@@ -1,0 +1,395 @@
+<div id="header_top" class="row no-gutters">
+    <div id="header_logo" class="col-2">
+        <a class="navbar-brand" id="header_logo_lien" routerLink="">
+            <div class="oi oi-home"></div>
+        </a>
+    </div>
+
+    <ul class="nav col-5" id="header_nav">
+        <li id="content_facebook_button" class="nav-item" style="width:120px;">
+            <a class="nav-link">
+                <fb-like href="//www.facebook.com/zeffyrmusic" layout="button_count" action="like" show-faces="false"
+                    share="false" width="80"></fb-like>
+            </a>
+        </li>
+
+        <li *ngIf="isConnected" class="nav-item" ngbDropdown>
+            <a class="nav-link" id="header_toggle_mini" ngbDropdownToggle>
+                <span class="oi oi-menu"></span>
+            </a>
+            <a id="header_toggle_big" ngbDropdownToggle>
+                {{pseudo}} <span class="caret"></span>
+            </a>
+            <ul ngbDropdownMenu>
+                <li ngbDropdownItem>
+                    <a (click)="openModal(contentModalPlaylists)">{{ 'mes_playlists' | transloco }}</a>
+                </li>
+                <li ngbDropdownItem>
+                    <a (click)="openModal(contentModalFollows)">{{ 'ma_selection' | transloco }}</a>
+                </li>
+                <li ngbDropdownItem>
+                    <a (click)="openModal(contentModalEditLang)">{{ 'langue' | transloco}}</a>
+                </li>
+                <li ngbDropdownItem>
+                    <a (click)="openModal(contentModalEditMail)">{{ 'modifier_mail' | transloco}}</a>
+                </li>
+                <li ngbDropdownItem>
+                    <a (click)="openModal(contentModalEditPass)">{{ 'modifier_mot_de_passe' | transloco}}</a>
+                </li>
+                <li class="dropdown-divider"></li>
+                <li ngbDropdownItem>
+                    <a (click)="onLogout()">{{ 'deconnexion' | transloco}}</a>
+                </li>
+            </ul>
+        </li>
+
+        <li id="header_li_inscription" class="nav-item" *ngIf="!isConnected">
+            <a class="nav-link" (click)="openModal(contentModalRegister)">{{ 'inscription' | transloco }}</a>
+        </li>
+        <li id="header_li_connexion" class="nav-item" *ngIf="!isConnected">
+            <a class="nav-link" (click)="openModal(contentModalLogin)">{{ 'connexion' | transloco }}</a>
+        </li>
+
+    </ul>
+
+    <div id="header_recherche" class="navbar-form navbar-right col-5">
+        <app-search-bar></app-search-bar>
+    </div>
+</div>
+
+<div id="header_player" class="row no-gutters">
+
+    <div id="header_player_gauche" class="col-3">
+        <div class="btn-group btn-group-lg d-flex">
+            <a class="oi oi-media-skip-backward btn btn-light w-100" (click)="onBefore()"></a>
+            <a id="play_button" [ngClass]="{'oi btn btn-light w-100': true,
+                                            'oi-media-pause': isPlaying,
+                                            'oi-media-play': !isPlaying}" (click)="onPlayPause()"></a>
+            <a class="oi oi-media-skip-forward btn btn-light w-100" (click)="onAfter()"></a>
+        </div>
+    </div>
+
+    <div id="header_player_centre" class="col-6">
+        <p id="titre_en_cours">{{currentTitle}}</p>
+
+        <div id="header_player_center_load">
+            <div id="chrono_en_cours">{{ currentTimeStr }}</div>
+            <div id="slider_1_main">
+                <div id="slider_1_content" class="ui-slider" (click)="onClickSliderPlayer($event)" #contentSlider1>
+                    <span class="ui-slider-handle" #sliderPlayer [style.left.%]="valueSliderPlayer" ngDraggable
+                        [bounds]="contentSlider1" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
+                        (movingOffset)="onDragMovingPlayer($event)" (endOffset)="onDragEndPlayer($event)"></span>
+                </div>
+                <div id="load_video" [style.width.%]="loadVideo"></div>
+                <div id="load_video_current" [style.width.%]="valueSliderPlayer"></div>
+            </div>
+            <div id="chrono_total">{{ totalTimeStr }}</div>
+        </div>
+    </div>
+
+    <div id="header_player_droite" class="col-3">
+        <div id="header_player_volume_content">
+            <span class="oi oi-volume-high"></span>
+            <div id="slider_2_main">
+                <div id="slider_2_content" class="ui-slider" (click)="onClickSliderVolume($event)" #contentSlider2>
+                    <span class="ui-slider-handle" #sliderVolume [style.left.%]="valueSliderVolume" ngDraggable
+                        [bounds]="contentSlider2" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
+                        (movingOffset)="onDragMovingVolume($event)" (endOffset)="onDragEndVolume($event)"></span>
+                </div>
+                <div id="load_volume_current" [style.width.%]="valueSliderVolume"></div>
+            </div>
+        </div>
+
+        <div class="btn-group btn-group-sm" id="header_mini_boutons">
+            <a (click)="goFullscreen('player')" class="oi oi-fullscreen-enter btn btn-light" placement="bottom"
+                ngbTooltip="{{'video_plein_ecran' | transloco}}"></a>
+            <a id="repeat" [ngClass]="{'oi oi-loop btn btn-light': true, 'active':repeat_b}" (click)="repeat()"
+                placement="bottom" ngbTooltip="{{'repetition' | transloco}}"></a>
+            <a id="random" [ngClass]="{'oi oi-random btn btn-light':true, 'active': random_b}" (click)="random()"
+                placement="bottom" ngbTooltip="{{'lecture_aleatoire' | transloco}}"></a>
+        </div>
+
+    </div>
+
+</div>
+
+<ng-template #contentModalRegister let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'inscription' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <p class="bg-info">{{ 'inscription_description' | transloco }}</p>
+        <form *ngIf="!isRegistered" (ngSubmit)="onSubmitRegister(formRegister)" #formRegister="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="pseudo">{{ 'pseudo' | transloco}}</label>
+                <input type="text" name="pseudo" id="pseudo" class="form-control" minlength="4" ngbAutofocus ngModel
+                    required />
+            </p>
+            <p class="form-group">
+                <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
+                <input type="text" name="mail" id="mail" class="form-control" ngModel required email />
+            </p>
+            <p class="form-group">
+                <label class="control-label" for="password">{{ 'mot_de_passe' | transloco}}</label>
+                <input type="password" name="password" id="password" class="form-control" minlength="4" ngModel
+                    required />
+            </p>
+            <p><input type="submit" class="btn btn-primary" [disabled]="formRegister.invalid"
+                    value="{{ 'je_m_inscris' | transloco}}" /></p>
+            <p *ngIf="formRegister.dirty && error!=''">{{error}}</p>
+        </form>
+        <div *ngIf="isRegistered">
+            <p>{{ 'inscription_succes' | transloco }}</p>
+            <p><a (click)="modal.dismiss(''); openModal(contentModalLogin)">{{ 'connexion' | transloco}}</a></p>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #contentModalLogin let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'connexion' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onLogIn(formLogIn, modal)" #formLogIn="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="pseudo">{{ 'pseudo_ou_mail' | transloco}}</label>
+                <input type="text" name="pseudo" id="pseudo" class="form-control" minlength="4" ngbAutofocus ngModel
+                    required />
+            </p>
+            <p class="form-group">
+                <label class="control-label" for="password">{{ 'mot_de_passe' | transloco}}</label>
+                <input type="password" name="password" id="password" class="form-control" minlength="4" ngModel
+                    required />
+            </p>
+            <p><input type="submit" class="btn btn-primary" [disabled]="formLogIn.invalid"
+                    value="{{ 'connexion' | transloco}}" /></p>
+            <p *ngIf="formLogIn.dirty && error!=''">{{error}}</p>
+
+            <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)">{{ 'mot_de_passe_oublie' | transloco}}</a>
+            </p>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalNewPass let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'mot_de_passe_oublie' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form *ngIf="!isSuccess" (ngSubmit)="onSumbitResetPass(formResetPass)" #formResetPass="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
+                <input type="text" name="mail" id="mail" class="form-control" ngbAutofocus ngModel required email />
+            </p>
+            <p><input type="submit" class="btn btn-primary" [disabled]="formResetPass.invalid"
+                    value="{{ 'envoyer' | transloco}}" /></p>
+            <p *ngIf="formResetPass.dirty && error!=''">{{error}}</p>
+        </form>
+        <p *ngIf="isSuccess">{{ 'mail_pass_envoye_succes' | transloco }}</p>
+    </div>
+</ng-template>
+
+<ng-template #contentModalEditLang let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'choisissez_langue' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <select class="form-control" (change)="onChangeLang(lang)" ngbAutofocus ngModel #lang>
+            <option value="" selected="selected">{{ 'choisissez_langue' | transloco}}</option>
+            <option *ngFor="let lang of langs" [value]="lang">{{ 'langue_'+lang | transloco }}</option>
+        </select>
+    </div>
+</ng-template>
+
+<ng-template #contentModalEditPass let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'modifier_mot_de_passe' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onSubmitEditPass(formEditPass)" #formEditPass="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="passwordold">{{ 'mot_de_passe_actuel' | transloco}}</label>
+                <input type="password" name="passwordold" id="passwordold" class="form-control" ngbAutofocus ngModel
+                    required />
+            </p>
+            <p class="form-group">
+                <label class="control-label" for="password1">{{ 'mot_de_passe_nouveau' | transloco}}</label>
+                <input type="password" name="password1" id="password1" class="form-control" ngModel required />
+            </p>
+            <p class="form-group">
+                <label class="control-label" for="password2">{{ 'mot_de_passe_repeter' | transloco}}</label>
+                <input type="password" name="password2" id="password2" class="form-control" ngModel required />
+            </p>
+
+            <p><input type="submit" class="btn btn-primary" [disabled]="formEditPass.invalid"
+                    value="{{ 'envoyer' | transloco}}" /></p>
+            <p *ngIf="formEditPass.dirty && error!=''">{{error}}</p>
+            <p *ngIf="successPass">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalEditMail let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'modifier_mail' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onSubmitEditMail(formEditMail)" #formEditMail="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
+                <input type="text" name="mail" id="mail" class="form-control" ngbAutofocus [(ngModel)]="mail" required
+                    email />
+            </p>
+
+            <p><input type="submit" class="btn btn-primary" [disabled]="formEditMail.invalid"
+                    value="{{ 'envoyer' | transloco}}" /></p>
+            <p *ngIf="formEditMail.dirty && error!=''">{{error}}</p>
+            <p *ngIf="successMail">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalPlaylists let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'mes_playlists' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onCreatePlaylist(formCreatePlaylist)" #formCreatePlaylist="ngForm">
+            <div class="input-group">
+                <input type="text" class="form-control" name="titre"
+                    placeholder="{{ 'creer_nouvelle_playlist' | transloco }}" ngbAutofocus ngModel required>
+                <span class="input-group-btn">
+                    <input class="btn btn-primary" type="submit" [disabled]="formCreatePlaylist.invalid"
+                        value="{{ 'creer' | transloco }}" />
+                </span>
+            </div>
+        </form>
+        <hr />
+        <table class="table table-condensed" id="tableau_musique">
+            <tr *ngFor="let playlist of listPlaylist">
+                <td>
+                    <a (click)="onCloseModalPlaylists(playlist.id_playlist,modal)">{{playlist.titre}}</a>
+                </td>
+
+                <td>
+                    <a (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)"><span
+                            class="oi oi-pencil" placement="right"
+                            ngbTooltip="{{'modifier_nom' | transloco}}"></span></a>
+                </td>
+
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" [ngClass]="{'btn btn-light' : true,
+                                                            'active' : !playlist.prive}"
+                            (click)="onSwitchVisibility(playlist.id_playlist,'public')">{{ 'public' | transloco }}</button>
+                        <button type="button" [ngClass]="{'btn btn-light' : true,
+                                                            'active' : playlist.prive}"
+                            (click)="onSwitchVisibility(playlist.id_playlist,'prive')">{{ 'prive' | transloco }}</button>
+                    </div>
+                </td>
+
+                <td>
+                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"><span class="oi oi-delete"
+                            placement="right" ngbTooltip="{{'supprimer' | transloco}}"></span></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</ng-template>
+
+<ng-template #contentModalFollows let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'ma_selection' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <table class="table table-condensed" id="tableau_selection">
+            <tr *ngFor="let playlist of listFollow">
+                <td>
+                    <a class="btn btn-link"
+                        (click)="onCloseModalPlaylists(playlist.id_playlist, modal)">{{playlist.titre}}</a>
+                </td>
+
+                <td>
+                    <a class="oi oi-delete" (click)="onDeleteFollow(playlist.id_playlist)" placement="right"
+                        ngbTooltip="{{'supprimer' | transloco}}"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</ng-template>
+
+<ng-template #contentModalConfirmDeletePlaylist let-modal>
+    <div class="modal-body">
+        {{ 'supprimer_playlist_confirmer' | transloco  }}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark"
+            (click)="modal.close('Save click')">{{ 'annuler' | transloco}}</button>
+        <button type="button" class="btn btn-primary" (click)="onDeletePlaylist(modal)">{{ 'confirmer' | transloco}}</button>
+    </div>
+</ng-template>
+
+<ng-template #contentModalConfirmEditTitle let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'playlist_modifier_titre' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onEditTitlePlaylist(formEditTitle, modal)" #formEditTitle="ngForm">
+            <div class="input-group">
+                <input type="text" class="form-control" name="playlist_titre" [(ngModel)]="playlistTitle" required>
+                <span class="input-group-btn">
+                    <input class="btn btn-primary" type="submit" [disabled]="formEditTitle.invalid"
+                            value="{{ 'modifier' | transloco }}" />
+                </span>
+            </div>
+            <p *ngIf="formEditTitle.dirty && error!=''">{{error}}</p>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalAddVideo let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'ajouter_musique_playlist' | transloco}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <p>{{'ajouter' | transloco}}: {{addTitle}} {{addArtist}}</p>
+        <p *ngIf="error!=''">{{error}}</p>
+        <table class="table">
+            <tr *ngFor="let playlist of listPlaylist">
+                <td>
+                    <a (click)="onAddVideo(playlist.id_playlist, modal)">{{playlist.titre}}</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</ng-template>

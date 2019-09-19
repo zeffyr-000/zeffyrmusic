@@ -1,0 +1,46 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { InitService } from '../services/init.service';
+import { PlayerService } from '../services/player.service';
+
+@Component({
+    selector: 'app-player',
+    templateUrl: './player.component.html',
+    styleUrls: ['./player.component.css']
+})
+export class PlayerComponent implements OnInit, OnDestroy {
+
+    list: any[];
+    currentKey: string;
+
+    subscription: any;
+    subscriptionChangeKey: any;
+
+    constructor(private initService: InitService,
+                private playerService: PlayerService) {
+        this.subscription = playerService.subjectCurrentPlaylistChange.subscribe((list) => {
+            this.list = list;
+        });
+
+        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe((data) => {
+            this.currentKey = data.currentKey;
+        });
+    }
+
+    ngOnInit() {
+        this.playerService.launchYTApi();
+    }
+
+    play(index: number, isInitialIndex: boolean) {
+        this.playerService.lecture(index, isInitialIndex);
+    }
+
+    removeToPlaylist(index: number) {
+        this.playerService.removeToPlaylist(index);
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+        this.subscriptionChangeKey.unsubscribe();
+    }
+
+}

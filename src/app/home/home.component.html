@@ -1,0 +1,29 @@
+<div id="home_bloc_1" class="panel panel-default m-t">
+    <h3 class="panel-heading text-center">Top charts</h3>
+    <div *ngIf="isLoading" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+        
+    <ul *ngIf="!isLoading" id="home_top_charts" class="list-unstyled panel-body">
+        <li *ngFor="let chart of listTopCharts" [style.backgroundImage]="'url('+chart.url_image+')'">
+            <a routerLink="/top_charts/{{chart.id_top_charts}}">
+            <p class="text-center h4">{{chart.nom}}</p></a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+    
+<div id="home_bloc_2" class="panel panel-default m-t">
+    <h3 class="panel-heading text-center">Top albums</h3>
+    <div *ngIf="isLoading" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+    
+    <ul *ngIf="!isLoading" id="home_top_albums" class="list-unstyled panel-body">
+        <li *ngFor="let album of listTopAlbums" [style.backgroundImage]="'url('+album.url_image+')'">
+            <a routerLink="/playlist/{{album.id_playlist}}">
+                <p class="text-center h5">{{album.titre}}
+                    <small *ngIf="album.artiste!==''"><br/> {{album.artiste}}</small>
+                </p>
+            </a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>

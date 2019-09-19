@@ -1,0 +1,14 @@
+@media screen and (max-device-width:899px), screen and (max-width:899px) {
+    #home_top_charts>li, #home_top_albums>li {
+        width: 50%;
+        padding-bottom: 50%;
+    }
+    #playlist_img_big {
+        width: 85px;
+        height: 85px;
+    }
+    #playlist_haut_titre {
+        width: calc( 100% - 100px);
+        min-height: auto;
+    }
+}

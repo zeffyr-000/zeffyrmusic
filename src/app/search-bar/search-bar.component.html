@@ -1,0 +1,22 @@
+<input class="form-control" type="search" 
+        placeholder="{{ 'rechercher' | transloco }}" id="input_search_header" 
+        [(ngModel)]="query" (input)="search()" />
+
+<ul class="list-group list-unstyled" id="liste_resultat_recherche">
+    <li *ngIf="query && query.length>0">
+        <a class="list-group-item all_results" (click)="reset(element, false,'/search/'+query)">
+            <h4><span class="oi oi-magnifying-glass"></span> {{ 'tous_les_resultats' | transloco }}</h4>
+        </a>
+    </li>
+    <li *ngFor="let element of resultsArtist">
+        <a class="list-group-item" (click)="reset(element, true,'/artist/'+element.id_artiste)">
+            <h4><img [src]="'https://api.deezer.com/artist/'+element.id_artiste_deezer+'/image'" 
+                        class="img-rounded img_artiste_recherche" /> {{element.artiste}}</h4>
+        </a>
+    </li>
+    <li *ngFor="let element of resultsAlbum">
+        <a class="list-group-item" (click)="reset(element, true,'/playlist/'+element.id_playlist)">
+            <h4><img [src]="element.url_image" class="img-rounded" /> {{element.titre}} <small>{{element.artiste}}</small></h4>
+        </a>
+    </li>
+</ul>

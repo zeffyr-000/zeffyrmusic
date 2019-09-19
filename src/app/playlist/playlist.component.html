@@ -1,0 +1,100 @@
+<div id="playlist_content" class="panel panel-default panel-profile">
+    <div *ngIf="!isPrivate">
+        <div id="playlist_haut" class="panel-heading clearfix">
+            <div *ngIf="imgBig" class="panel_head_img" [style.backgroundImage]="'url('+imgBig+')'"></div>
+            <div class="panel_head_content">
+                <div id="playlist_haut_titre">
+                    
+                    <h1 *ngIf="idTopCharts && idTopCharts!==null" class="m-t-0">{{ 'top_charts_'+idTopCharts | transloco }}</h1>
+                    <h1 *ngIf="idTopCharts==null && titre!==undefined" class="m-t-0">{{titre}}</h1>
+                    <h1 *ngIf="idTopCharts===null && titre==undefined" class="m-t-0">{{title}}</h1>
+
+                    <h3 *ngIf="artist!==null && artist!=''" ><a routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
+
+                    <div>
+                        <a class="btn btn-primary btn-lg" (click)="runPlaylist()">
+                            <span class="oi oi-media-play"></span> 
+                            {{ 'lire' | transloco }}
+                        </a>
+
+                        <a class="btn btn-light btn-lg" 
+                            *ngIf="isConnected && idPersoOwner!=idPerso" 
+                            [ngClass]="{'active' : isFollower}" 
+                            (click)="switchFollow()">{{'suivre' | transloco}}</a>
+                    
+                        <a class="btn btn-light btn-lg" 
+                            (click)="addInCurrentList()">{{'ajouter_liste_en_cours' | transloco}}</a>
+                    </div>
+
+                    <div class="row m-t">
+                        <div class="col-md-6">
+                            <div>
+                                <fb-like class="fb-like" layout="button_count" action="like" show-faces="false" share="true" width="300"></fb-like>
+                            </div>
+                        </div>
+                        <div id="playlist_infos" class="col-md-6">
+                            <span class="content_indication">
+                                <b>{{playlist && playlist.length}}</b> 
+                                <span *ngIf="playlist && playlist.length<=1"> {{ 'titre' | transloco }}</span>
+                                <span *ngIf="playlist && playlist.length>1"> {{ 'titres' | transloco }}</span>
+                                    {{sumDurationPlaylist()}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="imgBig && imgBig!==undefined && imgBig!==''">
+                    <img id="playlist_img_big" [src]="imgBig" class="img-rounded" />
+                </div>
+            </div>	
+        </div>
+        
+        <div class="panel-body p-t-0">	
+            <table id="table_playlist" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>{{ 'intitule_artiste' |transloco }}</th>
+                        <th>{{ 'intitule_titre' |transloco }}</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let video of playlist, let index=index" [attr.data-id-video]="video.key" 
+                            [ngClass]="{'active': video.key===currentKey}">
+                        <td>{{ index+1 }}</td>
+                        <td>
+                            <p *ngIf="video.id_artiste==undefined || video.id_artiste<=0" 
+                                (click)="runPlaylist(index)">{{video.artiste}}</p>
+                            <a *ngIf="video.id_artiste>0" routerLink="/artist/{{video.id_artiste}}">{{video.artiste}}</a>
+                        </td>
+                        <td (click)="runPlaylist(index)">{{video.titre}}</td>
+                        <td>
+                            <span *ngIf="video.tab_element[0].duree>0">{{video.tab_element[0].duree | toMMSS }}</span>
+                        </td>
+                        <td>
+                            <div>
+                                <span *ngIf="isConnected" 
+                                        class="oi oi-plus btn btn-default" 
+                                        (click)="addVideo(video.key,video.artiste,video.titre)" 
+                                        placement="top" 
+                                        ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}"></span>
+                                <span *ngIf="isConnected && idPersoOwner==idPerso" 
+                                        class="oi oi-x btn btn-default"  
+                                        (click)="removeVideo(video.id_video);" 
+                                        placement="top" 
+                                        ngbTooltip="{{'supprimer' | transloco}}"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+
+    <p *ngIf="isPrivate">{{ 'playlist_privee' | transloco }}</p>
+</div>
+    

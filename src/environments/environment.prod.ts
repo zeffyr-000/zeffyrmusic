@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  URL_SERVER: 'https://www.zeffyrmusic.com/',
+  httpClientConfig: {}
 };

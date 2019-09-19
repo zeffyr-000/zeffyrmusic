@@ -1,0 +1,41 @@
+#header_recherche>input {
+    width: 80%;
+}
+
+#liste_resultat_recherche {
+    width: 74%;
+    position: absolute;
+    z-index: 10;
+}
+
+#liste_resultat_recherche .list-group-item {
+    padding: 4px;
+}
+
+#liste_resultat_recherche .list-group-item.all_results {
+    min-height: 60px;
+}
+
+#liste_resultat_recherche .list-group-item.all_results>h4 {
+    min-height: 60px;
+    line-height: 60px;
+    padding-left: 64px;
+}
+
+#liste_resultat_recherche h4 {
+    margin: 0px;
+}
+
+.img_artiste_recherche {
+    height: 60px;
+    width: 60px;
+}
+
+@media screen and (max-device-width:799px), screen and (max-width:799px) {
+    #header_recherche>input {
+        width: 99%;
+    }
+    #liste_resultat_recherche {
+        width: 89%;
+    }
+}

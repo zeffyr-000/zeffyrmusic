@@ -1,0 +1,117 @@
+<div id="search_content" class="panel panel-default panel-body">
+	
+	<h1 class="m-t-0">{{ 'resultats_recherche' | transloco :{ query: query } }}</h1>
+
+    <h2 class="m-t-0">{{ 'artistes' | transloco }}</h2>
+    <div *ngIf="!isLoading1">
+        <div *ngFor="let artist of listArtists | slice:0:limitArtist" class="search_list_element">
+            <a routerLink="/artist/{{artist.id_artiste}}">
+                <img [src]="'https://api.deezer.com/artist/'+artist.id_artiste_deezer+'/image'" class="img-rounded" />
+                <h5>{{artist.artiste}}</h5>
+            </a>
+        </div>
+    </div>
+	<div *ngIf="isLoading1" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+
+	<div *ngIf="listArtists && listArtists.length>limitArtist" class="search_list_element search_more" (click)="moreArtists()">
+		<h5>{{ 'more' | transloco }}</h5>
+	</div>
+	
+
+    <h2 class="m-t-0"> {{ 'albums' | transloco }}</h2>
+    <div *ngIf="!isLoading1">
+        <div  *ngFor="let album of listAlbums | slice:0:limitAlbum" class="search_list_element">
+            <a routerLink="/playlist/{{album.id_playlist}}">
+                <img [src]="album.url_image" class="img-rounded" />
+                <h5>{{album.titre}} ({{album.year_release}})</h5>
+            </a>
+        </div>
+    </div>
+	<div *ngIf="isLoading1" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+
+	<div *ngIf="listAlbums && listAlbums.length>limit_album" class="search_list_element search_more" (click)="moreAlbums()">
+		<h5>{{ 'more' | transloco }}</h5>
+	</div>
+	
+	<h2 class="m-t-0">{{ 'morceaux' | transloco }}</h2>
+	<table *ngIf="!isLoading2" id="table_playlist" class="table table-hover">
+		<thead>
+			<tr>
+				<th></th>
+				<th>{{ 'intitule_artiste' |transloco }}</th>
+				<th>{{ 'intitule_titre' |transloco }}</th>
+				<th>{{ 'album' |transloco }}</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr *ngFor="let video of listTracks | slice:0:limitTrack; let index=index" [attr.data-id-video]="video.key">
+				<td>{{ index+1 }}</td>
+				<td>
+                    <p *ngIf="video.id_artiste==undefined || video.id_artiste<=0" 
+                        (click)="runPlaylistTrack(index)">{{video.artiste}}</p>
+					<a *ngIf="video.id_artiste>0" routerLink="/artist/{{video.id_artiste}}">{{video.artiste}}</a>
+				</td>
+				<td (click)="runPlaylistTrack(index)">{{video.titre}}</td>
+				<td>
+					<a *ngIf="video.titre_album!=undefined" routerLink="/playlist/{{video.id_playlist}}">{{video.titre_album}}</a>
+				</td>
+				<td>
+					<span *ngIf="video.tab_element[0].duree>0">{{video.tab_element[0].duree | toMMSS }}</span>
+				</td>
+				<td>
+                    <span *ngIf="isConnected" 
+                            class="oi oi-plus btn btn-default" 
+                            (click)="addVideo(video.key,video.artiste,video.titre)" 
+                            placement="left" 
+                            ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}"></span>
+				</td>
+			</tr>
+			<tr *ngIf="listTracks && listTracks.length>limitTrack">
+				<td colspan="6">
+					<a (click)="moreTracks()">{{ 'more' |transloco }}</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div *ngIf="isLoading2" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+
+
+	<h2 class="m-t-0">{{ 'extras' |transloco }}</h2>
+	<table *ngIf="!isLoading3" id="table_extra" class="table table-hover">
+		<thead>
+			<tr>
+				<th></th>
+				<th>{{ 'intitule_titre' |transloco }}</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr *ngFor="let extra of listExtras | slice:0:limitExtra; let index=index" [attr.data-id-video]="extra.key">
+				<td>{{ index+1 }}</td>
+				<td (click)="runPlaylistExtra(index)">{{extra.title}}</td>
+				<td>
+					<span *ngIf="extra.duree>0">{{extra.duree | toMMSS }}</span>
+				</td>
+				<td>
+                    <span *ngIf="isConnected" 
+                            class="oi oi-plus btn btn-default" 
+                            (click)="addVideo(extra.key,'',extra.title);" 
+                            placement="left" 
+                            ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}"></span>
+				</td>
+			</tr>
+			<tr *ngIf="listExtras && listExtras.length>limitExtra">
+				<td colspan="5">
+					<a (click)="moreExtras()">{{ 'more' |transloco }}</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div *ngIf="isLoading3" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+
+</div>
