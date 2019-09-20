@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ArtistComponent } from './artist.component';
+import { FacebookModule } from 'ngx-facebook';
+import { TranslocoModule } from '@ngneat/transloco';
 
 describe('ArtistComponent', () => {
   let component: ArtistComponent;
@@ -8,9 +12,13 @@ describe('ArtistComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ArtistComponent ]
+      imports: [FacebookModule,
+                TranslocoModule,
+                RouterTestingModule,
+                HttpClientTestingModule],
+      declarations: [ArtistComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
