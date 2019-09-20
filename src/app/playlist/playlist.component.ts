@@ -86,7 +86,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        if ((window as any).FB) {
+        if ((window as any).FB && false) {
             (window as any).FB.XFBML.parse();
         }
     }
