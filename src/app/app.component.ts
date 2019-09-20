@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 if ((window as any).FB) {
                     (window as any).FB.XFBML.parse();
                 }
-                
+
                 this.googleAnalyticsService.pageView(event.url);
             }
 
