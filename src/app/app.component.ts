@@ -1,15 +1,15 @@
-import { Component, Inject, OnInit, OnDestroy  } from '@angular/core';
-import { InitService } from './services/init.service';
-import { Router, Event, NavigationStart, NavigationEnd, NavigationError } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnDestroy, OnInit  } from '@angular/core';
+import { Event, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
-import { DOCUMENT } from '@angular/common';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css'],
+    styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
     title = 'zeffyrmusic';
@@ -20,19 +20,19 @@ export class AppComponent implements OnInit, OnDestroy {
     subscriptionMessageUnlog: any;
     subscriptionMessageTap: any;
 
-    constructor(@Inject(DOCUMENT) private document: Document,
-                private initService: InitService,
-                private playerService: PlayerService,
-                private router: Router,
-                private translocoService: TranslocoService,
-                private googleAnalyticsService: GoogleAnalyticsService) {
+    constructor(@Inject(DOCUMENT) private readonly document: Document,
+                private readonly initService: InitService,
+                private readonly playerService: PlayerService,
+                private readonly router: Router,
+                private readonly translocoService: TranslocoService,
+                private readonly googleAnalyticsService: GoogleAnalyticsService) {
         this.initService.getPing();
 
-        this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe((isShow) => {
+        this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe(isShow => {
             this.showMessageUnlog = isShow;
         });
 
-        this.subscriptionMessageTap = this.playerService.subjectMessageTap.subscribe((isShow) => {
+        this.subscriptionMessageTap = this.playerService.subjectMessageTap.subscribe(isShow => {
             this.showTapVideoYT = isShow;
         });
 
@@ -67,7 +67,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 // Hide loading indicator
 
                 // Present error to user
-                console.log(event.error);
             }
         });
 

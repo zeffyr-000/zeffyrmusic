@@ -1,28 +1,28 @@
-import { BrowserModule, Title, Meta } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserModule, Meta, Title } from '@angular/platform-browser';
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FacebookModule } from 'ngx-facebook';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 
+import { HttpClientModule } from '@angular/common/http';
+import { TRANSLOCO_CONFIG, TranslocoConfig, TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { AngularDraggableModule } from 'angular2-draggable';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
-import { environment } from '../environments/environment';
 import { translocoLoader } from './transloco.loader';
-import { TranslocoModule, TRANSLOCO_CONFIG, TranslocoConfig, TranslocoService } from '@ngneat/transloco';
-import { AngularDraggableModule } from 'angular2-draggable';
 
-import { HomeComponent } from './home/home.component';
-import { PlaylistComponent } from './playlist/playlist.component';
 import { ArtistComponent } from './artist/artist.component';
-import { SearchComponent } from './search/search.component';
 import { HeaderComponent } from './header/header.component';
+import { HomeComponent } from './home/home.component';
+import { ToMMSSPipe } from './pipes/to-mmss.pipe';
 import { PlayerComponent } from './player/player.component';
+import { PlaylistComponent } from './playlist/playlist.component';
+import { SearchBarComponent } from './search-bar/search-bar.component';
+import { SearchComponent } from './search/search.component';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
-import { SearchBarComponent } from './search-bar/search-bar.component';
-import { ToMMSSPipe } from './pipes/to-mmss.pipe';
 
 @NgModule({
     declarations: [
@@ -57,19 +57,19 @@ import { ToMMSSPipe } from './pipes/to-mmss.pipe';
             scopeStrategy: 'shared'
         } as TranslocoConfig
     },
-    {
+                {
         provide: APP_INITIALIZER,
         multi: true,
         useFactory: preload,
         deps: [TranslocoService]
     },
-        translocoLoader,
-        NgbActiveModal,
-        InitService,
-        PlayerService,
-        Title,
-        Meta,
-        TranslocoService
+                translocoLoader,
+                NgbActiveModal,
+                InitService,
+                PlayerService,
+                Title,
+                Meta,
+                TranslocoService
     ],
     bootstrap: [AppComponent]
 })

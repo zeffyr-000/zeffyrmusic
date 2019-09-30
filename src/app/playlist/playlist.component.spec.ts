@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlaylistComponent } from './playlist.component';
-import { TranslocoModule } from '@ngneat/transloco';
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslocoModule } from '@ngneat/transloco';
 import { FacebookModule } from 'ngx-facebook';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { PlaylistComponent } from './playlist.component';
 
 describe('PlaylistComponent', () => {
   let component: PlaylistComponent;

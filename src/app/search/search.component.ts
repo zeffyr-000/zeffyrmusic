@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { environment } from 'src/environments/environment';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
+import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 
@@ -14,32 +14,32 @@ import { PlayerService } from '../services/player.service';
 })
 export class SearchComponent implements OnInit, OnDestroy {
 
-    private isConnected: boolean;
-    private query: string;
-    private isLoading1: boolean;
-    private isLoading2: boolean;
-    private isLoading3: boolean;
+    isConnected: boolean;
+    query: string;
+    isLoading1: boolean;
+    isLoading2: boolean;
+    isLoading3: boolean;
 
-    private listArtists: any[];
-    private limitArtist: number;
+    listArtists: any[];
+    limitArtist: number;
 
-    private listAlbums: any[] = [];
-    private limitAlbum: number;
+    listAlbums: any[] = [];
+    limitAlbum: number;
 
-    private listTracks: any[] = [];
-    private limitTrack: number;
+    listTracks: any[] = [];
+    limitTrack: number;
 
-    private listExtras: any[] = [];
-    private limitExtra: number;
+    listExtras: any[] = [];
+    limitExtra: number;
 
     private subscriptionConnected: any;
 
-    constructor(private httpClient: HttpClient,
-                private activatedRoute: ActivatedRoute,
-                private titleService: Title,
-                private translocoService: TranslocoService,
-                private initService: InitService,
-                private playerService: PlayerService) {
+    constructor(private readonly httpClient: HttpClient,
+                private readonly activatedRoute: ActivatedRoute,
+                private readonly titleService: Title,
+                private readonly translocoService: TranslocoService,
+                private readonly initService: InitService,
+                private readonly playerService: PlayerService) {
                 }
 
     ngOnInit() {
@@ -48,7 +48,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isLoading2 = true;
         this.isLoading3 = true;
 
-        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe((data) => {
+        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
             this.isConnected = data.isConnected;
         });
 
@@ -112,15 +112,14 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     runPlaylistExtra(index) {
 
-        const listTransformed = this.listExtras.map((e) => {
-            return {
+        const listTransformed = this.listExtras.map(e =>
+            ({
                 titre : e.title,
                 tab_element: [{
                     key : e.key,
                     duree : e.duree
                 }]
-            };
-        });
+            }));
 
         this.playerService.runPlaylist(listTransformed, index);
     }

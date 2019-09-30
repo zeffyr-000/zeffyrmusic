@@ -103,9 +103,9 @@
         <div class="btn-group btn-group-sm" id="header_mini_boutons">
             <a (click)="goFullscreen('player')" class="oi oi-fullscreen-enter btn btn-light" placement="bottom"
                 ngbTooltip="{{'video_plein_ecran' | transloco}}"></a>
-            <a id="repeat" [ngClass]="{'oi oi-loop btn btn-light': true, 'active':repeat_b}" (click)="repeat()"
+            <a id="repeat" [ngClass]="{'oi oi-loop btn btn-light': true, 'active':isRepeat}" (click)="repeat()"
                 placement="bottom" ngbTooltip="{{'repetition' | transloco}}"></a>
-            <a id="random" [ngClass]="{'oi oi-random btn btn-light':true, 'active': random_b}" (click)="random()"
+            <a id="random" [ngClass]="{'oi oi-random btn btn-light':true, 'active': isRandom}" (click)="random()"
                 placement="bottom" ngbTooltip="{{'lecture_aleatoire' | transloco}}"></a>
         </div>
 

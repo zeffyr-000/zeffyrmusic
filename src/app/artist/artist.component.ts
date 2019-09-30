@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { Component, OnInit } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { TranslocoService } from '@ngneat/transloco';
+import { environment } from '../../environments/environment';
 
 @Component({
     selector: 'app-artist',
@@ -18,17 +18,17 @@ export class ArtistComponent implements OnInit {
     idArtist: string;
     listAlbums: any[];
 
-    constructor(private httpClient: HttpClient,
-                private activatedRoute: ActivatedRoute,
-                private titleService: Title,
-                private metaService: Meta,
-                private translocoService: TranslocoService) {
-        activatedRoute.params.subscribe(() => {
+    constructor(private readonly httpClient: HttpClient,
+                private readonly activatedRoute: ActivatedRoute,
+                private readonly titleService: Title,
+                private readonly metaService: Meta,
+                private readonly translocoService: TranslocoService) {}
+
+    ngOnInit() {
+        this.activatedRoute.params.subscribe(() => {
             this.initLoad();
         });
     }
-
-    ngOnInit() {}
 
     initLoad() {
         const idArtist = this.activatedRoute.snapshot.paramMap.get('id_artist');
@@ -52,10 +52,7 @@ export class ArtistComponent implements OnInit {
                 });
                 this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
                 this.metaService.updateTag({ name: 'og:url', content: document.location.href });
-            },
-                (error) => {
-                    console.log(error);
-                });
+            });
     }
 
 }

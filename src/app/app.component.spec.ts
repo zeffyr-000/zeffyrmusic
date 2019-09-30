@@ -1,16 +1,15 @@
-import { TestBed, async } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AppComponent } from './app.component';
-import { TranslocoModule } from '@ngneat/transloco';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NgbActiveModal, NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslocoModule } from '@ngneat/transloco';
+import { AngularDraggableModule } from 'angular2-draggable';
+import { FacebookModule } from 'ngx-facebook';
+import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { PlayerComponent } from './player/player.component';
-import { NgbAlert, NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { FacebookModule } from 'ngx-facebook';
 import { SearchBarComponent } from './search-bar/search-bar.component';
-import { AngularDraggableModule } from 'angular2-draggable';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
 
 describe('AppComponent', () => {
   beforeEach(async(() => {

@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { Component, OnInit } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService } from '@ngneat/transloco';
-import { Title, Meta } from '@angular/platform-browser';
+import { environment } from '../../environments/environment';
 
 @Component({
     selector: 'app-home',
@@ -10,16 +10,16 @@ import { Title, Meta } from '@angular/platform-browser';
     styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+    isLoading = false;
 
     private listTopAlbums: any[];
     private listTopCharts: any[];
-    private isLoading = false;
     private lang: string;
 
-    constructor(private httpClient: HttpClient,
-                private titleService: Title,
-                private metaService: Meta,
-                private translocoService: TranslocoService) { }
+    constructor(private readonly httpClient: HttpClient,
+                private readonly titleService: Title,
+                private readonly metaService: Meta,
+                private readonly translocoService: TranslocoService) { }
 
     ngOnInit() {
 
@@ -37,9 +37,7 @@ export class HomeComponent implements OnInit {
                 this.listTopAlbums = data.top_albums;
                 this.listTopCharts = data.top_charts;
 
-            },
-                (error) => {
-                    console.log(error);
+            }, error => { 
                     this.isLoading = false;
                 });
     }

@@ -1,10 +1,10 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { ArtistComponent } from './artist.component';
-import { FacebookModule } from 'ngx-facebook';
 import { TranslocoModule } from '@ngneat/transloco';
+import { FacebookModule } from 'ngx-facebook';
+import { ArtistComponent } from './artist.component';
 
 describe('ArtistComponent', () => {
   let component: ArtistComponent;

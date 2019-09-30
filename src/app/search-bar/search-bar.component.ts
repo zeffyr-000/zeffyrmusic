@@ -1,8 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-search-bar',
@@ -15,10 +15,10 @@ export class SearchBarComponent implements OnInit {
     resultsArtist: any[];
     resultsAlbum: any[];
 
-    constructor(private httpClient: HttpClient,
-                private ref: ChangeDetectorRef,
-                private router: Router,
-                private googleAnalyticsService: GoogleAnalyticsService) { }
+    constructor(private readonly httpClient: HttpClient,
+                private readonly ref: ChangeDetectorRef,
+                private readonly router: Router,
+                private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     ngOnInit() {
     }

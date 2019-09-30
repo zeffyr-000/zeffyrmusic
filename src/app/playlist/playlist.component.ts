@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
-import { Title, Meta } from '@angular/platform-browser';
-import { TranslocoService } from '@ngneat/transloco';
 
 @Component({
     selector: 'app-playlist',
@@ -31,13 +31,13 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
     subscriptionChangeKey: any;
     subscriptionChangeFollow: any;
 
-    constructor(private httpClient: HttpClient,
-                private activatedRoute: ActivatedRoute,
-                private initService: InitService,
-                private playerService: PlayerService,
-                private titleService: Title,
-                private metaService: Meta,
-                private translocoService: TranslocoService) {
+    constructor(private readonly httpClient: HttpClient,
+                private readonly activatedRoute: ActivatedRoute,
+                private readonly initService: InitService,
+                private readonly playerService: PlayerService,
+                private readonly titleService: Title,
+                private readonly metaService: Meta,
+                private readonly translocoService: TranslocoService) {
 
         activatedRoute.params.subscribe(() => {
             this.initLoad();
@@ -49,21 +49,21 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     initLoad() {
-        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe((data) => {
+        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
             this.isConnected = data.isConnected;
             this.idPerso = data.idPerso;
         });
 
-        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe((data) => {
+        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
             this.currentKey = data.currentKey;
         });
 
-        this.subscriptionChangeFollow = this.playerService.subjectListFollow.subscribe((listFollow) => {
+        this.subscriptionChangeFollow = this.playerService.subjectListFollow.subscribe(listFollow => {
             if (!listFollow) {
                 return;
             }
 
-            const listFiltered = listFollow.filter((e) => e.id_playlist === this.idPlaylist);
+            const listFiltered = listFollow.filter(e => e.id_playlist === this.idPlaylist);
 
             if (listFiltered.length > 0) {
                 this.isFollower = true;
@@ -93,7 +93,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
 
     loadPlaylist(url: string) {
 
-        if ( !url ) {
+        if (!url) {
             url = environment.URL_SERVER + 'json/playlist/' + this.idPlaylist;
         }
 
@@ -139,10 +139,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.isPrivate = true;
                 }
 
-            },
-                (error) => {
-                    console.log(error);
-                });
+            });
     }
 
     switchFollow() {

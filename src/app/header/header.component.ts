@@ -1,13 +1,13 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, TemplateRef } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslocoService } from '@ngneat/transloco';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
-import { NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { TranslocoService } from '@ngneat/transloco';
-import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-header',
@@ -57,57 +57,51 @@ export class HeaderComponent implements OnInit, OnDestroy {
     listPlaylist: any[];
     listFollow: any[];
 
-    @ViewChild('contentModalAddVideo', { static: false })
-    private contentModalAddVideo: TemplateRef<any>;
-
     @ViewChild('sliderPlayer', { static: false }) sliderPlayerRef: ElementRef;
     @ViewChild('sliderVolume', { static: false }) sliderVolumeRef: ElementRef;
 
+    @ViewChild('contentModalAddVideo', { static: false })
+    private readonly contentModalAddVideo: TemplateRef<any>;
 
     constructor(public activeModal: NgbActiveModal,
-                private modalService: NgbModal,
-                private initService: InitService,
-                private playerService: PlayerService,
-                private ref: ChangeDetectorRef,
-                private httpClient: HttpClient,
-                private router: Router,
-                private route: ActivatedRoute,
-                private googleAnalyticsService: GoogleAnalyticsService,
-                private translocoService: TranslocoService) {
+                private readonly modalService: NgbModal,
+                private readonly initService: InitService,
+                private readonly playerService: PlayerService,
+                private readonly ref: ChangeDetectorRef,
+                private readonly httpClient: HttpClient,
+                private readonly router: Router,
+                private readonly route: ActivatedRoute,
+                private readonly googleAnalyticsService: GoogleAnalyticsService,
+                private readonly translocoService: TranslocoService) {
         this.isConnected = false;
     }
 
     ngOnInit() {
-        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe((data) => {
+        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
             this.isConnected = data.isConnected;
             this.pseudo = data.pseudo;
             this.mail = data.mail;
         });
 
-        this.subscriptionRepeat = this.playerService.subjectRepeatChange.subscribe(
-            (isRepeat) => { this.isRepeat = isRepeat; }
+        this.subscriptionRepeat = this.playerService.subjectRepeatChange.subscribe(isRepeat => { this.isRepeat = isRepeat; }
         );
 
-        this.subscriptionRandom = this.playerService.subjectRandomChange.subscribe(
-            (isRandom) => { this.isRandom = isRandom; }
+        this.subscriptionRandom = this.playerService.subjectRandomChange.subscribe(isRandom => { this.isRandom = isRandom; }
         );
 
-        this.subscriptionIsPlaying = this.playerService.subjectIsPlayingChange.subscribe(
-            (isPlaying) => {
+        this.subscriptionIsPlaying = this.playerService.subjectIsPlayingChange.subscribe(isPlaying => {
                 this.isPlaying = isPlaying;
                 this.ref.detectChanges();
             }
         );
 
-        this.subscriptionVolume = this.playerService.subjectVolumeChange.subscribe(
-            (volume) => {
+        this.subscriptionVolume = this.playerService.subjectVolumeChange.subscribe(volume => {
                 this.valueSliderVolume = volume;
                 this.sliderVolumeRef.nativeElement.style.transform = 'none';
             }
         );
 
-        this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange.subscribe(
-            (data) => {
+        this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange.subscribe(data => {
 
                 if (!data) {
                     return;
@@ -122,15 +116,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
             }
         );
 
-        this.subscriptionListPlaylist = this.playerService.subjectListPlaylist.subscribe((data) => {
+        this.subscriptionListPlaylist = this.playerService.subjectListPlaylist.subscribe(data => {
             this.listPlaylist = data;
         });
 
-        this.subscriptionListFollow = this.playerService.subjectListFollow.subscribe((data) => {
+        this.subscriptionListFollow = this.playerService.subjectListFollow.subscribe(data => {
             this.listFollow = data;
         });
 
-        this.subscriptionAddVideo = this.playerService.subjectAddVideo.subscribe((data) => {
+        this.subscriptionAddVideo = this.playerService.subjectAddVideo.subscribe(data => {
             this.addKey = data.key;
             this.addArtist = data.artist;
             this.addTitle = data.title;
@@ -138,7 +132,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.openModal(this.contentModalAddVideo);
         });
 
-        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe((data) => {
+        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
             this.currentTitle = data.currentTitle;
         });
     }

@@ -1,16 +1,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderComponent } from './header.component';
-import { FacebookModule } from 'ngx-facebook';
-import { TranslocoModule } from '@ngneat/transloco';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { AngularDraggableModule } from 'angular2-draggable';
-import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslocoModule } from '@ngneat/transloco';
+import { AngularDraggableModule } from 'angular2-draggable';
+import { FacebookModule } from 'ngx-facebook';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;

@@ -1,5 +1,6 @@
 {
-    "extends": "../tslint.json",
+    "rulesDirectory": [ "../node_modules/codelyzer" ],
+    "extends": ["tslint:recommended", "tslint-angular","tslint-config-prettier"],
     "rules": {
         "directive-selector": [
             true,

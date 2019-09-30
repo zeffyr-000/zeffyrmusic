@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +14,7 @@ export class InitService {
     private idPerso: string;
     private mail: string;
 
-    public subjectConnectedChange: BehaviorSubject<{
+    subjectConnectedChange: BehaviorSubject<{
         isConnected: boolean,
         pseudo: string,
         idPerso: string,
@@ -29,8 +29,8 @@ export class InitService {
         idPerso: this.idPerso,
         mail: this.mail});
 
-    public subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
-    public subjectInitializePlaylist: Subject<{
+    subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
+    subjectInitializePlaylist: Subject<{
         listPlaylist: any[],
         listFollow: any[],
         listVideo: any[],
@@ -42,8 +42,8 @@ export class InitService {
         tabIndex: any[]
     }>();
 
-    constructor(private httpClient: HttpClient,
-                private translocoService: TranslocoService) {
+    constructor(private readonly httpClient: HttpClient,
+                private readonly translocoService: TranslocoService) {
 
         let lang = 'fr';
 
@@ -83,8 +83,7 @@ export class InitService {
                     listVideo: data.liste_video,
                     tabIndex: data.tab_index
                 });
-            },
-                (error) => { console.log(error); });
+            });
     }
 
     onChangeIsConnected() {

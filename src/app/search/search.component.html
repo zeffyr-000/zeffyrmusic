@@ -29,7 +29,7 @@
     </div>
 	<div *ngIf="isLoading1" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
 
-	<div *ngIf="listAlbums && listAlbums.length>limit_album" class="search_list_element search_more" (click)="moreAlbums()">
+	<div *ngIf="listAlbums && listAlbums.length>limitAlbum" class="search_list_element search_more" (click)="moreAlbums()">
 		<h5>{{ 'more' | transloco }}</h5>
 	</div>
 	
