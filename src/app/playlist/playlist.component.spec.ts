@@ -3,8 +3,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoTestingModule } from '@ngneat/transloco';
 import { FacebookModule } from 'ngx-facebook';
+import fr  from '../../assets/i18n/fr.json';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
 import { PlaylistComponent } from './playlist.component';
 
@@ -15,7 +16,7 @@ describe('PlaylistComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FacebookModule,
-                TranslocoModule,
+                TranslocoTestingModule.withLangs({fr}),
                 RouterTestingModule,
                 HttpClientTestingModule,
                 NgbModule],

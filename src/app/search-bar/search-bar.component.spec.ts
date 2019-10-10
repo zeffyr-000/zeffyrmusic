@@ -3,7 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoTestingModule } from '@ngneat/transloco';
+import fr  from '../../assets/i18n/fr.json';
 import { SearchBarComponent } from './search-bar.component';
 
 describe('SearchBarComponent', () => {
@@ -12,7 +13,7 @@ describe('SearchBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [TranslocoModule,
+      imports: [TranslocoTestingModule.withLangs({fr}),
                 FormsModule,
                 ReactiveFormsModule,
                 RouterTestingModule,

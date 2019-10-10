@@ -1,4 +1,4 @@
-<div id="search_content" class="panel panel-default panel-body">
+<div id="search_content" class="card card-body">
 	
 	<h1 class="m-t-0">{{ 'resultats_recherche' | transloco :{ query: query } }}</h1>
 
@@ -6,12 +6,12 @@
     <div *ngIf="!isLoading1">
         <div *ngFor="let artist of listArtists | slice:0:limitArtist" class="search_list_element">
             <a routerLink="/artist/{{artist.id_artiste}}">
-                <img [src]="'https://api.deezer.com/artist/'+artist.id_artiste_deezer+'/image'" class="img-rounded" />
+                <img [src]="'https://api.deezer.com/artist/'+artist.id_artiste_deezer+'/image'" class="rounded" />
                 <h5>{{artist.artiste}}</h5>
             </a>
         </div>
     </div>
-	<div *ngIf="isLoading1" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+	<div *ngIf="isLoading1" class="content_loading"><span class="icon icon-cycle spin"></span></div>
 
 	<div *ngIf="listArtists && listArtists.length>limitArtist" class="search_list_element search_more" (click)="moreArtists()">
 		<h5>{{ 'more' | transloco }}</h5>
@@ -22,12 +22,12 @@
     <div *ngIf="!isLoading1">
         <div  *ngFor="let album of listAlbums | slice:0:limitAlbum" class="search_list_element">
             <a routerLink="/playlist/{{album.id_playlist}}">
-                <img [src]="album.url_image" class="img-rounded" />
+                <img [src]="album.url_image" class="rounded" />
                 <h5>{{album.titre}} ({{album.year_release}})</h5>
             </a>
         </div>
     </div>
-	<div *ngIf="isLoading1" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+	<div *ngIf="isLoading1" class="content_loading"><span class="icon icon-cycle spin"></span></div>
 
 	<div *ngIf="listAlbums && listAlbums.length>limitAlbum" class="search_list_element search_more" (click)="moreAlbums()">
 		<h5>{{ 'more' | transloco }}</h5>
@@ -63,7 +63,7 @@
 				</td>
 				<td>
                     <span *ngIf="isConnected" 
-                            class="oi oi-plus btn btn-default" 
+                            class="icon icon-plus btn btn-default" 
                             (click)="addVideo(video.key,video.artiste,video.titre)" 
                             placement="left" 
                             ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}"></span>
@@ -76,7 +76,7 @@
 			</tr>
 		</tbody>
 	</table>
-	<div *ngIf="isLoading2" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+	<div *ngIf="isLoading2" class="content_loading"><span class="icon icon-cycle spin"></span></div>
 
 
 	<h2 class="m-t-0">{{ 'extras' |transloco }}</h2>
@@ -99,7 +99,7 @@
 				</td>
 				<td>
                     <span *ngIf="isConnected" 
-                            class="oi oi-plus btn btn-default" 
+                            class="icon icon-plus btn btn-default" 
                             (click)="addVideo(extra.key,'',extra.title);" 
                             placement="left" 
                             ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}"></span>
@@ -112,6 +112,6 @@
 			</tr>
 		</tbody>
 	</table>
-	<div *ngIf="isLoading3" class="content_loading"><span class="oi oi-loop-circular spin"></span></div>
+	<div *ngIf="isLoading3" class="content_loading"><span class="icon icon-cycle spin"></span></div>
 
 </div>

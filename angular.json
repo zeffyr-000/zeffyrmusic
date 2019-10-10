@@ -23,8 +23,7 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/open-iconic/font/css/open-iconic-bootstrap.css",
+              "src/assets/css/toolkit.min.css",
               "src/styles.css"
             ],
             "scripts": [],

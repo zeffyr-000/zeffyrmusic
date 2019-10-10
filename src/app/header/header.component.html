@@ -1,7 +1,7 @@
 <div id="header_top" class="row no-gutters">
     <div id="header_logo" class="col-2">
         <a class="navbar-brand" id="header_logo_lien" routerLink="">
-            <div class="oi oi-home"></div>
+            <div class="icon icon-home"></div>
         </a>
     </div>
 
@@ -15,7 +15,7 @@
 
         <li *ngIf="isConnected" class="nav-item" ngbDropdown>
             <a class="nav-link" id="header_toggle_mini" ngbDropdownToggle>
-                <span class="oi oi-menu"></span>
+                <span class="icon icon-menu"></span>
             </a>
             <a id="header_toggle_big" ngbDropdownToggle>
                 {{pseudo}} <span class="caret"></span>
@@ -61,11 +61,11 @@
 
     <div id="header_player_gauche" class="col-3">
         <div class="btn-group btn-group-lg d-flex">
-            <a class="oi oi-media-skip-backward btn btn-light w-100" (click)="onBefore()"></a>
-            <a id="play_button" [ngClass]="{'oi btn btn-light w-100': true,
-                                            'oi-media-pause': isPlaying,
-                                            'oi-media-play': !isPlaying}" (click)="onPlayPause()"></a>
-            <a class="oi oi-media-skip-forward btn btn-light w-100" (click)="onAfter()"></a>
+            <a class="icon icon-controller-fast-backward btn btn-light w-100" (click)="onBefore()"></a>
+            <a id="play_button" [ngClass]="{'icon btn btn-light w-100': true,
+                                            'icon-controller-paus': isPlaying,
+                                            'icon-controller-play': !isPlaying}" (click)="onPlayPause()"></a>
+            <a class="icon icon-controller-fast-forward btn btn-light w-100" (click)="onAfter()"></a>
         </div>
     </div>
 
@@ -89,7 +89,7 @@
 
     <div id="header_player_droite" class="col-3">
         <div id="header_player_volume_content">
-            <span class="oi oi-volume-high"></span>
+            <span class="icon icon-sound"></span>
             <div id="slider_2_main">
                 <div id="slider_2_content" class="ui-slider" (click)="onClickSliderVolume($event)" #contentSlider2>
                     <span class="ui-slider-handle" #sliderVolume [style.left.%]="valueSliderVolume" ngDraggable
@@ -101,11 +101,11 @@
         </div>
 
         <div class="btn-group btn-group-sm" id="header_mini_boutons">
-            <a (click)="goFullscreen('player')" class="oi oi-fullscreen-enter btn btn-light" placement="bottom"
+            <a (click)="goFullscreen('player')" class="icon icon-resize-full-screen btn btn-light" placement="bottom"
                 ngbTooltip="{{'video_plein_ecran' | transloco}}"></a>
-            <a id="repeat" [ngClass]="{'oi oi-loop btn btn-light': true, 'active':isRepeat}" (click)="repeat()"
+            <a id="repeat" [ngClass]="{'icon icon-cw btn btn-light': true, 'active':isRepeat}" (click)="repeat()"
                 placement="bottom" ngbTooltip="{{'repetition' | transloco}}"></a>
-            <a id="random" [ngClass]="{'oi oi-random btn btn-light':true, 'active': isRandom}" (click)="random()"
+            <a id="random" [ngClass]="{'icon icon-shuffle btn btn-light':true, 'active': isRandom}" (click)="random()"
                 placement="bottom" ngbTooltip="{{'lecture_aleatoire' | transloco}}"></a>
         </div>
 
@@ -294,7 +294,7 @@
 
                 <td>
                     <a (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)"><span
-                            class="oi oi-pencil" placement="right"
+                            class="icon icon-new-message" placement="right"
                             ngbTooltip="{{'modifier_nom' | transloco}}"></span></a>
                 </td>
 
@@ -310,7 +310,7 @@
                 </td>
 
                 <td>
-                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"><span class="oi oi-delete"
+                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"><span class="icon icon-cross"
                             placement="right" ngbTooltip="{{'supprimer' | transloco}}"></span></a>
                 </td>
             </tr>
@@ -334,7 +334,7 @@
                 </td>
 
                 <td>
-                    <a class="oi oi-delete" (click)="onDeleteFollow(playlist.id_playlist)" placement="right"
+                    <a class="icon icon-cross" (click)="onDeleteFollow(playlist.id_playlist)" placement="right"
                         ngbTooltip="{{'supprimer' | transloco}}"></a>
                 </td>
             </tr>

@@ -1,7 +1,7 @@
 <div id="container_player">
     <div id="player"></div>
 </div>
-<div id="liste_en_cours_content" class="panel panel-content panel-default">
+<div id="liste_en_cours_content" class="card panel-content">
     <table id="liste_en_cours" class="table table-hover">
         <tbody>
             <tr *ngFor="let video of list; let index = index" 
@@ -11,7 +11,7 @@
                     <p>{{video.artiste}}</p>
                 </td>
                 <td>
-                    <span class="oi oi-x btn btn-light" 
+                    <span class="icon icon-cross btn btn-outline-primary" 
                             (click)="removeToPlaylist(index)" 
                             placement="right" 
                             ngbTooltip="{{ 'supprimer_liste_lecture' | transloco}}"></span>

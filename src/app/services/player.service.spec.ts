@@ -2,14 +2,15 @@ import { TestBed } from '@angular/core/testing';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoTestingModule } from '@ngneat/transloco';
+import fr  from '../../assets/i18n/fr.json';
 import { PlayerService } from './player.service';
 
 describe('PlayerService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [RouterTestingModule,
               HttpClientTestingModule,
-              TranslocoModule]
+              TranslocoTestingModule.withLangs({fr})]
   }));
 
   it('should be created', () => {

@@ -1,6 +1,6 @@
-<div id="playlist_content" class="panel panel-default panel-profile">
+<div id="playlist_content" class="card panel-profile">
     <div *ngIf="!isPrivate">
-        <div id="playlist_haut" class="panel-heading clearfix">
+        <div id="playlist_haut" class="card-header clearfix">
             <div *ngIf="imgBig" class="panel_head_img" [style.backgroundImage]="'url('+imgBig+')'"></div>
             <div class="panel_head_content">
                 <div id="playlist_haut_titre">
@@ -12,18 +12,18 @@
                     <h3 *ngIf="artist!==null && artist!=''" ><a routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
 
                     <div>
-                        <a class="btn btn-primary btn-lg" (click)="runPlaylist()">
-                            <span class="oi oi-media-play"></span> 
+                        <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
+                            <span class="icon icon-chevron-with-circle-right"></span> 
                             {{ 'lire' | transloco }}
-                        </a>
+                        </button>
 
-                        <a class="btn btn-light btn-lg" 
+                        <button class="btn btn-secondary btn-lg" 
                             *ngIf="isConnected && idPersoOwner!=idPerso" 
                             [ngClass]="{'active' : isFollower}" 
-                            (click)="switchFollow()">{{'suivre' | transloco}}</a>
+                            (click)="switchFollow()">{{'suivre' | transloco}}</button>
                     
-                        <a class="btn btn-light btn-lg" 
-                            (click)="addInCurrentList()">{{'ajouter_liste_en_cours' | transloco}}</a>
+                        <button class="btn btn-secondary btn-lg" 
+                            (click)="addInCurrentList()">{{'ajouter_liste_en_cours' | transloco}}</button>
                     </div>
 
                     <div class="row m-t">
@@ -44,12 +44,12 @@
                 </div>
 
                 <div *ngIf="imgBig && imgBig!==undefined && imgBig!==''">
-                    <img id="playlist_img_big" [src]="imgBig" class="img-rounded" />
+                    <img id="playlist_img_big" [src]="imgBig" class="rounded" />
                 </div>
             </div>	
         </div>
         
-        <div class="panel-body p-t-0">	
+        <div class="card-body p-t-0">	
             <table id="table_playlist" class="table table-hover">
                 <thead>
                     <tr>
@@ -77,12 +77,12 @@
                         <td>
                             <div>
                                 <span *ngIf="isConnected" 
-                                        class="oi oi-plus btn btn-default" 
+                                        class="icon icon-plus btn btn-outline-primary" 
                                         (click)="addVideo(video.key,video.artiste,video.titre)" 
                                         placement="top" 
                                         ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}"></span>
                                 <span *ngIf="isConnected && idPersoOwner==idPerso" 
-                                        class="oi oi-x btn btn-default"  
+                                        class="icon icon-cross btn btn-outline-primary"  
                                         (click)="removeVideo(video.id_video);" 
                                         placement="top" 
                                         ngbTooltip="{{'supprimer' | transloco}}"></span>

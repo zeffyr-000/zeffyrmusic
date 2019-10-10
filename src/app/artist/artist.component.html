@@ -1,7 +1,7 @@
-<div id="artist_content" class="panel panel-default panel-profile">
+<div id="artist_content" class="card panel-profile">
 	
-	<div id="artist_haut" class="panel-heading clearfix">
-        <div class="panel_head_img" 
+	<div id="artist_haut" class="card-header clearfix">
+        <div class="panel_head_img rounded" 
             [style.backgroundImage]="'url('+urlDeezer+'?size=big)'"></div>
 		<div class="panel_head_content">
 			<div id="artist_haut_titre">
@@ -12,19 +12,19 @@
 			</div>
 
 			<div >
-				<img id="artist_img_big" [src]="urlDeezer" class="img-rounded" />
+				<img id="artist_img_big" [src]="urlDeezer" class="rounded" />
 			</div>
 		</div>	
 	</div>
 
-	<div class="panel-body">
+	<div class="card-body">
 		<div>
 			<h3>{{ 'albums' | transloco }}</h3>
 		</div>
 
 		<div *ngFor="let album of listAlbums" class="artist_list_album">
 			<a routerLink="/playlist/{{album.id_playlist}}">
-				<img [src]="album.img_big" class="img-rounded" />
+				<img [src]="album.img_big" class="rounded" />
 				<h5>{{album.titre}} ({{album.year_release}})</h5>
 			</a>
 		</div>

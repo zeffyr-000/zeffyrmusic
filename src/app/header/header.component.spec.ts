@@ -5,9 +5,10 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoTestingModule } from '@ngneat/transloco';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { FacebookModule } from 'ngx-facebook';
+import fr  from '../../assets/i18n/fr.json';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { HeaderComponent } from './header.component';
@@ -19,7 +20,7 @@ describe('HeaderComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FacebookModule,
-                TranslocoModule,
+                TranslocoTestingModule.withLangs({fr}),
                 AngularDraggableModule,
                 NgbModule,
                 FormsModule,

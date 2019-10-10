@@ -28,7 +28,6 @@
     "core-js": "^2.5.4",
     "ngx-facebook": "^2.4.0",
     "ngx-google-analytics": "^8.0.0",
-    "open-iconic": "^1.1.1",
     "rxjs": "~6.5.3",
     "service": "^0.1.4",
     "tslib": "^1.9.0",
