@@ -6,7 +6,7 @@ import { FacebookModule } from 'ngx-facebook';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 
 import { HttpClientModule } from '@angular/common/http';
-import { TRANSLOCO_CONFIG, TranslocoConfig, TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { TRANSLOCO_CONFIG, TranslocoModule, TranslocoService } from '@ngneat/transloco';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -47,29 +47,30 @@ import { PlayerService } from './services/player.service';
         FacebookModule.forRoot(),
         NgxGoogleAnalyticsModule.forRoot('UA-1664521-8')
     ],
-    providers: [{
-        provide: TRANSLOCO_CONFIG,
-        useValue: {
-            listenToLangChange: true,
-            defaultLang: 'en',
-            fallbackLang: 'fr',
-            prodMode: environment.production,
-            scopeStrategy: 'shared'
-        } as TranslocoConfig
-    },
-                {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: preload,
-        deps: [TranslocoService]
-    },
-                translocoLoader,
-                NgbActiveModal,
-                InitService,
-                PlayerService,
-                Title,
-                Meta,
-                TranslocoService
+    providers: [
+        {
+            provide: TRANSLOCO_CONFIG,
+            useValue: {
+                reRenderOnLangChange: true,
+                availableLangs: ['fr', 'en'],
+                defaultLang: 'en',
+                fallbackLang: 'fr',
+                prodMode: environment.production
+            }
+        },
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            useFactory: preload,
+            deps: [TranslocoService]
+        },
+        translocoLoader,
+        NgbActiveModal,
+        InitService,
+        PlayerService,
+        Title,
+        Meta,
+        TranslocoService
     ],
     bootstrap: [AppComponent]
 })
