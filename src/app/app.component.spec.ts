@@ -1,11 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgbActiveModal, NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { FacebookModule } from 'ngx-facebook';
+import { config } from 'rxjs';
 import fr  from '../assets/i18n/fr.json';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -23,7 +25,12 @@ describe('AppComponent', () => {
         FacebookModule,
         RouterTestingModule,
         HttpClientTestingModule,
-        TranslocoTestingModule.withLangs({fr}),
+        TranslocoTestingModule.withLangs({fr},
+          {
+            availableLangs: ['fr', 'en'],
+            defaultLang: 'fr',
+            ...config
+          }),
         NgbModule,
         AngularDraggableModule,
         FormsModule,
@@ -46,6 +53,21 @@ describe('AppComponent', () => {
 
   it('should create the app', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have a router outlet', () => {
+    const element = fixture.nativeElement;
+    const routerOutlet = element.querySelector('router-outlet');
+    expect(routerOutlet)
+      .withContext('You need a RouterOutlet component in your root component')
+      .not.toBeNull();
+  });
+
+  it('should use the header component', () => {
+    const element = fixture.debugElement;
+    expect(element.query(By.directive(HeaderComponent)))
+      .withContext('You probably forgot to add HeaderComponent to the AppComponent template')
+      .not.toBeNull();
   });
 
 });

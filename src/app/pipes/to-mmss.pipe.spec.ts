@@ -1,8 +1,18 @@
 import { ToMMSSPipe } from './to-mmss.pipe';
 
 describe('ToMMSSPipe', () => {
+
+  let pipe: ToMMSSPipe;
+
+  beforeEach(() => {
+    pipe = new ToMMSSPipe();
+  });
+
   it('create an instance', () => {
-    const pipe = new ToMMSSPipe();
     expect(pipe).toBeTruthy();
   });
+
+  it('#transform', () => {
+    expect(pipe.transform(66)).toEqual('01:06');
+  })
 });

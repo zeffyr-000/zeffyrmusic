@@ -1,20 +1,28 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { FacebookModule } from 'ngx-facebook';
+import { config } from 'rxjs';
 import fr  from '../../assets/i18n/fr.json';
+import { environment } from '../../environments/environment';
 import { ArtistComponent } from './artist.component';
 
 describe('ArtistComponent', () => {
-  let component: ArtistComponent;
+  let artistComponent: ArtistComponent;
   let fixture: ComponentFixture<ArtistComponent>;
+  let http: HttpTestingController;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FacebookModule,
-                TranslocoTestingModule.withLangs({fr}),
+                TranslocoTestingModule.withLangs({fr},
+                                                  {
+                                                    availableLangs: ['fr', 'en'],
+                                                    defaultLang: 'fr',
+                                                    ...config
+                                                  }),
                 RouterTestingModule,
                 HttpClientTestingModule],
       declarations: [ArtistComponent]
@@ -24,11 +32,24 @@ describe('ArtistComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ArtistComponent);
-    component = fixture.componentInstance;
+    artistComponent = fixture.componentInstance;
+
+    http = TestBed.get(HttpTestingController);
+
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should create ArtistComponent', () => {
+    expect(artistComponent).toBeTruthy();
   });
+/*
+  it('should return an Observable of 3 races', () => {
+    // fake response
+    const hardcodedRaces = [{ name: 'Paris' }, { name: 'Tokyo' }, { name: 'Lyon' }] as any[];
+
+    artistComponent.initLoad();
+
+    http.expectOne(`${environment.URL_SERVER}races?status=PENDING`).flush(hardcodedRaces);
+  });
+*/
 });

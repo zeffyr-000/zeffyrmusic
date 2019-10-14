@@ -8,9 +8,9 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
-  it('should display welcome message', () => {
+  it('should display header top chart', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('Welcome to zeffyrmusic!');
+    expect(page.getTitleText()).toEqual('Top charts');
   });
 
   afterEach(async () => {

@@ -24,10 +24,12 @@ export class InitService {
         pseudo: string,
         idPerso: string,
         mail: string
-    }>({isConnected: this.isConnected,
+    }>({
+        isConnected: this.isConnected,
         pseudo: this.pseudo,
         idPerso: this.idPerso,
-        mail: this.mail});
+        mail: this.mail
+    });
 
     subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
     subjectInitializePlaylist: Subject<{
@@ -43,7 +45,7 @@ export class InitService {
     }>();
 
     constructor(private readonly httpClient: HttpClient,
-                private readonly translocoService: TranslocoService) {
+        private readonly translocoService: TranslocoService) {
 
         let lang = 'fr';
 
@@ -55,8 +57,8 @@ export class InitService {
     }
 
     getPing() {
-        this.httpClient.get(environment.URL_SERVER + 'ping/' + this.translocoService.getActiveLang(),
-                            environment.httpClientConfig)
+        return this.httpClient.get(environment.URL_SERVER + 'ping/' + this.translocoService.getActiveLang(),
+            environment.httpClientConfig)
             .subscribe((data: any) => {
                 this.isConnected = data.est_connecte;
                 let listPlaylist = [];

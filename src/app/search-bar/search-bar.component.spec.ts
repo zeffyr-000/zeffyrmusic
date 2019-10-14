@@ -4,7 +4,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslocoTestingModule } from '@ngneat/transloco';
-import fr  from '../../assets/i18n/fr.json';
+import { config } from 'rxjs';
+import fr from '../../assets/i18n/fr.json';
 import { SearchBarComponent } from './search-bar.component';
 
 describe('SearchBarComponent', () => {
@@ -13,14 +14,19 @@ describe('SearchBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [TranslocoTestingModule.withLangs({fr}),
-                FormsModule,
-                ReactiveFormsModule,
-                RouterTestingModule,
-                HttpClientTestingModule],
-      declarations: [ SearchBarComponent ]
+      imports: [TranslocoTestingModule.withLangs({ fr },
+        {
+          availableLangs: ['fr', 'en'],
+          defaultLang: 'fr',
+          ...config
+        }),
+        FormsModule,
+        ReactiveFormsModule,
+        RouterTestingModule,
+        HttpClientTestingModule],
+      declarations: [SearchBarComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,7 +8,8 @@ import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { FacebookModule } from 'ngx-facebook';
-import fr  from '../../assets/i18n/fr.json';
+import { config } from 'rxjs';
+import fr from '../../assets/i18n/fr.json';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { HeaderComponent } from './header.component';
@@ -20,19 +21,24 @@ describe('HeaderComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FacebookModule,
-                TranslocoTestingModule.withLangs({fr}),
-                AngularDraggableModule,
-                NgbModule,
-                FormsModule,
-                ReactiveFormsModule,
-                RouterTestingModule,
-                HttpClientTestingModule],
-      declarations: [ HeaderComponent,
-                      SearchBarComponent,
-                      ToMMSSPipe ],
+        TranslocoTestingModule.withLangs({ fr },
+          {
+            availableLangs: ['fr', 'en'],
+            defaultLang: 'fr',
+            ...config
+          }),
+        AngularDraggableModule,
+        NgbModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterTestingModule,
+        HttpClientTestingModule],
+      declarations: [HeaderComponent,
+        SearchBarComponent,
+        ToMMSSPipe],
       providers: [NgbActiveModal]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

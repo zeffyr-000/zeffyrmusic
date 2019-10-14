@@ -4,7 +4,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoTestingModule } from '@ngneat/transloco';
-import fr  from '../../assets/i18n/fr.json';
+import { config } from 'rxjs';
+import fr from '../../assets/i18n/fr.json';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
 import { SearchComponent } from './search.component';
 
@@ -14,14 +15,19 @@ describe('SearchComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [TranslocoTestingModule.withLangs({fr}),
-                RouterTestingModule,
-                HttpClientTestingModule,
-                NgbModule],
-      declarations: [ SearchComponent,
-                      ToMMSSPipe ]
+      imports: [TranslocoTestingModule.withLangs({ fr },
+        {
+          availableLangs: ['fr', 'en'],
+          defaultLang: 'fr',
+          ...config
+        }),
+        RouterTestingModule,
+        HttpClientTestingModule,
+        NgbModule],
+      declarations: [SearchComponent,
+        ToMMSSPipe]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
