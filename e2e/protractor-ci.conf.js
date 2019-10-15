@@ -7,4 +7,6 @@ config.capabilities = {
     }
 };
 
+config.baseUrl = 'https://next.zeffyrmusic.com/',
+
 exports.config = config;
