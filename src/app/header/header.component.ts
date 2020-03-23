@@ -57,10 +57,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     listPlaylist: any[];
     listFollow: any[];
 
-    @ViewChild('sliderPlayer',null) sliderPlayerRef: ElementRef;
-    @ViewChild('sliderVolume',null) sliderVolumeRef: ElementRef;
+    @ViewChild('sliderPlayer',{}) sliderPlayerRef: ElementRef;
+    @ViewChild('sliderVolume',{}) sliderVolumeRef: ElementRef;
 
-    @ViewChild('contentModalAddVideo',null)
+    @ViewChild('contentModalAddVideo',{})
     private readonly contentModalAddVideo: TemplateRef<any>;
 
     constructor(public activeModal: NgbActiveModal,
