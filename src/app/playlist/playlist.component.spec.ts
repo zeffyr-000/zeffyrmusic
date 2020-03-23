@@ -2,9 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { FacebookModule } from '@finosofica/ngx-facebook';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoTestingModule } from '@ngneat/transloco';
-import { FacebookModule } from 'ngx-facebook';
 import { config } from 'rxjs';
 import fr from '../../assets/i18n/fr.json';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';

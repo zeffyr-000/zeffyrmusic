@@ -2,8 +2,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
+import { FacebookModule } from '@finosofica/ngx-facebook';
 import { TranslocoTestingModule } from '@ngneat/transloco';
-import { FacebookModule } from 'ngx-facebook';
 import { config } from 'rxjs';
 import fr  from '../../assets/i18n/fr.json';
 import { environment } from '../../environments/environment';
