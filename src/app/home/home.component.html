@@ -1,4 +1,15 @@
 <div id="home_bloc_1" class="card mt-3">
+    <div *ngIf="isLoading" class="content_loading"><span class="icon icon-circle spin"></span></div>
+        
+    <ul *ngIf="!isLoading" id="home_top_charts" class="list-unstyled card-body">
+        <li *ngFor="let chart of listTop" [style.backgroundImage]="'url('+chart.url_image+')'">
+            <a routerLink="/top/{{chart.id}}"></a>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+</div>
+
+<div id="home_bloc_1" class="card mt-3">
     <h3 class="card-header text-center">Top charts</h3>
     <div *ngIf="isLoading" class="content_loading"><span class="icon icon-circle spin"></span></div>
         
@@ -10,7 +21,6 @@
     </ul>
     <div class="clearfix"></div>
 </div>
-
     
 <div id="home_bloc_2" class="card mt-3">
     <h3 class="card-header text-center">Top albums</h3>

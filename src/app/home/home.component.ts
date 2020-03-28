@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit {
 
     private listTopAlbums: any[];
     private listTopCharts: any[];
+    private listTop: any[];
     private lang: string;
 
     constructor(private readonly httpClient: HttpClient,
@@ -36,6 +37,7 @@ export class HomeComponent implements OnInit {
 
                 this.listTopAlbums = data.top_albums;
                 this.listTopCharts = data.top_charts;
+                this.listTop = data.top;
 
             }, error => { 
                     this.isLoading = false;

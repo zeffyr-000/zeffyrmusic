@@ -79,7 +79,11 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
         if (idPlaylist !== null) {
             url = environment.URL_SERVER + 'json/playlist/' + idPlaylist;
         } else {
-            url = environment.URL_SERVER + 'json/top_charts/' + id;
+            if(this.activatedRoute.snapshot.url[0].path === 'top') {
+                url = environment.URL_SERVER + 'json/top/' + id;
+            } else {
+                url = environment.URL_SERVER + 'json/top_charts/' + id;
+            }
         }
 
         this.loadPlaylist(url);
