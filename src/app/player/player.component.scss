@@ -1,29 +1,19 @@
 #container_player {
     position: relative;
     padding-bottom: 56.25%;
-    padding-top: 25px;
     height: 0;
 }
 
 #liste_en_cours_content {
     padding-bottom: 56.25%;
-    padding-bottom: calc( 25px + 56.25%);
 }
 
 #liste_en_cours {
     table-layout: fixed;
 }
 
-#liste_en_cours>tbody>tr>td {
-    padding: 0 4px 1px 4px;
-}
-
 #liste_en_cours td>a:hover {
     text-decoration: none;
-}
-
-#liste_en_cours tr {
-    height: 34px;
 }
 
 #liste_en_cours td:first-child {
@@ -37,9 +27,12 @@
 #liste_en_cours td>p {
     margin: 0;
     padding: 0;
-    height: 17px;
     text-overflow: ellipsis;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
+}
+
+#liste_en_cours td>p:hover {
+    cursor: pointer;
 }

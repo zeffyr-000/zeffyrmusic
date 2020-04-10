@@ -23,11 +23,11 @@ describe('InitService', () => {
             ...config
           })]
     });
-    http = TestBed.get(HttpTestingController);
+    http = TestBed.inject(HttpTestingController);
   });
 
   it('should be created', () => {
-    const service: InitService = TestBed.get(InitService);
+    const service: InitService = TestBed.inject(InitService);
     expect(service).toBeTruthy();
   });
 
@@ -102,7 +102,7 @@ describe('InitService', () => {
       "tab_index": []
     };
 
-    const service: InitService = TestBed.get(InitService);
+    const service: InitService = TestBed.inject(InitService);
 
     /*
     service.getPing();

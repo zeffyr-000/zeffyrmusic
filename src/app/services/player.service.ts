@@ -23,6 +23,7 @@ export class PlayerService implements OnDestroy {
     isPlaying = false;
     refInterval = null;
     currentTitle: string;
+    currentArtist: string;
     currentKey: string;
 
     isAutoPlay: boolean;
@@ -49,7 +50,8 @@ export class PlayerService implements OnDestroy {
     subjectAddVideo: Subject<any> = new Subject<any>();
     subjectCurrentKeyChange: BehaviorSubject<any> = new BehaviorSubject<any>({
         currentKey: this.currentKey,
-        currentTitle: this.currentTitle
+        currentTitle: this.currentTitle,
+        currentArtist: this.currentArtist
     });
 
     subscriptionInitializePlaylist: any;
@@ -193,19 +195,24 @@ export class PlayerService implements OnDestroy {
 
         this.currentKey = this.listVideo[this.currentIndex].tab_element[0].key;
         this.currentTitle = this.listVideo[this.currentIndex].titre;
+        let fullTitle = this.currentTitle;
 
         if (
             this.listVideo[this.currentIndex].artiste &&
             this.listVideo[this.currentIndex].artiste !== ""
         ) {
-            this.currentTitle += " - " + this.listVideo[this.currentIndex].artiste;
+            this.currentArtist = this.listVideo[this.currentIndex].artiste;
+            fullTitle += " - " + this.listVideo[this.currentIndex].artiste;
+        } else {
+            this.currentArtist = '';
         }
 
-        this.titleService.setTitle(this.currentTitle + " - Zeffyr Music");
+        this.titleService.setTitle(fullTitle + " - Zeffyr Music");
 
         this.subjectCurrentKeyChange.next({
             currentKey: this.currentKey,
-            currentTitle: this.currentTitle
+            currentTitle: this.currentTitle,
+            currentArtist: this.currentArtist
         });
 
         this.currentIndex = indice;

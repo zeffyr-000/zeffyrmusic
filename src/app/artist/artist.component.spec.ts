@@ -34,7 +34,7 @@ describe('ArtistComponent', () => {
     fixture = TestBed.createComponent(ArtistComponent);
     artistComponent = fixture.componentInstance;
 
-    http = TestBed.get(HttpTestingController);
+    http = TestBed.inject(HttpTestingController);
 
     fixture.detectChanges();
   });

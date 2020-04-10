@@ -1,11 +1,12 @@
 <div id="header_top" class="row no-gutters">
-    <div id="header_logo" class="col-2">
-        <a class="navbar-brand" id="header_logo_lien" routerLink="">
-            <div class="icon icon-home"></div>
+    <div id="header_logo" class="col-3">
+        <a class="navbar-brand p-0" id="header_logo_lien" routerLink="">
+            <img src="../../assets/img/logo.png"  />
+            <span class="material-icons">home</span>
         </a>
     </div>
 
-    <ul class="nav col-5" id="header_nav">
+    <ul class="nav col-5 align-self-center" id="header_nav">
         <li id="content_facebook_button" class="nav-item" style="width:120px;">
             <a class="nav-link">
                 <fb-like href="//www.facebook.com/zeffyrmusic" layout="button_count" action="like" show-faces="false"
@@ -13,64 +14,99 @@
             </a>
         </li>
 
-        <li *ngIf="isConnected" class="nav-item" ngbDropdown>
+        <li *ngIf="isConnected" class="nav-item align-self-center" ngbDropdown>
             <a class="nav-link" id="header_toggle_mini" ngbDropdownToggle>
-                <span class="icon icon-menu"></span>
+                <span class="material-icons">menu</span>
             </a>
-            <a id="header_toggle_big" ngbDropdownToggle>
+            <a id="header_toggle_big" class="btn btn-light" ngbDropdownToggle>
                 {{pseudo}} <span class="caret"></span>
             </a>
             <ul ngbDropdownMenu>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalPlaylists)">{{ 'mes_playlists' | transloco }}</a>
+                    <a (click)="openModal(contentModalPlaylists)">
+                        <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
+                    </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalFollows)">{{ 'ma_selection' | transloco }}</a>
+                    <a (click)="openModal(contentModalFollows)">
+                        <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
+                    </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalEditLang)">{{ 'langue' | transloco}}</a>
+                    <a (click)="openModal(contentModalEditLang)">
+                        <span class="material-icons">language</span>{{ 'langue' | transloco}}
+                    </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalEditMail)">{{ 'modifier_mail' | transloco}}</a>
+                    <a (click)="openModal(contentModalEditMail)">
+                        <span class="material-icons">email</span>{{ 'modifier_mail' | transloco}}
+                    </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalEditPass)">{{ 'modifier_mot_de_passe' | transloco}}</a>
+                    <a (click)="openModal(contentModalEditPass)">
+                        <span class="material-icons">lock</span>{{ 'modifier_mot_de_passe' | transloco}}
+                    </a>
                 </li>
                 <li class="dropdown-divider"></li>
                 <li ngbDropdownItem>
-                    <a (click)="onLogout()">{{ 'deconnexion' | transloco}}</a>
+                    <a (click)="onLogout()">
+                        <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco}}
+                    </a>
                 </li>
             </ul>
         </li>
 
         <li id="header_li_inscription" class="nav-item" *ngIf="!isConnected">
-            <a class="nav-link" (click)="openModal(contentModalRegister)">{{ 'inscription' | transloco }}</a>
+            <a class="nav-link btn btn-outline-warning text-warning" (click)="openModal(contentModalRegister)">{{ 'inscription' | transloco }}</a>
         </li>
         <li id="header_li_connexion" class="nav-item" *ngIf="!isConnected">
-            <a class="nav-link" (click)="openModal(contentModalLogin)">{{ 'connexion' | transloco }}</a>
+            <a class="nav-link btn btn-primary text-light" (click)="openModal(contentModalLogin)">{{ 'connexion' | transloco }}</a>
         </li>
 
     </ul>
 
-    <div id="header_recherche" class="navbar-form navbar-right col-5">
+    <div id="header_recherche" class="navbar-form navbar-right col-4 my-auto">
         <app-search-bar></app-search-bar>
     </div>
 </div>
 
 <div id="header_player" class="row no-gutters">
 
-    <div id="header_player_gauche" class="col-3">
-        <div class="btn-group btn-group-lg d-flex">
-            <a class="icon icon-controller-fast-backward btn btn-light w-100" (click)="onBefore()"></a>
-            <a id="play_button" [ngClass]="{'icon btn btn-light w-100': true,
-                                            'icon-controller-paus': isPlaying,
-                                            'icon-controller-play': !isPlaying}" (click)="onPlayPause()"></a>
-            <a class="icon icon-controller-fast-forward btn btn-light w-100" (click)="onAfter()"></a>
-        </div>
+    <div id="header_player_gauche" class="col-md-3 pl-5 pt-2">
+        <div><b>{{currentTitle}}</b></div>
+        <div>{{currentArtist}}</div>
     </div>
 
-    <div id="header_player_centre" class="col-6">
-        <p id="titre_en_cours">{{currentTitle}}</p>
+    <div id="header_player_centre" class="col-md-6">
+        <div class="pl-lg-5 pr-lg-5 ml-lg-5 mr-lg-5">
+            <div class="btn-group btn-group-sm">
+                <a class="btn text-light w-100" (click)="onBefore()">
+                    <span class="material-icons">skip_previous</span>
+                </a>
+                <a id="play_button" class="btn text-light w-100" (click)="onPlayPause()">
+                    <span *ngIf="isPlaying" class="material-icons">pause</span>
+                    <span *ngIf="!isPlaying" class="material-icons">play_arrow</span>
+                </a>
+                <a class="btn text-light w-100" (click)="onAfter()">
+                    <span class="material-icons">skip_next</span>
+                </a>
+            </div>
+
+            <div class="btn-group btn-group-sm float-right">
+                <a (click)="goFullscreen('player')" class="btn text-light" placement="top"
+                    ngbTooltip="{{'video_plein_ecran' | transloco}}">
+                    <span class="material-icons">fullscreen</span>
+                </a>
+                <a id="repeat" class="btn text-light" [ngClass]="{'active':isRepeat}" (click)="repeat()"
+                    placement="top" ngbTooltip="{{'repetition' | transloco}}">
+                    <span class="material-icons">repeat</span>
+                </a>
+                <a id="random" class="btn text-light" [ngClass]="{'active': isRandom}" (click)="random()"
+                    placement="top" ngbTooltip="{{'lecture_aleatoire' | transloco}}">
+                    <span class="material-icons">shuffle</span>
+                </a>
+            </div>
+        </div>
 
         <div id="header_player_center_load">
             <div id="chrono_en_cours">{{ currentTimeStr }}</div>
@@ -87,9 +123,9 @@
         </div>
     </div>
 
-    <div id="header_player_droite" class="col-3">
-        <div id="header_player_volume_content">
-            <span class="icon icon-sound"></span>
+    <div id="header_player_droite" class="col-md-3 my-auto">
+        <div id="header_player_volume_content" class="mx-auto">
+            <span class="material-icons text-light">volume_up</span>
             <div id="slider_2_main">
                 <div id="slider_2_content" class="ui-slider" (click)="onClickSliderVolume($event)" #contentSlider2>
                     <span class="ui-slider-handle" #sliderVolume [style.left.%]="valueSliderVolume" ngDraggable
@@ -99,16 +135,6 @@
                 <div id="load_volume_current" [style.width.%]="valueSliderVolume"></div>
             </div>
         </div>
-
-        <div class="btn-group btn-group-sm" id="header_mini_boutons">
-            <a (click)="goFullscreen('player')" class="icon icon-resize-full-screen btn btn-light" placement="bottom"
-                ngbTooltip="{{'video_plein_ecran' | transloco}}"></a>
-            <a id="repeat" [ngClass]="{'icon icon-cw btn btn-light': true, 'active':isRepeat}" (click)="repeat()"
-                placement="bottom" ngbTooltip="{{'repetition' | transloco}}"></a>
-            <a id="random" [ngClass]="{'icon icon-shuffle btn btn-light':true, 'active': isRandom}" (click)="random()"
-                placement="bottom" ngbTooltip="{{'lecture_aleatoire' | transloco}}"></a>
-        </div>
-
     </div>
 
 </div>
@@ -121,7 +147,7 @@
         </button>
     </div>
     <div class="modal-body">
-        <p class="bg-info">{{ 'inscription_description' | transloco }}</p>
+        <p class="bg-info p-2 rounded">{{ 'inscription_description' | transloco }}</p>
         <form *ngIf="!isRegistered" (ngSubmit)="onSubmitRegister(formRegister)" #formRegister="ngForm">
             <p class="form-group">
                 <label class="control-label" for="pseudo">{{ 'pseudo' | transloco}}</label>
@@ -293,9 +319,11 @@
                 </td>
 
                 <td>
-                    <a (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)"><span
-                            class="icon icon-new-message" placement="right"
-                            ngbTooltip="{{'modifier_nom' | transloco}}"></span></a>
+                    <a (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)">
+                        <span class="material-icons" 
+                                placement="right"
+                                ngbTooltip="{{'modifier_nom' | transloco}}">edit</span>
+                    </a>
                 </td>
 
                 <td>
@@ -310,8 +338,10 @@
                 </td>
 
                 <td>
-                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"><span class="icon icon-cross"
-                            placement="right" ngbTooltip="{{'supprimer' | transloco}}"></span></a>
+                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)">
+                        <span class="material-icons"
+                            placement="right" ngbTooltip="{{'supprimer' | transloco}}">clear</span>
+                    </a>
                 </td>
             </tr>
         </table>
@@ -334,8 +364,10 @@
                 </td>
 
                 <td>
-                    <a class="icon icon-cross" (click)="onDeleteFollow(playlist.id_playlist)" placement="right"
-                        ngbTooltip="{{'supprimer' | transloco}}"></a>
+                    <a (click)="onDeleteFollow(playlist.id_playlist)" placement="right"
+                        ngbTooltip="{{'supprimer' | transloco}}">
+                        <span class="material-icons">clear</span>
+                    </a>
                 </td>
             </tr>
         </table>

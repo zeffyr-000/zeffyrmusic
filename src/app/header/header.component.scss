@@ -1,31 +1,45 @@
+@import 'custom';
+@import "node_modules/bootstrap/scss/bootstrap";
+
+#header {
+	height: 60px;
+	padding: 0;
+}
+
 #header_logo_lien {
     display: block;
     width: 100%;
     height: 50px;
-    background: url("../../assets/img/logo_head.png") transparent no-repeat center center;
     margin: 0 auto;
+    text-align: center;
 }
 
-#header_logo_lien>div {
+#header_logo_lien>span {
     display: none;
+}
+
+#header_logo_lien>img {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 #slider_1_main {
     width: 70%;
     position: relative;
+    margin-top: 8px;
 }
 
 #slider_1_content {
     width: 100%;
-    height: 16px;
-    background-color: #7d7d7d;
+    height: 6px;
+    background-color: $greyish-brown-two;
     position: relative;
-    border-radius: 8px;
+    border-radius: 5px;
 }
 
 #slider_1 {
     width: 10px;
-    height: 16px;
+    height: 6px;
     background-color: #e6e6e6;
     cursor: pointer;
     position: absolute;
@@ -37,26 +51,26 @@
     bottom: 0;
     left: 0;
     width: 0px;
-    height: 16px;
-    border-radius: 8px;
+    height: 6px;
+    border-radius: 5px;
     pointer-events: none;
 }
 
 #load_video {
-    background-color: rgba(230, 230, 230, 0.5);
+    background-color: rgba($white, 0.8);
 }
 
 #load_video_current {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: $white;
 }
 
 #slider_2_main {
     position: relative;
     float: right;
-    margin: 2px 10px 0 0;
-    background-color: #7d7d7d;
-    border-radius: 8px;
-    height: 16px;
+    margin: 8px 10px 0 0;
+    background-color: $greyish-brown-two;
+    border-radius: 5px;
+    height: 6px;
     width: 90%;
     width: calc( 100% - 34px);
 }
@@ -76,11 +90,11 @@
 }
 
 #load_volume_current {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: $white;
     position: absolute;
-    height: 16px;
+    height: 6px;
     width: 0;
-    border-radius: 8px;
+    border-radius: 5px;
     pointer-events: none;
 }
 
@@ -95,11 +109,9 @@
     width: 22px;
     height: 22px;
     cursor: default;
-    margin-top: -.25em;
-    box-sizing: border-box;
-    border: solid 5px #f5f4f3;
+    margin-top: -8px;
     border-radius: 50%;
-    background: #536570;
+    background-color: $blue;
 }
 
 .ui-slider .ui-slider-range {
@@ -159,40 +171,57 @@
     display: none;
 }
 
-#header_player_centre {
-    width: 50%;
-    height: 50px;
-    float: left;
-}
-
-#header_player_gauche, #header_player_droite {
-    float: left;
-    width: 25%;
-    height: 50px;
-}
-
 #header_player {
-    height: 50px;
     width: 100%;
+    position: fixed;
+	bottom: 0;
+	background-color: $mushroom;
+	height: 70px;
+	z-index: 100;
 }
 
 #header_player_volume_content {
-    float: right;
     width: 50%;
     max-width: 150px;
     border-radius: 3px;
-    background-color: #b5b5b5;
-    margin: 10px 10px 0 0;
-    padding: 0 1px 0 1px;
 }
 
-#header_mini_boutons {
-    margin-top: 6px;
+#header_player_center_load {
+    height: 30px;
+}
+
+#header_player_center_load>div {
+	display: inline-block;
+	height: 30px;
+    text-align: center;
+    vertical-align: top;
+}
+
+#chrono_en_cours, #chrono_total {
+    width: 15%;
+}
+
+#header_player_gauche>div{
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#header_li_connexion>a, #header_li_inscription>a {
+    border-radius: 20px;
+    padding: 2px 28px;
+    margin: 4px;
 }
 
 @media screen and (max-device-width:1199px), screen and (max-width:1199px) {
     #header_player_volume_content {
         margin: 0;
+    }
+
+    #header_li_connexion>a, #header_li_inscription>a {
+        padding: 2px;
     }
 }
 
@@ -204,36 +233,30 @@
         display: block;
         height: 20px;
     }
-    #header_logo_lien {
-        background: none;
+    #header_logo_lien>img {
+        display: none;
     }
-    #header_logo_lien>div {
+    #header_logo_lien>span {
         display: block;
         width: 100%;
         text-align: center;
+        line-height: 50px;
     }
     #header {
-        height: 150px;
+        height: 60px;
     }
     #header_player {
         height: 100px;
-        position: relative;
     }
     #header_player_gauche {
-        position: absolute;
-        top: 50px;
-        left: 0;
-        width: 50%;
+        display: none;
     }
     #header_player_centre {
         float: none;
         width: 100%;
     }
     #header_player_droite {
-        position: absolute;
-        top: 50px;
-        right: 0;
-        width: 33%;
+        display: none;
     }
     #header_logo {
         width: 16.666%;

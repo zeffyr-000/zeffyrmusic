@@ -24,9 +24,14 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.css"
+              "src/styling/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                ".",
+                "src/styling"
+              ]
+            },
             "scripts": [],
             "es5BrowserSupport": true
           },
@@ -138,5 +143,10 @@
       }
     }
   },
-  "defaultProject": "zeffyrmusic"
+  "defaultProject": "zeffyrmusic",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }

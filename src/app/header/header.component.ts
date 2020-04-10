@@ -12,7 +12,7 @@ import { PlayerService } from '../services/player.service';
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
-    styleUrls: ['./header.component.css']
+    styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
@@ -23,6 +23,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     isRandom: boolean;
     isPlaying: boolean;
     currentTitle: string;
+    currentArtist: string;
 
     subscriptionConnected: any;
     subscriptionRepeat: any;
@@ -134,6 +135,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
         this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
             this.currentTitle = data.currentTitle;
+            this.currentArtist = data.currentArtist;
         });
     }
 

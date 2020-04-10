@@ -10,7 +10,7 @@ import { PlayerService } from '../services/player.service';
 @Component({
     selector: 'app-playlist',
     templateUrl: './playlist.component.html',
-    styleUrls: ['./playlist.component.css']
+    styleUrls: ['./playlist.component.scss']
 })
 export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -21,6 +21,8 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
     idTopCharts: any;
     idPersoOwner: string;
     title: string;
+    titre: string;
+    description: string;
     isFollower: boolean;
     artist: string | null;
     idArtist: any;
@@ -112,6 +114,8 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.imgBig = data.img_big;
                     this.idTopCharts = data.id_top_charts || null;
                     this.title = data.title;
+                    this.titre = data.titre || '';
+                    this.description = data.description || '';
                     this.isFollower = data.est_suivi;
                     this.artist = data.artiste;
                     this.idArtist = data.id_artiste;

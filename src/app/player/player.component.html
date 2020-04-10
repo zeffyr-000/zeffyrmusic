@@ -1,8 +1,8 @@
 <div id="container_player">
     <div id="player"></div>
 </div>
-<div id="liste_en_cours_content" class="card panel-content">
-    <table id="liste_en_cours" class="table table-hover">
+<div id="liste_en_cours_content" class="card panel-content border-0">
+    <table id="liste_en_cours" class="table table-hover table-sm">
         <tbody>
             <tr *ngFor="let video of list; let index = index" 
                 [ngClass]="{'active' : video.tab_element[0].key===currentKey}">
@@ -11,10 +11,12 @@
                     <p>{{video.artiste}}</p>
                 </td>
                 <td>
-                    <span class="icon icon-cross btn btn-outline-primary" 
+                    <span class="btn btn-outline-primary btn-sm" 
                             (click)="removeToPlaylist(index)" 
-                            placement="right" 
-                            ngbTooltip="{{ 'supprimer_liste_lecture' | transloco}}"></span>
+                            placement="left" 
+                            ngbTooltip="{{ 'supprimer_liste_lecture' | transloco}}">
+                        <span class="material-icons">clear</span>
+                    </span>
                 </td>
             </tr>
         </tbody>

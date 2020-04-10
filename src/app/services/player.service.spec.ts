@@ -23,7 +23,7 @@ describe('PlayerService', () => {
             ...config
           })]
     });
-    service = TestBed.get(PlayerService);
+    service = TestBed.inject(PlayerService);
   }
 
   

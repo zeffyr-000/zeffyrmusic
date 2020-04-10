@@ -5,7 +5,7 @@
 <ul class="list-group list-unstyled" id="liste_resultat_recherche">
     <li *ngIf="query && query.length>0">
         <a class="list-group-item all_results" (click)="reset(element, false,'/search/'+query)">
-            <h4><span class="icon icon-magnifying-glass"></span> {{ 'tous_les_resultats' | transloco }}</h4>
+            <h4><span class="material-icons">search</span> {{ 'tous_les_resultats' | transloco }}</h4>
         </a>
     </li>
     <li *ngFor="let element of resultsArtist">
