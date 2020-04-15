@@ -4,7 +4,6 @@
             <div class="panel_head_content">
                 <div id="playlist_haut_titre">
                     
-                    <h1 *ngIf="idTopCharts && idTopCharts!==null" class="m-t-0">{{ 'top_charts_'+idTopCharts | transloco }}</h1>
                     <h1 *ngIf="idTopCharts==null && titre!==''" class="m-t-0">{{titre}}</h1>
                     <h1 *ngIf="idTopCharts===null && titre==''" class="m-t-0">{{title}}</h1>
                     

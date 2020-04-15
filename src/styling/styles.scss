@@ -185,6 +185,12 @@ td[onclick], td[ng-click] {
 #container.showTapVideoYT #gauche {
 	width: 100% !important;
 	height: 100% !important;
+	flex: none;
+    max-width: 100%;
+}
+
+#container.showTapVideoYT #content {
+	display: none !important;
 }
 
 .material-icons {
@@ -192,9 +198,14 @@ td[onclick], td[ng-click] {
     vertical-align: top;
 }
 
-.card[ng-reflect-router-link]:hover {
+.card[ng-reflect-router-link]:hover,
+.card[href]:hover {
 	cursor: pointer;
 	border-color: rgba($black, .250);
+}
+
+.card-img-top {
+	min-height: 13.3vw;
 }
 
 $grid-breakpoints: (
@@ -238,9 +249,9 @@ $cards-per-line: (
 		padding: 0;
 		margin: 0;
 	}
-	#gauche {
-		display:none;
-		visibility: hidden;
+	#gauche, 
+	#container_player, #player {
+		height: 1px;
 	}
 	#liste_en_cours_content {
 		display: none;
@@ -284,16 +295,14 @@ $cards-per-line: (
 	.navbar {
 		margin-bottom: 0px;
 	}
-	#container_player, #player {
+	
+	#container.showTapVideoYT #container_player, #container.showTapVideoYT #player {
+		height: 100% !important;
 		z-index: 1000 !important;
 		display: block !important;
 		position: absolute;
 		top: 0;
 		left: 0;
 		width: 100% !important;
-		height: 10px !important;
-	}
-	#container.showTapVideoYT #container_player, #container.showTapVideoYT #player {
-		height: 100% !important;
 	}
 }

@@ -1,10 +1,9 @@
 <app-header id="header" class="navbar navbar-inverse navbar-fixed-top"></app-header>
 
 <div id="main" class="container-fluid">	
-	<div class="row" id="container">
+	<div id="container" class="row" [ngClass]="{'showTapVideoYT':showTapVideoYT}">
 
     <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
-    
     
     <div class="col-xs-9 col-md-9" id="content">
         <router-outlet></router-outlet>

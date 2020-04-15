@@ -8,7 +8,9 @@ export const environment = {
   URL_SERVER: '/api/',
   httpClientConfig: {
     withCredentials: true
-  }
+  },
+  lang: 'fr',
+  URL_ASSETS : ''
 };
 
 /*

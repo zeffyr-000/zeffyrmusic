@@ -54,6 +54,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     addKey: string;
     addArtist: string;
     addTitle: string;
+    URL_ASSETS: string;
 
     listPlaylist: any[];
     listFollow: any[];
@@ -75,6 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 private readonly googleAnalyticsService: GoogleAnalyticsService,
                 private readonly translocoService: TranslocoService) {
         this.isConnected = false;
+        this.URL_ASSETS = environment.URL_ASSETS;
     }
 
     ngOnInit() {
@@ -291,12 +293,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
                     }
                 });
         }
-    }
-
-    onChangeLang(lang: NgForm) {
-        this.translocoService.setActiveLang(lang.value);
-
-        localStorage.langue = lang.value;
     }
 
     onSubmitEditPass(form: NgForm) {

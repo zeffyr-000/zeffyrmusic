@@ -1,7 +1,7 @@
 <div id="header_top" class="row no-gutters">
     <div id="header_logo" class="col-3">
         <a class="navbar-brand p-0" id="header_logo_lien" routerLink="">
-            <img src="../../assets/img/logo.png"  />
+            <img src="{{URL_ASSETS}}assets/img/logo.png"  />
             <span class="material-icons">home</span>
         </a>
     </div>
@@ -30,11 +30,6 @@
                 <li ngbDropdownItem>
                     <a (click)="openModal(contentModalFollows)">
                         <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-                    </a>
-                </li>
-                <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalEditLang)">
-                        <span class="material-icons">language</span>{{ 'langue' | transloco}}
                     </a>
                 </li>
                 <li ngbDropdownItem>
@@ -221,21 +216,6 @@
             <p *ngIf="formResetPass.dirty && error!=''">{{error}}</p>
         </form>
         <p *ngIf="isSuccess">{{ 'mail_pass_envoye_succes' | transloco }}</p>
-    </div>
-</ng-template>
-
-<ng-template #contentModalEditLang let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'choisissez_langue' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <select class="form-control" (change)="onChangeLang(lang)" ngbAutofocus ngModel #lang>
-            <option value="" selected="selected">{{ 'choisissez_langue' | transloco}}</option>
-            <option *ngFor="let lang of langs" [value]="lang">{{ 'langue_'+lang | transloco }}</option>
-        </select>
     </div>
 </ng-template>
 

@@ -225,7 +225,7 @@
     }
 }
 
-@media screen and (max-device-width:799px), screen and (max-width:799px) {
+@media (max-width: 750px) {
     #header_toggle_big {
         display: none;
     }
@@ -255,6 +255,11 @@
         float: none;
         width: 100%;
     }
+
+    #header_player_centre .material-icons {
+        font-size: 40px;
+    }
+
     #header_player_droite {
         display: none;
     }

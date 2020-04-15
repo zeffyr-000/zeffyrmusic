@@ -142,7 +142,7 @@ export class PlayerService implements OnDestroy {
             case 2:
                 this.isPlaying = false;
                 break;
-
+ 
             case 1:
                 this.isPlaying = true;
                 break;
@@ -165,7 +165,7 @@ export class PlayerService implements OnDestroy {
             this.refInterval = null;
         }
 
-        if (etat === 1  && !this.firstLaunched) {
+        if (etat === 1 && !this.firstLaunched) {
             if (!this.isAutoPlay) {
                 this.launchFullInit();
             } else {

@@ -84,7 +84,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
             if(this.activatedRoute.snapshot.url[0].path === 'top') {
                 url = environment.URL_SERVER + 'json/top/' + id;
             } else {
-                url = environment.URL_SERVER + 'json/top_charts/' + id;
+                url = '';
             }
         }
 
@@ -112,7 +112,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.idPlaylist = data.id_playlist;
                     this.playlist = data.tab_video;
                     this.imgBig = data.img_big;
-                    this.idTopCharts = data.id_top_charts || null;
+                    this.idTopCharts = null;
                     this.title = data.title;
                     this.titre = data.titre || '';
                     this.description = data.description || '';

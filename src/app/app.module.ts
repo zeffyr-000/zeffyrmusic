@@ -51,10 +51,10 @@ import { PlayerService } from './services/player.service';
         {
             provide: TRANSLOCO_CONFIG,
             useValue: {
-                reRenderOnLangChange: true,
-                availableLangs: ['fr', 'en'],
-                defaultLang: 'en',
-                fallbackLang: 'fr',
+                reRenderOnLangChange: false,
+                availableLangs: [environment.lang],
+                defaultLang: environment.lang,
+                fallbackLang: environment.lang,
                 prodMode: environment.production
             }
         },
@@ -78,12 +78,6 @@ export class AppModule { }
 
 export function preload(transloco: TranslocoService) {
     return () => {
-        let lang = 'fr';
-
-        if (localStorage.langue && localStorage.langue === 'en') {
-            lang = 'en';
-        }
-
-        return transloco.load(lang).toPromise();
+        return transloco.load(environment.lang).toPromise();
     };
 }

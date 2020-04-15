@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { DOCUMENT } from '@angular/common';
 
 @Injectable({
     providedIn: 'root'
@@ -44,17 +45,12 @@ export class InitService {
         tabIndex: any[]
     }>();
 
-    constructor(private readonly httpClient: HttpClient,
-        private readonly translocoService: TranslocoService) {
-
-        let lang = 'fr';
-
-        if (localStorage.langue && localStorage.langue === 'en') {
-            lang = 'en';
+    constructor(@Inject(DOCUMENT) private document: Document,
+                private readonly httpClient: HttpClient,
+                private readonly translocoService: TranslocoService) {
+            this.document.querySelector('link[rel=icon]').setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);
+            this.translocoService.setActiveLang(environment.lang);
         }
-
-        this.translocoService.setActiveLang(lang);
-    }
 
     getPing() {
         return this.httpClient.get(environment.URL_SERVER + 'ping/' + this.translocoService.getActiveLang(),
