@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnDestroy, OnInit  } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Event, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -24,8 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 private readonly initService: InitService,
                 private readonly playerService: PlayerService,
                 private readonly router: Router,
-                private readonly translocoService: TranslocoService,
-                private readonly googleAnalyticsService: GoogleAnalyticsService) {
+                private readonly translocoService: TranslocoService) {
         this.initService.getPing();
 
         this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe(isShow => {
@@ -59,8 +58,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 if ((window as any).FB) {
                     (window as any).FB.XFBML.parse();
                 }
-
-                this.googleAnalyticsService.pageView(event.url);
             }
 
             if (event instanceof NavigationError) {

@@ -53,8 +53,7 @@ export class InitService {
         }
 
     getPing() {
-        return this.httpClient.get(environment.URL_SERVER + 'ping/' + this.translocoService.getActiveLang(),
-            environment.httpClientConfig)
+        return this.httpClient.get(environment.URL_SERVER + 'ping', environment.httpClientConfig)
             .subscribe((data: any) => {
                 this.isConnected = data.est_connecte;
                 let listPlaylist = [];

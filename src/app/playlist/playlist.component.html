@@ -54,6 +54,7 @@
                 <thead>
                     <tr>
                         <th></th>
+                        <th></th>
                         <th>{{ 'intitule_artiste' |transloco }}</th>
                         <th>{{ 'intitule_titre' |transloco }}</th>
                         <th></th>
@@ -62,17 +63,23 @@
                 </thead>
 
                 <tbody>
-                    <tr *ngFor="let video of playlist; index as i" [attr.data-id-video]="video.key" 
+                    <tr *ngFor="let video of playlist; index as i" [attr.data-id-video]="video.key"
+                            (click)="runPlaylist(i)" 
                             [ngClass]="{'active': video.key===currentKey}">
                         <td>{{ i+1 }}</td>
+                        <td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
+                            <img [src]="'https://img.youtube.com/vi/'+video.tab_element[0].key+'/mqdefault.jpg'" class="thumbnail" />
+                        </td>
                         <td>
                             <span *ngFor="let artist of video.artists; ; last as isLast">
-                                <a *ngIf="artist.id_artist" routerLink="/artist/{{artist.id_artist}}">{{artist.label}}</a>
+                                <a *ngIf="artist.id_artist" 
+                                    (click)="$event.stopPropagation()"
+                                    routerLink="/artist/{{artist.id_artist}}">{{artist.label}}</a>
                                 <span *ngIf="!artist.id_artist">{{artist.label}}</span>
                                 <span *ngIf="!isLast">, </span>
                             </span>
                         </td>
-                        <td (click)="runPlaylist(i)">{{video.titre}}</td>
+                        <td>{{video.titre}}</td>
                         <td>
                             <span *ngIf="video.tab_element[0].duree>0">{{video.tab_element[0].duree | toMMSS }}</span>
                         </td>
@@ -80,14 +87,14 @@
                             <div>
                                 <span *ngIf="isConnected" 
                                         class="btn btn-outline-primary btn-sm" 
-                                        (click)="addVideo(video.key,video.artiste,video.titre)" 
+                                        (click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre)" 
                                         placement="top" 
                                         ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}">
                                     <span class="material-icons">add</span>
                                 </span>
                                 <span *ngIf="isConnected && idPersoOwner==idPerso" 
                                         class="btn btn-outline-primary btn-sm"  
-                                        (click)="removeVideo(video.id_video);" 
+                                        (click)="$event.stopPropagation();removeVideo(video.id_video);" 
                                         placement="top" 
                                         ngbTooltip="{{'supprimer' | transloco}}">
                                     <span class="material-icons">clear</span>

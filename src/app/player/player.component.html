@@ -5,14 +5,18 @@
     <table id="liste_en_cours" class="table table-hover table-sm">
         <tbody>
             <tr *ngFor="let video of list; let index = index" 
+                (click)="play(index,true)"
                 [ngClass]="{'active' : video.tab_element[0].key===currentKey}">
-                <td (click)="play(index,true)">
+                <td>
+                    <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" />
+                </td>
+                <td>
                     <p><strong>{{video.titre}}</strong></p>
                     <p>{{video.artiste}}</p>
                 </td>
                 <td>
                     <span class="btn btn-outline-primary btn-sm" 
-                            (click)="removeToPlaylist(index)" 
+                            (click)="$event.stopPropagation();removeToPlaylist(index)" 
                             placement="left" 
                             ngbTooltip="{{ 'supprimer_liste_lecture' | transloco}}">
                         <span class="material-icons">clear</span>

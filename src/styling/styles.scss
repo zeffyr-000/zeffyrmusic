@@ -172,6 +172,10 @@ td[onclick], td[ng-click] {
 	white-space: nowrap;
 }
 
+#table_playlist tr:hover {
+	cursor: pointer;
+}
+
 .content_loading {
 	height: 20px;
 	width: 20px;
@@ -206,6 +210,10 @@ td[onclick], td[ng-click] {
 
 .card-img-top {
 	min-height: 13.3vw;
+}
+
+.thumbnail {
+	max-height: 34px;
 }
 
 $grid-breakpoints: (

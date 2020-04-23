@@ -76,6 +76,23 @@ export class PlayerService implements OnDestroy {
                     this.shuffle(this.tabIndex);
                 }
 
+                this.currentKey = this.listVideo[this.currentIndex].tab_element[0].key;
+                this.currentTitle = this.listVideo[this.currentIndex].titre;
+                if (
+                    this.listVideo[this.currentIndex].artiste &&
+                    this.listVideo[this.currentIndex].artiste !== ""
+                ) {
+                    this.currentArtist = this.listVideo[this.currentIndex].artiste;
+                } else {
+                    this.currentArtist = '';
+                }
+
+                this.subjectCurrentKeyChange.next({
+                    currentKey: this.currentKey,
+                    currentTitle: this.currentTitle,
+                    currentArtist: this.currentArtist
+                });
+
                 this.onChangeCurrentPlaylist();
 
                 this.onChangeListPlaylist();
@@ -573,7 +590,7 @@ export class PlayerService implements OnDestroy {
             this.tabIndexInitial.push(i + index);
             this.tabIndex.push(i + index);
         }
-
+        
         if (this.isRandom) {
             this.shuffle(this.tabIndex);
         }
@@ -587,7 +604,7 @@ export class PlayerService implements OnDestroy {
         this.tabIndex = [];
         this.addInCurrentList(playlist);
 
-        this.lecture(index);
+        this.lecture(index, true);
     }
 
     ngOnDestroy() {

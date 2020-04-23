@@ -67,7 +67,8 @@
 
 <div id="header_player" class="row no-gutters">
 
-    <div id="header_player_gauche" class="col-md-3 pl-5 pt-2">
+    <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
+        <img [src]="'https://img.youtube.com/vi/'+currentKey+'/mqdefault.jpg'" *ngIf="currentKey" class="float-left " />
         <div><b>{{currentTitle}}</b></div>
         <div>{{currentArtist}}</div>
     </div>

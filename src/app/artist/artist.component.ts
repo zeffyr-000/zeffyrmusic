@@ -4,6 +4,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { environment } from '../../environments/environment';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 @Component({
     selector: 'app-artist',
@@ -22,7 +23,8 @@ export class ArtistComponent implements OnInit {
                 private readonly activatedRoute: ActivatedRoute,
                 private readonly titleService: Title,
                 private readonly metaService: Meta,
-                private readonly translocoService: TranslocoService) {}
+                private readonly translocoService: TranslocoService,
+                private readonly googleAnalyticsService: GoogleAnalyticsService) {}
 
     ngOnInit() {
         this.activatedRoute.params.subscribe(() => {
@@ -52,6 +54,8 @@ export class ArtistComponent implements OnInit {
                 });
                 this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
                 this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+
+                this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
             });
     }
 

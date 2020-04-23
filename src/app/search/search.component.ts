@@ -6,6 +6,7 @@ import { TranslocoService } from '@ngneat/transloco';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 @Component({
     selector: 'app-search',
@@ -39,7 +40,8 @@ export class SearchComponent implements OnInit, OnDestroy {
                 private readonly titleService: Title,
                 private readonly translocoService: TranslocoService,
                 private readonly initService: InitService,
-                private readonly playerService: PlayerService) {
+                private readonly playerService: PlayerService,
+                private readonly googleAnalyticsService: GoogleAnalyticsService) {
                 }
 
     ngOnInit() {
@@ -88,6 +90,8 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.listExtras = data.tab_extra;
                 this.limitExtra = 5;
             });
+
+        this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
     }
 
     moreArtists() {

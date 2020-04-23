@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 @Component({
     selector: 'app-playlist',
@@ -39,7 +40,9 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
                 private readonly playerService: PlayerService,
                 private readonly titleService: Title,
                 private readonly metaService: Meta,
-                private readonly translocoService: TranslocoService) {
+                private readonly translocoService: TranslocoService,
+                private readonly googleAnalyticsService: GoogleAnalyticsService,
+                private readonly ngZone: NgZone) {
 
         activatedRoute.params.subscribe(() => {
             this.initLoad();
@@ -57,7 +60,9 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-            this.currentKey = data.currentKey;
+            this.ngZone.run( () => {
+                this.currentKey = data.currentKey;
+             });
         });
 
         this.subscriptionChangeFollow = this.playerService.subjectListFollow.subscribe(listFollow => {
@@ -147,6 +152,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.isPrivate = true;
                 }
 
+                this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
             });
     }
 

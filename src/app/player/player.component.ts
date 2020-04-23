@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 
@@ -16,13 +16,16 @@ export class PlayerComponent implements OnInit, OnDestroy {
     subscriptionChangeKey: any;
 
     constructor(private readonly initService: InitService,
-                private readonly playerService: PlayerService) {
+                private readonly playerService: PlayerService,
+                private readonly ngZone: NgZone) {
         this.subscription = playerService.subjectCurrentPlaylistChange.subscribe(list => {
             this.list = list;
         });
 
         this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-            this.currentKey = data.currentKey;
+            this.ngZone.run( () => {
+                this.currentKey = data.currentKey;
+             });
         });
     }
 

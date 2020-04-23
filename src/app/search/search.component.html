@@ -44,6 +44,7 @@
 		<thead>
 			<tr>
 				<th></th>
+				<th></th>
 				<th>{{ 'intitule_artiste' |transloco }}</th>
 				<th>{{ 'intitule_titre' |transloco }}</th>
 				<th>{{ 'album' |transloco }}</th>
@@ -53,16 +54,19 @@
 		</thead>
 
 		<tbody>
-			<tr *ngFor="let video of listTracks | slice:0:limitTrack; let index=index" [attr.data-id-video]="video.key">
+			<tr *ngFor="let video of listTracks | slice:0:limitTrack; let index=index" [attr.data-id-video]="video.key"
+				(click)="runPlaylistTrack(index)">
 				<td>{{ index+1 }}</td>
-				<td>
-                    <p *ngIf="video.id_artiste==undefined || video.id_artiste<=0" 
-                        (click)="runPlaylistTrack(index)">{{video.artiste}}</p>
-					<a *ngIf="video.id_artiste>0" routerLink="/artist/{{video.id_artiste}}">{{video.artiste}}</a>
+				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
+					<img [src]="'https://img.youtube.com/vi/'+video.tab_element[0].key+'/mqdefault.jpg'" class="thumbnail" />
 				</td>
-				<td (click)="runPlaylistTrack(index)">{{video.titre}}</td>
 				<td>
-					<a *ngIf="video.titre_album!=undefined" routerLink="/playlist/{{video.id_playlist}}">{{video.titre_album}}</a>
+                    <p *ngIf="video.id_artiste==undefined || video.id_artiste<=0">{{video.artiste}}</p>
+					<a *ngIf="video.id_artiste>0" (click)="$event.stopPropagation()" routerLink="/artist/{{video.id_artiste}}">{{video.artiste}}</a>
+				</td>
+				<td>{{video.titre}}</td>
+				<td>
+					<a *ngIf="video.titre_album!=undefined" (click)="$event.stopPropagation()" routerLink="/playlist/{{video.id_playlist}}">{{video.titre_album}}</a>
 				</td>
 				<td>
 					<span *ngIf="video.tab_element[0].duree>0">{{video.tab_element[0].duree | toMMSS }}</span>
@@ -70,7 +74,7 @@
 				<td>
                     <span *ngIf="isConnected" 
                             class="btn btn-default" 
-                            (click)="addVideo(video.key,video.artiste,video.titre)" 
+                            (click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre)" 
                             placement="left" 
 							ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}">
 						<span class="material-icons">add</span>
@@ -78,7 +82,7 @@
 				</td>
 			</tr>
 			<tr *ngIf="listTracks && listTracks.length>limitTrack">
-				<td colspan="6">
+				<td colspan="7">
 					<a (click)="moreTracks()">{{ 'more' |transloco }}</a>
 				</td>
 			</tr>

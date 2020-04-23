@@ -201,12 +201,17 @@
     width: 15%;
 }
 
-#header_player_gauche>div{
+#header_player_gauche>div {
     box-sizing: border-box;
-    width: 100%;
+    width: calc( 100% - 100px );
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+#header_player_gauche>img {
+    max-height: 50px;
+    padding: 4px;
 }
 
 #header_li_connexion>a, #header_li_inscription>a {

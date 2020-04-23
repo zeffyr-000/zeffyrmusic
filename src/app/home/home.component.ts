@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService } from '@ngneat/transloco';
 import { environment } from '../../environments/environment';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 @Component({
     selector: 'app-home',
@@ -20,7 +21,8 @@ export class HomeComponent implements OnInit {
     constructor(private readonly httpClient: HttpClient,
                 private readonly titleService: Title,
                 private readonly metaService: Meta,
-                private readonly translocoService: TranslocoService) { }
+                private readonly translocoService: TranslocoService,
+                private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     ngOnInit() {
 
@@ -30,8 +32,7 @@ export class HomeComponent implements OnInit {
         this.titleService.setTitle(this.translocoService.translate('title'));
         this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('meta_description') });
 
-        this.httpClient.get(environment.URL_SERVER + 'home_init/' + this.translocoService.getActiveLang(),
-                            environment.httpClientConfig)
+        this.httpClient.get(environment.URL_SERVER + 'home_init', environment.httpClientConfig)
             .subscribe((data: any) => {
                 this.isLoading = false;
 
@@ -39,6 +40,7 @@ export class HomeComponent implements OnInit {
                 this.listTopCharts = data.top_charts;
                 this.listTop = data.top;
 
+                this.googleAnalyticsService.pageView('/');
             }, error => { 
                     this.isLoading = false;
                 });

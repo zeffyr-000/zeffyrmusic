@@ -24,6 +24,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     isPlaying: boolean;
     currentTitle: string;
     currentArtist: string;
+    currentKey: string;
 
     subscriptionConnected: any;
     subscriptionRepeat: any;
@@ -138,6 +139,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
             this.currentTitle = data.currentTitle;
             this.currentArtist = data.currentArtist;
+            this.currentKey = data.currentKey;
         });
     }
 

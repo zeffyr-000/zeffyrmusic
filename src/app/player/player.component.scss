@@ -12,12 +12,16 @@
     table-layout: fixed;
 }
 
+#liste_en_cours tr:hover{
+    cursor: pointer;
+}
+
 #liste_en_cours td>a:hover {
     text-decoration: none;
 }
 
 #liste_en_cours td:first-child {
-    width: auto;
+    width: 70px;
 }
 
 #liste_en_cours td:last-child {
