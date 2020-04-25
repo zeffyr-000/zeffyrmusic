@@ -37,12 +37,14 @@ export class InitService {
         listPlaylist: any[],
         listFollow: any[],
         listVideo: any[],
-        tabIndex: any[]
+        tabIndex: any[],
+        listLikeVideo: any[]
     }> = new Subject<{
         listPlaylist: any[],
         listFollow: any[],
         listVideo: any[],
-        tabIndex: any[]
+        tabIndex: any[],
+        listLikeVideo: any[]
     }>();
 
     constructor(@Inject(DOCUMENT) private document: Document,
@@ -58,6 +60,7 @@ export class InitService {
                 this.isConnected = data.est_connecte;
                 let listPlaylist = [];
                 let listFollow = [];
+                let listLikeVideo =[];
 
                 if (this.isConnected) {
                     this.pseudo = data.pseudo;
@@ -66,6 +69,7 @@ export class InitService {
 
                     listPlaylist = data.liste_playlist;
                     listFollow = data.liste_suivi;
+                    listLikeVideo = data.like_video;
                 } else {
                     this.pseudo = '';
                     this.idPerso = '';
@@ -78,7 +82,8 @@ export class InitService {
                     listPlaylist,
                     listFollow,
                     listVideo: data.liste_video,
-                    tabIndex: data.tab_index
+                    tabIndex: data.tab_index,
+                    listLikeVideo
                 });
             });
     }

@@ -2,7 +2,6 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Event, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
-import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
 

@@ -85,6 +85,16 @@
                         </td>
                         <td>
                             <div>
+                                <span *ngIf="isConnected && playerService.isLiked(video.tab_element[0].key)"
+                                    class="btn btn-sm btn-link text-decoration-none"
+                                    (click)="$event.stopPropagation();playerService.removeLike(video.tab_element[0].key)" >
+                                    <span class="material-icons">favorite</span>
+                                </span>
+                                <span *ngIf="isConnected && !playerService.isLiked(video.tab_element[0].key)"
+                                    class="btn btn-sm btn-link text-decoration-none text-body"
+                                    (click)="$event.stopPropagation();playerService.addLike(video.tab_element[0].key)" >
+                                    <span class="material-icons">favorite_border</span>
+                                </span>
                                 <span *ngIf="isConnected" 
                                         class="btn btn-outline-primary btn-sm" 
                                         (click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre)" 

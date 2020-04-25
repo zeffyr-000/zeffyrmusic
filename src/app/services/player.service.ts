@@ -25,6 +25,7 @@ export class PlayerService implements OnDestroy {
     currentTitle: string;
     currentArtist: string;
     currentKey: string;
+    listLikeVideo: any[];
 
     isAutoPlay: boolean;
     firstLaunched = false;
@@ -69,6 +70,7 @@ export class PlayerService implements OnDestroy {
                 this.listFollow = data.listFollow;
                 this.listVideo = data.listVideo;
                 this.tabIndex = data.tabIndex;
+                this.listLikeVideo = data.listLikeVideo;
 
                 this.tabIndexInitial = this.tabIndex.slice(0);
 
@@ -605,6 +607,57 @@ export class PlayerService implements OnDestroy {
         this.addInCurrentList(playlist);
 
         this.lecture(index, true);
+    }
+
+    isLiked(key: string) {
+        const found = this.listLikeVideo.find(e => e.key===key);
+        return (found !== undefined);
+    }
+
+    addLike(key: string) {
+        this.httpClient
+            .post(
+                environment.URL_SERVER + "add_like",
+                {
+                    key
+                },
+                environment.httpClientConfig
+            )
+            .subscribe(
+                (data: any) => {
+                    if (data.success !== undefined) {
+                       this.listLikeVideo.unshift(data.like);
+                    }
+                },
+                () => {
+                    this.initService.onMessageUnlog();
+                }
+            );
+    }
+
+    removeLike(key: string) {
+        this.httpClient
+            .post(
+                environment.URL_SERVER + "remove_like",
+                {
+                    key
+                },
+                environment.httpClientConfig
+            )
+            .subscribe(
+                (data: any) => {
+                    if (data.success !== undefined) {
+                       const index = this.listLikeVideo.findIndex(e => e.key === key);
+
+                       if(index>0){
+                           this.listLikeVideo.splice(index, 1);
+                       }
+                    }
+                },
+                () => {
+                    this.initService.onMessageUnlog();
+                }
+            );
     }
 
     ngOnDestroy() {
