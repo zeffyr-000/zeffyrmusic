@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { FacebookModule } from '@finosofica/ngx-facebook';
@@ -14,7 +14,7 @@ describe('ArtistComponent', () => {
   let fixture: ComponentFixture<ArtistComponent>;
   let http: HttpTestingController;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [FacebookModule,
                 TranslocoTestingModule.withLangs({fr},

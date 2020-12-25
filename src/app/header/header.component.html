@@ -23,6 +23,11 @@
             </a>
             <ul ngbDropdownMenu>
                 <li ngbDropdownItem>
+                    <a class="text-decoration-none text-body" routerLink="/like">
+                        <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
+                    </a>
+                </li>
+                <li ngbDropdownItem>
                     <a (click)="openModal(contentModalPlaylists)">
                         <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
                     </a>
@@ -68,6 +73,16 @@
 <div id="header_player" class="row no-gutters">
 
     <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
+        <span *ngIf="isConnected && playerService.isLiked(currentKey)"
+            class="btn btn-sm btn-link text-decoration-none float-right"
+            (click)="$event.stopPropagation();playerService.removeLike(currentKey)" >
+            <span class="material-icons">favorite</span>
+        </span>
+        <span *ngIf="isConnected && !playerService.isLiked(currentKey)"
+            class="btn btn-sm btn-link text-decoration-none text-body float-right"
+            (click)="$event.stopPropagation();playerService.addLike(currentKey)" >
+            <span class="material-icons">favorite_border</span>
+        </span>
         <img [src]="'https://img.youtube.com/vi/'+currentKey+'/mqdefault.jpg'" *ngIf="currentKey" class="float-left " />
         <div><b>{{currentTitle}}</b></div>
         <div>{{currentArtist}}</div>
@@ -161,10 +176,10 @@
             </p>
             <p><input type="submit" class="btn btn-primary" [disabled]="formRegister.invalid"
                     value="{{ 'je_m_inscris' | transloco}}" /></p>
-            <p *ngIf="formRegister.dirty && error!=''">{{error}}</p>
+            <p *ngIf="formRegister.dirty && error!=''" class="alert alert-danger">{{error}}</p>
         </form>
         <div *ngIf="isRegistered">
-            <p>{{ 'inscription_succes' | transloco }}</p>
+            <p class="alert alert-success">{{ 'inscription_succes' | transloco }}</p>
             <p><a (click)="modal.dismiss(''); openModal(contentModalLogin)">{{ 'connexion' | transloco}}</a></p>
         </div>
     </div>
@@ -191,7 +206,7 @@
             </p>
             <p><input type="submit" class="btn btn-primary" [disabled]="formLogIn.invalid"
                     value="{{ 'connexion' | transloco}}" /></p>
-            <p *ngIf="formLogIn.dirty && error!=''">{{error}}</p>
+            <p *ngIf="formLogIn.dirty && error!=''" class="alert alert-danger">{{error}}</p>
 
             <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)">{{ 'mot_de_passe_oublie' | transloco}}</a>
             </p>
@@ -214,9 +229,9 @@
             </p>
             <p><input type="submit" class="btn btn-primary" [disabled]="formResetPass.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formResetPass.dirty && error!=''">{{error}}</p>
+            <p *ngIf="formResetPass.dirty && error!=''" class="alert alert-danger">{{error}}</p>
         </form>
-        <p *ngIf="isSuccess">{{ 'mail_pass_envoye_succes' | transloco }}</p>
+        <p *ngIf="isSuccess" class="alert alert-success">{{ 'mail_pass_envoye_succes' | transloco }}</p>
     </div>
 </ng-template>
 
@@ -245,8 +260,8 @@
 
             <p><input type="submit" class="btn btn-primary" [disabled]="formEditPass.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formEditPass.dirty && error!=''">{{error}}</p>
-            <p *ngIf="successPass">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+            <p *ngIf="formEditPass.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="successPass" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
         </form>
     </div>
 </ng-template>
@@ -268,8 +283,8 @@
 
             <p><input type="submit" class="btn btn-primary" [disabled]="formEditMail.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formEditMail.dirty && error!=''">{{error}}</p>
-            <p *ngIf="successMail">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+            <p *ngIf="formEditMail.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="successMail" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
         </form>
     </div>
 </ng-template>
@@ -382,7 +397,7 @@
                             value="{{ 'modifier' | transloco }}" />
                 </span>
             </div>
-            <p *ngIf="formEditTitle.dirty && error!=''">{{error}}</p>
+            <p *ngIf="formEditTitle.dirty && error!=''" class="alert alert-danger">{{error}}</p>
         </form>
     </div>
 </ng-template>
@@ -396,7 +411,7 @@
     </div>
     <div class="modal-body">
         <p>{{'ajouter' | transloco}}: {{addTitle}} {{addArtist}}</p>
-        <p *ngIf="error!=''">{{error}}</p>
+        <p *ngIf="error!=''" class="alert alert-danger">{{error}}</p>
         <table class="table">
             <tr *ngFor="let playlist of listPlaylist">
                 <td>

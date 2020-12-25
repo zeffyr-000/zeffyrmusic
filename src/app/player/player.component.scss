@@ -40,3 +40,7 @@
 #liste_en_cours td>p:hover {
     cursor: pointer;
 }
+
+.dropdown-toggle::after {
+    display:none;
+}

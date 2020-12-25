@@ -55,6 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     addKey: string;
     addArtist: string;
     addTitle: string;
+    addDuration: string;
     URL_ASSETS: string;
 
     listPlaylist: any[];
@@ -69,7 +70,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     constructor(public activeModal: NgbActiveModal,
                 private readonly modalService: NgbModal,
                 private readonly initService: InitService,
-                private readonly playerService: PlayerService,
+                public playerService: PlayerService,
                 private readonly ref: ChangeDetectorRef,
                 private readonly httpClient: HttpClient,
                 private readonly router: Router,
@@ -132,6 +133,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.addKey = data.key;
             this.addArtist = data.artist;
             this.addTitle = data.title;
+            this.addDuration = data.duration;
 
             this.openModal(this.contentModalAddVideo);
         });
@@ -425,7 +427,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     onAddVideo(idPlaylist, modal) {
-        this.playerService.addVideoInPlaylistRequest(idPlaylist, this.addKey, this.addTitle, this.addArtist);
+        this.playerService.addVideoInPlaylistRequest(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration);
         modal.dismiss();
     }
 

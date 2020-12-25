@@ -17,15 +17,15 @@ export class PlayerService implements OnDestroy {
     isRandom: boolean;
     currentIndex = 0;
     isRepeat: boolean;
-    listPlaylist: any[];
-    listFollow: any[];
-    listVideo: any[];
+    listPlaylist: any[] = [];
+    listFollow: any[] = [];
+    listVideo: any[] = [];
     isPlaying = false;
     refInterval = null;
-    currentTitle: string;
-    currentArtist: string;
-    currentKey: string;
-    listLikeVideo: any[];
+    currentTitle: string = '';
+    currentArtist: string = '';
+    currentKey: string = '';
+    listLikeVideo: any[] = [];
 
     isAutoPlay: boolean;
     firstLaunched = false;
@@ -47,6 +47,9 @@ export class PlayerService implements OnDestroy {
     );
     subjectListFollow: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(
         this.listFollow
+    );
+    subjectListLikeVideo: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(
+        this.listLikeVideo
     );
     subjectAddVideo: Subject<any> = new Subject<any>();
     subjectCurrentKeyChange: BehaviorSubject<any> = new BehaviorSubject<any>({
@@ -99,6 +102,7 @@ export class PlayerService implements OnDestroy {
 
                 this.onChangeListPlaylist();
                 this.onChangeListFollow();
+                this.onChangeListLikeVideo();
             }
         );
     }
@@ -434,6 +438,10 @@ export class PlayerService implements OnDestroy {
         this.subjectListFollow.next(this.listFollow);
     }
 
+    onChangeListLikeVideo() {
+        this.subjectListLikeVideo.next(this.listLikeVideo);
+    }
+
     onLoadListLogin(listPlaylist, listFollow) {
         this.listPlaylist = listPlaylist;
         this.listFollow = listFollow;
@@ -554,11 +562,11 @@ export class PlayerService implements OnDestroy {
             );
     }
 
-    addVideoInPlaylist(key, artist, title) {
-        this.subjectAddVideo.next({ key, artist, title });
+    addVideoInPlaylist(key, artist, title, duration) {
+        this.subjectAddVideo.next({ key, artist, title, duration });
     }
 
-    addVideoInPlaylistRequest(idPlaylist, addKey, addTitle, addArtist) {
+    addVideoInPlaylistRequest(idPlaylist, addKey, addTitle, addArtist, addDuration) {
         this.httpClient
             .post(
                 environment.URL_SERVER + "insert_video",
@@ -566,7 +574,8 @@ export class PlayerService implements OnDestroy {
                     id_playlist: idPlaylist,
                     key: addKey,
                     titre: addTitle,
-                    artiste: addArtist
+                    artiste: addArtist,
+                    duree: addDuration
                 },
                 environment.httpClientConfig
             )
@@ -600,6 +609,22 @@ export class PlayerService implements OnDestroy {
         this.onChangeCurrentPlaylist();
     }
 
+    addVideoAfterCurrentInList(video) {
+        this.listVideo.splice(this.currentIndex +1, 0, video);
+
+        const index = this.tabIndexInitial.length;
+        const iMax = this.listVideo.length;
+
+        this.tabIndexInitial.push( index +1);
+        this.tabIndex.push( iMax +1);
+        
+        if (this.isRandom) {
+            this.shuffle(this.tabIndex);
+        }
+
+        this.onChangeCurrentPlaylist();
+    }
+
     runPlaylist(playlist, index) {
         this.listVideo = [];
         this.tabIndexInitial = [];
@@ -610,8 +635,12 @@ export class PlayerService implements OnDestroy {
     }
 
     isLiked(key: string) {
-        const found = this.listLikeVideo.find(e => e.key===key);
-        return (found !== undefined);
+        let found;
+        
+        if(this.listLikeVideo) {
+            found = this.listLikeVideo.find(e => e.key===key);
+        }
+        return (found && found !== undefined);
     }
 
     addLike(key: string) {

@@ -106,8 +106,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.playerService.runPlaylist(this.listTracks, index);
     }
 
-    addVideo(key, artist, title) {
-        this.playerService.addVideoInPlaylist(key, artist, title);
+    addVideo(key, artist, title, duration) {
+        this.playerService.addVideoInPlaylist(key, artist, title, duration);
     }
 
     moreTracks() {

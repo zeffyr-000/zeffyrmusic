@@ -33,6 +33,8 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
     subscriptionConnected: any;
     subscriptionChangeKey: any;
     subscriptionChangeFollow: any;
+    subscriptionInitializePlaylist: any;
+    subscriptionListLikeVideo: any;
 
     constructor(private readonly httpClient: HttpClient,
                 private readonly activatedRoute: ActivatedRoute,
@@ -79,21 +81,26 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         });
 
-        const idPlaylist = this.activatedRoute.snapshot.paramMap.get('id_playlist');
-        const id = this.activatedRoute.snapshot.paramMap.get('id');
-
-        let url: string;
-        if (idPlaylist !== null) {
-            url = environment.URL_SERVER + 'json/playlist/' + idPlaylist;
+        
+        if(this.activatedRoute.snapshot.url[0].path === 'like') {
+            this.loadLike();
         } else {
-            if(this.activatedRoute.snapshot.url[0].path === 'top') {
-                url = environment.URL_SERVER + 'json/top/' + id;
-            } else {
-                url = '';
-            }
-        }
+            const idPlaylist = this.activatedRoute.snapshot.paramMap.get('id_playlist');
+            const id = this.activatedRoute.snapshot.paramMap.get('id');
 
-        this.loadPlaylist(url);
+            let url: string;
+            if (idPlaylist !== null) {
+                url = environment.URL_SERVER + 'json/playlist/' + idPlaylist;
+            } else {
+                if(this.activatedRoute.snapshot.url[0].path === 'top') {
+                    url = environment.URL_SERVER + 'json/top/' + id;
+                } else {
+                    url = '';
+                }
+            }
+
+            this.loadPlaylist(url);
+        } 
     }
 
     ngAfterViewInit() {
@@ -156,6 +163,46 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
             });
     }
 
+    loadLike() {
+        this.isPrivate = false;
+        this.idPlaylist = '';
+        this.playlist = [];
+        this.imgBig = '';
+        this.idTopCharts = null;
+        this.title = '';
+        this.titre = '' || '';
+        this.description = '' || '';
+        this.isFollower = false;
+        this.artist = null;
+        this.idArtist = null;
+        this.idPersoOwner = null;
+
+        this.subscriptionListLikeVideo = this.playerService.subjectListLikeVideo.subscribe(
+            listLikeVideo => {
+                if(!listLikeVideo) {
+                    return;
+                }
+
+                listLikeVideo.forEach(element => {
+                    element.artists=[{label:element.artiste}];
+                    element.tab_element=[{
+                        key:element.key,
+                        duree:element.duree
+                    }];
+                    this.playlist.push(element);
+                });
+            }
+        );
+
+        this.titleService.setTitle(this.translocoService.translate('mes_likes') + ' - Zeffyr Music');
+        this.metaService.updateTag({ name: 'og:title', content: '' });
+        this.metaService.updateTag({ name: 'og:description', content: '' });
+        this.metaService.updateTag({ name: 'og:image', content:'' });
+        this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+    
+        this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+    }
+
     switchFollow() {
         this.playerService.switchFollow(this.idPlaylist, this.title);
     }
@@ -168,12 +215,20 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
         this.playerService.addInCurrentList(this.playlist);
     }
 
-    addVideo(key, artist, title) {
-        this.playerService.addVideoInPlaylist(key, artist, title);
+    addVideo(key, artist, title, duration) {
+        this.playerService.addVideoInPlaylist(key, artist, title, duration);
     }
 
     removeVideo(idVideo) {
         this.playerService.removeVideo(idVideo, this.loadPlaylist.bind(this));
+    }
+
+    addVideoAfterCurrentInList(video) {
+        this.playerService.addVideoAfterCurrentInList(video);
+    }
+
+    addVideoInEndCurrentList(video) {
+        this.playerService.addInCurrentList(video);
     }
 
     sumDurationPlaylist() {

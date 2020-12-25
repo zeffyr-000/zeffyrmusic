@@ -15,11 +15,24 @@
                     <p>{{video.artiste}}</p>
                 </td>
                 <td>
-                    <span class="btn btn-outline-primary btn-sm" 
-                            (click)="$event.stopPropagation();removeToPlaylist(index)" 
-                            placement="left" 
-                            ngbTooltip="{{ 'supprimer_liste_lecture' | transloco}}">
-                        <span class="material-icons">clear</span>
+                    <span class="btn btn-link btn-sm text-decoration-none text-body"
+                            (click)="$event.stopPropagation()"
+                            ngbDropdown placement="left-top">
+                        <span class="material-icons" ngbDropdownToggle>more_vert</span>
+                        <ul ngbDropdownMenu>
+                            <li ngbDropdownItem>
+                                <a (click)="removeToPlaylist(index)">
+                                    <span class="material-icons">clear</span>
+                                    {{'supprimer_liste_lecture' | transloco}}
+                                </a>
+                            </li>
+                            <li ngbDropdownItem *ngIf="isConnected">
+                                <a (click)="playerService.addVideoInPlaylist(video.key,video.artiste,video.titre, video.duree)">
+                                    <span class="material-icons">add</span>
+                                    {{'ajouter_a_une_playlist' | transloco}}
+                                </a>
+                            </li>
+                        </ul>
                     </span>
                 </td>
             </tr>

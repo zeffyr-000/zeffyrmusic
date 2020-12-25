@@ -36,7 +36,7 @@ $tooltip-bg:  $mushroom;
 @font-face {
     font-family: Nunito;
     src: local(Nunito-Regular),
-        url('~/assets/font/Nunito/Nunito-Regular.ttf') format('ttf');
+        url('../assets/font/Nunito/Nunito-Regular.ttf') format('ttf');
     font-weight: normal;
     font-style: normal;
     font-stretch: normal;
@@ -44,7 +44,7 @@ $tooltip-bg:  $mushroom;
 @font-face {
     font-family: Nunito;
     src: local(Nunito-SemiBold),
-            url('~/assets/font/Nunito/Nunito-SemiBold.ttf') format('ttf');
+            url('../assets/font/Nunito/Nunito-SemiBold.ttf') format('ttf');
     font-weight: 600;
     font-style: normal;
     font-stretch: normal;
@@ -52,7 +52,7 @@ $tooltip-bg:  $mushroom;
 @font-face {
     font-family: Nunito;
     src: local(Nunito-Bold),
-            url('~/assets/font/Nunito/Nunito-Bold.ttf') format('ttf');
+            url('../assets/font/Nunito/Nunito-Bold.ttf') format('ttf');
     font-weight: bold;
     font-style: normal;
     font-stretch: normal;
@@ -60,7 +60,7 @@ $tooltip-bg:  $mushroom;
 @font-face {
     font-family: Nunito;
     src: local(Nunito-ExtraBold),
-        url('~/assets/font/Nunito/Nunito-ExtraBold.ttf') format('ttf');
+        url('../assets/font/Nunito/Nunito-ExtraBold.ttf') format('ttf');
     font-weight: 800;
     font-style: normal;
     font-stretch: normal;

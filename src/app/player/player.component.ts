@@ -9,11 +9,13 @@ import { PlayerService } from '../services/player.service';
 })
 export class PlayerComponent implements OnInit, OnDestroy {
 
+    isConnected = false;
     list: any[];
     currentKey: string;
 
     subscription: any;
     subscriptionChangeKey: any;
+    subscriptionConnected: any;
 
     constructor(private readonly initService: InitService,
                 private readonly playerService: PlayerService,
@@ -26,6 +28,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
             this.ngZone.run( () => {
                 this.currentKey = data.currentKey;
              });
+        });
+
+        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
+            this.isConnected = data.isConnected;
         });
     }
 
@@ -44,6 +50,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.subscription.unsubscribe();
         this.subscriptionChangeKey.unsubscribe();
+        this.subscriptionConnected.unsubscribe();
     }
 
 }

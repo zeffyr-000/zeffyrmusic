@@ -11,9 +11,9 @@ import { DOCUMENT } from '@angular/common';
 export class InitService {
 
     private isConnected = false;
-    private pseudo: string;
-    private idPerso: string;
-    private mail: string;
+    private pseudo ='';
+    private idPerso ='';
+    private mail ='';
 
     subjectConnectedChange: BehaviorSubject<{
         isConnected: boolean,

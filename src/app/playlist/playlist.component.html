@@ -18,7 +18,7 @@
                         </button>
 
                         <button class="btn btn-secondary btn-lg" 
-                            *ngIf="isConnected && idPersoOwner!=idPerso" 
+                            *ngIf="isConnected && idPersoOwner!=idPerso && idPlaylist !==''" 
                             [ngClass]="{'active' : isFollower}" 
                             (click)="switchFollow()">{{'suivre' | transloco}}</button>
                     
@@ -28,7 +28,7 @@
 
                     <div class="row m-t">
                         <div class="col-md-6">
-                            <div>
+                            <div *ngIf="idPlaylist !==''">
                                 <fb-like class="fb-like" layout="button_count" action="like" show-faces="false" share="true" width="300"></fb-like>
                             </div>
                         </div>
@@ -95,19 +95,36 @@
                                     (click)="$event.stopPropagation();playerService.addLike(video.tab_element[0].key)" >
                                     <span class="material-icons">favorite_border</span>
                                 </span>
-                                <span *ngIf="isConnected" 
-                                        class="btn btn-outline-primary btn-sm" 
-                                        (click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre)" 
-                                        placement="top" 
-                                        ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}">
-                                    <span class="material-icons">add</span>
-                                </span>
-                                <span *ngIf="isConnected && idPersoOwner==idPerso" 
-                                        class="btn btn-outline-primary btn-sm"  
-                                        (click)="$event.stopPropagation();removeVideo(video.id_video);" 
-                                        placement="top" 
-                                        ngbTooltip="{{'supprimer' | transloco}}">
-                                    <span class="material-icons">clear</span>
+                                <span class="btn btn-link btn-sm text-decoration-none text-body"
+                                        (click)="$event.stopPropagation()"
+                                        ngbDropdown>
+                                    <span class="material-icons" ngbDropdownToggle>more_vert</span>
+                                    <ul ngbDropdownMenu>
+                                        <li ngbDropdownItem>
+                                            <a (click)="addVideoAfterCurrentInList(video)">
+                                                <span class="material-icons">queue_music</span>
+                                                {{'ajouter_apres_courant' | transloco}}
+                                            </a>
+                                        </li>
+                                        <li ngbDropdownItem>
+                                            <a (click)="addVideoInEndCurrentList(video)">
+                                                <span class="material-icons">playlist_add</span>
+                                                {{'ajouter_liste_en_cours' | transloco}}
+                                            </a>
+                                        </li>
+                                        <li ngbDropdownItem *ngIf="isConnected">
+                                            <a (click)="addVideo(video.key,video.artiste,video.titre,video.duree)">
+                                                <span class="material-icons">add</span>
+                                                {{'ajouter_a_une_playlist' | transloco}}
+                                            </a>
+                                        </li>
+                                        <li ngbDropdownItem *ngIf="isConnected && idPersoOwner==idPerso">
+                                            <a (click)="removeVideo(video.id_video)">
+                                                <span class="material-icons">clear</span>
+                                                {{'supprimer' | transloco}}
+                                            </a>
+                                        </li> 
+                                    </ul>
                                 </span>
                             </div>
                         </td>

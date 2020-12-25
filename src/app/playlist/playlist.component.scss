@@ -1,3 +1,7 @@
+.dropdown-toggle::after {
+    display:none;
+}
+
 @media screen and (max-device-width:899px), screen and (max-width:899px) {
     #playlist_img_big {
         width: 85px;

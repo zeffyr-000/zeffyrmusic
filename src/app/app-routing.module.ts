@@ -9,13 +9,14 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'playlist/:id_playlist', component: PlaylistComponent },
   { path: 'top/:id', component: PlaylistComponent },
+  { path: 'like', component: PlaylistComponent },
   { path: 'artist/:id_artist', component: ArtistComponent },
   { path: 'search/:query', component: SearchComponent },
   { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
