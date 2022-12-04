@@ -153,9 +153,7 @@
 <ng-template #contentModalRegister let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'inscription' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <p class="bg-info p-2 rounded">{{ 'inscription_description' | transloco }}</p>
@@ -188,9 +186,7 @@
 <ng-template #contentModalLogin let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'connexion' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <form (ngSubmit)="onLogIn(formLogIn, modal)" #formLogIn="ngForm">
@@ -217,9 +213,7 @@
 <ng-template #contentModalNewPass let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'mot_de_passe_oublie' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <form *ngIf="!isSuccess" (ngSubmit)="onSumbitResetPass(formResetPass)" #formResetPass="ngForm">
@@ -238,9 +232,7 @@
 <ng-template #contentModalEditPass let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'modifier_mot_de_passe' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <form (ngSubmit)="onSubmitEditPass(formEditPass)" #formEditPass="ngForm">
@@ -269,9 +261,7 @@
 <ng-template #contentModalEditMail let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'modifier_mail' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <form (ngSubmit)="onSubmitEditMail(formEditMail)" #formEditMail="ngForm">
@@ -292,9 +282,7 @@
 <ng-template #contentModalPlaylists let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'mes_playlists' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <form (ngSubmit)="onCreatePlaylist(formCreatePlaylist)" #formCreatePlaylist="ngForm">
@@ -347,9 +335,7 @@
 <ng-template #contentModalFollows let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'ma_selection' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <table class="table table-condensed" id="tableau_selection">
@@ -384,9 +370,7 @@
 <ng-template #contentModalConfirmEditTitle let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'playlist_modifier_titre' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <form (ngSubmit)="onEditTitlePlaylist(formEditTitle, modal)" #formEditTitle="ngForm">
@@ -405,9 +389,7 @@
 <ng-template #contentModalAddVideo let-modal>
     <div class="modal-header">
         <h4 class="modal-title">{{ 'ajouter_musique_playlist' | transloco}}</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
         <p>{{'ajouter' | transloco}}: {{addTitle}} {{addArtist}}</p>

@@ -1,6 +1,6 @@
 {
     "/api/*" : {
-        "target" : "http://localhost/zeffyrmusic-api/www/",
+        "target" : "http://localhost:8888/zeffyrmusic-api/www/",
         "secure" : false,
         "pathRewrite": {
             "^/api": ""
