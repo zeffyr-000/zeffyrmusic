@@ -27,11 +27,6 @@
                     </div>
 
                     <div class="row m-t">
-                        <div class="col-md-6">
-                            <div *ngIf="idPlaylist !==''">
-                                <fb-like class="fb-like" layout="button_count" action="like" show-faces="false" share="true" width="300"></fb-like>
-                            </div>
-                        </div>
                         <div id="playlist_infos" class="col-md-6">
                             <span class="content_indication">
                                 <b>{{playlist && playlist.length}}</b> 
@@ -44,7 +39,7 @@
                 </div>
 
                 <div *ngIf="imgBig && imgBig!==undefined && imgBig!==''">
-                    <img id="playlist_img_big" [src]="imgBig" class="rounded-pill" />
+                    <img id="playlist_img_big" [src]="imgBig" class="rounded" />
                 </div>
             </div>	
         </div>

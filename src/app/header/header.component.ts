@@ -41,6 +41,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     valueSliderVolume: number;
     currentTimeStr = '0:00';
     totalTimeStr = '0:00';
+    onDragingPlayer = false;
 
     loadVideo = 0;
 
@@ -112,12 +113,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                this.valueSliderPlayer = data.slideLength;
-                this.currentTimeStr = data.currentTimeStr;
-                this.totalTimeStr = data.totalTimeStr;
-                this.loadVideo = data.loadVideo;
+                if(!this.onDragingPlayer) {
+                    this.valueSliderPlayer = data.slideLength;
+                    this.currentTimeStr = data.currentTimeStr;
+                    this.totalTimeStr = data.totalTimeStr;
+                    this.loadVideo = data.loadVideo;
 
-                this.ref.detectChanges();
+                    this.ref.detectChanges();
+                }
             }
         );
 
@@ -159,11 +162,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     onDragMovingPlayer(e) {
+        this.onDragingPlayer = true;
         this.onUpdateSliderPlayer(e.x);
         this.sliderPlayerRef.nativeElement.style.left = 'auto';
     }
 
     onDragEndPlayer(e) {
+        this.onDragingPlayer = false;
         this.onUpdateSliderPlayer(e.x);
         this.sliderPlayerRef.nativeElement.style.transform = 'none';
     }

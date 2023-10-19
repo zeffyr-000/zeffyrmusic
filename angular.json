@@ -37,7 +37,12 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "allowedCommonJsDependencies": [
+              "ngneat-transloc",
+              "ngneat-transloco-locale",
+              "flat"
+           ]
           },
           "configurations": {
             "production": {

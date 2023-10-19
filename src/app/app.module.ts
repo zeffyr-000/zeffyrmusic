@@ -1,7 +1,6 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Meta, Title } from '@angular/platform-browser';
-import { FacebookModule } from '@finosofica/ngx-facebook';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 
@@ -44,7 +43,6 @@ import { PlayerService } from './services/player.service';
         HttpClientModule,
         TranslocoModule,
         AngularDraggableModule,
-        FacebookModule.forRoot(),
         NgxGoogleAnalyticsModule.forRoot('UA-1664521-8')
     ],
     providers: [

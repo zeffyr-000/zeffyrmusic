@@ -2,7 +2,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { FacebookModule } from '@finosofica/ngx-facebook';
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { config } from 'rxjs';
 import fr  from '../../assets/i18n/fr.json';
@@ -16,8 +15,7 @@ describe('ArtistComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [FacebookModule,
-                TranslocoTestingModule.withLangs({fr},
+      imports: [TranslocoTestingModule.withLangs({fr},
                                                   {
                                                     availableLangs: ['fr', 'en'],
                                                     defaultLang: 'fr',

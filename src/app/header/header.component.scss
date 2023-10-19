@@ -6,6 +6,10 @@
 	padding: 0;
 }
 
+#header_logo{
+    width: 25%;
+}
+
 #header_logo_lien {
     display: block;
     width: 100%;
@@ -160,7 +164,12 @@
 }
 
 #header_nav {
+    width: 41.66666667%;
     max-height: 50px;
+}
+
+#header_recherche {
+    width: 33.33333333%;
 }
 
 #header_toggle_big {
@@ -201,6 +210,10 @@
     width: 15%;
 }
 
+#header_player_gauche {
+    width: 25%;
+}
+
 #header_player_gauche>div {
     box-sizing: border-box;
     width: calc( 100% - 130px );
@@ -212,6 +225,14 @@
 #header_player_gauche>img {
     max-height: 50px;
     padding: 4px;
+}
+
+#header_player_centre {
+    width: 50%;
+}
+
+#header_player_droite {
+    width: 25%;
 }
 
 #header_li_connexion>a, #header_li_inscription>a {

@@ -4,13 +4,10 @@
         <div class="panel_head_content">
 			<div id="artist_haut_titre">
 				<h1>{{name}}</h1>
-				<div>
-					<fb-like class="fb-like" layout="button_count" action="like" show-faces="false" share="true" width="300"></fb-like>
-				</div>		
 			</div>
 
 			<div >
-				<img id="artist_img_big" [src]="urlDeezer" class="rounded-pill" />
+				<img id="artist_img_big" [src]="urlDeezer" class="rounded" />
 			</div>
 		</div>	
 	</div>
@@ -20,16 +17,18 @@
 			<h3>{{ 'albums' | transloco }}</h3>
 		</div>
 
-		<div class="card-deck" >
-			<a *ngFor="let album of listAlbums" class="card" routerLink="/playlist/{{album.id_playlist}}">
-				<img [src]="album.img_big" class="card-img-top" />
-				<div class="card-body">
-					<h5 class="card-title">{{album.titre}}</h5>
-				</div>
-				<div class="card-footer">
-					<small class="text-muted">{{album.year_release}}</small>
-				</div>
-			</a>
+		<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1" >
+			<div *ngFor="let album of listAlbums" class="col m-0 mt-1 mb-1">
+				<a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
+					<img [src]="album.img_big" class="card-img-top" />
+					<div class="card-body">
+						<h5 class="card-title">{{album.titre}}</h5>
+					</div>
+					<div class="card-footer">
+						<small class="text-muted">{{album.year_release}}</small>
+					</div>
+				</a>
+			</div>
 		</div>
 	</div>
 </div>

@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FacebookModule } from '@finosofica/ngx-facebook';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { config } from 'rxjs';
@@ -16,7 +15,7 @@ describe('PlaylistComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [FacebookModule,
+      imports: [
         TranslocoTestingModule.withLangs({ fr },
           {
             availableLangs: ['fr', 'en'],

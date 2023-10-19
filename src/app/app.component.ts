@@ -40,11 +40,6 @@ export class AppComponent implements OnInit, OnDestroy {
             langStr = 'en_US';
         }
 
-        const tag = document.createElement('script');
-        tag.src = 'https://connect.facebook.net/' + langStr + '/sdk.js#xfbml=1&version=v4.0';
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationStart) {
                 // Show loading indicator

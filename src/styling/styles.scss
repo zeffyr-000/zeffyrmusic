@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "custom";
 @import "node_modules/bootstrap/scss/bootstrap";
 
@@ -9,6 +11,7 @@ html, body {
 
 a {
 	cursor: pointer;
+	text-decoration: none;
 }
 
 .navbar-inverse {
@@ -125,6 +128,7 @@ a.card {
 .btn.active,
 .btn.active.text-light{
 	color: $blue !important;
+	border-color: transparent !important;
 }
 
 @keyframes spin {
@@ -162,10 +166,6 @@ td[onclick], td[ng-click] {
 
 .btn-group>.tooltip+.btn, .btn-group>.popover+.btn {
 	margin-left: -1px;
-}
-
-#content_facebook_button {
-	width: 120px;
 }
 
 #table_playlist td:nth-child(5)>div {
@@ -233,20 +233,9 @@ $cards-per-line: (
     xl: 5
 );
 
-@each $name, $breakpoint in $grid-breakpoints {
-	@media (min-width: $breakpoint) {
-		.card-deck .card {
-			flex: 0 0 calc(#{100/map-get($cards-per-line, $name)}% - #{$grid-gutter-width});
-		}
-	}
-}
-
 @media screen and (max-device-width:799px), screen and (max-width:799px) {
 	#playlist_content, #artist_content, #search_content {
 		width: 100%;
-	}
-	#content_facebook_button {
-		display: none;
 	}
 }
 

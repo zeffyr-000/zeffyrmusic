@@ -1,16 +1,18 @@
 <div class="card card-body mt-3 border-0">
     <div *ngIf="isLoading" class="content_loading"><div class="spinner-border"></div></div>
     
-    <div *ngIf="!isLoading" class="card-deck">
-        <a *ngFor="let chart of listTop" class="card mt-1 mb-1" routerLink="/top/{{chart.id}}">
-            <img src="{{chart.url_image}}" class="card-img-top" />
-            <div class="card-body">
-                <h5 class="card-title">{{chart.titre}}</h5>
-            </div>
-            <div class="card-footer">
-                <small class="text-muted">{{chart.description}}</small>
-            </div>
-        </a>
+    <div *ngIf="!isLoading" class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1">
+        <div *ngFor="let chart of listTop" class="col m-0 mt-1 mb-1">
+            <a class="card h-100" routerLink="/top/{{chart.id}}">
+                <img src="{{chart.url_image}}" class="card-img-top" />
+                <div class="card-body">
+                    <h5 class="card-title">{{chart.titre}}</h5>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">{{chart.description}}</small>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 
@@ -18,16 +20,18 @@
     <h3 class="text-center border-0">Top albums</h3>
     <div *ngIf="isLoading" class="content_loading"><div class="spinner-border"></div></div>
     
-    <div *ngIf="!isLoading" class="card-deck">
-        <a *ngFor="let album of listTopAlbums; let i = index" class="card mt-1 mb-1" routerLink="/playlist/{{album.id_playlist}}">
-            <img src="{{album.url_image}}" class="card-img-top" />
-            <div class="card-body">
-                <h5 class="card-title">
-                    <span class="badge badge-primary text-light">{{i+1}}</span>
-                    {{album.titre}}
-                </h5>
-                <p *ngIf="album.artiste!==''" class="card-text">{{album.artiste}}</p>
-            </div>
-        </a>
+    <div *ngIf="!isLoading" class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1">
+        <div *ngFor="let album of listTopAlbums; let i = index" class="col m-0 mt-1 mb-1">
+            <a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
+                <img src="{{album.url_image}}" class="card-img-top" />
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span class="badge bg-primary text-light">{{i+1}}</span>
+                        {{album.titre}}
+                    </h5>
+                    <p *ngIf="album.artiste!==''" class="card-text">{{album.artiste}}</p>
+                </div>
+            </a>
+        </div>
     </div>
 </div>

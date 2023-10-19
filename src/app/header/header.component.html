@@ -1,4 +1,4 @@
-<div id="header_top" class="row no-gutters">
+<div id="header_top" class="row g-0">
     <div id="header_logo" class="col-3">
         <a class="navbar-brand p-0" id="header_logo_lien" routerLink="">
             <img src="{{URL_ASSETS}}assets/img/logo.png"  />
@@ -7,13 +7,6 @@
     </div>
 
     <ul class="nav col-5 align-self-center" id="header_nav">
-        <li id="content_facebook_button" class="nav-item" style="width:120px;">
-            <a class="nav-link">
-                <fb-like href="//www.facebook.com/zeffyrmusic" layout="button_count" action="like" show-faces="false"
-                    share="false" width="80"></fb-like>
-            </a>
-        </li>
-
         <li *ngIf="isConnected" class="nav-item align-self-center" ngbDropdown>
             <a class="nav-link" id="header_toggle_mini" ngbDropdownToggle>
                 <span class="material-icons">menu</span>
@@ -70,20 +63,20 @@
     </div>
 </div>
 
-<div id="header_player" class="row no-gutters">
+<div id="header_player" class="row g-0">
 
     <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
         <span *ngIf="isConnected && playerService.isLiked(currentKey)"
-            class="btn btn-sm btn-link text-decoration-none float-right"
+            class="btn btn-sm btn-link text-decoration-none float-end"
             (click)="$event.stopPropagation();playerService.removeLike(currentKey)" >
             <span class="material-icons">favorite</span>
         </span>
         <span *ngIf="isConnected && !playerService.isLiked(currentKey)"
-            class="btn btn-sm btn-link text-decoration-none text-body float-right"
+            class="btn btn-sm btn-link text-decoration-none text-body float-end"
             (click)="$event.stopPropagation();playerService.addLike(currentKey)" >
             <span class="material-icons">favorite_border</span>
         </span>
-        <img [src]="'https://img.youtube.com/vi/'+currentKey+'/mqdefault.jpg'" *ngIf="currentKey" class="float-left " />
+        <img [src]="'https://img.youtube.com/vi/'+currentKey+'/mqdefault.jpg'" *ngIf="currentKey" class="float-start" />
         <div><b>{{currentTitle}}</b></div>
         <div>{{currentArtist}}</div>
     </div>
@@ -103,7 +96,7 @@
                 </a>
             </div>
 
-            <div class="btn-group btn-group-sm float-right">
+            <div class="btn-group btn-group-sm float-end">
                 <a (click)="goFullscreen('player')" class="btn text-light" placement="top"
                     ngbTooltip="{{'video_plein_ecran' | transloco}}">
                     <span class="material-icons">fullscreen</span>
