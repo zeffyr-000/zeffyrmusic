@@ -5,7 +5,7 @@ import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 
 import { HttpClientModule } from '@angular/common/http';
-import { TRANSLOCO_CONFIG, TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { TRANSLOCO_CONFIG, TRANSLOCO_TRANSPILER, TranslocoConfig, TranslocoModule, TranslocoService } from '@ngneat/transloco';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -54,7 +54,7 @@ import { PlayerService } from './services/player.service';
                 defaultLang: environment.lang,
                 fallbackLang: environment.lang,
                 prodMode: environment.production
-            }
+            } as TranslocoConfig
         },
         {
             provide: APP_INITIALIZER,
