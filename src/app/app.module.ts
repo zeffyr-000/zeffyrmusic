@@ -5,12 +5,14 @@ import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 
 import { HttpClientModule } from '@angular/common/http';
-import { TRANSLOCO_CONFIG, TRANSLOCO_TRANSPILER, TranslocoConfig, TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { TRANSLOCO_CONFIG, TranslocoConfig, TranslocoModule, TranslocoService } from '@ngneat/transloco';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { translocoLoader } from './transloco.loader';
+import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
+import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 
 import { ArtistComponent } from './artist/artist.component';
 import { HeaderComponent } from './header/header.component';
@@ -22,6 +24,12 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 import { SearchComponent } from './search/search.component';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
+import { ShareButtonsConfig } from 'ngx-sharebuttons';
+
+const customConfig: ShareButtonsConfig = {
+    include: ['facebook','twitter','whatsapp','copy'],
+    gaTracking: true,
+  }
 
 @NgModule({
     declarations: [
@@ -43,7 +51,9 @@ import { PlayerService } from './services/player.service';
         HttpClientModule,
         TranslocoModule,
         AngularDraggableModule,
-        NgxGoogleAnalyticsModule.forRoot('UA-1664521-8')
+        NgxGoogleAnalyticsModule.forRoot('UA-1664521-8'),
+        ShareButtonsModule.withConfig(customConfig),
+        ShareIconsModule
     ],
     providers: [
         {
