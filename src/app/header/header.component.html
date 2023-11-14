@@ -1,7 +1,7 @@
 <div id="header_top" class="row g-0">
     <div id="header_logo" class="col-3">
         <a class="navbar-brand p-0" id="header_logo_lien" routerLink="">
-            <img src="{{URL_ASSETS}}assets/img/logo.png"  />
+            <img src="{{URL_ASSETS}}assets/img/logo.png" alt="" />
             <span class="material-icons">home</span>
         </a>
     </div>
@@ -21,28 +21,28 @@
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalPlaylists)">
+                    <a (click)="openModal(contentModalPlaylists)" role="presentation">
                         <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalFollows)">
+                    <a (click)="openModal(contentModalFollows)" role="presentation">
                         <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalEditMail)">
+                    <a (click)="openModal(contentModalEditMail)" role="presentation">
                         <span class="material-icons">email</span>{{ 'modifier_mail' | transloco}}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalEditPass)">
+                    <a (click)="openModal(contentModalEditPass)" role="presentation">
                         <span class="material-icons">lock</span>{{ 'modifier_mot_de_passe' | transloco}}
                     </a>
                 </li>
                 <li class="dropdown-divider"></li>
                 <li ngbDropdownItem>
-                    <a (click)="onLogout()">
+                    <a (click)="onLogout()" role="presentation">
                         <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco}}
                     </a>
                 </li>
@@ -50,10 +50,14 @@
         </li>
 
         <li id="header_li_inscription" class="nav-item" *ngIf="!isConnected">
-            <a class="nav-link btn btn-outline-warning text-warning" (click)="openModal(contentModalRegister)">{{ 'inscription' | transloco }}</a>
+            <a class="nav-link btn btn-outline-warning text-warning" (click)="openModal(contentModalRegister)"
+                role="presentation">{{
+                'inscription' | transloco }}</a>
         </li>
         <li id="header_li_connexion" class="nav-item" *ngIf="!isConnected">
-            <a class="nav-link btn btn-primary text-light" (click)="openModal(contentModalLogin)">{{ 'connexion' | transloco }}</a>
+            <a class="nav-link btn btn-primary text-light" (click)="openModal(contentModalLogin)" role="presentation">{{
+                'connexion' |
+                transloco }}</a>
         </li>
 
     </ul>
@@ -68,15 +72,16 @@
     <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
         <span *ngIf="isConnected && playerService.isLiked(currentKey)"
             class="btn btn-sm btn-link text-decoration-none float-end"
-            (click)="$event.stopPropagation();playerService.removeLike(currentKey)" >
+            (click)="$event.stopPropagation();playerService.removeLike(currentKey)" role="presentation">
             <span class="material-icons">favorite</span>
         </span>
         <span *ngIf="isConnected && !playerService.isLiked(currentKey)"
             class="btn btn-sm btn-link text-decoration-none text-body float-end"
-            (click)="$event.stopPropagation();playerService.addLike(currentKey)" >
+            (click)="$event.stopPropagation();playerService.addLike(currentKey)" role="presentation">
             <span class="material-icons">favorite_border</span>
         </span>
-        <img [src]="'https://img.youtube.com/vi/'+currentKey+'/mqdefault.jpg'" *ngIf="currentKey" class="float-start" />
+        <img [src]="'https://img.youtube.com/vi/'+currentKey+'/mqdefault.jpg'" *ngIf="currentKey" class="float-start"
+            alt="" />
         <div><b>{{currentTitle}}</b></div>
         <div>{{currentArtist}}</div>
     </div>
@@ -84,29 +89,29 @@
     <div id="header_player_centre" class="col-md-6">
         <div class="pl-lg-5 pr-lg-5 ml-lg-5 mr-lg-5">
             <div class="btn-group btn-group-sm">
-                <a class="btn text-light w-100" (click)="onBefore()">
+                <a class="btn text-light w-100" (click)="onBefore()" role="presentation">
                     <span class="material-icons">skip_previous</span>
                 </a>
-                <a id="play_button" class="btn text-light w-100" (click)="onPlayPause()">
+                <a id="play_button" class="btn text-light w-100" (click)="onPlayPause()" role="presentation">
                     <span *ngIf="isPlaying" class="material-icons">pause</span>
                     <span *ngIf="!isPlaying" class="material-icons">play_arrow</span>
                 </a>
-                <a class="btn text-light w-100" (click)="onAfter()">
+                <a class="btn text-light w-100" (click)="onAfter()" role="presentation">
                     <span class="material-icons">skip_next</span>
                 </a>
             </div>
 
             <div class="btn-group btn-group-sm float-end">
                 <a (click)="goFullscreen('player')" class="btn text-light" placement="top"
-                    ngbTooltip="{{'video_plein_ecran' | transloco}}">
+                    ngbTooltip="{{'video_plein_ecran' | transloco}}" role="presentation">
                     <span class="material-icons">fullscreen</span>
                 </a>
-                <a id="repeat" class="btn text-light" [ngClass]="{'active':isRepeat}" (click)="repeat()"
-                    placement="top" ngbTooltip="{{'repetition' | transloco}}">
+                <a id="repeat" class="btn text-light" [ngClass]="{'active':isRepeat}" (click)="repeat()" placement="top"
+                    ngbTooltip="{{'repetition' | transloco}}" role="presentation">
                     <span class="material-icons">repeat</span>
                 </a>
                 <a id="random" class="btn text-light" [ngClass]="{'active': isRandom}" (click)="random()"
-                    placement="top" ngbTooltip="{{'lecture_aleatoire' | transloco}}">
+                    placement="top" ngbTooltip="{{'lecture_aleatoire' | transloco}}" role="presentation">
                     <span class="material-icons">shuffle</span>
                 </a>
             </div>
@@ -115,7 +120,8 @@
         <div id="header_player_center_load">
             <div id="chrono_en_cours">{{ currentTimeStr }}</div>
             <div id="slider_1_main">
-                <div id="slider_1_content" class="ui-slider" (click)="onClickSliderPlayer($event)" #contentSlider1>
+                <div id="slider_1_content" class="ui-slider" (click)="onClickSliderPlayer($event)" #contentSlider1
+                    role="presentation">
                     <span class="ui-slider-handle" #sliderPlayer [style.left.%]="valueSliderPlayer" ngDraggable
                         [bounds]="contentSlider1" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
                         (movingOffset)="onDragMovingPlayer($event)" (endOffset)="onDragEndPlayer($event)"></span>
@@ -131,7 +137,8 @@
         <div id="header_player_volume_content" class="mx-auto">
             <span class="material-icons text-light">volume_up</span>
             <div id="slider_2_main">
-                <div id="slider_2_content" class="ui-slider" (click)="onClickSliderVolume($event)" #contentSlider2>
+                <div id="slider_2_content" class="ui-slider" (click)="onClickSliderVolume($event)" #contentSlider2
+                    role="presentation">
                     <span class="ui-slider-handle" #sliderVolume [style.left.%]="valueSliderVolume" ngDraggable
                         [bounds]="contentSlider2" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
                         (movingOffset)="onDragMovingVolume($event)" (endOffset)="onDragEndVolume($event)"></span>
@@ -167,11 +174,12 @@
             </p>
             <p><input type="submit" class="btn btn-primary" [disabled]="formRegister.invalid"
                     value="{{ 'je_m_inscris' | transloco}}" /></p>
-            <p *ngIf="formRegister.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="formRegister.dirty && error!==''" class="alert alert-danger">{{error}}</p>
         </form>
         <div *ngIf="isRegistered">
             <p class="alert alert-success">{{ 'inscription_succes' | transloco }}</p>
-            <p><a (click)="modal.dismiss(''); openModal(contentModalLogin)">{{ 'connexion' | transloco}}</a></p>
+            <p><a (click)="modal.dismiss(''); openModal(contentModalLogin)" role="presentation">{{ 'connexion' |
+                    transloco}}</a></p>
         </div>
     </div>
 </ng-template>
@@ -195,9 +203,10 @@
             </p>
             <p><input type="submit" class="btn btn-primary" [disabled]="formLogIn.invalid"
                     value="{{ 'connexion' | transloco}}" /></p>
-            <p *ngIf="formLogIn.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="formLogIn.dirty && error!==''" class="alert alert-danger">{{error}}</p>
 
-            <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)">{{ 'mot_de_passe_oublie' | transloco}}</a>
+            <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)" role="presentation">{{
+                    'mot_de_passe_oublie' | transloco}}</a>
             </p>
         </form>
     </div>
@@ -216,7 +225,7 @@
             </p>
             <p><input type="submit" class="btn btn-primary" [disabled]="formResetPass.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formResetPass.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="formResetPass.dirty && error!==''" class="alert alert-danger">{{error}}</p>
         </form>
         <p *ngIf="isSuccess" class="alert alert-success">{{ 'mail_pass_envoye_succes' | transloco }}</p>
     </div>
@@ -245,7 +254,7 @@
 
             <p><input type="submit" class="btn btn-primary" [disabled]="formEditPass.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formEditPass.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="formEditPass.dirty && error!==''" class="alert alert-danger">{{error}}</p>
             <p *ngIf="successPass" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
         </form>
     </div>
@@ -266,7 +275,7 @@
 
             <p><input type="submit" class="btn btn-primary" [disabled]="formEditMail.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formEditMail.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="formEditMail.dirty && error!==''" class="alert alert-danger">{{error}}</p>
             <p *ngIf="successMail" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
         </form>
     </div>
@@ -292,14 +301,15 @@
         <table class="table table-condensed" id="tableau_musique">
             <tr *ngFor="let playlist of listPlaylist">
                 <td>
-                    <a (click)="onCloseModalPlaylists(playlist.id_playlist,modal)">{{playlist.titre}}</a>
+                    <a (click)="onCloseModalPlaylists(playlist.id_playlist,modal)"
+                        role="presentation">{{playlist.titre}}</a>
                 </td>
 
                 <td>
-                    <a (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)">
-                        <span class="material-icons" 
-                                placement="right"
-                                ngbTooltip="{{'modifier_nom' | transloco}}">edit</span>
+                    <a (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)"
+                        role="presentation">
+                        <span class="material-icons" placement="right"
+                            ngbTooltip="{{'modifier_nom' | transloco}}">edit</span>
                     </a>
                 </td>
 
@@ -307,17 +317,20 @@
                     <div class="btn-group btn-group-sm">
                         <button type="button" [ngClass]="{'btn btn-light' : true,
                                                             'active' : !playlist.prive}"
-                            (click)="onSwitchVisibility(playlist.id_playlist,'public')">{{ 'public' | transloco }}</button>
+                            (click)="onSwitchVisibility(playlist.id_playlist,'public')">{{ 'public' | transloco
+                            }}</button>
                         <button type="button" [ngClass]="{'btn btn-light' : true,
                                                             'active' : playlist.prive}"
-                            (click)="onSwitchVisibility(playlist.id_playlist,'prive')">{{ 'prive' | transloco }}</button>
+                            (click)="onSwitchVisibility(playlist.id_playlist,'prive')">{{ 'prive' | transloco
+                            }}</button>
                     </div>
                 </td>
 
                 <td>
-                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)">
-                        <span class="material-icons"
-                            placement="right" ngbTooltip="{{'supprimer' | transloco}}">clear</span>
+                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
+                        role="presentation">
+                        <span class="material-icons" placement="right"
+                            ngbTooltip="{{'supprimer' | transloco}}">clear</span>
                     </a>
                 </td>
             </tr>
@@ -334,13 +347,13 @@
         <table class="table table-condensed" id="tableau_selection">
             <tr *ngFor="let playlist of listFollow">
                 <td>
-                    <a class="btn btn-link"
-                        (click)="onCloseModalPlaylists(playlist.id_playlist, modal)">{{playlist.titre}}</a>
+                    <a class="btn btn-link" (click)="onCloseModalPlaylists(playlist.id_playlist, modal)"
+                        role="presentation">{{playlist.titre}}</a>
                 </td>
 
                 <td>
                     <a (click)="onDeleteFollow(playlist.id_playlist)" placement="right"
-                        ngbTooltip="{{'supprimer' | transloco}}">
+                        ngbTooltip="{{'supprimer' | transloco}}" role="presentation">
                         <span class="material-icons">clear</span>
                     </a>
                 </td>
@@ -351,12 +364,13 @@
 
 <ng-template #contentModalConfirmDeletePlaylist let-modal>
     <div class="modal-body">
-        {{ 'supprimer_playlist_confirmer' | transloco  }}
+        {{ 'supprimer_playlist_confirmer' | transloco }}
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark"
-            (click)="modal.close('Save click')">{{ 'annuler' | transloco}}</button>
-        <button type="button" class="btn btn-primary" (click)="onDeletePlaylist(modal)">{{ 'confirmer' | transloco}}</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">{{ 'annuler' |
+            transloco}}</button>
+        <button type="button" class="btn btn-primary" (click)="onDeletePlaylist(modal)">{{ 'confirmer' |
+            transloco}}</button>
     </div>
 </ng-template>
 
@@ -371,10 +385,10 @@
                 <input type="text" class="form-control" name="playlist_titre" [(ngModel)]="playlistTitle" required>
                 <span class="input-group-btn">
                     <input class="btn btn-primary" type="submit" [disabled]="formEditTitle.invalid"
-                            value="{{ 'modifier' | transloco }}" />
+                        value="{{ 'modifier' | transloco }}" />
                 </span>
             </div>
-            <p *ngIf="formEditTitle.dirty && error!=''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="formEditTitle.dirty && error!==''" class="alert alert-danger">{{error}}</p>
         </form>
     </div>
 </ng-template>
@@ -386,11 +400,11 @@
     </div>
     <div class="modal-body">
         <p>{{'ajouter' | transloco}}: {{addTitle}} {{addArtist}}</p>
-        <p *ngIf="error!=''" class="alert alert-danger">{{error}}</p>
+        <p *ngIf="error!==''" class="alert alert-danger">{{error}}</p>
         <table class="table">
             <tr *ngFor="let playlist of listPlaylist">
                 <td>
-                    <a (click)="onAddVideo(playlist.id_playlist, modal)">{{playlist.titre}}</a>
+                    <a (click)="onAddVideo(playlist.id_playlist, modal)" role="presentation">{{playlist.titre}}</a>
                 </td>
             </tr>
         </table>

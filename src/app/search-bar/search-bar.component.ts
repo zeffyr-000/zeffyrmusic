@@ -1,48 +1,51 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
+import { ArtistResult } from '../models/artist.model';
+import { PlaylistResult } from '../models/playlist.model';
+
+interface SearchResponse {
+    playlist: PlaylistResult[];
+    artist: ArtistResult[];
+}
 
 @Component({
     selector: 'app-search-bar',
     templateUrl: './search-bar.component.html',
     styleUrls: ['./search-bar.component.scss']
 })
-export class SearchBarComponent implements OnInit {
+export class SearchBarComponent {
 
     query: string;
-    resultsArtist: any[];
-    resultsAlbum: any[];
+    resultsArtist: ArtistResult[];
+    resultsAlbum: PlaylistResult[];
 
     constructor(private readonly httpClient: HttpClient,
-                private readonly ref: ChangeDetectorRef,
-                private readonly router: Router,
-                private readonly googleAnalyticsService: GoogleAnalyticsService) { }
-
-    ngOnInit() {
-    }
+        private readonly ref: ChangeDetectorRef,
+        private readonly router: Router,
+        private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     search() {
-
         this.httpClient.get(environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(this.query),
             environment.httpClientConfig)
-            .subscribe((data: any) => {
+            .subscribe((data: SearchResponse) => {
                 this.resultsAlbum = data.playlist;
                 this.resultsArtist = data.artist;
             });
     }
 
-    reset(element: any, redirect: boolean, url: string) {
+    reset(element: ArtistResult | PlaylistResult, redirect: boolean, url: string) {
 
         if (redirect) {
             let query = '';
 
-            if (element.artiste !== undefined) {
+            if ('artiste' in element && element.artiste !== undefined) {
                 query += element.artiste;
             }
 
-            if (element.titre !== undefined) {
+            if ('titre' in element && element.titre !== undefined) {
                 if (query.length > 0) {
                     query += ' ';
                 }

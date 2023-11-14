@@ -4,6 +4,7 @@ import { Event, NavigationEnd, NavigationError, NavigationStart, Router } from '
 import { TranslocoService } from '@ngneat/transloco';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -16,14 +17,14 @@ export class AppComponent implements OnInit, OnDestroy {
     showMessageUnlog = false;
     showTapVideoYT = false;
 
-    subscriptionMessageUnlog: any;
-    subscriptionMessageTap: any;
+    subscriptionMessageUnlog: Subscription;
+    subscriptionMessageTap: Subscription;
 
     constructor(@Inject(DOCUMENT) private readonly document: Document,
-                private readonly initService: InitService,
-                private readonly playerService: PlayerService,
-                private readonly router: Router,
-                private readonly translocoService: TranslocoService) {
+        private readonly initService: InitService,
+        private readonly playerService: PlayerService,
+        private readonly router: Router,
+        private readonly translocoService: TranslocoService) {
         this.initService.getPing();
 
         this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe(isShow => {
@@ -34,12 +35,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.showTapVideoYT = isShow;
         });
 
-        let langStr = 'fr_FR';
-
-        if (this.translocoService.getActiveLang() !== 'fr') {
-            langStr = 'en_US';
-        }
-
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationStart) {
                 // Show loading indicator
@@ -48,10 +43,6 @@ export class AppComponent implements OnInit, OnDestroy {
             if (event instanceof NavigationEnd) {
                 // Hide loading indicator
                 document.querySelector('link[rel="canonical"]').setAttribute('href', location.origin + event.url);
-
-                if ((window as any).FB) {
-                    (window as any).FB.XFBML.parse();
-                }
             }
 
             if (event instanceof NavigationError) {

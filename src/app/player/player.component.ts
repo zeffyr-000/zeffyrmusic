@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
+import { Subscription } from 'rxjs';
+import { Video } from '../models/video.model';
 
 @Component({
     selector: 'app-player',
@@ -10,24 +12,24 @@ import { PlayerService } from '../services/player.service';
 export class PlayerComponent implements OnInit, OnDestroy {
 
     isConnected = false;
-    list: any[];
+    list: Video[];
     currentKey: string;
 
-    subscription: any;
-    subscriptionChangeKey: any;
-    subscriptionConnected: any;
+    subscription: Subscription;
+    subscriptionChangeKey: Subscription;
+    subscriptionConnected: Subscription;
 
     constructor(private readonly initService: InitService,
-                private readonly playerService: PlayerService,
-                private readonly ngZone: NgZone) {
+        private readonly playerService: PlayerService,
+        private readonly ngZone: NgZone) {
         this.subscription = playerService.subjectCurrentPlaylistChange.subscribe(list => {
             this.list = list;
         });
 
         this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-            this.ngZone.run( () => {
+            this.ngZone.run(() => {
                 this.currentKey = data.currentKey;
-             });
+            });
         });
 
         this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {

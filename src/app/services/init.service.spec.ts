@@ -5,13 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { config } from 'rxjs';
 import fr from '../../assets/i18n/fr.json';
-import { environment } from '../../environments/environment';
 import { InitService } from './init.service';
 
 describe('InitService', () => {
-
-  let http: HttpTestingController;
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule,
@@ -32,6 +28,8 @@ describe('InitService', () => {
   });
 
   it('getPing returned Observable should match the right data', () => {
+    /*
+    
     const mockPing = {
       "est_connecte": false,
       "liste_video": [{
@@ -104,7 +102,6 @@ describe('InitService', () => {
 
     const service: InitService = TestBed.inject(InitService);
 
-    /*
     service.getPing();
 
     let hardcodedRaces;

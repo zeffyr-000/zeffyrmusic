@@ -3,27 +3,27 @@
         <div id="playlist_haut" class="card-header clearfix border-0">
             <div class="panel_head_content">
                 <div id="playlist_haut_titre">
-                    
-                    <h1 *ngIf="idTopCharts==null && titre!==''" class="m-t-0">{{titre}}</h1>
-                    <h1 *ngIf="idTopCharts===null && titre==''" class="m-t-0">{{title}}</h1>
-                    
-                    <h3 *ngIf="artist!==null && artist!=''" ><a routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
 
-                    <p *ngIf="idTopCharts===null && titre==''" class="m-t-0">{{description}}</p>
-                    
+                    <h1 *ngIf="idTopCharts===null && titre!==''" class="m-t-0">{{titre}}</h1>
+                    <h1 *ngIf="idTopCharts===null && titre===''" class="m-t-0">{{title}}</h1>
+
+                    <h3 *ngIf="artist!==null && artist!==''"><a routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
+
+                    <p *ngIf="idTopCharts===null && titre===''" class="m-t-0">{{description}}</p>
+
                     <div>
                         <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
                             <span class="material-icons">play_circle_outline</span>
                             {{ 'lire' | transloco }}
                         </button>
 
-                        <button class="btn btn-secondary btn-lg" 
-                            *ngIf="isConnected && idPersoOwner!=idPerso && idPlaylist !==''" 
-                            [ngClass]="{'active' : isFollower}" 
-                            (click)="switchFollow()">{{'suivre' | transloco}}</button>
-                    
-                        <button class="btn btn-secondary btn-lg" 
-                            (click)="addInCurrentList()">{{'ajouter_liste_en_cours' | transloco}}</button>
+                        <button class="btn btn-secondary btn-lg"
+                            *ngIf="isConnected && idPersoOwner!==idPerso && idPlaylist !==''"
+                            [ngClass]="{'active' : isFollower}" (click)="switchFollow()">{{'suivre' |
+                            transloco}}</button>
+
+                        <button class="btn btn-secondary btn-lg" (click)="addInCurrentList()">{{'ajouter_liste_en_cours'
+                            | transloco}}</button>
 
                         <share-buttons class="d-inline-block" show="2" showText="true"></share-buttons>
                     </div>
@@ -31,22 +31,22 @@
                     <div class="row m-t">
                         <div id="playlist_infos" class="col-md-6">
                             <span class="content_indication">
-                                <b>{{playlist && playlist.length}}</b> 
+                                <b>{{playlist && playlist.length}}</b>
                                 <span *ngIf="playlist && playlist.length<=1"> {{ 'titre' | transloco }}</span>
                                 <span *ngIf="playlist && playlist.length>1"> {{ 'titres' | transloco }}</span>
-                                    {{sumDurationPlaylist()}}
+                                {{sumDurationPlaylist()}}
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <div *ngIf="imgBig && imgBig!==undefined && imgBig!==''">
-                    <img id="playlist_img_big" [src]="imgBig" class="rounded" />
+                    <img id="playlist_img_big" [src]="imgBig" class="rounded" alt="" />
                 </div>
-            </div>	
+            </div>
         </div>
-        
-        <div class="card-body p-t-0">	
+
+        <div class="card-body p-t-0">
             <table id="table_playlist" class="table table-hover">
                 <thead>
                     <tr>
@@ -61,16 +61,15 @@
 
                 <tbody>
                     <tr *ngFor="let video of playlist; index as i" [attr.data-id-video]="video.key"
-                            (click)="runPlaylist(i)" 
-                            [ngClass]="{'active': video.key===currentKey}">
+                        (click)="runPlaylist(i)" [ngClass]="{'active': video.key===currentKey}">
                         <td>{{ i+1 }}</td>
                         <td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
-                            <img [src]="'https://img.youtube.com/vi/'+video.tab_element[0].key+'/mqdefault.jpg'" class="thumbnail" />
+                            <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail"
+                                alt="" />
                         </td>
                         <td>
                             <span *ngFor="let artist of video.artists; ; last as isLast">
-                                <a *ngIf="artist.id_artist" 
-                                    (click)="$event.stopPropagation()"
+                                <a *ngIf="artist.id_artist" (click)="$event.stopPropagation()"
                                     routerLink="/artist/{{artist.id_artist}}">{{artist.label}}</a>
                                 <span *ngIf="!artist.id_artist">{{artist.label}}</span>
                                 <span *ngIf="!isLast">, </span>
@@ -78,60 +77,61 @@
                         </td>
                         <td>{{video.titre}}</td>
                         <td>
-                            <span *ngIf="video.tab_element[0].duree>0">{{video.tab_element[0].duree | toMMSS }}</span>
+                            <span *ngIf="video.duree>0">{{video.duree | toMMSS }}</span>
                         </td>
                         <td>
                             <div>
-                                <span *ngIf="isConnected && playerService.isLiked(video.tab_element[0].key)"
+                                <span *ngIf="isConnected && playerService.isLiked(video.key)"
                                     class="btn btn-sm btn-link text-decoration-none"
-                                    (click)="$event.stopPropagation();playerService.removeLike(video.tab_element[0].key)" >
+                                    (click)="$event.stopPropagation();playerService.removeLike(video.key)"
+                                    role="presentation">
                                     <span class="material-icons">favorite</span>
                                 </span>
-                                <span *ngIf="isConnected && !playerService.isLiked(video.tab_element[0].key)"
+                                <span *ngIf="isConnected && !playerService.isLiked(video.key)"
                                     class="btn btn-sm btn-link text-decoration-none text-body"
-                                    (click)="$event.stopPropagation();playerService.addLike(video.tab_element[0].key)" >
+                                    (click)="$event.stopPropagation();playerService.addLike(video.key)"
+                                    role="presentation">
                                     <span class="material-icons">favorite_border</span>
                                 </span>
                                 <span class="btn btn-link btn-sm text-decoration-none text-body"
-                                        (click)="$event.stopPropagation()"
-                                        ngbDropdown>
+                                    (click)="$event.stopPropagation()" role="presentation" ngbDropdown>
                                     <span class="material-icons" ngbDropdownToggle>more_vert</span>
                                     <ul ngbDropdownMenu>
                                         <li ngbDropdownItem>
-                                            <a (click)="addVideoAfterCurrentInList(video)">
+                                            <a (click)="addVideoAfterCurrentInList(video)" role="presentation">
                                                 <span class="material-icons">queue_music</span>
                                                 {{'ajouter_apres_courant' | transloco}}
                                             </a>
                                         </li>
                                         <li ngbDropdownItem>
-                                            <a (click)="addVideoInEndCurrentList(video)">
+                                            <a (click)="addVideoInEndCurrentList(video)" role="presentation">
                                                 <span class="material-icons">playlist_add</span>
                                                 {{'ajouter_liste_en_cours' | transloco}}
                                             </a>
                                         </li>
                                         <li ngbDropdownItem *ngIf="isConnected">
-                                            <a (click)="addVideo(video.key,video.artiste,video.titre,video.duree)">
+                                            <a (click)="addVideo(video.key,video.artiste,video.titre,video.duree)"
+                                                role="presentation">
                                                 <span class="material-icons">add</span>
                                                 {{'ajouter_a_une_playlist' | transloco}}
                                             </a>
                                         </li>
-                                        <li ngbDropdownItem *ngIf="isConnected && idPersoOwner==idPerso">
-                                            <a (click)="removeVideo(video.id_video)">
+                                        <li ngbDropdownItem *ngIf="isConnected && idPersoOwner===idPerso">
+                                            <a (click)="removeVideo(video.id_video)" role="presentation">
                                                 <span class="material-icons">clear</span>
                                                 {{'supprimer' | transloco}}
                                             </a>
-                                        </li> 
+                                        </li>
                                     </ul>
                                 </span>
                             </div>
                         </td>
                     </tr>
                 </tbody>
-                
+
             </table>
         </div>
     </div>
 
     <p *ngIf="isPrivate">{{ 'playlist_privee' | transloco }}</p>
 </div>
-    

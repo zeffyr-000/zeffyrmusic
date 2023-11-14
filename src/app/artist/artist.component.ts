@@ -5,26 +5,28 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { environment } from '../../environments/environment';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { Album } from '../models/album.model';
 
 @Component({
     selector: 'app-artist',
     templateUrl: './artist.component.html',
     styleUrls: ['./artist.component.scss']
 })
+
 export class ArtistComponent implements OnInit {
 
     name: string;
     idArtistDeezer: string;
     urlDeezer = '';
     idArtist: string;
-    listAlbums: any[];
+    listAlbums: Album[];
 
     constructor(private readonly httpClient: HttpClient,
-                private readonly activatedRoute: ActivatedRoute,
-                private readonly titleService: Title,
-                private readonly metaService: Meta,
-                private readonly translocoService: TranslocoService,
-                private readonly googleAnalyticsService: GoogleAnalyticsService) {}
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly titleService: Title,
+        private readonly metaService: Meta,
+        private readonly translocoService: TranslocoService,
+        private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     ngOnInit() {
         this.activatedRoute.params.subscribe(() => {
@@ -37,7 +39,7 @@ export class ArtistComponent implements OnInit {
 
         this.httpClient.get(environment.URL_SERVER + 'json/artist/' + idArtist,
             environment.httpClientConfig)
-            .subscribe((data: any) => {
+            .subscribe((data: { nom: string, id_artiste_deezer: string, id_artist: string, list_albums: Album[] }) => {
 
                 this.name = data.nom;
                 this.idArtistDeezer = data.id_artiste_deezer;

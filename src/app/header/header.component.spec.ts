@@ -35,7 +35,8 @@ describe('HeaderComponent', () => {
       declarations: [HeaderComponent,
         SearchBarComponent,
         ToMMSSPipe],
-      providers: [NgbActiveModal]
+      providers: [NgbActiveModal],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
   }));
@@ -48,5 +49,57 @@ describe('HeaderComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have a title', () => {
+    const title = fixture.nativeElement.querySelector('h1');
+    expect(title.textContent).toContain('My App');
+  });
+
+  it('should have a login button', () => {
+    const button = fixture.nativeElement.querySelector('#login-button');
+    expect(button).toBeTruthy();
+  });
+
+  it('should have a register button', () => {
+    const button = fixture.nativeElement.querySelector('#register-button');
+    expect(button).toBeTruthy();
+  });
+
+  it('should have a logout button', () => {
+    const button = fixture.nativeElement.querySelector('#logout-button');
+    expect(button).toBeFalsy();
+  });
+
+  it('should show login modal when login button is clicked', () => {
+    const button = fixture.nativeElement.querySelector('#login-button');
+    button.click();
+    fixture.detectChanges();
+    const modal = fixture.nativeElement.querySelector('#login-modal');
+    expect(modal).toBeTruthy();
+  });
+
+  it('should show register modal when register button is clicked', () => {
+    const button = fixture.nativeElement.querySelector('#register-button');
+    button.click();
+    fixture.detectChanges();
+    const modal = fixture.nativeElement.querySelector('#register-modal');
+    expect(modal).toBeTruthy();
+  });
+
+  it('should hide login and register buttons when user is logged in', () => {
+    component.isConnected = true;
+    fixture.detectChanges();
+    const loginButton = fixture.nativeElement.querySelector('#login-button');
+    const registerButton = fixture.nativeElement.querySelector('#register-button');
+    expect(loginButton).toBeFalsy();
+    expect(registerButton).toBeFalsy();
+  });
+
+  it('should show logout button when user is logged in', () => {
+    component.isConnected = true;
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('#logout-button');
+    expect(button).toBeTruthy();
   });
 });

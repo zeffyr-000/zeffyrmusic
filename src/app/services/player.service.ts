@@ -1,37 +1,48 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnDestroy, OnInit } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { Title } from "@angular/platform-browser";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject, Subject, Subscription } from "rxjs";
 import { PlayerRunning } from "src/app/models/player-running.model";
 import { environment } from "../../environments/environment";
 import { InitService } from "./init.service";
+import { UserVideo, Video, VideoItem } from "../models/video.model";
+import { UserPlaylist } from "../models/playlist.model";
+import { FollowItem } from "../models/follow.model";
+
+interface CurrentKey {
+    currentKey: string;
+    currentTitle: string;
+    currentArtist: string;
+}
 
 @Injectable({
     providedIn: "root"
 })
 export class PlayerService implements OnDestroy {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     YT: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     player: any;
-    tabIndexInitial: any[];
-    tabIndex: any[];
+    tabIndexInitial: number[];
+    tabIndex: number[];
     isRandom: boolean;
     currentIndex = 0;
     isRepeat: boolean;
-    listPlaylist: any[] = [];
-    listFollow: any[] = [];
-    listVideo: any[] = [];
+    listPlaylist: UserPlaylist[] = [];
+    listFollow: FollowItem[] = [];
+    listVideo: Video[] = [];
     isPlaying = false;
     refInterval = null;
-    currentTitle: string = '';
-    currentArtist: string = '';
-    currentKey: string = '';
-    listLikeVideo: any[] = [];
+    currentTitle = '';
+    currentArtist = '';
+    currentKey = '';
+    listLikeVideo: UserVideo[] = [];
 
     isAutoPlay: boolean;
     firstLaunched = false;
     showTapVideoYT: boolean;
 
-    subjectCurrentPlaylistChange: Subject<any[]> = new Subject<any[]>();
+    subjectCurrentPlaylistChange: Subject<Video[]> = new Subject<Video[]>();
     subjectRepeatChange: Subject<boolean> = new Subject<boolean>();
     subjectRandomChange: Subject<boolean> = new Subject<boolean>();
     subjectIsPlayingChange: BehaviorSubject<boolean> = new BehaviorSubject<
@@ -42,29 +53,29 @@ export class PlayerService implements OnDestroy {
         PlayerRunning
     > = new BehaviorSubject<PlayerRunning>(undefined);
     subjectMessageTap: Subject<boolean> = new Subject<boolean>();
-    subjectListPlaylist: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(
+    subjectListPlaylist: BehaviorSubject<UserPlaylist[]> = new BehaviorSubject<UserPlaylist[]>(
         this.listPlaylist
     );
-    subjectListFollow: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(
+    subjectListFollow: BehaviorSubject<FollowItem[]> = new BehaviorSubject<FollowItem[]>(
         this.listFollow
     );
-    subjectListLikeVideo: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(
+    subjectListLikeVideo: BehaviorSubject<UserVideo[]> = new BehaviorSubject<UserVideo[]>(
         this.listLikeVideo
     );
-    subjectAddVideo: Subject<any> = new Subject<any>();
-    subjectCurrentKeyChange: BehaviorSubject<any> = new BehaviorSubject<any>({
+    subjectAddVideo: Subject<VideoItem> = new Subject<VideoItem>();
+    subjectCurrentKeyChange: BehaviorSubject<CurrentKey> = new BehaviorSubject<CurrentKey>({
         currentKey: this.currentKey,
         currentTitle: this.currentTitle,
         currentArtist: this.currentArtist
     });
 
-    subscriptionInitializePlaylist: any;
+    subscriptionInitializePlaylist: Subscription;
 
     constructor(
         private readonly titleService: Title,
         private readonly httpClient: HttpClient,
         private readonly initService: InitService
-    ) { 
+    ) {
         this.init();
 
         this.subscriptionInitializePlaylist = this.initService.subjectInitializePlaylist.subscribe(
@@ -81,7 +92,7 @@ export class PlayerService implements OnDestroy {
                     this.shuffle(this.tabIndex);
                 }
 
-                this.currentKey = this.listVideo[this.currentIndex].tab_element[0].key;
+                this.currentKey = this.listVideo[this.currentIndex].key;
                 this.currentTitle = this.listVideo[this.currentIndex].titre;
                 if (
                     this.listVideo[this.currentIndex].artiste &&
@@ -108,7 +119,9 @@ export class PlayerService implements OnDestroy {
     }
 
     launchYTApi() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).onYouTubeIframeAPIReady = () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             this.YT = (window as any).YT;
             this.player = new this.YT.Player("player", {
                 playerVars: {
@@ -118,11 +131,10 @@ export class PlayerService implements OnDestroy {
                     origin: window.location.href
                 },
                 events: {
-                    onStateChange: (e: any) => this.finvideo(e),
-                    onError: this.catch_error.bind(this),
+                    onStateChange: (e: { data: number }) => this.finvideo(e),
                     onReady: () => {
                         if (this.tabIndex !== undefined && this.tabIndex[0] !== undefined) {
-                            this.player.cueVideoById(this.listVideo[0].tab_element[0].key);
+                            this.player.cueVideoById(this.listVideo[0].key);
                         } else {
                             setTimeout(function () {
                                 if (
@@ -130,7 +142,7 @@ export class PlayerService implements OnDestroy {
                                     this.tab_index[0] !== undefined
                                 ) {
                                     this.player.cueVideoById(
-                                        this.liste_video[0].tab_element[0].key
+                                        this.liste_video[0].key
                                     );
                                 }
                             }, 800);
@@ -156,16 +168,14 @@ export class PlayerService implements OnDestroy {
         };
     }
 
-    finvideo(etat) {
-        etat = etat.data;
-
-        switch (etat) {
+    finvideo(state: { data: number }) {
+        switch (state.data) {
             case -1:
             case 0:
             case 2:
                 this.isPlaying = false;
                 break;
- 
+
             case 1:
                 this.isPlaying = true;
                 break;
@@ -173,22 +183,22 @@ export class PlayerService implements OnDestroy {
 
         this.subjectIsPlayingChange.next(this.isPlaying);
 
-        if (etat === 0) {
+        if (state.data === 0) {
             this.after();
         }
 
-        if (etat === 1 || etat === -1 || etat === 3) {
+        if (state.data === 1 || state.data === -1 || state.data === 3) {
             if (this.refInterval === null) {
                 this.refInterval = setInterval(this.playerRunning.bind(this), 200);
             }
         }
 
-        if (etat === 2) {
+        if (state.data === 2) {
             clearInterval(this.refInterval);
             this.refInterval = null;
         }
 
-        if (etat === 1 && !this.firstLaunched) {
+        if (state.data === 1 && !this.firstLaunched) {
             if (!this.isAutoPlay) {
                 this.launchFullInit();
             } else {
@@ -198,12 +208,12 @@ export class PlayerService implements OnDestroy {
             }
         }
 
-        if (etat === 1 && !this.isAutoPlay && this.showTapVideoYT) {
+        if (state.data === 1 && !this.isAutoPlay && this.showTapVideoYT) {
             this.disableFullInit();
         }
     }
 
-    lecture(indice, indexInitial = false) {
+    lecture(indice: number, indexInitial = false) {
         if (indexInitial) {
             this.currentIndex = indice;
         } else {
@@ -211,12 +221,12 @@ export class PlayerService implements OnDestroy {
         }
 
         this.player.loadVideoById(
-            this.listVideo[this.currentIndex].tab_element[0].key,
+            this.listVideo[this.currentIndex].key,
             0,
             "large"
         );
 
-        this.currentKey = this.listVideo[this.currentIndex].tab_element[0].key;
+        this.currentKey = this.listVideo[this.currentIndex].key;
         this.currentTitle = this.listVideo[this.currentIndex].titre;
         let fullTitle = this.currentTitle;
 
@@ -254,13 +264,6 @@ export class PlayerService implements OnDestroy {
             this.lecture(this.currentIndex + 1);
         } else if (this.isRepeat) {
             this.currentIndex = 0;
-            this.lecture(this.currentIndex);
-        }
-    }
-
-    catch_error(e) {
-        if (this.listVideo[this.currentIndex].tab_element.length > 1) {
-            this.listVideo[this.currentIndex].tab_element.shift();
             this.lecture(this.currentIndex);
         }
     }
@@ -317,15 +320,17 @@ export class PlayerService implements OnDestroy {
         }
     }
 
-    shuffle(v: string[]) {
+    shuffle(v: number[]) {
         for (
-            let j: number, x: string, i = v.length;
+            let j: number, x: number, i = v.length;
             i;
             j = parseInt((Math.random() * i).toString(), 10),
             x = v[--i],
             v[i] = v[j],
             v[j] = x
-        ) { }
+        ) {
+            null;
+        }
     }
 
     switchRepeat() {
@@ -366,15 +371,15 @@ export class PlayerService implements OnDestroy {
         );
     }
 
-    removeVideo(idVideo, callbackSuccess) {
+    removeVideo(idVideo: string, callbackSuccess: () => void) {
         this.httpClient
             .get(
                 environment.URL_SERVER + "supprimer/" + idVideo,
                 environment.httpClientConfig
             )
             .subscribe(
-                (data: any) => {
-                    if (data.success !== undefined) {
+                (data: { success: boolean }) => {
+                    if (data.success !== undefined && data.success) {
                         for (let i = 0; i < this.listVideo.length; i++) {
                             if (this.listVideo[i].id_video === idVideo) {
                                 this.listVideo.splice(i, 1);
@@ -450,16 +455,17 @@ export class PlayerService implements OnDestroy {
         this.onChangeListFollow();
     }
 
-    addNewPlaylist(idPlaylist, title) {
+    addNewPlaylist(idPlaylist: string, title: string) {
         this.listPlaylist.unshift({
             id_playlist: idPlaylist,
-            titre: title
+            titre: title,
+            prive: false
         });
 
         this.onChangeListPlaylist();
     }
 
-    editPlaylistTitle(idPlaylist, title) {
+    editPlaylistTitle(idPlaylist: string, title: string) {
         this.listPlaylist
             .filter(a => a.id_playlist === idPlaylist)
             .map(a => {
@@ -469,7 +475,7 @@ export class PlayerService implements OnDestroy {
         this.onChangeListPlaylist();
     }
 
-    switchVisibilityPlaylist(idPlaylist, isPrivate) {
+    switchVisibilityPlaylist(idPlaylist: string, isPrivate: boolean) {
         let status: string;
 
         if (isPrivate) {
@@ -488,8 +494,8 @@ export class PlayerService implements OnDestroy {
                 environment.httpClientConfig
             )
             .subscribe(
-                (data: any) => {
-                    if (data.success !== undefined) {
+                (data: { success: boolean }) => {
+                    if (data.success !== undefined && data.success) {
                         this.listPlaylist
                             .filter(a => a.id_playlist === idPlaylist)
                             .map(a => {
@@ -504,15 +510,15 @@ export class PlayerService implements OnDestroy {
             );
     }
 
-    deletePlaylist(idPlaylist) {
+    deletePlaylist(idPlaylist: string) {
         this.httpClient
             .get(
                 environment.URL_SERVER + "playlist-supprimer/" + idPlaylist,
                 environment.httpClientConfig
             )
             .subscribe(
-                (data: any) => {
-                    if (data.success !== undefined) {
+                (data: { success: boolean }) => {
+                    if (data.success !== undefined && data.success) {
                         for (let i = 0; i < this.listPlaylist.length; i++) {
                             if (this.listPlaylist[i].id_playlist === idPlaylist) {
                                 this.listPlaylist.splice(i, 1);
@@ -527,19 +533,19 @@ export class PlayerService implements OnDestroy {
             );
     }
 
-    deleteFollow(idPlaylist) {
+    deleteFollow(idPlaylist: string) {
         this.switchFollow(idPlaylist);
     }
 
-    switchFollow(idPlaylist, title = "") {
+    switchFollow(idPlaylist: string, title = "") {
         this.httpClient
             .get(
                 environment.URL_SERVER + "switch_suivi/" + idPlaylist,
                 environment.httpClientConfig
             )
             .subscribe(
-                (data: any) => {
-                    if (data.success !== undefined) {
+                (data: { success: boolean, est_suivi: boolean }) => {
+                    if (data.success !== undefined && data.success) {
                         if (data.est_suivi) {
                             this.listFollow.unshift({
                                 id_playlist: idPlaylist,
@@ -562,11 +568,11 @@ export class PlayerService implements OnDestroy {
             );
     }
 
-    addVideoInPlaylist(key, artist, title, duration) {
+    addVideoInPlaylist(key: string, artist: string, title: string, duration: number) {
         this.subjectAddVideo.next({ key, artist, title, duration });
     }
 
-    addVideoInPlaylistRequest(idPlaylist, addKey, addTitle, addArtist, addDuration) {
+    addVideoInPlaylistRequest(idPlaylist: string, addKey: string, addTitle: string, addArtist: string, addDuration: number) {
         this.httpClient
             .post(
                 environment.URL_SERVER + "insert_video",
@@ -580,8 +586,8 @@ export class PlayerService implements OnDestroy {
                 environment.httpClientConfig
             )
             .subscribe(
-                (data: any) => {
-                    if (data.success !== undefined) {
+                (data: { success: boolean }) => {
+                    if (data.success !== undefined && data.success) {
                         this.onChangeListPlaylist();
                     }
                 },
@@ -591,7 +597,7 @@ export class PlayerService implements OnDestroy {
             );
     }
 
-    addInCurrentList(playlist) {
+    addInCurrentList(playlist: Video[]) {
         this.listVideo = this.listVideo.concat(playlist);
 
         const index = this.tabIndexInitial.length;
@@ -601,7 +607,7 @@ export class PlayerService implements OnDestroy {
             this.tabIndexInitial.push(i + index);
             this.tabIndex.push(i + index);
         }
-        
+
         if (this.isRandom) {
             this.shuffle(this.tabIndex);
         }
@@ -609,15 +615,15 @@ export class PlayerService implements OnDestroy {
         this.onChangeCurrentPlaylist();
     }
 
-    addVideoAfterCurrentInList(video) {
-        this.listVideo.splice(this.currentIndex +1, 0, video);
+    addVideoAfterCurrentInList(video: Video) {
+        this.listVideo.splice(this.currentIndex + 1, 0, video);
 
         const index = this.tabIndexInitial.length;
         const iMax = this.listVideo.length;
 
-        this.tabIndexInitial.push( index +1);
-        this.tabIndex.push( iMax +1);
-        
+        this.tabIndexInitial.push(index + 1);
+        this.tabIndex.push(iMax + 1);
+
         if (this.isRandom) {
             this.shuffle(this.tabIndex);
         }
@@ -625,7 +631,7 @@ export class PlayerService implements OnDestroy {
         this.onChangeCurrentPlaylist();
     }
 
-    runPlaylist(playlist, index) {
+    runPlaylist(playlist: Video[], index: number) {
         this.listVideo = [];
         this.tabIndexInitial = [];
         this.tabIndex = [];
@@ -636,9 +642,9 @@ export class PlayerService implements OnDestroy {
 
     isLiked(key: string) {
         let found;
-        
-        if(this.listLikeVideo) {
-            found = this.listLikeVideo.find(e => e.key===key);
+
+        if (this.listLikeVideo) {
+            found = this.listLikeVideo.find(e => e.key === key);
         }
         return (found && found !== undefined);
     }
@@ -653,9 +659,9 @@ export class PlayerService implements OnDestroy {
                 environment.httpClientConfig
             )
             .subscribe(
-                (data: any) => {
-                    if (data.success !== undefined) {
-                       this.listLikeVideo.unshift(data.like);
+                (data: { success: boolean, like: UserVideo }) => {
+                    if (data.success !== undefined && data.success) {
+                        this.listLikeVideo.unshift(data.like);
                     }
                 },
                 () => {
@@ -674,13 +680,13 @@ export class PlayerService implements OnDestroy {
                 environment.httpClientConfig
             )
             .subscribe(
-                (data: any) => {
-                    if (data.success !== undefined) {
-                       const index = this.listLikeVideo.findIndex(e => e.key === key);
+                (data: { success: boolean }) => {
+                    if (data.success !== undefined && data.success) {
+                        const index = this.listLikeVideo.findIndex(e => e.key === key);
 
-                       if(index>0){
-                           this.listLikeVideo.splice(index, 1);
-                       }
+                        if (index > 0) {
+                            this.listLikeVideo.splice(index, 1);
+                        }
                     }
                 },
                 () => {

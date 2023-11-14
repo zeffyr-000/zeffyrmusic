@@ -4,30 +4,29 @@
 <div id="liste_en_cours_content" class="card panel-content border-0">
     <table id="liste_en_cours" class="table table-hover table-sm">
         <tbody>
-            <tr *ngFor="let video of list; let index = index" 
-                (click)="play(index,true)"
-                [ngClass]="{'active' : video.tab_element[0].key===currentKey}">
+            <tr *ngFor="let video of list; let index = index" (click)="play(index,true)"
+                [ngClass]="{'active' : video.key===currentKey}">
                 <td>
-                    <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" />
+                    <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
                 </td>
                 <td>
                     <p><strong>{{video.titre}}</strong></p>
                     <p>{{video.artiste}}</p>
                 </td>
                 <td>
-                    <span class="btn btn-link btn-sm text-decoration-none text-body"
-                            (click)="$event.stopPropagation()"
-                            ngbDropdown placement="left-top">
+                    <span class="btn btn-link btn-sm text-decoration-none text-body" (click)="$event.stopPropagation()"
+                        ngbDropdown placement="left-top" role="presentation">
                         <span class="material-icons" ngbDropdownToggle>more_vert</span>
                         <ul ngbDropdownMenu>
                             <li ngbDropdownItem>
-                                <a (click)="removeToPlaylist(index)">
+                                <a (click)="removeToPlaylist(index)" role="presentation">
                                     <span class="material-icons">clear</span>
                                     {{'supprimer_liste_lecture' | transloco}}
                                 </a>
                             </li>
                             <li ngbDropdownItem *ngIf="isConnected">
-                                <a (click)="playerService.addVideoInPlaylist(video.key,video.artiste,video.titre, video.duree)">
+                                <a (click)="playerService.addVideoInPlaylist(video.key,video.artiste,video.titre, video.duree)"
+                                    role="presentation">
                                     <span class="material-icons">add</span>
                                     {{'ajouter_a_une_playlist' | transloco}}
                                 </a>
@@ -38,5 +37,4 @@
             </tr>
         </tbody>
     </table>
-</div>		
-
+</div>

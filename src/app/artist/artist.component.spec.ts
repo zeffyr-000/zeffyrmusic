@@ -4,25 +4,23 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { config } from 'rxjs';
-import fr  from '../../assets/i18n/fr.json';
-import { environment } from '../../environments/environment';
+import fr from '../../assets/i18n/fr.json';
 import { ArtistComponent } from './artist.component';
 
 describe('ArtistComponent', () => {
   let artistComponent: ArtistComponent;
   let fixture: ComponentFixture<ArtistComponent>;
-  let http: HttpTestingController;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [TranslocoTestingModule.withLangs({fr},
-                                                  {
-                                                    availableLangs: ['fr', 'en'],
-                                                    defaultLang: 'fr',
-                                                    ...config
-                                                  }),
-                RouterTestingModule,
-                HttpClientTestingModule],
+      imports: [TranslocoTestingModule.withLangs({ fr },
+        {
+          availableLangs: ['fr', 'en'],
+          defaultLang: 'fr',
+          ...config
+        }),
+        RouterTestingModule,
+        HttpClientTestingModule],
       declarations: [ArtistComponent]
     })
       .compileComponents();
@@ -40,14 +38,14 @@ describe('ArtistComponent', () => {
   it('should create ArtistComponent', () => {
     expect(artistComponent).toBeTruthy();
   });
-/*
-  it('should return an Observable of 3 races', () => {
-    // fake response
-    const hardcodedRaces = [{ name: 'Paris' }, { name: 'Tokyo' }, { name: 'Lyon' }] as any[];
-
-    artistComponent.initLoad();
-
-    http.expectOne(`${environment.URL_SERVER}races?status=PENDING`).flush(hardcodedRaces);
-  });
-*/
+  /*
+    it('should return an Observable of 3 races', () => {
+      // fake response
+      const hardcodedRaces = [{ name: 'Paris' }, { name: 'Tokyo' }, { name: 'Lyon' }] as any[];
+  
+      artistComponent.initLoad();
+  
+      http.expectOne(`${environment.URL_SERVER}races?status=PENDING`).flush(hardcodedRaces);
+    });
+  */
 });

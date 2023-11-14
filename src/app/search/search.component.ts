@@ -7,6 +7,11 @@ import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { Album, Extra } from '../models/search.model';
+import { Subscription } from 'rxjs';
+import { ArtistResult } from '../models/artist.model';
+import { PlaylistResult } from '../models/playlist.model';
+import { Video } from '../models/video.model';
 
 @Component({
     selector: 'app-search',
@@ -21,28 +26,28 @@ export class SearchComponent implements OnInit, OnDestroy {
     isLoading2: boolean;
     isLoading3: boolean;
 
-    listArtists: any[];
+    listArtists: ArtistResult[];
     limitArtist: number;
 
-    listAlbums: any[] = [];
+    listAlbums: Album[] = [];
     limitAlbum: number;
 
-    listTracks: any[] = [];
+    listTracks: Video[] = [];
     limitTrack: number;
 
-    listExtras: any[] = [];
+    listExtras: Extra[] = [];
     limitExtra: number;
 
-    private subscriptionConnected: any;
+    private subscriptionConnected: Subscription;
 
     constructor(private readonly httpClient: HttpClient,
-                private readonly activatedRoute: ActivatedRoute,
-                private readonly titleService: Title,
-                private readonly translocoService: TranslocoService,
-                private readonly initService: InitService,
-                private readonly playerService: PlayerService,
-                private readonly googleAnalyticsService: GoogleAnalyticsService) {
-                }
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly titleService: Title,
+        private readonly translocoService: TranslocoService,
+        private readonly initService: InitService,
+        private readonly playerService: PlayerService,
+        private readonly googleAnalyticsService: GoogleAnalyticsService) {
+    }
 
     ngOnInit() {
         this.query = this.activatedRoute.snapshot.paramMap.get('query');
@@ -56,12 +61,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         this.httpClient.get(environment.URL_SERVER + 'fullsearch1/' + encodeURIComponent(this.query),
             environment.httpClientConfig)
-            .subscribe((data: any) => {
-
+            .subscribe((data: { artist: ArtistResult[], playlist: PlaylistResult[] }) => {
                 this.isLoading1 = false;
 
                 this.titleService.setTitle(this.translocoService.translate('resultats_recherche', { query: this.query }) +
-                                            ' - Zeffyr Music');
+                    ' - Zeffyr Music');
 
                 this.listArtists = data.artist;
                 this.limitArtist = 5;
@@ -73,8 +77,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         this.httpClient.get(environment.URL_SERVER + 'fullsearch2/' + encodeURIComponent(this.query),
             environment.httpClientConfig)
-            .subscribe((data: any) => {
-
+            .subscribe((data: { tab_video: Video[] }) => {
                 this.isLoading2 = false;
 
                 this.listTracks = data.tab_video;
@@ -83,8 +86,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         this.httpClient.get(environment.URL_SERVER + 'fullsearch3/' + encodeURIComponent(this.query),
             environment.httpClientConfig)
-            .subscribe((data: any) => {
-
+            .subscribe((data: { tab_extra: Extra[] }) => {
                 this.isLoading3 = false;
 
                 this.listExtras = data.tab_extra;
@@ -102,11 +104,11 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.limitAlbum = this.listAlbums.length;
     }
 
-    runPlaylistTrack(index) {
+    runPlaylistTrack(index: number) {
         this.playerService.runPlaylist(this.listTracks, index);
     }
 
-    addVideo(key, artist, title, duration) {
+    addVideo(key: string, artist: string, title: string, duration: number) {
         this.playerService.addVideoInPlaylist(key, artist, title, duration);
     }
 
@@ -114,16 +116,13 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.limitTrack = this.listTracks.length;
     }
 
-    runPlaylistExtra(index) {
+    runPlaylistExtra(index: number) {
 
         const listTransformed = this.listExtras.map(e =>
-            ({
-                titre : e.title,
-                tab_element: [{
-                    key : e.key,
-                    duree : e.duree
-                }]
-            }));
+        ({
+            ...e,
+            titre: e.title,
+        })) as unknown as Video[];
 
         this.playerService.runPlaylist(listTransformed, index);
     }

@@ -42,7 +42,7 @@
               "ngneat-transloc",
               "ngneat-transloco-locale",
               "flat"
-           ]
+            ]
           },
           "configurations": {
             "production": {
@@ -103,19 +103,19 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "zeffyrmusic:build",
-            "proxyConfig": "src/proxy.conf.json"
+            "proxyConfig": "src/proxy.conf.json",
+            "buildTarget": "zeffyrmusic:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "zeffyrmusic:build:production"
+              "buildTarget": "zeffyrmusic:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "zeffyrmusic:build"
+            "buildTarget": "zeffyrmusic:build"
           }
         },
         "test": {
@@ -132,6 +132,15 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }

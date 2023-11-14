@@ -4,6 +4,22 @@ import { TranslocoService } from '@ngneat/transloco';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DOCUMENT } from '@angular/common';
+import { UserPlaylist } from '../models/playlist.model';
+import { UserVideo, Video } from '../models/video.model';
+import { FollowItem } from '../models/follow.model';
+
+interface PingResponse {
+    est_connecte: boolean;
+    pseudo: string;
+    id_perso: string;
+    mail: string;
+    liste_playlist: UserPlaylist[];
+    liste_suivi: FollowItem[];
+    like_video: UserVideo[];
+    liste_video: Video[];
+    tab_index: number[];
+    tab_video: string[];
+}
 
 @Injectable({
     providedIn: 'root'
@@ -11,9 +27,9 @@ import { DOCUMENT } from '@angular/common';
 export class InitService {
 
     private isConnected = false;
-    private pseudo ='';
-    private idPerso ='';
-    private mail ='';
+    private pseudo = '';
+    private idPerso = '';
+    private mail = '';
 
     subjectConnectedChange: BehaviorSubject<{
         isConnected: boolean,
@@ -34,33 +50,33 @@ export class InitService {
 
     subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
     subjectInitializePlaylist: Subject<{
-        listPlaylist: any[],
-        listFollow: any[],
-        listVideo: any[],
-        tabIndex: any[],
-        listLikeVideo: any[]
+        listPlaylist: UserPlaylist[],
+        listFollow: FollowItem[],
+        listVideo: Video[],
+        tabIndex: number[],
+        listLikeVideo: UserVideo[]
     }> = new Subject<{
-        listPlaylist: any[],
-        listFollow: any[],
-        listVideo: any[],
-        tabIndex: any[],
-        listLikeVideo: any[]
+        listPlaylist: UserPlaylist[],
+        listFollow: FollowItem[],
+        listVideo: Video[],
+        tabIndex: number[],
+        listLikeVideo: UserVideo[]
     }>();
 
     constructor(@Inject(DOCUMENT) private document: Document,
-                private readonly httpClient: HttpClient,
-                private readonly translocoService: TranslocoService) {
-            this.document.querySelector('link[rel=icon]').setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);
-            this.translocoService.setActiveLang(environment.lang);
-        }
+        private readonly httpClient: HttpClient,
+        private readonly translocoService: TranslocoService) {
+        this.document.querySelector('link[rel=icon]').setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);
+        this.translocoService.setActiveLang(environment.lang);
+    }
 
     getPing() {
         return this.httpClient.get(environment.URL_SERVER + 'ping', environment.httpClientConfig)
-            .subscribe((data: any) => {
+            .subscribe((data: PingResponse) => {
                 this.isConnected = data.est_connecte;
                 let listPlaylist = [];
                 let listFollow = [];
-                let listLikeVideo =[];
+                let listLikeVideo = [];
 
                 if (this.isConnected) {
                     this.pseudo = data.pseudo;

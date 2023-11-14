@@ -27,9 +27,9 @@ import { PlayerService } from './services/player.service';
 import { ShareButtonsConfig } from 'ngx-sharebuttons';
 
 const customConfig: ShareButtonsConfig = {
-    include: ['facebook','twitter','whatsapp','copy'],
+    include: ['facebook', 'twitter', 'whatsapp', 'copy'],
     gaTracking: true,
-  }
+}
 
 @NgModule({
     declarations: [
@@ -51,7 +51,7 @@ const customConfig: ShareButtonsConfig = {
         HttpClientModule,
         TranslocoModule,
         AngularDraggableModule,
-        NgxGoogleAnalyticsModule.forRoot('UA-1664521-8'),
+        NgxGoogleAnalyticsModule.forRoot(environment.production ? 'UA-1664521-8' : 'UA-FAKE-ID'),
         ShareButtonsModule.withConfig(customConfig),
         ShareIconsModule
     ],

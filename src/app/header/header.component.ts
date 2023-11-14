@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,6 +8,19 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
+import { Subscription } from 'rxjs';
+import { UserPlaylist } from '../models/playlist.model';
+import { FollowItem } from '../models/follow.model';
+
+interface LoginResponse {
+    success: boolean;
+    pseudo: string;
+    id_perso: string;
+    mail: string;
+    liste_playlist: UserPlaylist[];
+    liste_suivi: FollowItem[];
+    error?: string;
+}
 
 @Component({
     selector: 'app-header',
@@ -26,16 +39,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     currentArtist: string;
     currentKey: string;
 
-    subscriptionConnected: any;
-    subscriptionRepeat: any;
-    subscriptionRandom: any;
-    subscriptionIsPlaying: any;
-    subscriptionVolume: any;
-    subscriptionPlayerRunning: any;
-    subscriptionListPlaylist: any;
-    subscriptionListFollow: any;
-    subscriptionAddVideo: any;
-    subscriptionChangeKey: any;
+    subscriptionConnected: Subscription;
+    subscriptionRepeat: Subscription;
+    subscriptionRandom: Subscription;
+    subscriptionIsPlaying: Subscription;
+    subscriptionVolume: Subscription;
+    subscriptionPlayerRunning: Subscription;
+    subscriptionListPlaylist: Subscription;
+    subscriptionListFollow: Subscription;
+    subscriptionAddVideo: Subscription;
+    subscriptionChangeKey: Subscription;
 
     valueSliderPlayer: number;
     valueSliderVolume: number;
@@ -51,33 +64,33 @@ export class HeaderComponent implements OnInit, OnDestroy {
     langs = ['fr', 'en'];
     successPass = false;
     successMail = false;
-    currentIdPlaylistEdit: any;
-    playlistTitle: any;
+    currentIdPlaylistEdit: string;
+    playlistTitle: string;
     addKey: string;
     addArtist: string;
     addTitle: string;
-    addDuration: string;
+    addDuration: number;
     URL_ASSETS: string;
 
-    listPlaylist: any[];
-    listFollow: any[];
+    listPlaylist: UserPlaylist[];
+    listFollow: FollowItem[];
 
-    @ViewChild('sliderPlayer',{}) sliderPlayerRef: ElementRef;
-    @ViewChild('sliderVolume',{}) sliderVolumeRef: ElementRef;
+    @ViewChild('sliderPlayer', {}) sliderPlayerRef: ElementRef;
+    @ViewChild('sliderVolume', {}) sliderVolumeRef: ElementRef;
 
-    @ViewChild('contentModalAddVideo',{})
-    private readonly contentModalAddVideo: TemplateRef<any>;
+    @ViewChild('contentModalAddVideo', {})
+    private readonly contentModalAddVideo: TemplateRef<unknown>;
 
     constructor(public activeModal: NgbActiveModal,
-                private readonly modalService: NgbModal,
-                private readonly initService: InitService,
-                public playerService: PlayerService,
-                private readonly ref: ChangeDetectorRef,
-                private readonly httpClient: HttpClient,
-                private readonly router: Router,
-                private readonly route: ActivatedRoute,
-                private readonly googleAnalyticsService: GoogleAnalyticsService,
-                private readonly translocoService: TranslocoService) {
+        private readonly modalService: NgbModal,
+        private readonly initService: InitService,
+        public playerService: PlayerService,
+        private readonly ref: ChangeDetectorRef,
+        private readonly httpClient: HttpClient,
+        private readonly router: Router,
+        private readonly route: ActivatedRoute,
+        private readonly googleAnalyticsService: GoogleAnalyticsService,
+        private readonly translocoService: TranslocoService) {
         this.isConnected = false;
         this.URL_ASSETS = environment.URL_ASSETS;
     }
@@ -96,32 +109,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
         );
 
         this.subscriptionIsPlaying = this.playerService.subjectIsPlayingChange.subscribe(isPlaying => {
-                this.isPlaying = isPlaying;
-                this.ref.detectChanges();
-            }
+            this.isPlaying = isPlaying;
+            this.ref.detectChanges();
+        }
         );
 
         this.subscriptionVolume = this.playerService.subjectVolumeChange.subscribe(volume => {
-                this.valueSliderVolume = volume;
-                this.sliderVolumeRef.nativeElement.style.transform = 'none';
-            }
+            this.valueSliderVolume = volume;
+            this.sliderVolumeRef.nativeElement.style.transform = 'none';
+        }
         );
 
         this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange.subscribe(data => {
 
-                if (!data) {
-                    return;
-                }
-
-                if(!this.onDragingPlayer) {
-                    this.valueSliderPlayer = data.slideLength;
-                    this.currentTimeStr = data.currentTimeStr;
-                    this.totalTimeStr = data.totalTimeStr;
-                    this.loadVideo = data.loadVideo;
-
-                    this.ref.detectChanges();
-                }
+            if (!data) {
+                return;
             }
+
+            if (!this.onDragingPlayer) {
+                this.valueSliderPlayer = data.slideLength;
+                this.currentTimeStr = data.currentTimeStr;
+                this.totalTimeStr = data.totalTimeStr;
+                this.loadVideo = data.loadVideo;
+
+                this.ref.detectChanges();
+            }
+        }
         );
 
         this.subscriptionListPlaylist = this.playerService.subjectListPlaylist.subscribe(data => {
@@ -244,8 +257,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.httpClient.post(environment.URL_SERVER + 'inscription',
                 form.form.value,
                 environment.httpClientConfig)
-                .subscribe((data: any) => {
-                    if (data.success !== undefined) {
+                .subscribe((data: { success: boolean, error: string }) => {
+                    if (data.success !== undefined && data.success) {
                         this.isRegistered = true;
 
                         this.googleAnalyticsService.pageView('/inscription/succes');
@@ -261,8 +274,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.httpClient.post(environment.URL_SERVER + 'login',
                 form.form.value,
                 environment.httpClientConfig)
-                .subscribe((data: any) => {
-                    if (data.success !== undefined) {
+                .subscribe((data: LoginResponse) => {
+                    if (data.success !== undefined && data.success) {
                         this.isConnected = true;
 
                         this.initService.loginSuccess(data.pseudo, data.id_perso);
@@ -282,8 +295,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     onLogout() {
         this.httpClient.get(environment.URL_SERVER + 'deconnexion',
             environment.httpClientConfig)
-            .subscribe((data: any) => {
-                if (data.success !== undefined) {
+            .subscribe((data: { success: boolean }) => {
+                if (data.success !== undefined && data.success) {
                     this.initService.logOut();
                 }
             });
@@ -294,8 +307,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.httpClient.post(environment.URL_SERVER + 'pass',
                 form.form.value,
                 environment.httpClientConfig)
-                .subscribe((data: any) => {
-                    if (data.success !== undefined) {
+                .subscribe((data: { success: boolean, error: string }) => {
+                    if (data.success !== undefined && data.success) {
                         this.isSuccess = true;
                     } else {
                         this.error = this.translocoService.translate(data.error);
@@ -314,9 +327,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
                         passwordnew: form.form.value.password1
                     },
                     environment.httpClientConfig)
-                    .subscribe((data: any) => {
+                    .subscribe((data: { success: boolean, error: string }) => {
 
-                        if (data.success !== undefined) {
+                        if (data.success !== undefined && data.success) {
                             this.successPass = true;
                             setTimeout(() => {
                                 this.successPass = false;
@@ -340,9 +353,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.httpClient.post(environment.URL_SERVER + 'options/mail',
                 form.form.value,
                 environment.httpClientConfig)
-                .subscribe((data: any) => {
+                .subscribe((data: { success: boolean, error: string }) => {
 
-                    if (data.success !== undefined) {
+                    if (data.success !== undefined && data.success) {
                         this.successMail = true;
                         setTimeout(() => {
                             this.successMail = false;
@@ -363,9 +376,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.httpClient.post(environment.URL_SERVER + 'playlist-creer',
                 form.form.value,
                 environment.httpClientConfig)
-                .subscribe((data: any) => {
+                .subscribe((data: { success: boolean, id_playlist: string, titre: string, error: string }) => {
 
-                    if (data.success !== undefined) {
+                    if (data.success !== undefined && data.success) {
                         this.playerService.addNewPlaylist(data.id_playlist, data.titre);
                     } else {
                         this.error = this.translocoService.translate(data.error);
@@ -380,7 +393,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onCloseModalPlaylists(idPlaylist, modal) {
         modal.dismiss();
-        this.router.navigate(['/playlist', idPlaylist], {relativeTo: this.route});
+        this.router.navigate(['/playlist', idPlaylist], { relativeTo: this.route });
     }
 
     onSwitchVisibility(idPlaylist, isPrivate) {
@@ -397,13 +410,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (form.valid) {
             this.httpClient.post(environment.URL_SERVER + 'edit_title',
                 {
-                    id_playlist : this.currentIdPlaylistEdit,
-                    titre : form.form.value.playlist_titre
+                    id_playlist: this.currentIdPlaylistEdit,
+                    titre: form.form.value.playlist_titre
                 },
                 environment.httpClientConfig)
-                .subscribe((data: any) => {
+                .subscribe((data: { success: boolean, error: string }) => {
 
-                    if (data.success !== undefined) {
+                    if (data.success !== undefined && data.success) {
                         this.playerService.editPlaylistTitle(this.currentIdPlaylistEdit, form.form.value.playlist_titre);
                         modal.dismiss();
                     } else {

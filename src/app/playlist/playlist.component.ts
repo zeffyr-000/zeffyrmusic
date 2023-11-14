@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, OnDestroy, OnInit, NgZone } from '@angular/core';
+import { Component, OnDestroy, NgZone } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
@@ -7,52 +7,51 @@ import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { Video } from '../models/video.model';
+import { Playlist } from '../models/playlist.model';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-playlist',
     templateUrl: './playlist.component.html',
     styleUrls: ['./playlist.component.scss']
 })
-export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PlaylistComponent implements OnDestroy {
 
-    isPrivate: boolean;
-    idPlaylist: any;
-    playlist: any[];
-    imgBig: string;
-    idTopCharts: any;
-    idPersoOwner: string;
-    title: string;
-    titre: string;
-    description: string;
-    isFollower: boolean;
-    artist: string | null;
-    idArtist: any;
+    isPrivate = false;
+    idPlaylist: string | null = null;
+    playlist: Video[] = [];
+    imgBig = '';
+    idTopCharts: string | null = null;
+    idPersoOwner = '';
+    title = '';
+    titre = '';
+    description = '';
+    isFollower = false;
+    artist: string | null = null;
+    idArtist: string | null = null;
     isConnected = false;
-    idPerso: string;
-    currentKey: string;
-    subscriptionConnected: any;
-    subscriptionChangeKey: any;
-    subscriptionChangeFollow: any;
-    subscriptionInitializePlaylist: any;
-    subscriptionListLikeVideo: any;
+    idPerso = '';
+    currentKey = '';
+    subscriptionConnected: Subscription;
+    subscriptionChangeKey: Subscription;
+    subscriptionChangeFollow: Subscription;
+    subscriptionInitializePlaylist: Subscription;
+    subscriptionListLikeVideo: Subscription;
 
     constructor(private readonly httpClient: HttpClient,
-                private readonly activatedRoute: ActivatedRoute,
-                private readonly initService: InitService,
-                private readonly playerService: PlayerService,
-                private readonly titleService: Title,
-                private readonly metaService: Meta,
-                private readonly translocoService: TranslocoService,
-                private readonly googleAnalyticsService: GoogleAnalyticsService,
-                private readonly ngZone: NgZone) {
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly initService: InitService,
+        private readonly playerService: PlayerService,
+        private readonly titleService: Title,
+        private readonly metaService: Meta,
+        private readonly translocoService: TranslocoService,
+        private readonly googleAnalyticsService: GoogleAnalyticsService,
+        private readonly ngZone: NgZone) {
 
         activatedRoute.params.subscribe(() => {
             this.initLoad();
         });
-    }
-
-    ngOnInit() {
-
     }
 
     initLoad() {
@@ -62,9 +61,9 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-            this.ngZone.run( () => {
+            this.ngZone.run(() => {
                 this.currentKey = data.currentKey;
-             });
+            });
         });
 
         this.subscriptionChangeFollow = this.playerService.subjectListFollow.subscribe(listFollow => {
@@ -81,8 +80,8 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         });
 
-        
-        if(this.activatedRoute.snapshot.url[0].path === 'like') {
+
+        if (this.activatedRoute.snapshot.url[0].path === 'like') {
             this.loadLike();
         } else {
             const idPlaylist = this.activatedRoute.snapshot.paramMap.get('id_playlist');
@@ -92,7 +91,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
             if (idPlaylist !== null) {
                 url = environment.URL_SERVER + 'json/playlist/' + idPlaylist;
             } else {
-                if(this.activatedRoute.snapshot.url[0].path === 'top') {
+                if (this.activatedRoute.snapshot.url[0].path === 'top') {
                     url = environment.URL_SERVER + 'json/top/' + id;
                 } else {
                     url = '';
@@ -100,12 +99,6 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
             this.loadPlaylist(url);
-        } 
-    }
-
-    ngAfterViewInit() {
-        if ((window as any).FB && (window as any).FB.XFBML) {
-            (window as any).FB.XFBML.parse();
         }
     }
 
@@ -117,7 +110,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.httpClient.get(url,
             environment.httpClientConfig)
-            .subscribe((data: any) => {
+            .subscribe((data: Playlist) => {
 
                 if (data.est_prive === undefined) {
                     this.isPrivate = false;
@@ -134,7 +127,6 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.idPersoOwner = data.id_perso;
 
                     this.titleService.setTitle(data.title + ' - Zeffyr Music');
-
                     this.metaService.updateTag({ name: 'og:title', content: data.title + ' - Zeffyr Music' });
 
                     if (data.artiste !== undefined && data.titre !== undefined) {
@@ -179,17 +171,14 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.subscriptionListLikeVideo = this.playerService.subjectListLikeVideo.subscribe(
             listLikeVideo => {
-                if(!listLikeVideo) {
+                if (!listLikeVideo) {
                     return;
                 }
 
                 listLikeVideo.forEach(element => {
-                    element.artists=[{label:element.artiste}];
-                    element.tab_element=[{
-                        key:element.key,
-                        duree:element.duree
-                    }];
-                    this.playlist.push(element);
+                    const elementToPush = element as unknown as Video;
+                    elementToPush.artists = [{ label: element.artiste, id_artiste: '' }];
+                    this.playlist.push(elementToPush);
                 });
             }
         );
@@ -197,9 +186,9 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
         this.titleService.setTitle(this.translocoService.translate('mes_likes') + ' - Zeffyr Music');
         this.metaService.updateTag({ name: 'og:title', content: '' });
         this.metaService.updateTag({ name: 'og:description', content: '' });
-        this.metaService.updateTag({ name: 'og:image', content:'' });
+        this.metaService.updateTag({ name: 'og:image', content: '' });
         this.metaService.updateTag({ name: 'og:url', content: document.location.href });
-    
+
         this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
     }
 
@@ -215,20 +204,20 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
         this.playerService.addInCurrentList(this.playlist);
     }
 
-    addVideo(key, artist, title, duration) {
+    addVideo(key: string, artist: string, title: string, duration: number) {
         this.playerService.addVideoInPlaylist(key, artist, title, duration);
     }
 
-    removeVideo(idVideo) {
+    removeVideo(idVideo: string) {
         this.playerService.removeVideo(idVideo, this.loadPlaylist.bind(this));
     }
 
-    addVideoAfterCurrentInList(video) {
+    addVideoAfterCurrentInList(video: Video) {
         this.playerService.addVideoAfterCurrentInList(video);
     }
 
-    addVideoInEndCurrentList(video) {
-        this.playerService.addInCurrentList(video);
+    addVideoInEndCurrentList(video: Video) {
+        this.playerService.addInCurrentList([video]);
     }
 
     sumDurationPlaylist() {
@@ -238,7 +227,7 @@ export class PlaylistComponent implements OnInit, OnDestroy, AfterViewInit {
             let sumDuration = 0;
 
             for (const element of this.playlist) {
-                sumDuration += parseInt(element.tab_element[0].duree, 10);
+                sumDuration += parseInt(element.duree, 10);
             }
 
             const hour = Math.floor(sumDuration / 3600);

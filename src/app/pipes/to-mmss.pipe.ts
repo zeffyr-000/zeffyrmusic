@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class ToMMSSPipe implements PipeTransform {
 
-    transform(value: any, ...args: any[]): any {
+    transform(value: string): string {
         const secNum = parseInt(value, 10);
         const minuts = Math.floor((secNum) / 60);
         const seconds = secNum - (minuts * 60);
