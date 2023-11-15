@@ -74,9 +74,9 @@ export class InitService {
         return this.httpClient.get(environment.URL_SERVER + 'ping', environment.httpClientConfig)
             .subscribe((data: PingResponse) => {
                 this.isConnected = data.est_connecte;
-                let listPlaylist = [];
-                let listFollow = [];
-                let listLikeVideo = [];
+                let listPlaylist: UserPlaylist[] = [];
+                let listFollow: FollowItem[] = [];
+                let listLikeVideo: UserVideo[] = [];
 
                 if (this.isConnected) {
                     this.pseudo = data.pseudo;
@@ -113,7 +113,7 @@ export class InitService {
         });
     }
 
-    loginSuccess(pseudo, idPerso) {
+    loginSuccess(pseudo: string, idPerso: string) {
         this.isConnected = true;
         this.idPerso = idPerso;
         this.pseudo = pseudo;

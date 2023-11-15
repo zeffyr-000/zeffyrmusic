@@ -174,19 +174,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.playerService.switchRandom();
     }
 
-    onDragMovingPlayer(e) {
+    onDragMovingPlayer(e: { x: number; }) {
         this.onDragingPlayer = true;
         this.onUpdateSliderPlayer(e.x);
         this.sliderPlayerRef.nativeElement.style.left = 'auto';
     }
 
-    onDragEndPlayer(e) {
+    onDragEndPlayer(e: { x: number; }) {
         this.onDragingPlayer = false;
         this.onUpdateSliderPlayer(e.x);
         this.sliderPlayerRef.nativeElement.style.transform = 'none';
     }
 
-    onClickSliderPlayer(e) {
+    onClickSliderPlayer(e: { offsetX: number; }) {
         this.onUpdateSliderPlayer(e.offsetX);
         this.sliderPlayerRef.nativeElement.style.transform = 'none';
     }
@@ -215,7 +215,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.sliderVolumeRef.nativeElement.style.transform = 'none';
     }
 
-    onClickSliderVolume(e) {
+    onClickSliderVolume(e: { x: number; }) {
         this.onUpdateVolume(e.x);
         this.sliderVolumeRef.nativeElement.style.transform = 'none';
     }
@@ -248,7 +248,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.playerService.after();
     }
 
-    openModal(content) {
+    openModal(content: TemplateRef<unknown>) {
         this.modalService.open(content, { size: 'lg' });
     }
 
@@ -269,7 +269,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
     }
 
-    onLogIn(form: NgForm, modal) {
+    onLogIn(form: NgForm, modal: NgbActiveModal) {
         if (form.valid) {
             this.httpClient.post(environment.URL_SERVER + 'login',
                 form.form.value,
@@ -391,22 +391,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
     }
 
-    onCloseModalPlaylists(idPlaylist, modal) {
+    onCloseModalPlaylists(idPlaylist: string, modal: NgbActiveModal) {
         modal.dismiss();
         this.router.navigate(['/playlist', idPlaylist], { relativeTo: this.route });
     }
 
-    onSwitchVisibility(idPlaylist, isPrivate) {
+    onSwitchVisibility(idPlaylist: string, isPrivate: string) {
         this.playerService.switchVisibilityPlaylist(idPlaylist, isPrivate === 'prive');
     }
 
-    onConfirmEditTitlePlaylist(idPlaylist, title, contentModalConfirmEditTitle) {
+    onConfirmEditTitlePlaylist(idPlaylist: string, title: string, contentModalConfirmEditTitle: TemplateRef<unknown>) {
         this.modalService.open(contentModalConfirmEditTitle);
         this.currentIdPlaylistEdit = idPlaylist;
         this.playlistTitle = title;
     }
 
-    onEditTitlePlaylist(form: NgForm, modal) {
+    onEditTitlePlaylist(form: NgForm, modal: NgbActiveModal) {
         if (form.valid) {
             this.httpClient.post(environment.URL_SERVER + 'edit_title',
                 {
@@ -430,21 +430,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
     }
 
-    onConfirmDeletePlaylist(idPlaylist, contentModalConfirmDeletePlaylist) {
+    onConfirmDeletePlaylist(idPlaylist: string, contentModalConfirmDeletePlaylist: TemplateRef<unknown>) {
         this.modalService.open(contentModalConfirmDeletePlaylist);
         this.currentIdPlaylistEdit = idPlaylist;
     }
 
-    onDeletePlaylist(modal) {
+    onDeletePlaylist(modal: NgbActiveModal) {
         this.playerService.deletePlaylist(this.currentIdPlaylistEdit);
         modal.dismiss();
     }
 
-    onDeleteFollow(idPlaylist) {
+    onDeleteFollow(idPlaylist: string) {
         this.playerService.deleteFollow(idPlaylist);
     }
 
-    onAddVideo(idPlaylist, modal) {
+    onAddVideo(idPlaylist: string, modal: NgbActiveModal) {
         this.playerService.addVideoInPlaylistRequest(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration);
         modal.dismiss();
     }

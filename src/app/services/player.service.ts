@@ -32,7 +32,7 @@ export class PlayerService implements OnDestroy {
     listFollow: FollowItem[] = [];
     listVideo: Video[] = [];
     isPlaying = false;
-    refInterval = null;
+    refInterval: number | null = null;
     currentTitle = '';
     currentArtist = '';
     currentKey = '';
@@ -189,7 +189,7 @@ export class PlayerService implements OnDestroy {
 
         if (state.data === 1 || state.data === -1 || state.data === 3) {
             if (this.refInterval === null) {
-                this.refInterval = setInterval(this.playerRunning.bind(this), 200);
+                this.refInterval = window.setInterval(this.playerRunning.bind(this), 200);
             }
         }
 
@@ -447,7 +447,7 @@ export class PlayerService implements OnDestroy {
         this.subjectListLikeVideo.next(this.listLikeVideo);
     }
 
-    onLoadListLogin(listPlaylist, listFollow) {
+    onLoadListLogin(listPlaylist: UserPlaylist[], listFollow: FollowItem[]) {
         this.listPlaylist = listPlaylist;
         this.listFollow = listFollow;
 
@@ -682,11 +682,7 @@ export class PlayerService implements OnDestroy {
             .subscribe(
                 (data: { success: boolean }) => {
                     if (data.success !== undefined && data.success) {
-                        const index = this.listLikeVideo.findIndex(e => e.key === key);
-
-                        if (index > 0) {
-                            this.listLikeVideo.splice(index, 1);
-                        }
+                        this.listLikeVideo = this.listLikeVideo.filter(e => e.key !== key);
                     }
                 },
                 () => {
