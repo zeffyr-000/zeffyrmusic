@@ -8,7 +8,7 @@ import { UserPlaylist } from '../models/playlist.model';
 import { UserVideo, Video } from '../models/video.model';
 import { FollowItem } from '../models/follow.model';
 
-interface PingResponse {
+export interface PingResponse {
     est_connecte: boolean;
     pseudo: string;
     id_perso: string;
@@ -66,7 +66,7 @@ export class InitService {
     constructor(@Inject(DOCUMENT) private document: Document,
         private readonly httpClient: HttpClient,
         private readonly translocoService: TranslocoService) {
-        this.document.querySelector('link[rel=icon]').setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);
+        this.document.querySelector('link[rel=icon]')?.setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);
         this.translocoService.setActiveLang(environment.lang);
     }
 

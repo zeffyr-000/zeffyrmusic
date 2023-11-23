@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
 
-interface SearchResponse {
+export interface SearchResponse {
     playlist: PlaylistResult[];
     artist: ArtistResult[];
 }

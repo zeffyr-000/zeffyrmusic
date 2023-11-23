@@ -327,21 +327,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
                         passwordnew: form.form.value.password1
                     },
                     environment.httpClientConfig)
-                    .subscribe((data: { success: boolean, error: string }) => {
-
-                        if (data.success !== undefined && data.success) {
-                            this.successPass = true;
-                            setTimeout(() => {
-                                this.successPass = false;
-                            }, 10000);
-                        } else {
-                            this.error = this.translocoService.translate(data.error);
-                        }
-                    },
-                        () => {
+                    .subscribe({
+                        next: (data: { success: boolean, error: string }) => {
+                            if (data.success !== undefined && data.success) {
+                                this.successPass = true;
+                                setTimeout(() => {
+                                    this.successPass = false;
+                                }, 10000);
+                            } else {
+                                this.error = this.translocoService.translate(data.error);
+                            }
+                        },
+                        error: () => {
                             this.isConnected = false;
                             this.initService.onMessageUnlog();
-                        });
+                        }
+                    });
             } else {
                 this.error = this.translocoService.translate('mot_de_passe_confirmer_invalide');
             }
@@ -353,21 +354,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.httpClient.post(environment.URL_SERVER + 'options/mail',
                 form.form.value,
                 environment.httpClientConfig)
-                .subscribe((data: { success: boolean, error: string }) => {
-
-                    if (data.success !== undefined && data.success) {
-                        this.successMail = true;
-                        setTimeout(() => {
-                            this.successMail = false;
-                        }, 10000);
-                    } else {
-                        this.error = this.translocoService.translate(data.error);
-                    }
-                },
-                    () => {
+                .subscribe({
+                    next: (data: { success: boolean, error: string }) => {
+                        if (data.success !== undefined && data.success) {
+                            this.successMail = true;
+                            setTimeout(() => {
+                                this.successMail = false;
+                            }, 10000);
+                        } else {
+                            this.error = this.translocoService.translate(data.error);
+                        }
+                    },
+                    error: () => {
                         this.isConnected = false;
                         this.initService.onMessageUnlog();
-                    });
+                    }
+                });
         }
     }
 
@@ -376,18 +378,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.httpClient.post(environment.URL_SERVER + 'playlist-creer',
                 form.form.value,
                 environment.httpClientConfig)
-                .subscribe((data: { success: boolean, id_playlist: string, titre: string, error: string }) => {
-
-                    if (data.success !== undefined && data.success) {
-                        this.playerService.addNewPlaylist(data.id_playlist, data.titre);
-                    } else {
-                        this.error = this.translocoService.translate(data.error);
-                    }
-                },
-                    () => {
+                .subscribe({
+                    next: (data: { success: boolean, id_playlist: string, titre: string, error: string }) => {
+                        if (data.success !== undefined && data.success) {
+                            this.playerService.addNewPlaylist(data.id_playlist, data.titre);
+                        } else {
+                            this.error = this.translocoService.translate(data.error);
+                        }
+                    },
+                    error: () => {
                         this.isConnected = false;
                         this.initService.onMessageUnlog();
-                    });
+                    }
+                });
         }
     }
 
@@ -414,19 +417,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
                     titre: form.form.value.playlist_titre
                 },
                 environment.httpClientConfig)
-                .subscribe((data: { success: boolean, error: string }) => {
-
-                    if (data.success !== undefined && data.success) {
-                        this.playerService.editPlaylistTitle(this.currentIdPlaylistEdit, form.form.value.playlist_titre);
-                        modal.dismiss();
-                    } else {
-                        this.error = this.translocoService.translate(data.error);
-                    }
-                },
-                    () => {
+                .subscribe({
+                    next: (data: { success: boolean, error: string }) => {
+                        if (data.success !== undefined && data.success) {
+                            this.playerService.editPlaylistTitle(this.currentIdPlaylistEdit, form.form.value.playlist_titre);
+                            modal.dismiss();
+                        } else {
+                            this.error = this.translocoService.translate(data.error);
+                        }
+                    },
+                    error: () => {
                         this.isConnected = false;
                         this.initService.onMessageUnlog();
-                    });
+                    }
+                });
         }
     }
 

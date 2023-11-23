@@ -377,8 +377,8 @@ export class PlayerService implements OnDestroy {
                 environment.URL_SERVER + "supprimer/" + idVideo,
                 environment.httpClientConfig
             )
-            .subscribe(
-                (data: { success: boolean }) => {
+            .subscribe({
+                next: (data: { success: boolean }) => {
                     if (data.success !== undefined && data.success) {
                         for (let i = 0; i < this.listVideo.length; i++) {
                             if (this.listVideo[i].id_video === idVideo) {
@@ -389,10 +389,10 @@ export class PlayerService implements OnDestroy {
                         callbackSuccess();
                     }
                 },
-                () => {
+                error: () => {
                     this.initService.onMessageUnlog();
                 }
-            );
+            });
     }
 
     testAutoPlay() {
@@ -493,8 +493,8 @@ export class PlayerService implements OnDestroy {
                 status,
                 environment.httpClientConfig
             )
-            .subscribe(
-                (data: { success: boolean }) => {
+            .subscribe({
+                next: (data: { success: boolean }) => {
                     if (data.success !== undefined && data.success) {
                         this.listPlaylist
                             .filter(a => a.id_playlist === idPlaylist)
@@ -504,10 +504,10 @@ export class PlayerService implements OnDestroy {
                         this.onChangeListPlaylist();
                     }
                 },
-                () => {
+                error: () => {
                     this.initService.onMessageUnlog();
                 }
-            );
+            });
     }
 
     deletePlaylist(idPlaylist: string) {
@@ -516,8 +516,8 @@ export class PlayerService implements OnDestroy {
                 environment.URL_SERVER + "playlist-supprimer/" + idPlaylist,
                 environment.httpClientConfig
             )
-            .subscribe(
-                (data: { success: boolean }) => {
+            .subscribe({
+                next: (data: { success: boolean }) => {
                     if (data.success !== undefined && data.success) {
                         for (let i = 0; i < this.listPlaylist.length; i++) {
                             if (this.listPlaylist[i].id_playlist === idPlaylist) {
@@ -527,10 +527,10 @@ export class PlayerService implements OnDestroy {
                         this.onChangeListPlaylist();
                     }
                 },
-                () => {
+                error: () => {
                     this.initService.onMessageUnlog();
                 }
-            );
+            });
     }
 
     deleteFollow(idPlaylist: string) {
@@ -543,8 +543,8 @@ export class PlayerService implements OnDestroy {
                 environment.URL_SERVER + "switch_suivi/" + idPlaylist,
                 environment.httpClientConfig
             )
-            .subscribe(
-                (data: { success: boolean, est_suivi: boolean }) => {
+            .subscribe({
+                next: (data: { success: boolean, est_suivi: boolean }) => {
                     if (data.success !== undefined && data.success) {
                         if (data.est_suivi) {
                             this.listFollow.unshift({
@@ -562,10 +562,10 @@ export class PlayerService implements OnDestroy {
                         this.onChangeListFollow();
                     }
                 },
-                () => {
+                error: () => {
                     this.initService.onMessageUnlog();
                 }
-            );
+            });
     }
 
     addVideoInPlaylist(key: string, artist: string, title: string, duration: number) {
@@ -585,16 +585,16 @@ export class PlayerService implements OnDestroy {
                 },
                 environment.httpClientConfig
             )
-            .subscribe(
-                (data: { success: boolean }) => {
+            .subscribe({
+                next: (data: { success: boolean }) => {
                     if (data.success !== undefined && data.success) {
                         this.onChangeListPlaylist();
                     }
                 },
-                () => {
+                error: () => {
                     this.initService.onMessageUnlog();
                 }
-            );
+            });
     }
 
     addInCurrentList(playlist: Video[]) {
@@ -679,16 +679,16 @@ export class PlayerService implements OnDestroy {
                 },
                 environment.httpClientConfig
             )
-            .subscribe(
-                (data: { success: boolean }) => {
+            .subscribe({
+                next: (data: { success: boolean }) => {
                     if (data.success !== undefined && data.success) {
                         this.listLikeVideo = this.listLikeVideo.filter(e => e.key !== key);
                     }
                 },
-                () => {
+                error: () => {
                     this.initService.onMessageUnlog();
                 }
-            );
+            });
     }
 
     ngOnDestroy() {

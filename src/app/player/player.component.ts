@@ -22,17 +22,17 @@ export class PlayerComponent implements OnInit, OnDestroy {
     constructor(private readonly initService: InitService,
         private readonly playerService: PlayerService,
         private readonly ngZone: NgZone) {
-        this.subscription = playerService.subjectCurrentPlaylistChange.subscribe(list => {
+        this.subscription = playerService.subjectCurrentPlaylistChange?.subscribe(list => {
             this.list = list;
         });
 
-        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
+        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange?.subscribe(data => {
             this.ngZone.run(() => {
                 this.currentKey = data.currentKey;
             });
         });
 
-        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
+        this.subscriptionConnected = this.initService.subjectConnectedChange?.subscribe(data => {
             this.isConnected = data.isConnected;
         });
     }

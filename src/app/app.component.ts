@@ -63,7 +63,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.document.documentElement.lang = this.translocoService.getActiveLang();
+        if (this.document) {
+            this.document.documentElement.lang = this.translocoService.getActiveLang();
+        }
     }
 
     ngOnDestroy() {

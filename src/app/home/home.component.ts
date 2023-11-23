@@ -33,14 +33,17 @@ export class HomeComponent implements OnInit {
         this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('meta_description') });
 
         this.httpClient.get(environment.URL_SERVER + 'home_init', environment.httpClientConfig)
-            .subscribe((data: { top: HomeAlbum[], top_albums: HomeAlbum[] }) => {
-                this.isLoading = false;
-                this.listTopAlbums = data.top_albums;
-                this.listTop = data.top;
+            .subscribe({
+                next: (data: { top: HomeAlbum[], top_albums: HomeAlbum[] }) => {
+                    this.isLoading = false;
+                    this.listTopAlbums = data.top_albums;
+                    this.listTop = data.top;
 
-                this.googleAnalyticsService.pageView('/');
-            }, () => {
-                this.isLoading = false;
+                    this.googleAnalyticsService.pageView('/');
+                },
+                error: () => {
+                    this.isLoading = false;
+                }
             });
     }
 
