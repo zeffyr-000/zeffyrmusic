@@ -74,8 +74,24 @@ describe('PlaylistComponent', () => {
         HttpClientTestingModule,
         TranslocoTestingModule.forRoot({
           langs: {
-            en: { meta_description: 'META_DESCRIPTION', title: 'TITLE', lire: 'lire', ajouter_liste_en_cours: 'ajouter_liste_en_cours', intitule_titre: 'intitule_titre', intitule_artiste: 'intitule_artiste' },
-            fr: { meta_description: 'META_DESCRIPTION_FR', title: 'TITLE_FR', lire: 'lire', ajouter_liste_en_cours: 'ajouter_liste_en_cours', intitule_titre: 'intitule_titre', intitule_artiste: 'intitule_artiste' }
+            en: {
+              meta_description: 'META_DESCRIPTION',
+              title: 'TITLE',
+              lire: 'lire',
+              ajouter_liste_en_cours: 'ajouter_liste_en_cours',
+              intitule_titre: 'intitule_titre',
+              intitule_artiste: 'intitule_artiste',
+              suivre: 'suivre',
+            },
+            fr: {
+              meta_description: 'META_DESCRIPTION_FR',
+              title: 'TITLE_FR',
+              lire: 'lire',
+              ajouter_liste_en_cours: 'ajouter_liste_en_cours',
+              intitule_titre: 'intitule_titre',
+              intitule_artiste: 'intitule_artiste',
+              suivre: 'suivre',
+            }
           }
         })],
       declarations: [PlaylistComponent],
@@ -277,6 +293,19 @@ describe('PlaylistComponent', () => {
     expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1', environment.httpClientConfig);
   });
 
+  it('no description', () => {
+    const httpClient = TestBed.inject(HttpClient);
+    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of({ ...mockPlaylistData, description: undefined }));
+    const url = environment.URL_SERVER + 'json/playlist/1';
+    component.idPlaylist = '1';
+
+    component.loadPlaylist(url);
+
+    expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1', environment.httpClientConfig);
+    expect(component.description).toEqual('');
+  });
+
+
   it('should initialize properties and call services with correct arguments when loadLike is called', () => {
     const titleServiceSpy = spyOn(titleService, 'setTitle');
     const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
@@ -346,6 +375,24 @@ describe('PlaylistComponent', () => {
     component.playlist = playlistData;
 
     component.runPlaylist(0);
+
+    expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0);
+  });
+
+  it('should call playerService.runPlaylist without arguments', () => {
+    const playlistData = [{
+      id_video: '1',
+      artiste: 'Artiste 1',
+      artists: [{ id_artiste: '1', label: 'Artiste 1' }],
+      duree: '100',
+      id_playlist: '1',
+      key: 'XXX-XXX',
+      ordre: '1',
+      titre: 'Titre 1',
+      titre_album: 'Titre album 1'
+    }] as Video[];
+    component.playlist = playlistData;
+    component.runPlaylist();
 
     expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0);
   });

@@ -70,16 +70,16 @@
 <div id="header_player" class="row g-0">
 
     <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
-        <span *ngIf="isConnected && playerService.isLiked(currentKey)"
+        <button *ngIf="isConnected && playerService.isLiked(currentKey)"
             class="btn btn-sm btn-link text-decoration-none float-end"
             (click)="$event.stopPropagation();playerService.removeLike(currentKey)" role="presentation">
             <span class="material-icons">favorite</span>
-        </span>
-        <span *ngIf="isConnected && !playerService.isLiked(currentKey)"
+        </button>
+        <button *ngIf="isConnected && !playerService.isLiked(currentKey)"
             class="btn btn-sm btn-link text-decoration-none text-body float-end"
             (click)="$event.stopPropagation();playerService.addLike(currentKey)" role="presentation">
             <span class="material-icons">favorite_border</span>
-        </span>
+        </button>
         <img [src]="'https://img.youtube.com/vi/'+currentKey+'/mqdefault.jpg'" *ngIf="currentKey" class="float-start"
             alt="" />
         <div><b>{{currentTitle}}</b></div>

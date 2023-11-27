@@ -91,6 +91,118 @@ describe('PlayerService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('should update properties and call methods on subjectInitializePlaylist emission', () => {
+        const data = {
+            listPlaylist: [] as UserPlaylist[],
+            listFollow: [] as FollowItem[],
+            listVideo: [{ key: 'key1', titre: 'title1', artiste: '' }] as Video[],
+            tabIndex: [] as number[],
+            listLikeVideo: [] as UserVideo[],
+        };
+        service.isRandom = true;
+
+        const subjectInitializePlaylistSpy = spyOn(service['initService'].subjectInitializePlaylist, 'next').and.callThrough();
+        const subjectCurrentKeyChangeSpy = spyOn(service.subjectCurrentKeyChange, 'next').and.callThrough();
+        const onChangeCurrentPlaylistSpy = spyOn(service, 'onChangeCurrentPlaylist').and.callThrough();
+        const onChangeListPlaylistSpy = spyOn(service, 'onChangeListPlaylist').and.callThrough();
+        const onChangeListFollowSpy = spyOn(service, 'onChangeListFollow').and.callThrough();
+        const onChangeListLikeVideoSpy = spyOn(service, 'onChangeListLikeVideo').and.callThrough();
+
+        service['initService'].subjectInitializePlaylist.next(data);
+
+        expect(subjectInitializePlaylistSpy).toHaveBeenCalledWith(data);
+
+        expect(service.listPlaylist).toEqual(data.listPlaylist);
+        expect(service.listFollow).toEqual(data.listFollow);
+        expect(service.listVideo).toEqual(data.listVideo);
+        expect(service.tabIndex).toEqual(data.tabIndex);
+        expect(service.listLikeVideo).toEqual(data.listLikeVideo);
+        expect(service.currentKey).toEqual(data.listVideo[0].key);
+        expect(service.currentTitle).toEqual(data.listVideo[0].titre);
+        expect(service.currentArtist).toEqual(data.listVideo[0].artiste);
+
+        expect(subjectCurrentKeyChangeSpy).toHaveBeenCalledWith({
+            currentKey: service.currentKey,
+            currentTitle: service.currentTitle,
+            currentArtist: service.currentArtist,
+        });
+
+        expect(onChangeCurrentPlaylistSpy).toHaveBeenCalled();
+        expect(onChangeListPlaylistSpy).toHaveBeenCalled();
+        expect(onChangeListFollowSpy).toHaveBeenCalled();
+        expect(onChangeListLikeVideoSpy).toHaveBeenCalled();
+    });
+
+    it('should launch YT API', () => {
+        const onStateChangeSpy = spyOn(service, 'onStateChangeYT').and.callThrough();
+        const onReadySpy = spyOn(service, 'onReadyYT').and.callThrough();
+        const mockYT = {
+            Player: jasmine.createSpy().and.returnValue({
+                playerVars: {
+                    controls: 0,
+                    hd: 1,
+                    showinfo: 0,
+                    origin: window.location.href
+                },
+                events: {
+                    onStateChange: onStateChangeSpy,
+                    onReady: onReadySpy
+                }
+            })
+        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mockWindow: any = window;
+
+        if (!mockWindow.onYouTubeIframeAPIReady) {
+            mockWindow.onYouTubeIframeAPIReady = () => { };
+        }
+
+        spyOn(mockWindow, 'onYouTubeIframeAPIReady').and.callFake(() => { });
+
+        mockWindow.YT = mockYT;
+
+        service.launchYTApi();
+
+        expect(mockWindow.onYouTubeIframeAPIReady).toBeDefined();
+
+        mockWindow.onYouTubeIframeAPIReady();
+        expect(service.player).toBeDefined();
+    });
+
+    it('should call finvideo on state change', () => {
+        const finvideoSpy = spyOn(service, 'finvideo');
+
+        const mockEvent = { data: 123 };
+
+        service.onStateChangeYT(mockEvent);
+
+        expect(finvideoSpy).toHaveBeenCalledWith(mockEvent);
+    });
+
+    it('should handle onReadyYT correctly', () => {
+        const getVolumeSpy = spyOn(service.player, 'getVolume').and.returnValue(undefined);
+        const updateVolumeSpy = spyOn(service, 'updateVolume');
+
+        service.tabIndex = [0];
+        service.listVideo = [{ key: '123' }] as Video[];
+        localStorage.volume = '200'; // should be capped to 100
+
+        service.onReadyYT();
+
+        expect(service.player.cueVideoById).toHaveBeenCalledWith(service.listVideo[0].key);
+        expect(getVolumeSpy).toHaveBeenCalled();
+
+        getVolumeSpy.calls.reset();
+        getVolumeSpy.and.returnValue(50);
+
+        localStorage.volume = '-100';
+        service.tabIndex = [];
+        service.onReadyYT();
+
+        expect(getVolumeSpy).toHaveBeenCalled();
+        expect(updateVolumeSpy).toHaveBeenCalled();
+    });
+
     it('should set the title on lecture', () => {
         spyOn(titleService, 'setTitle');
         service.listVideo = [
@@ -403,8 +515,8 @@ describe('PlayerService', () => {
             },
             {
                 id_video: '789',
-                artiste: 'Test Artist 3',
-                artists: [{ id_artiste: '789', label: 'Test Artist 3' }],
+                artiste: '',
+                artists: [],
                 duree: '100',
                 id_playlist: '789',
                 key: 'ZZZ-789',
@@ -417,6 +529,10 @@ describe('PlayerService', () => {
         service.tabIndex = [0, 1, 2];
         service.lecture(1);
         expect(service.currentIndex).toBe(1);
+
+        service.lecture(2, true);
+        expect(service.currentIndex).toBe(2);
+        expect(service.currentArtist).toBe('');
     });
 
     it('should call launchFullInit on first play if not autoplay', () => {
@@ -476,10 +592,16 @@ describe('PlayerService', () => {
         expect(service.isPlaying).toBe(false);
     });
 
-    it('should set refInterval to null on video end', () => {
+    it('should set isPlaying to false on video end', () => {
+        service.isPlaying = true;
+        service.finvideo({ data: 0 });
+        expect(service.isPlaying).toBe(false);
+    });
+
+    it('should set isPlaying to false on video end', () => {
         service.refInterval = 123;
-        service.finvideo({ data: 2 });
-        expect(service.refInterval).toBe(null);
+        service.finvideo({ data: -1 });
+        expect(service.isPlaying).toBe(false);
     });
 
     it('should clear the refInterval on video pause', () => {
@@ -576,6 +698,18 @@ describe('PlayerService', () => {
         expect(spy).not.toHaveBeenCalled();
     });
 
+    it('should call launchFullInit on testAutoPlay if not firstLaunched mp3 only', () => {
+        const mockAudio = jasmine.createSpyObj('HTMLAudioElement', ['canPlayType', 'load', 'play', 'pause', 'addEventListener', 'removeEventListener']);
+        mockAudio.canPlayType.and.callFake((type: string) => {
+            return type !== 'audio/ogg';
+        });
+        const spyAudio = spyOn(window, 'Audio').and.returnValue(mockAudio);
+
+        service.firstLaunched = false;
+        service.testAutoPlay();
+        expect(spyAudio).toHaveBeenCalled();
+    });
+
     it('should unsubscribe from subscriptionInitializePlaylist on ngOnDestroy', () => {
         const spy = spyOn(service.subscriptionInitializePlaylist, 'unsubscribe');
         service.ngOnDestroy();
@@ -627,6 +761,36 @@ describe('PlayerService', () => {
     it('should update player running on playerRunning', () => {
         const spyCurrentTime = spyOn(service.player, 'getCurrentTime').and.returnValue(120);
         const spyDuration = spyOn(service.player, 'getDuration').and.returnValue(300);
+        const spyLoadedFraction = spyOn(service.player, 'getVideoLoadedFraction').and.returnValue(0.5);
+
+        const spyNext = spyOn(service.subjectPlayerRunningChange, 'next');
+
+        service.playerRunning();
+
+        expect(spyCurrentTime).toHaveBeenCalled();
+        expect(spyDuration).toHaveBeenCalled();
+        expect(spyLoadedFraction).toHaveBeenCalled();
+        expect(spyNext).toHaveBeenCalled();
+    });
+
+    it('should update player running on playerRunning when player is not ready', () => {
+        const spyCurrentTime = spyOn(service.player, 'getCurrentTime').and.returnValue(undefined);
+        const spyDuration = spyOn(service.player, 'getDuration').and.returnValue(undefined);
+        const spyLoadedFraction = spyOn(service.player, 'getVideoLoadedFraction').and.returnValue(undefined);
+
+        const spyNext = spyOn(service.subjectPlayerRunningChange, 'next');
+
+        service.playerRunning();
+
+        expect(spyCurrentTime).toHaveBeenCalled();
+        expect(spyDuration).toHaveBeenCalled();
+        expect(spyLoadedFraction).toHaveBeenCalled();
+        expect(spyNext).toHaveBeenCalled();
+    });
+
+    it('should update player running on playerRunning with empty values', () => {
+        const spyCurrentTime = spyOn(service.player, 'getCurrentTime').and.returnValue(10);
+        const spyDuration = spyOn(service.player, 'getDuration').and.returnValue(30);
         const spyLoadedFraction = spyOn(service.player, 'getVideoLoadedFraction').and.returnValue(0.5);
 
         const spyNext = spyOn(service.subjectPlayerRunningChange, 'next');

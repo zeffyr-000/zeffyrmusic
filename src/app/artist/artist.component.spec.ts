@@ -25,8 +25,8 @@ describe('ArtistComponent', () => {
                 HttpClientTestingModule,
                 TranslocoTestingModule.forRoot({
                     langs: {
-                        en: { artist: 'Test Artist', albums: 'albums' },
-                        fr: { artist: 'Artiste de test', albums: 'albums' }
+                        en: { artist: 'Test Artist', albums: 'albums', description_partage_artist: 'description_partage_artist' },
+                        fr: { artist: 'Artiste de test', albums: 'albums', description_partage_artist: 'description_partage_artist' }
                     }
                 }),
                 ShareModule

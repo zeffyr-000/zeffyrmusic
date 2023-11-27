@@ -5,7 +5,7 @@ import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { BehaviorSubject } from 'rxjs';
-import { Router, NavigationEnd, NavigationError } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 
 describe('AppComponent', () => {
     let component: AppComponent;
@@ -108,7 +108,6 @@ describe('AppComponent', () => {
     });
 
     it('should set canonical link on NavigationEnd', fakeAsync(() => {
-        // Créer un élément de lien canonique fictif et l'ajouter au DOM
         const link = document.createElement('link');
         link.rel = 'canonical';
         document.head.appendChild(link);
@@ -116,7 +115,6 @@ describe('AppComponent', () => {
         const setAttributeSpy = spyOn(link, 'setAttribute');
         const url = '/test-url';
 
-        // S'abonner aux événements du routeur
         router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 tick();
@@ -124,25 +122,6 @@ describe('AppComponent', () => {
             }
         });
 
-        // Naviguer vers l'URL
         router.navigate([url]);
-    }));
-
-    it('should handle NavigationError', fakeAsync(() => {
-        // Créer un espion pour router.navigateByUrl et le faire rejeter une promesse
-        spyOn(router, 'navigateByUrl').and.returnValue(Promise.reject('Navigation Error'));
-
-        // S'abonner aux événements du routeur
-        router.events.subscribe((event) => {
-            if (event instanceof NavigationError) {
-                tick();
-                // Vérifiez ici les actions appropriées, par exemple :
-                // expect(component.isLoading).toBe(false);
-                // expect(component.error).toBe('Navigation Error');
-            }
-        });
-
-        // Appeler router.navigateByUrl pour déclencher un événement NavigationError
-        router.navigateByUrl('/non-existent-url').catch(() => { });
     }));
 });

@@ -1,23 +1,23 @@
 <app-header id="header" class="navbar navbar-inverse navbar-fixed-top"></app-header>
 
-<div id="main" class="container-fluid">	
-	<div id="container" class="row" [ngClass]="{'showTapVideoYT':showTapVideoYT}">
+<div id="main" class="container-fluid">
+    <div id="container" class="row" [ngClass]="{'showTapVideoYT':showTapVideoYT}">
 
-    <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
-    
-    <div class="col-xs-9 col-md-9" id="content">
-        <router-outlet></router-outlet>
+        <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
+
+        <div class="col-xs-9 col-md-9" id="content">
+            <router-outlet></router-outlet>
+        </div>
+
     </div>
-  
-  </div>
 </div>
 
-<ngb-alert *ngIf="!isOnline" id="alert_perte_connexion" (close)="isOnline = true" type="danger" >
+<ngb-alert *ngIf="!isOnline" id="alert_perte_connexion" (close)="isOnline = true" type="danger">
     {{ 'perte_connexion' | transloco }}
 </ngb-alert>
-<ngb-alert *ngIf="showMessageUnlog" id="alert_deconnexion" (close)="showMessageUnlog = false" type="danger" >
+<ngb-alert *ngIf="showMessageUnlog" id="alert_deconnexion" (close)="showMessageUnlog = false" type="danger">
     {{ 'veuillez_vous_reconnecter' | transloco }}
 </ngb-alert>
-<ngb-alert *ngIf="showTapVideoYT" id="alert_active_autoplay" type="warning" >
+<ngb-alert *ngIf="showTapVideoYT" id="alert_active_autoplay" type="warning">
     {{ 'active_autoplay' | transloco }}
 </ngb-alert>

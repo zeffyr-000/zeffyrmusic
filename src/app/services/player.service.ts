@@ -118,6 +118,31 @@ export class PlayerService implements OnDestroy {
         );
     }
 
+    onStateChangeYT(event: { data: number }) {
+        this.finvideo(event);
+    }
+
+    onReadyYT() {
+        if (this.tabIndex !== undefined && this.tabIndex[0] !== undefined) {
+            this.player.cueVideoById(this.listVideo[0].key);
+        }
+
+        if (
+            localStorage.volume === "undefined" ||
+            localStorage.volume === undefined ||
+            parseInt(localStorage.volume, 10) > 100 ||
+            parseInt(localStorage.volume, 10) < 0
+        ) {
+            if (typeof this.player.getVolume() === "number") {
+                localStorage.volume = this.player.getVolume();
+            } else {
+                localStorage.volume = "100";
+            }
+        }
+
+        this.updateVolume(parseInt(localStorage.volume, 10));
+    }
+
     launchYTApi() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).onYouTubeIframeAPIReady = () => {
@@ -131,38 +156,8 @@ export class PlayerService implements OnDestroy {
                     origin: window.location.href
                 },
                 events: {
-                    onStateChange: (e: { data: number }) => this.finvideo(e),
-                    onReady: () => {
-                        if (this.tabIndex !== undefined && this.tabIndex[0] !== undefined) {
-                            this.player.cueVideoById(this.listVideo[0].key);
-                        } else {
-                            setTimeout(function () {
-                                if (
-                                    this.tab_index !== undefined &&
-                                    this.tab_index[0] !== undefined
-                                ) {
-                                    this.player.cueVideoById(
-                                        this.liste_video[0].key
-                                    );
-                                }
-                            }, 800);
-                        }
-
-                        if (
-                            localStorage.volume === "undefined" ||
-                            localStorage.volume === undefined ||
-                            parseInt(localStorage.volume, 10) > 100 ||
-                            parseInt(localStorage.volume, 10) < 0
-                        ) {
-                            if (typeof this.player.getVolume() === "number") {
-                                localStorage.volume = this.player.getVolume();
-                            } else {
-                                localStorage.volume = "100";
-                            }
-                        }
-
-                        this.updateVolume(parseInt(localStorage.volume, 10));
-                    }
+                    onStateChange: this.onStateChangeYT.bind(this),
+                    onReady: this.onReadyYT.bind(this)
                 }
             });
         };
