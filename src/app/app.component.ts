@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { Event, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
+import { Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
@@ -43,12 +43,6 @@ export class AppComponent implements OnInit, OnDestroy {
             if (event instanceof NavigationEnd) {
                 // Hide loading indicator
                 document.querySelector('link[rel="canonical"]').setAttribute('href', location.origin + event.url);
-            }
-
-            if (event instanceof NavigationError) {
-                // Hide loading indicator
-
-                // Present error to user
             }
         });
 
