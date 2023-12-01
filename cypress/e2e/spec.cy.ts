@@ -1,6 +1,13 @@
-describe('My First Test', () => {
-  it('Visits the initial project page', () => {
+describe('Home page', () => {
+  beforeEach(() => {
     cy.visit('/')
-    cy.contains('app is running!')
+  })
+
+  it('Checks if title is well initialized', () => {
+    cy.title().should('eq', 'La musique gratuite, légale, en illimité - Zeffyr Music')
+  })
+
+  it('Checks if the search form is present', () => {
+    cy.get('#input_search_header').should('exist')
   })
 })
