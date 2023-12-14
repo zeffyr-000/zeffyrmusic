@@ -6,6 +6,26 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { of, throwError } from 'rxjs';
 import { HomeAlbum } from '../models/album.model';
 import { HomeComponent } from './home.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+
+class TranslocoServiceStub {
+  translate(key: string) {
+    const translations: { [key: string]: string } = {
+      'title': 'title',
+      'meta_description': 'meta_description',
+      'titre': 'titre',
+    };
+    return translations[key] || key;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setDefaultLang(lang: string) {
+  }
+
+  getActiveLang() {
+    return 'en';
+  }
+}
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -27,8 +47,8 @@ describe('HomeComponent', () => {
       providers: [
         Title,
         Meta,
-        TranslocoService,
         GoogleAnalyticsService,
+        { provide: TranslocoService, useClass: TranslocoServiceStub },
         {
           provide: TRANSLOCO_CONFIG, useValue: {
             reRenderOnLangChange: true,
@@ -38,6 +58,7 @@ describe('HomeComponent', () => {
           } as TranslocoConfig
         }
       ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
@@ -87,8 +108,8 @@ describe('HomeComponent', () => {
     };
     spyOn(component['httpClient'], 'get').and.returnValue(of(data));
     component.ngOnInit();
-    //expect(component.listTopAlbums).toEqual(data.top_albums);
-    //expect(component.listTop).toEqual(data.top);
+    expect(component['listTopAlbums']).toEqual(data.top_albums);
+    expect(component['listTop']).toEqual(data.top);
   });
 
   it('should set isLoading to false after http request error', () => {

@@ -12,6 +12,8 @@ import { Video } from '../models/video.model';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { SearchComponent } from './search.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -42,6 +44,9 @@ describe('SearchComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: 'test', component: null }
+        ]),
         TranslocoTestingModule.forRoot({
           langs: {
             en: {
@@ -97,6 +102,7 @@ describe('SearchComponent', () => {
           },
         },
       ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);

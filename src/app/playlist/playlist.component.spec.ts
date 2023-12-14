@@ -12,6 +12,7 @@ import { PlayerService } from '../services/player.service';
 import { FollowItem } from '../models/follow.model';
 import { HttpClient } from '@angular/common/http';
 import { UserVideo, Video } from '../models/video.model';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('PlaylistComponent', () => {
   let component: PlaylistComponent;
@@ -82,6 +83,10 @@ describe('PlaylistComponent', () => {
               intitule_titre: 'intitule_titre',
               intitule_artiste: 'intitule_artiste',
               suivre: 'suivre',
+              titre: 'titre',
+              description_partage: 'description_partage',
+              mes_likes: 'mes_likes',
+              description_partage_playlist: 'description_partage_playlist',
             },
             fr: {
               meta_description: 'META_DESCRIPTION_FR',
@@ -91,6 +96,10 @@ describe('PlaylistComponent', () => {
               intitule_titre: 'intitule_titre',
               intitule_artiste: 'intitule_artiste',
               suivre: 'suivre',
+              titre: 'titre',
+              description_partage: 'description_partage',
+              mes_likes: 'mes_likes',
+              description_partage_playlist: 'description_partage_playlist',
             }
           }
         })],
@@ -124,6 +133,7 @@ describe('PlaylistComponent', () => {
           useValue: metaServiceMock,
         },
       ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);

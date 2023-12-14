@@ -6,6 +6,7 @@ import { PlayerService } from './services/player.service';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { BehaviorSubject } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
+import { NO_ERRORS_SCHEMA, NgZone } from '@angular/core';
 
 describe('AppComponent', () => {
     let component: AppComponent;
@@ -14,6 +15,7 @@ describe('AppComponent', () => {
     let playerServiceMock: Partial<PlayerService>;
     let translocoService: TranslocoService;
     let router: Router;
+    let ngZone: NgZone;
 
     beforeEach(async () => {
         initServiceMock = {
@@ -46,6 +48,7 @@ describe('AppComponent', () => {
                     } as TranslocoConfig
                 },
             ],
+            schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();
 
         translocoService = TestBed.inject(TranslocoService);
@@ -58,6 +61,7 @@ describe('AppComponent', () => {
         component = fixture.componentInstance;
 
         router = TestBed.inject(Router);
+        ngZone = TestBed.inject(NgZone);
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
 
@@ -122,6 +126,8 @@ describe('AppComponent', () => {
             }
         });
 
-        router.navigate([url]);
+        ngZone.run(() => {
+            router.navigate([url]);
+        });
     }));
 });

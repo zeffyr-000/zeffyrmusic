@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "downlevelIteration": true,
+    "isolatedModules": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -22,5 +23,6 @@
     "esModuleInterop": true,
     "useDefineForClassFields": false,
     "noImplicitAny": true,
-  }
+  },
+  "exclude": ["cypress/**/*","cypress.config.ts"]
 }
