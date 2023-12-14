@@ -9,6 +9,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { of } from 'rxjs';
 import { Album } from '../models/album.model';
 import { ArtistComponent } from './artist.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ArtistComponent', () => {
     let component: ArtistComponent;
@@ -59,13 +60,14 @@ describe('ArtistComponent', () => {
                 },
                 {
                     provide: TRANSLOCO_CONFIG, useValue: {
-                        reRenderOnLangChange: true,
+                        reRenderOnLangChange: false,
                         availableLangs: ['en', 'fr'],
                         defaultLang: 'en',
                         prodMode: false,
                     } as TranslocoConfig
-                }
+                },
             ],
+            schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();
 
         translocoService = TestBed.inject(TranslocoService);

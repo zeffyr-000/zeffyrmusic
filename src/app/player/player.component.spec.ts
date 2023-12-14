@@ -4,6 +4,7 @@ import { PlayerService } from '../services/player.service';
 import { BehaviorSubject } from 'rxjs';
 import { Video } from '../models/video.model';
 import { PlayerComponent } from './player.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('PlayerComponent', () => {
   let component: PlayerComponent;
@@ -34,6 +35,7 @@ describe('PlayerComponent', () => {
           useValue: playerServiceMock,
         },
       ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
 

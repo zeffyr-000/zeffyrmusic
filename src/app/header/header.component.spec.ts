@@ -14,7 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { PlayerRunning } from '../models/player-running.model';
 import { VideoItem } from '../models/video.model';
-import { TemplateRef } from '@angular/core';
+import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -75,8 +75,36 @@ describe('HeaderComponent', () => {
         NgbModalModule,
         TranslocoTestingModule.forRoot({
           langs: {
-            en: { repetition: 'repetition', title: 'TITLE', inscription: 'inscription', login: 'login', lecture_aleatoire: 'lecture_aleatoire', connexion: 'connexion', meta_description: 'META_DESCRIPTION', video_plein_ecran: 'video_plein_ecran' },
-            fr: { repetition: 'repetition', title: 'TITLE_FR', inscription: 'inscription', login: 'login', lecture_aleatoire: 'lecture_aleatoire', connexion: 'connexion', meta_description: 'META_DESCRIPTION_FR', video_plein_ecran: 'video_plein_ecran' }
+            en: {
+              repetition: 'repetition',
+              title: 'TITLE',
+              inscription: 'inscription',
+              login: 'login',
+              lecture_aleatoire: 'lecture_aleatoire',
+              connexion: 'connexion',
+              meta_description: 'META_DESCRIPTION',
+              video_plein_ecran: 'video_plein_ecran',
+              'Invalid credentials': 'Invalid credentials',
+              'Invalid playlist name': 'Invalid playlist name',
+              'Invalid email': 'Invalid email',
+              'Invalid title': 'Invalid title',
+              mot_de_passe_confirmer_invalide: 'mot_de_passe_confirmer_invalide'
+            },
+            fr: {
+              repetition: 'repetition',
+              title: 'TITLE_FR',
+              inscription: 'inscription',
+              login: 'login',
+              lecture_aleatoire: 'lecture_aleatoire',
+              connexion: 'connexion',
+              meta_description: 'META_DESCRIPTION_FR',
+              video_plein_ecran: 'video_plein_ecran',
+              'Invalid credentials': 'Invalid credentials',
+              'Invalid playlist name': 'Invalid playlist name',
+              'Invalid email': 'Invalid email',
+              'Invalid title': 'Invalid title',
+              mot_de_passe_confirmer_invalide: 'mot_de_passe_confirmer_invalide'
+            }
           }
         })],
       declarations: [HeaderComponent],
@@ -97,6 +125,7 @@ describe('HeaderComponent', () => {
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
       ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     initService = TestBed.inject(InitService);

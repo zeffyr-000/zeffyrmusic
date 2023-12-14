@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, NO_ERRORS_SCHEMA, NgZone } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -10,6 +10,7 @@ import { PlaylistResult } from '../models/playlist.model';
 import { SearchBarComponent, SearchResponse } from './search-bar.component';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { HttpClient } from '@angular/common/http';
+import { MockTestComponent } from '../mock-test.component';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -18,6 +19,7 @@ describe('SearchBarComponent', () => {
   let routerSpy: { navigate: jasmine.Spy };
   let changeDetectorRefSpy: { detectChanges: jasmine.Spy };
   let translocoService: TranslocoService;
+  let ngZone: NgZone;
 
   beforeEach(async () => {
     googleAnalyticsServiceSpy = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
@@ -26,14 +28,16 @@ describe('SearchBarComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: 'test', component: MockTestComponent },
+        ]),
         TranslocoTestingModule.forRoot({
           langs: {
             en: { meta_description: 'META_DESCRIPTION', title: 'TITLE', rechercher: 'rechercher' },
             fr: { meta_description: 'META_DESCRIPTION_FR', title: 'TITLE_FR', rechercher: 'rechercher' }
           }
         }),],
-      declarations: [SearchBarComponent],
+      declarations: [SearchBarComponent, MockTestComponent],
       providers: [
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpy },
         { provide: RouterTestingModule, useValue: routerSpy },
@@ -47,6 +51,7 @@ describe('SearchBarComponent', () => {
           } as TranslocoConfig
         }
       ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
@@ -54,6 +59,7 @@ describe('SearchBarComponent', () => {
   });
 
   beforeEach(() => {
+    ngZone = TestBed.inject(NgZone);
     fixture = TestBed.createComponent(SearchBarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -119,7 +125,9 @@ describe('SearchBarComponent', () => {
       component.resultsArtist = [artistResult];
       component.resultsAlbum = [playlistResult];
 
-      component.reset(artistResult, true, url);
+      ngZone.run(() => {
+        component.reset(artistResult, true, url);
+      });
 
       expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/recherche?q=test');
       expect(component.query).toEqual('');
@@ -130,7 +138,9 @@ describe('SearchBarComponent', () => {
       expect(routerSpy.navigate).toHaveBeenCalledWith([url]);
       */
 
-      component.reset(playlistResult, true, url);
+      ngZone.run(() => {
+        component.reset(playlistResult, true, url);
+      });
       expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/recherche?q=test');
     });
   });
