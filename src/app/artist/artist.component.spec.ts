@@ -99,14 +99,6 @@ describe('ArtistComponent', () => {
         spyOn(googleAnalyticsService, 'pageView');
         component.initLoad();
         expect(titleService.setTitle).toHaveBeenCalledWith('Test Artist - Zeffyr Music');
-        /*
-        expect(component['metaService'].tags).toEqual([
-            { name: 'og:title', content: 'Test Artist - Zeffyr Music' },
-            { name: 'og:description', content: 'description_partage_artist' },
-            { name: 'og:image', content: 'https://api.deezer.com/artist/123/image?size=big' },
-            { name: 'og:url', content: document.location.href },
-        ]);
-        */
         expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('artist/1');
     });
 });
