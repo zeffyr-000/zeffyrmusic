@@ -23,7 +23,7 @@ export interface PlaylistResult {
     ordre: string;
     titre: string;
     url_image: string;
-    year_release: string;
+    year_release: number;
 }
 
 export interface UserPlaylist {

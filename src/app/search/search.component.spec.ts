@@ -127,7 +127,7 @@ describe('SearchComponent', () => {
   it('should set title and load data on init', () => {
     const data: { artist: ArtistResult[], playlist: PlaylistResult[], tab_video: Video[], tab_extra: Extra[] } = {
       artist: [{ id_artiste: '1', artiste: 'Test Artist', artist: 'Test Artist', id_artiste_deezer: '123' }],
-      playlist: [{ id_playlist: '1', artiste: 'Test Artist', ordre: '1', titre: 'Test Album', url_image: '', year_release: '2021' }],
+      playlist: [{ id_playlist: '1', artiste: 'Test Artist', ordre: '1', titre: 'Test Album', url_image: '', year_release: 2021 }],
       tab_video: [{
         id_video: '1', artiste: 'Test Artist', artists: [{ id_artiste: '1', label: 'Test Artist' }], duree: '100', id_playlist: '1', key: 'XXX-XXX', ordre: '1', titre: 'Test Track', titre_album: 'Test Album'
       }],
@@ -170,7 +170,7 @@ describe('SearchComponent', () => {
       ordre: '1',
       titre: 'Test Album',
       url_image: '',
-      year_release: '2021'
+      year_release: 2021
     },
     {
       artiste: 'Test Artist 2',
@@ -178,7 +178,7 @@ describe('SearchComponent', () => {
       ordre: '2',
       titre: 'Test Album 2',
       url_image: '',
-      year_release: '2021'
+      year_release: 2021
     }];
     component.moreAlbums();
     expect(component.limitAlbum).toEqual(component.listAlbums.length);

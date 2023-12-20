@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
 import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
+import { Subject } from 'rxjs';
+import { debounceTime, switchMap, filter, distinctUntilChanged } from 'rxjs/operators';
 
 export interface SearchResponse {
     playlist: PlaylistResult[];
@@ -16,24 +18,32 @@ export interface SearchResponse {
     templateUrl: './search-bar.component.html',
     styleUrls: ['./search-bar.component.scss']
 })
-export class SearchBarComponent {
+export class SearchBarComponent implements OnInit {
 
     query: string;
     resultsArtist: ArtistResult[];
     resultsAlbum: PlaylistResult[];
+    private searchSubject = new Subject<string>();
 
     constructor(private readonly httpClient: HttpClient,
         private readonly ref: ChangeDetectorRef,
         private readonly router: Router,
         private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
+    ngOnInit() {
+        this.searchSubject.pipe(
+            debounceTime(300),
+            filter(query => query.length >= 3),
+            distinctUntilChanged(),
+            switchMap(query => this.httpClient.get(environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(query), environment.httpClientConfig))
+        ).subscribe((data: SearchResponse) => {
+            this.resultsAlbum = data.playlist;
+            this.resultsArtist = data.artist;
+        });
+    }
+
     search() {
-        this.httpClient.get(environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(this.query),
-            environment.httpClientConfig)
-            .subscribe((data: SearchResponse) => {
-                this.resultsAlbum = data.playlist;
-                this.resultsArtist = data.artist;
-            });
+        this.searchSubject.next(this.query);
     }
 
     reset(element: ArtistResult | PlaylistResult, redirect: boolean, url: string) {

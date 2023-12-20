@@ -4,7 +4,7 @@ export interface Album {
     img_big: string;
     title: string;
     titre: string;
-    year_release: string;
+    year_release: number;
 }
 
 export interface HomeAlbum {

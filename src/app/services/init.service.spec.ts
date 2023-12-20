@@ -140,27 +140,6 @@ describe('InitService', () => {
       expect(service['pseudo']).toBe('test_pseudo');
       expect(service['idPerso']).toBe('test_id_perso');
       expect(service['mail']).toBe('test_mail');
-
-      /*
-      expect(service.subjectConnectedChange).toEqual(
-        new BehaviorSubject({
-          isConnected: true,
-          pseudo: 'test_pseudo',
-          idPerso: 'test_id_perso',
-          mail: 'test_mail',
-        })
-      );
-
-      expect(service.subjectInitializePlaylist).toEqual(
-        new Subject<{
-          listPlaylist: UserPlaylist[];
-          listFollow: FollowItem[];
-          listVideo: Video[];
-          tabIndex: number[];
-          listLikeVideo: UserVideo[];
-        }>()
-      );
-      */
     });
 
     it('should set isConnected to false and initialize playlist when server returns invalid data', () => {

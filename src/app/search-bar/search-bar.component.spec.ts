@@ -3,14 +3,15 @@ import { ChangeDetectorRef, NO_ERRORS_SCHEMA, NgZone } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
-import { SearchBarComponent, SearchResponse } from './search-bar.component';
+import { SearchBarComponent } from './search-bar.component';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { HttpClient } from '@angular/common/http';
 import { MockTestComponent } from '../mock-test.component';
+import { TestScheduler } from 'rxjs/testing';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -20,6 +21,8 @@ describe('SearchBarComponent', () => {
   let changeDetectorRefSpy: { detectChanges: jasmine.Spy };
   let translocoService: TranslocoService;
   let ngZone: NgZone;
+  let httpClient: HttpClient;
+  let testScheduler: TestScheduler;
 
   beforeEach(async () => {
     googleAnalyticsServiceSpy = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
@@ -39,6 +42,7 @@ describe('SearchBarComponent', () => {
         }),],
       declarations: [SearchBarComponent, MockTestComponent],
       providers: [
+        HttpClient,
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpy },
         { provide: RouterTestingModule, useValue: routerSpy },
         { provide: ChangeDetectorRef, useValue: changeDetectorRefSpy },
@@ -61,6 +65,10 @@ describe('SearchBarComponent', () => {
   beforeEach(() => {
     ngZone = TestBed.inject(NgZone);
     fixture = TestBed.createComponent(SearchBarComponent);
+    httpClient = TestBed.inject(HttpClient);
+    testScheduler = new TestScheduler((actual, expected) => {
+      expect(actual).toEqual(expected);
+    });
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -69,10 +77,10 @@ describe('SearchBarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('search', () => {
-    it('should call the API with the correct query', () => {
+  it('should debounce, filter, and search for query in ngOnInit', () => {
+    testScheduler.run(({ cold }) => {
       const query = 'test';
-      const searchResponse: SearchResponse = {
+      const searchResponse = {
         artist: [{
           artist: 'Artist 1',
           artiste: 'Artist 1',
@@ -85,23 +93,41 @@ describe('SearchBarComponent', () => {
           ordre: '1',
           titre: 'Playlist 1',
           url_image: 'https://url.com/image.jpg',
-          year_release: '2000'
+          year_release: 2000
         }],
       };
 
-      const httpClient = TestBed.inject(HttpClient);
-      const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of(searchResponse));
+      spyOn(httpClient, 'get').and.returnValue(cold('a|', { a: searchResponse }));
 
-      component.query = query;
-      component.search();
+      const searchSubject = new Subject<string>();
+      component['searchSubject'] = searchSubject;
 
-      expect(httpClientSpy).toHaveBeenCalledWith(
+      component.ngOnInit();
+
+      testScheduler.schedule(() => searchSubject.next('te'), 0);
+      testScheduler.schedule(() => searchSubject.next('tes'), 300);
+      testScheduler.schedule(() => searchSubject.next('test'), 600);
+
+      testScheduler.flush();
+
+      expect(component['resultsAlbum']).toEqual(searchResponse.playlist);
+      expect(component['resultsArtist']).toBe(searchResponse.artist);
+
+      expect(httpClient.get).toHaveBeenCalledWith(
         environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(query),
         environment.httpClientConfig
       );
-      expect(component.resultsArtist).toEqual(searchResponse.artist);
-      expect(component.resultsAlbum).toEqual(searchResponse.playlist);
     });
+  });
+
+  it('should emit query value when search is called', () => {
+    const query = 'test';
+    component['query'] = query;
+    const searchSubjectSpy = spyOn(component['searchSubject'], 'next');
+
+    component.search();
+
+    expect(searchSubjectSpy).toHaveBeenCalledWith(query);
   });
 
   describe('reset', () => {
@@ -118,7 +144,7 @@ describe('SearchBarComponent', () => {
         ordre: '1',
         titre: 'Playlist 1',
         url_image: 'https://url.com/image.jpg',
-        year_release: '2000'
+        year_release: 2000
       };
       const url = '/test';
       component.query = 'test';
@@ -133,10 +159,6 @@ describe('SearchBarComponent', () => {
       expect(component.query).toEqual('');
       expect(component.resultsArtist).toEqual([]);
       expect(component.resultsAlbum).toEqual([]);
-      /*
-      expect(changeDetectorRefSpy.detectChanges).toHaveBeenCalled();
-      expect(routerSpy.navigate).toHaveBeenCalledWith([url]);
-      */
 
       ngZone.run(() => {
         component.reset(playlistResult, true, url);

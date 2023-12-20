@@ -50,14 +50,15 @@
         </li>
 
         <li id="header_li_inscription" class="nav-item" *ngIf="!isConnected">
-            <a class="nav-link btn btn-outline-warning text-warning" (click)="openModal(contentModalRegister)"
-                role="presentation">{{
-                'inscription' | transloco }}</a>
+            <a class="btn btn-warning btn-outline-warning text-light" (click)="openModal(contentModalRegister)"
+                role="presentation">
+                {{'inscription' | transloco }}
+            </a>
         </li>
         <li id="header_li_connexion" class="nav-item" *ngIf="!isConnected">
-            <a class="nav-link btn btn-primary text-light" (click)="openModal(contentModalLogin)" role="presentation">{{
-                'connexion' |
-                transloco }}</a>
+            <a class="btn btn-primary text-light" (click)="openModal(contentModalLogin)" role="presentation">
+                {{'connexion' |transloco }}
+            </a>
         </li>
 
     </ul>
