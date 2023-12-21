@@ -24,11 +24,11 @@ jobs:
           password: ${{ secrets.password }}
           script: rm -rf www/dist/*
 
-      - name: Deploy to SFTP
-        uses: SamKirkland/FTP-Deploy-Action@4.0.0
-        with:
-          server: ${{ secrets.server }}
-          username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
-          server-dir: www/dist/
-          local-dir: dist/zeffyrmusic/
+      - name: Deploy to FTP
+        run: |
+          sudo apt-get install -y lftp
+          lftp ftp://${{ secrets.username }}:${{ secrets.password }}@${{ secrets.server }} -e "
+          set ftp:active-mode true;
+          mirror -R dist/zeffyrmusic/ /www/dist/;
+          quit
+          "
