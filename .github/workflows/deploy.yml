@@ -1,28 +1,33 @@
-name: Deploy
-
 on:
-    push:
-        branches:
-            - master  # Déclenche le workflow uniquement lorsqu'un push est effectué sur la branche master
+  push:
+    branches:
+      - master
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        steps:
-        - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-        - name: Install Dependencies
-            run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-        - name: Build
-            run: npm run build --configuration=production --base-href /dist/
+      - name: Build
+        run: "npm run build --configuration=production --base-href /dist/"
 
-        - name: Deploy to SFTP
-            uses: SamKirkland/FTP-Deploy-Action@4.0.0
-            with:
-                server: ${{ secrets.server }}
-                username: ${{ secrets.username }}
-                password: ${{ secrets.password }}
-                server-dir: www/dist
-                delete: 'true'
+      - name: Clear deployment directory
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.server }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          script: rm -rf www/dist/*
+
+      - name: Deploy to SFTP
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{ secrets.server }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          server-dir: www/dist
