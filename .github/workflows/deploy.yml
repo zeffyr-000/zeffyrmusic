@@ -25,9 +25,10 @@ jobs:
           script: rm -rf www/dist/*
 
       - name: Deploy to SFTP
-        uses: appleboy/ssh-action@master
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
-          host: ${{ secrets.server }}
+          server: ${{ secrets.server }}
           username: ${{ secrets.username }}
           password: ${{ secrets.password }}
-          script: put -r dist/zeffyrmusic/* www/dist/
+          server-dir: www/dist/
+          local-dir: dist/zeffyrmusic/
