@@ -30,6 +30,6 @@ jobs:
           host: ${{ secrets.server }}
           username: ${{ secrets.username }}
           password: ${{ secrets.password }}
-          port: ${{ secrets.PORT }}
+          port: 22
           source: dist/zeffyrmusic/*
           target: www/dist/
