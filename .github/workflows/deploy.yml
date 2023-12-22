@@ -32,4 +32,4 @@ jobs:
           password: ${{ secrets.password }}
           port: 22
           source: dist/zeffyrmusic/*
-          target: www/dist/
+          target: /www/dist/
