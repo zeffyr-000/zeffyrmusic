@@ -39,3 +39,4 @@ jobs:
           port: 22
           source: dist/zeffyrmusic/*
           target: /www/dist/
+          debug: true
