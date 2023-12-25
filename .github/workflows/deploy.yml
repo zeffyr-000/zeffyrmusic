@@ -37,6 +37,6 @@ jobs:
           port: 22
           user: ${{ secrets.username }}
           pass: ${{ secrets.password }}
-          localDir: "dist/zeffyrmusic"
-          remoteDir: "www/dist"
+          localDir: "www/dist"
+          remoteDir: "dist/zeffyrmusic"
           reverse: false
