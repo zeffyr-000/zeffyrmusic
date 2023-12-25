@@ -38,5 +38,4 @@ jobs:
           password: ${{ secrets.password }}
           port: 22
           source: dist/zeffyrmusic/*
-          target: /www/dist/
-          debug: true
+          target: www/dist/
