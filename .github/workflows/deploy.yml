@@ -30,13 +30,13 @@ jobs:
           password: ${{ secrets.password }}
           script: rm -rf www/dist/*
 
-      - name: copy file via ssh password
-        uses: appleboy/scp-action@v0.1.4
+      - name: deploy
+        uses: pressidium/lftp-mirror-action@v1
         with:
           host: ${{ secrets.server }}
-          username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
           port: 22
-          source: dist/zeffyrmusic/*
-          target: www/dist/
-          strip_components: 1
+          user: ${{ secrets.username }}
+          pass: ${{ secrets.password }}
+          localDir: "dist/zeffyrmusic"
+          remoteDir: "www/dist"
+          reverse: false
