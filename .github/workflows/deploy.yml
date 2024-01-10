@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
 
 jobs:
   build:
@@ -16,6 +15,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Install Dependencies
         run: npm ci
