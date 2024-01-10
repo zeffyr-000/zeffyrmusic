@@ -37,6 +37,4 @@ jobs:
           password: ${{ secrets.password }}
           port: 22
           script: |
-            sudo apt-get update
-            sudo apt-get install -y rsync
-            rsync -avz --delete dist/zeffyrmusic ${{ secrets.username }}@${{ secrets.server }}:www/dist
+            rsync -avz -e "ssh -o StrictHostKeyChecking=no" --delete dist/*** ${{ secrets.username }}@${{ secrets.server }}:www/dist
