@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,16 +10,8 @@ import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
 import { UserPlaylist } from '../models/playlist.model';
 import { FollowItem } from '../models/follow.model';
-
-interface LoginResponse {
-    success: boolean;
-    pseudo: string;
-    id_perso: string;
-    mail: string;
-    liste_playlist: UserPlaylist[];
-    liste_suivi: FollowItem[];
-    error?: string;
-}
+import { UserService } from '../services/user.service';
+import { CreatePlaylistResponse, LoginResponse, UserReponse } from '../models/user.model';
 
 @Component({
     selector: 'app-header',
@@ -86,7 +77,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         private readonly initService: InitService,
         public playerService: PlayerService,
         private readonly ref: ChangeDetectorRef,
-        private readonly httpClient: HttpClient,
+        private readonly userService: UserService,
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly googleAnalyticsService: GoogleAnalyticsService,
@@ -254,10 +245,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onSubmitRegister(form: NgForm) {
         if (form.valid) {
-            this.httpClient.post(environment.URL_SERVER + 'inscription',
-                form.form.value,
-                environment.httpClientConfig)
-                .subscribe((data: { success: boolean, error: string }) => {
+            this.userService.register(form.form.value)
+                .subscribe((data: UserReponse) => {
                     if (data.success !== undefined && data.success) {
                         this.isRegistered = true;
 
@@ -271,9 +260,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onLogIn(form: NgForm, modal: NgbActiveModal) {
         if (form.valid) {
-            this.httpClient.post(environment.URL_SERVER + 'login',
-                form.form.value,
-                environment.httpClientConfig)
+            this.userService.login(form.form.value)
                 .subscribe((data: LoginResponse) => {
                     if (data.success !== undefined && data.success) {
                         this.isConnected = true;
@@ -293,21 +280,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     onLogout() {
-        this.httpClient.get(environment.URL_SERVER + 'deconnexion',
-            environment.httpClientConfig)
-            .subscribe((data: { success: boolean }) => {
+        this.userService.logout()
+            .subscribe((data: UserReponse) => {
                 if (data.success !== undefined && data.success) {
                     this.initService.logOut();
                 }
             });
     }
 
-    onSumbitResetPass(form: NgForm) {
+    onSubmitResetPass(form: NgForm) {
         if (form.valid) {
-            this.httpClient.post(environment.URL_SERVER + 'pass',
-                form.form.value,
-                environment.httpClientConfig)
-                .subscribe((data: { success: boolean, error: string }) => {
+            this.userService.resetPass(form.form.value)
+                .subscribe((data: UserReponse) => {
                     if (data.success !== undefined && data.success) {
                         this.isSuccess = true;
                     } else {
@@ -320,15 +304,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     onSubmitEditPass(form: NgForm) {
         if (form.valid) {
             if (form.form.value.password1 === form.form.value.password2) {
-
-                this.httpClient.post(environment.URL_SERVER + 'options/passe',
+                this.userService.editPass(
                     {
                         passwordold: form.form.value.passwordold,
                         passwordnew: form.form.value.password1
-                    },
-                    environment.httpClientConfig)
+                    })
                     .subscribe({
-                        next: (data: { success: boolean, error: string }) => {
+                        next: (data: UserReponse) => {
                             if (data.success !== undefined && data.success) {
                                 this.successPass = true;
                                 setTimeout(() => {
@@ -351,11 +333,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onSubmitEditMail(form: NgForm) {
         if (form.valid) {
-            this.httpClient.post(environment.URL_SERVER + 'options/mail',
-                form.form.value,
-                environment.httpClientConfig)
+            this.userService.editMail(form.form.value)
                 .subscribe({
-                    next: (data: { success: boolean, error: string }) => {
+                    next: (data: UserReponse) => {
                         if (data.success !== undefined && data.success) {
                             this.successMail = true;
                             setTimeout(() => {
@@ -375,11 +355,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onCreatePlaylist(form: NgForm) {
         if (form.valid) {
-            this.httpClient.post(environment.URL_SERVER + 'playlist-creer',
-                form.form.value,
-                environment.httpClientConfig)
+            this.userService.createPlaylist(form.form.value)
                 .subscribe({
-                    next: (data: { success: boolean, id_playlist: string, titre: string, error: string }) => {
+                    next: (data: CreatePlaylistResponse) => {
                         if (data.success !== undefined && data.success) {
                             this.playerService.addNewPlaylist(data.id_playlist, data.titre);
                         } else {
@@ -411,14 +389,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onEditTitlePlaylist(form: NgForm, modal: NgbActiveModal) {
         if (form.valid) {
-            this.httpClient.post(environment.URL_SERVER + 'edit_title',
+            this.userService.editTitlePlaylist(
                 {
                     id_playlist: this.currentIdPlaylistEdit,
                     titre: form.form.value.playlist_titre
-                },
-                environment.httpClientConfig)
+                }
+            )
                 .subscribe({
-                    next: (data: { success: boolean, error: string }) => {
+                    next: (data: UserReponse) => {
                         if (data.success !== undefined && data.success) {
                             this.playerService.editPlaylistTitle(this.currentIdPlaylistEdit, form.form.value.playlist_titre);
                             modal.dismiss();

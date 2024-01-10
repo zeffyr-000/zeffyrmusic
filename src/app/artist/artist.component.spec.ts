@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -10,6 +9,7 @@ import { of } from 'rxjs';
 import { Album } from '../models/album.model';
 import { ArtistComponent } from './artist.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ArtistService } from '../services/artist.service';
 
 describe('ArtistComponent', () => {
     let component: ArtistComponent;
@@ -19,11 +19,22 @@ describe('ArtistComponent', () => {
     let titleService: Title;
     let googleAnalyticsService: GoogleAnalyticsService;
     let translocoService: TranslocoService;
+    let artistServiceMock: Partial<ArtistService>;
+
+    const data: { nom: string; id_artiste_deezer: string; id_artist: string; list_albums: Album[] } = {
+        nom: 'Test Artist',
+        id_artiste_deezer: '123',
+        id_artist: '1',
+        list_albums: [],
+    };
 
     beforeEach(async () => {
+        artistServiceMock = {
+            getArtist: jasmine.createSpy('getArtist').and.returnValue(of(data)),
+        };
+
         await TestBed.configureTestingModule({
             imports: [
-                HttpClientTestingModule,
                 TranslocoTestingModule.forRoot({
                     langs: {
                         en: { artist: 'Test Artist', albums: 'albums', description_partage_artist: 'description_partage_artist' },
@@ -34,6 +45,7 @@ describe('ArtistComponent', () => {
             ],
             declarations: [ArtistComponent],
             providers: [
+                { provide: ArtistService, useValue: artistServiceMock },
                 {
                     provide: ActivatedRoute,
                     useValue: {
@@ -88,13 +100,6 @@ describe('ArtistComponent', () => {
     });
 
     it('should set title and meta tags on init', () => {
-        const data: { nom: string; id_artiste_deezer: string; id_artist: string; list_albums: Album[] } = {
-            nom: 'Test Artist',
-            id_artiste_deezer: '123',
-            id_artist: '1',
-            list_albums: [],
-        };
-        spyOn(component['httpClient'], 'get').and.returnValue(of(data));
         spyOn(titleService, 'setTitle');
         spyOn(googleAnalyticsService, 'pageView');
         component.initLoad();

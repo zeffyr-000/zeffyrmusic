@@ -1,9 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
-import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -12,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
 import { Video } from '../models/video.model';
+import { SearchService } from '../services/search.service';
 
 @Component({
     selector: 'app-search',
@@ -40,7 +39,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private subscriptionConnected: Subscription;
 
-    constructor(private readonly httpClient: HttpClient,
+    constructor(private readonly searchService: SearchService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly titleService: Title,
         private readonly translocoService: TranslocoService,
@@ -59,8 +58,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.isConnected = data.isConnected;
         });
 
-        this.httpClient.get(environment.URL_SERVER + 'fullsearch1/' + encodeURIComponent(this.query),
-            environment.httpClientConfig)
+        this.searchService.fullSearch1(this.query)
             .subscribe((data: { artist: ArtistResult[], playlist: PlaylistResult[] }) => {
                 this.isLoading1 = false;
 
@@ -75,8 +73,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
             });
 
-        this.httpClient.get(environment.URL_SERVER + 'fullsearch2/' + encodeURIComponent(this.query),
-            environment.httpClientConfig)
+        this.searchService.fullSearch2(this.query)
             .subscribe((data: { tab_video: Video[] }) => {
                 this.isLoading2 = false;
 
@@ -84,8 +81,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.limitTrack = 5;
             });
 
-        this.httpClient.get(environment.URL_SERVER + 'fullsearch3/' + encodeURIComponent(this.query),
-            environment.httpClientConfig)
+        this.searchService.fullSearch3(this.query)
             .subscribe((data: { tab_extra: Extra[] }) => {
                 this.isLoading3 = false;
 

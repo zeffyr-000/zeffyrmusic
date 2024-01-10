@@ -19,6 +19,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Run Tests
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
+
+      - name: Lint
+        run: npm run lint
+
       - name: Build
         run: npm run build -- --configuration=production --deploy-url /dist/
 
@@ -37,6 +43,6 @@ jobs:
           port: 22
           user: ${{ secrets.username }}
           pass: ${{ secrets.password }}
-          localDir: "www/dist"
-          remoteDir: "dist/zeffyrmusic"
+          localDir: "dist/zeffyrmusic"
+          remoteDir: "www/dist"
           reverse: false
