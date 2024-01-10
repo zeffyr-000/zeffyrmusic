@@ -25,6 +25,8 @@ class TranslocoServiceStub {
   getActiveLang() {
     return 'en';
   }
+
+  setActiveLang: jasmine.Spy = jasmine.createSpy('setActiveLang');
 }
 
 describe('HomeComponent', () => {
@@ -80,7 +82,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set title and meta tags on init', () => {
-    spyOn(component['httpClient'], 'get').and.returnValue(of({ top: [], top_albums: [] }));
+    spyOn(component['initService'], 'getHomeInit').and.returnValue(of({ top: [], top_albums: [] }));
     spyOn(titleService, 'setTitle');
     spyOn(metaService, 'updateTag');
     spyOn(googleAnalyticsService, 'pageView');
@@ -91,7 +93,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set isLoading to false after http request', () => {
-    spyOn(component['httpClient'], 'get').and.returnValue(of({ top: [], top_albums: [] }));
+    spyOn(component['initService'], 'getHomeInit').and.returnValue(of({ top: [], top_albums: [] }));
     component.ngOnInit();
     expect(component.isLoading).toBeFalse();
   });
@@ -106,14 +108,14 @@ describe('HomeComponent', () => {
       }],
       top_albums: [{ id: '2', titre: 'Titre Album 2', description: 'Description Album 2', url_image: '' }],
     };
-    spyOn(component['httpClient'], 'get').and.returnValue(of(data));
+    spyOn(component['initService'], 'getHomeInit').and.returnValue(of(data));
     component.ngOnInit();
     expect(component['listTopAlbums']).toEqual(data.top_albums);
     expect(component['listTop']).toEqual(data.top);
   });
 
   it('should set isLoading to false after http request error', () => {
-    spyOn(component['httpClient'], 'get').and.returnValue(throwError('Error'));
+    spyOn(component['initService'], 'getHomeInit').and.returnValue(throwError('Error'));
     component.ngOnInit();
     expect(component.isLoading).toBeFalse();
   });

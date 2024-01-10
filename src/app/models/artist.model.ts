@@ -1,3 +1,5 @@
+import { Album } from "./album.model";
+
 export interface Artist {
     id_artiste: string;
     label: string;
@@ -8,4 +10,11 @@ export interface ArtistResult {
     artiste?: string;
     id_artiste: string;
     id_artiste_deezer: string;
+}
+
+export interface ArtistData {
+    nom: string;
+    id_artiste_deezer: string;
+    id_artist: string;
+    list_albums: Album[];
 }

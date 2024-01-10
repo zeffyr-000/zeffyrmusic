@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { environment } from '../../environments/environment';
 import { InitService, PingResponse } from './init.service';
+import { HomeAlbum } from '../models/album.model';
 
 describe('InitService', () => {
   let service: InitService;
@@ -236,6 +237,25 @@ describe('InitService', () => {
       expect(service['isConnected']).toBeFalse();
 
       expect(service.onChangeIsConnected).toHaveBeenCalled();
+    });
+  });
+
+  describe('getHomeInit', () => {
+    it('should fetch home init data', () => {
+      const mockHomeInitData: { top: HomeAlbum[], top_albums: HomeAlbum[] } = {
+        top: [{ id: '1', titre: 'Test Album', description: 'Test Description', url_image: '' }],
+        top_albums: [{ id: '2', titre: 'Test Album 2', description: 'Test Description 2', url_image: '' }]
+      };
+
+      service.getHomeInit().subscribe(data => {
+        expect(data).toEqual(mockHomeInitData);
+      });
+
+      const req = httpMock.expectOne(environment.URL_SERVER + 'home_init');
+
+      expect(req.request.method).toBe('GET');
+
+      req.flush(mockHomeInitData);
     });
   });
 });

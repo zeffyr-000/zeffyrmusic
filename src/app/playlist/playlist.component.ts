@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, NgZone } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -10,6 +9,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Video } from '../models/video.model';
 import { Playlist } from '../models/playlist.model';
 import { Subscription } from 'rxjs';
+import { PlaylistService } from '../services/playlist.service';
 
 @Component({
     selector: 'app-playlist',
@@ -39,7 +39,7 @@ export class PlaylistComponent implements OnDestroy {
     subscriptionInitializePlaylist: Subscription;
     subscriptionListLikeVideo: Subscription;
 
-    constructor(private readonly httpClient: HttpClient,
+    constructor(private readonly playlistService: PlaylistService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly initService: InitService,
         private readonly playerService: PlayerService,
@@ -103,13 +103,7 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     loadPlaylist(url: string) {
-
-        if (!url) {
-            url = environment.URL_SERVER + 'json/playlist/' + this.idPlaylist;
-        }
-
-        this.httpClient.get(url,
-            environment.httpClientConfig)
+        this.playlistService.getPlaylist(url, this.idPlaylist)
             .subscribe((data: Playlist) => {
 
                 if (data.est_prive === undefined) {

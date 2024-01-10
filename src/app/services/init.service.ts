@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Inject } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DOCUMENT } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
 import { UserVideo, Video } from '../models/video.model';
 import { FollowItem } from '../models/follow.model';
+import { HomeAlbum } from '../models/album.model';
 
 export interface PingResponse {
     est_connecte: boolean;
@@ -136,6 +137,10 @@ export class InitService {
 
         this.isConnected = false;
         this.onChangeIsConnected();
+    }
+
+    getHomeInit(): Observable<{ top: HomeAlbum[], top_albums: HomeAlbum[] }> {
+        return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
     }
 
 }

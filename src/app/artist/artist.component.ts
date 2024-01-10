@@ -1,11 +1,10 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
-import { environment } from '../../environments/environment';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Album } from '../models/album.model';
+import { ArtistService } from '../services/artist.service';
 
 @Component({
     selector: 'app-artist',
@@ -21,7 +20,7 @@ export class ArtistComponent implements OnInit {
     idArtist: string;
     listAlbums: Album[];
 
-    constructor(private readonly httpClient: HttpClient,
+    constructor(private readonly artistService: ArtistService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly titleService: Title,
         private readonly metaService: Meta,
@@ -37,10 +36,8 @@ export class ArtistComponent implements OnInit {
     initLoad() {
         const idArtist = this.activatedRoute.snapshot.paramMap.get('id_artist');
 
-        this.httpClient.get(environment.URL_SERVER + 'json/artist/' + idArtist,
-            environment.httpClientConfig)
+        this.artistService.getArtist(idArtist)
             .subscribe((data: { nom: string, id_artiste_deezer: string, id_artist: string, list_albums: Album[] }) => {
-
                 this.name = data.nom;
                 this.idArtistDeezer = data.id_artiste_deezer;
                 this.urlDeezer = 'https://api.deezer.com/artist/' + data.id_artiste_deezer + '/image?size=big';

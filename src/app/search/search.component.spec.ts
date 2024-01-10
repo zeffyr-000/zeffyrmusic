@@ -1,19 +1,18 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { BehaviorSubject, of } from 'rxjs';
-import { Extra } from '../models/search.model';
-import { ArtistResult } from '../models/artist.model';
-import { PlaylistResult } from '../models/playlist.model';
-import { Video } from '../models/video.model';
+import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { SearchComponent } from './search.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SearchService } from '../services/search.service';
+import { MockTestComponent } from '../mock-test.component';
+import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -24,6 +23,20 @@ describe('SearchComponent', () => {
   let initService: InitService;
   let playerService: PlayerService;
   let googleAnalyticsService: GoogleAnalyticsService;
+  let searchServiceMock: Partial<SearchService>;
+
+  const searchResults1: SearchResults1 = {
+    artist: [{ id_artiste: '1', artiste: 'Test Artist', artist: 'Test Artist', id_artiste_deezer: '123' }],
+    playlist: [{ id_playlist: '1', artiste: 'Test Artist', ordre: '1', titre: 'Test Album', url_image: '', year_release: 2021 }],
+  };
+  const searchResults2: SearchResults2 = {
+    tab_video: [{
+      id_video: '1', artiste: 'Test Artist', artists: [{ id_artiste: '1', label: 'Test Artist' }], duree: '100', id_playlist: '1', key: 'XXX-XXX', ordre: '1', titre: 'Test Track', titre_album: 'Test Album'
+    }],
+  };
+  const searchResults3: SearchResults3 = {
+    tab_extra: [{ key: 'TEST', title: 'TITLE', duree: 100 }],
+  };
 
   beforeEach(async () => {
     const initServiceMock = jasmine.createSpyObj('InitService', ['init']);
@@ -40,12 +53,16 @@ describe('SearchComponent', () => {
       'addVideoAfterCurrentInList',
     ]);
     initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
+    searchServiceMock = {
+      fullSearch1: jasmine.createSpy('fullSearch1').and.returnValue(of(searchResults1)),
+      fullSearch2: jasmine.createSpy('fullSearch2').and.returnValue(of(searchResults2)),
+      fullSearch3: jasmine.createSpy('fullSearch3').and.returnValue(of(searchResults3)),
+    };
 
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         RouterTestingModule.withRoutes([
-          { path: 'test', component: null }
+          { path: 'test', component: MockTestComponent }
         ]),
         TranslocoTestingModule.forRoot({
           langs: {
@@ -60,8 +77,12 @@ describe('SearchComponent', () => {
             }
           }
         })],
-      declarations: [SearchComponent],
+      declarations: [SearchComponent, ToMMSSPipe, MockTestComponent],
       providers: [
+        {
+          provide: SearchService,
+          useValue: searchServiceMock,
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -125,23 +146,14 @@ describe('SearchComponent', () => {
   });
 
   it('should set title and load data on init', () => {
-    const data: { artist: ArtistResult[], playlist: PlaylistResult[], tab_video: Video[], tab_extra: Extra[] } = {
-      artist: [{ id_artiste: '1', artiste: 'Test Artist', artist: 'Test Artist', id_artiste_deezer: '123' }],
-      playlist: [{ id_playlist: '1', artiste: 'Test Artist', ordre: '1', titre: 'Test Album', url_image: '', year_release: 2021 }],
-      tab_video: [{
-        id_video: '1', artiste: 'Test Artist', artists: [{ id_artiste: '1', label: 'Test Artist' }], duree: '100', id_playlist: '1', key: 'XXX-XXX', ordre: '1', titre: 'Test Track', titre_album: 'Test Album'
-      }],
-      tab_extra: [{ key: 'TEST', title: 'TITLE', duree: 100 }],
-    };
-    spyOn(component['httpClient'], 'get').and.returnValue(of(data));
     spyOn(titleService, 'setTitle');
     spyOn(googleAnalyticsService, 'pageView');
     component.ngOnInit();
     expect(titleService.setTitle).toHaveBeenCalledWith('resultats_recherche - Zeffyr Music');
-    expect(component.listArtists).toEqual(data.artist);
-    expect(component.listAlbums).toEqual(data.playlist);
-    expect(component.listTracks).toEqual(data.tab_video);
-    expect(component.listExtras).toEqual(data.tab_extra);
+    expect(component.listArtists).toEqual(searchResults1.artist);
+    expect(component.listAlbums).toEqual(searchResults1.playlist);
+    expect(component.listTracks).toEqual(searchResults2.tab_video);
+    expect(component.listExtras).toEqual(searchResults3.tab_extra);
     expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('search/test');
   });
 

@@ -219,7 +219,7 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
-        <form *ngIf="!isSuccess" (ngSubmit)="onSumbitResetPass(formResetPass)" #formResetPass="ngForm">
+        <form *ngIf="!isSuccess" (ngSubmit)="onSubmitResetPass(formResetPass)" #formResetPass="ngForm">
             <p class="form-group">
                 <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
                 <input type="text" name="mail" id="mail" class="form-control" ngbAutofocus ngModel required email />

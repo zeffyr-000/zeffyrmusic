@@ -1,17 +1,16 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA, NgZone } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { Subject } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { Subject, of } from 'rxjs';
 import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
 import { SearchBarComponent } from './search-bar.component';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
-import { HttpClient } from '@angular/common/http';
 import { MockTestComponent } from '../mock-test.component';
 import { TestScheduler } from 'rxjs/testing';
+import { SearchService } from '../services/search.service';
+import { SearchBarResponse } from '../models/search.model';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -21,16 +20,35 @@ describe('SearchBarComponent', () => {
   let changeDetectorRefSpy: { detectChanges: jasmine.Spy };
   let translocoService: TranslocoService;
   let ngZone: NgZone;
-  let httpClient: HttpClient;
   let testScheduler: TestScheduler;
+  let searchServiceMock: Partial<SearchService>;
+  const mockSearchBarResponse: SearchBarResponse = {
+    playlist: [{
+      id_playlist: 'test_id_playlist',
+      artiste: 'test_artiste',
+      ordre: '1',
+      titre: 'test_titre',
+      url_image: 'test_url_image',
+      year_release: 2021,
+    }],
+    artist: [{
+      artist: 'test_artist',
+      artiste: 'test_artiste',
+      id_artiste: 'test_id_artiste',
+      id_artiste_deezer: 'test_id_artiste_deezer',
+    }],
+  };
 
   beforeEach(async () => {
     googleAnalyticsServiceSpy = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     changeDetectorRefSpy = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
+    searchServiceMock = {
+      searchBar: jasmine.createSpy('searchBar').and.returnValue(of(mockSearchBarResponse))
+    };
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,
+      imports: [
         RouterTestingModule.withRoutes([
           { path: 'test', component: MockTestComponent },
         ]),
@@ -42,7 +60,7 @@ describe('SearchBarComponent', () => {
         }),],
       declarations: [SearchBarComponent, MockTestComponent],
       providers: [
-        HttpClient,
+        { provide: SearchService, useValue: searchServiceMock },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpy },
         { provide: RouterTestingModule, useValue: routerSpy },
         { provide: ChangeDetectorRef, useValue: changeDetectorRefSpy },
@@ -65,7 +83,6 @@ describe('SearchBarComponent', () => {
   beforeEach(() => {
     ngZone = TestBed.inject(NgZone);
     fixture = TestBed.createComponent(SearchBarComponent);
-    httpClient = TestBed.inject(HttpClient);
     testScheduler = new TestScheduler((actual, expected) => {
       expect(actual).toEqual(expected);
     });
@@ -78,26 +95,7 @@ describe('SearchBarComponent', () => {
   });
 
   it('should debounce, filter, and search for query in ngOnInit', () => {
-    testScheduler.run(({ cold }) => {
-      const query = 'test';
-      const searchResponse = {
-        artist: [{
-          artist: 'Artist 1',
-          artiste: 'Artist 1',
-          id_artiste: '1',
-          id_artiste_deezer: '123'
-        }],
-        playlist: [{
-          id_playlist: '1',
-          artiste: 'Artist 1',
-          ordre: '1',
-          titre: 'Playlist 1',
-          url_image: 'https://url.com/image.jpg',
-          year_release: 2000
-        }],
-      };
-
-      spyOn(httpClient, 'get').and.returnValue(cold('a|', { a: searchResponse }));
+    testScheduler.run(() => {
 
       const searchSubject = new Subject<string>();
       component['searchSubject'] = searchSubject;
@@ -110,13 +108,8 @@ describe('SearchBarComponent', () => {
 
       testScheduler.flush();
 
-      expect(component['resultsAlbum']).toEqual(searchResponse.playlist);
-      expect(component['resultsArtist']).toBe(searchResponse.artist);
-
-      expect(httpClient.get).toHaveBeenCalledWith(
-        environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(query),
-        environment.httpClientConfig
-      );
+      expect(component['resultsAlbum']).toEqual(mockSearchBarResponse.playlist);
+      expect(component['resultsArtist']).toBe(mockSearchBarResponse.artist);
     });
   });
 

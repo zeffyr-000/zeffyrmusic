@@ -1,35 +1,37 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { environment } from 'src/environments/environment';
 import { FollowItem } from '../models/follow.model';
 import { UserPlaylist } from '../models/playlist.model';
 import { PlayerService } from '../services/player.service';
 import { HeaderComponent } from './header.component';
 import { NgForm } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { PlayerRunning } from '../models/player-running.model';
 import { VideoItem } from '../models/video.model';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
+import { UserService } from '../services/user.service';
+import { LoginResponse } from '../models/user.model';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
   let initService: InitService;
   let playerService: PlayerService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let userService: UserService;
   let googleAnalyticsServiceSpy: jasmine.SpyObj<GoogleAnalyticsService>;
   let translocoService: TranslocoService;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let httpTestingController: HttpTestingController;
   let onUpdateSliderPlayerSpy: jasmine.Spy;
   let onUpdateVolumeSpy: jasmine.Spy;
   let modalService: NgbModal;
   let routerSpyObj: jasmine.SpyObj<Router>;
   let routeSpyObj: jasmine.SpyObj<ActivatedRoute>;
+  let userServiceMock: jasmine.SpyObj<UserService>;
 
   beforeEach(async () => {
     const initServiceMock = jasmine.createSpyObj('InitService', ['loginSuccess', 'logOut', 'onMessageUnlog']);
@@ -50,6 +52,7 @@ describe('HeaderComponent', () => {
       'deletePlaylist',
       'addVideoInPlaylistRequest'
     ]);
+    userServiceMock = jasmine.createSpyObj('UserService', ['register', 'login', 'resetPass', 'editPass', 'editMail', 'createPlaylist', 'logout', 'editTitlePlaylist']);
     routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
     routeSpyObj = jasmine.createSpyObj('ActivatedRoute', [], { snapshot: { paramMap: { get: () => '1' } } });
     const googleAnalyticsServiceSpyObj = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
@@ -71,7 +74,6 @@ describe('HeaderComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         NgbModalModule,
         TranslocoTestingModule.forRoot({
           langs: {
@@ -111,6 +113,7 @@ describe('HeaderComponent', () => {
       providers: [
         { provide: InitService, useValue: initServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
+        { provide: UserService, useValue: userServiceMock },
         { provide: Router, useValue: routerSpyObj },
         { provide: ActivatedRoute, useValue: routeSpyObj },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpyObj },
@@ -130,6 +133,7 @@ describe('HeaderComponent', () => {
 
     initService = TestBed.inject(InitService);
     playerService = TestBed.inject(PlayerService);
+    userService = TestBed.inject(UserService);
     googleAnalyticsServiceSpy = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     modalService = TestBed.inject(NgbModal);
@@ -140,15 +144,10 @@ describe('HeaderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
-    httpTestingController = TestBed.inject(HttpTestingController);
     onUpdateSliderPlayerSpy = spyOn(component, 'onUpdateSliderPlayer');
     onUpdateVolumeSpy = spyOn(component, 'onUpdateVolume');
 
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    httpTestingController.verify(); // vérifie qu'il n'y a pas de requêtes HTTP en suspens
   });
 
   it('should create', () => {
@@ -348,6 +347,11 @@ describe('HeaderComponent', () => {
   });
 
   describe('onSubmitRegister', () => {
+
+    afterEach(() => {
+      userServiceMock.register.calls.reset();
+    });
+
     it('should call httpClient.post with the correct arguments', () => {
       const form = <NgForm>{
         valid: true,
@@ -358,13 +362,12 @@ describe('HeaderComponent', () => {
           }
         }
       };
+      const registerResponse = { success: true, error: '' };
+      userServiceMock.register.and.returnValue(of(registerResponse));
+
       component.onSubmitRegister(form);
 
-      const req = httpTestingController.expectOne(environment.URL_SERVER + 'inscription');
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(form.form.value);
-
-      req.flush({ success: true });
+      expect(userServiceMock.register).toHaveBeenCalledWith(form.form.value);
     });
 
     it('should set isRegistered to true and call googleAnalyticsService.pageView if the response is successful', () => {
@@ -377,13 +380,12 @@ describe('HeaderComponent', () => {
           }
         }
       };
+      const registerResponse = { success: true, error: '' };
+      userServiceMock.register.and.returnValue(of(registerResponse));
+
       component.onSubmitRegister(form);
 
-      const req = httpTestingController.expectOne(environment.URL_SERVER + 'inscription');
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(form.form.value);
-
-      req.flush({ success: true }); // simule une réponse du serveur
+      expect(userServiceMock.register).toHaveBeenCalledWith(form.form.value);
 
       expect(component.isRegistered).toBeTrue();
       expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/inscription/succes');
@@ -401,19 +403,21 @@ describe('HeaderComponent', () => {
       };
       const error = 'invalid_email';
       spyOn(translocoService, 'translate').and.returnValue('Invalid email');
+      const registerResponse = { success: false, error };
+      userServiceMock.register.and.returnValue(of(registerResponse));
 
       component.onSubmitRegister(form);
 
-      const req = httpTestingController.expectOne(environment.URL_SERVER + 'inscription');
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual(form.form.value);
-
-      req.flush({ success: false, error }); // simule une réponse du serveur avec une erreur
+      expect(userServiceMock.register).toHaveBeenCalledWith(form.form.value);
 
       expect(component.error).toBe('Invalid email');
     });
 
     describe('onLogIn', () => {
+      afterEach(() => {
+        userServiceMock.login.calls.reset();
+      });
+
       it('should call httpClient.post with the correct arguments', () => {
         const form = <NgForm>{
           valid: true,
@@ -424,13 +428,13 @@ describe('HeaderComponent', () => {
             }
           }
         };
+
+        const loginResponse = { success: true, pseudo: '', id_perso: '', mail: '', liste_playlist: [], liste_suivi: [] } as LoginResponse;
+        userServiceMock.login.and.returnValue(of(loginResponse));
+
         component.onLogIn(form, activeModalSpy);
 
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'login');
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.body).toEqual(form.form.value);
-
-        req.flush({ success: true }); // simule une réponse du serveur
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
 
         expect(component.isConnected).toBeTrue();
         expect(initService.loginSuccess).toHaveBeenCalled();
@@ -453,13 +457,12 @@ describe('HeaderComponent', () => {
         const liste_playlist: UserPlaylist[] = [];
         const liste_suivi: FollowItem[] = [];
 
+        const loginResponse = { success: true, pseudo, id_perso, mail, liste_playlist, liste_suivi } as LoginResponse;
+        userServiceMock.login.and.returnValue(of(loginResponse));
+
         component.onLogIn(form, activeModalSpy);
 
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'login');
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.body).toEqual(form.form.value);
-
-        req.flush({ success: true, pseudo, id_perso, mail, liste_playlist, liste_suivi }); // simule une réponse du serveur
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
 
         expect(component.isConnected).toBeTrue();
         expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso);
@@ -481,13 +484,12 @@ describe('HeaderComponent', () => {
         const error = 'invalid_credentials';
         spyOn(translocoService, 'translate').and.returnValue('Invalid credentials');
 
+        const loginResponse = { success: false, error } as LoginResponse;
+        userServiceMock.login.and.returnValue(of(loginResponse));
+
         component.onLogIn(form, activeModalSpy);
 
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'login');
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.body).toEqual(form.form.value);
-
-        req.flush({ success: false, error }); // simule une réponse du serveur avec une erreur
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
 
         expect(component.error).toBe('Invalid credentials');
       });
@@ -499,18 +501,18 @@ describe('HeaderComponent', () => {
         const successResponse = { success: true, error: '' };
         const errorResponse = { success: false, error: 'Invalid credentials' };
 
-        component.onSumbitResetPass(form);
+        userServiceMock.resetPass.and.returnValue(of(successResponse));
 
-        let req = httpTestingController.expectOne(environment.URL_SERVER + 'pass');
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.body).toEqual(form.form.value);
-        req.flush(successResponse);
+        component.onSubmitResetPass(form);
+
+        expect(userServiceMock.resetPass).toHaveBeenCalledWith(form.form.value);
         expect(component.isSuccess).toBe(true);
 
-        component.onSumbitResetPass(form);
+        userServiceMock.resetPass.and.returnValue(of(errorResponse));
 
-        req = httpTestingController.expectOne(environment.URL_SERVER + 'pass');
-        req.flush(errorResponse);
+        component.onSubmitResetPass(form);
+
+        expect(userServiceMock.resetPass).toHaveBeenCalledWith(form.form.value);
         expect(component.error).toBe('Invalid credentials');
       });
     });
@@ -530,27 +532,28 @@ describe('HeaderComponent', () => {
         } as NgForm;
         const successResponse = { success: true, error: '' };
         const errorResponse = { success: false, error: 'Invalid credentials' };
+        const expectedBody = {
+          passwordold: 'oldPassword',
+          passwordnew: 'testPassword'
+        };
+
+        userServiceMock.editPass.and.returnValue(of(successResponse));
 
         // Act
         component.onSubmitEditPass(form);
 
         // Assert
-        let req = httpTestingController.expectOne(environment.URL_SERVER + 'options/passe');
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.body).toEqual({
-          passwordold: form.form.value.passwordold,
-          passwordnew: form.form.value.password1
-        });
-        req.flush(successResponse);
+        expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
         tick(10000);
         expect(component.successPass).toBe(false);
 
+
+        userServiceMock.editPass.and.returnValue(of(errorResponse));
         // Act
         component.onSubmitEditPass(form);
 
         // Assert
-        req = httpTestingController.expectOne(environment.URL_SERVER + 'options/passe');
-        req.flush(errorResponse);
+        expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
         expect(component.error).toBe('Invalid credentials');
       }));
 
@@ -586,13 +589,13 @@ describe('HeaderComponent', () => {
             }
           }
         } as NgForm;
+        userServiceMock.editPass.and.returnValue(throwError('error'));
 
         // Act
         component.onSubmitEditPass(form);
 
         // Assert
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'options/passe');
-        req.error(new ErrorEvent('Network error'));
+        expect(userServiceMock.editPass).toHaveBeenCalled();
         expect(component.isConnected).toBe(false);
         expect(initService.onMessageUnlog).toHaveBeenCalled();
       });
@@ -611,24 +614,22 @@ describe('HeaderComponent', () => {
         } as NgForm;
         const successResponse = { success: true, error: '' };
         const errorResponse = { success: false, error: 'Invalid email' };
+        userServiceMock.editMail.and.returnValue(of(successResponse));
 
         // Act
         component.onSubmitEditMail(form);
 
         // Assert
-        let req = httpTestingController.expectOne(environment.URL_SERVER + 'options/mail');
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.body).toEqual(form.form.value);
-        req.flush(successResponse);
+        expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
         tick(10000);
         expect(component.successMail).toBe(false);
 
+        userServiceMock.editMail.and.returnValue(of(errorResponse));
         // Act
         component.onSubmitEditMail(form);
 
         // Assert
-        req = httpTestingController.expectOne(environment.URL_SERVER + 'options/mail');
-        req.flush(errorResponse);
+        expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
         expect(component.error).toBe('Invalid email');
       }));
 
@@ -642,13 +643,14 @@ describe('HeaderComponent', () => {
             }
           }
         } as NgForm;
+        const errorResponse = { success: false, error: 'Invalid email' };
+        userServiceMock.editMail.and.returnValue(throwError(errorResponse));
 
         // Act
         component.onSubmitEditMail(form);
 
         // Assert
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'options/mail');
-        req.error(new ErrorEvent('Network error'));
+        expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
         expect(component.isConnected).toBe(false);
         expect(initService.onMessageUnlog).toHaveBeenCalled();
       });
@@ -667,23 +669,21 @@ describe('HeaderComponent', () => {
         } as NgForm;
         const successResponse = { success: true, id_playlist: '123', titre: 'testPlaylist', error: '' };
         const errorResponse = { success: false, id_playlist: '', titre: '', error: 'Invalid playlist name' };
+        userServiceMock.createPlaylist.and.returnValue(of(successResponse));
 
         // Act
         component.onCreatePlaylist(form);
 
         // Assert
-        let req = httpTestingController.expectOne(environment.URL_SERVER + 'playlist-creer');
-        expect(req.request.method).toEqual('POST');
-        expect(req.request.body).toEqual(form.form.value);
-        req.flush(successResponse);
+        expect(userServiceMock.createPlaylist).toHaveBeenCalledWith(form.form.value);
         expect(playerService.addNewPlaylist).toHaveBeenCalledWith('123', 'testPlaylist');
 
+        userServiceMock.createPlaylist.and.returnValue(of(errorResponse));
         // Act
         component.onCreatePlaylist(form);
 
         // Assert
-        req = httpTestingController.expectOne(environment.URL_SERVER + 'playlist-creer');
-        req.flush(errorResponse);
+        expect(userServiceMock.createPlaylist).toHaveBeenCalledWith(form.form.value);
         expect(component.error).toBe('Invalid playlist name');
       });
 
@@ -697,13 +697,13 @@ describe('HeaderComponent', () => {
             }
           }
         } as NgForm;
+        userServiceMock.createPlaylist.and.returnValue(throwError('error'));
 
         // Act
         component.onCreatePlaylist(form);
 
         // Assert
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'playlist-creer');
-        req.error(new ErrorEvent('Network error'));
+        expect(userServiceMock.createPlaylist).toHaveBeenCalledWith(form.form.value);
         expect(component.isConnected).toBe(false);
         expect(initService.onMessageUnlog).toHaveBeenCalled();
       });
@@ -711,20 +711,19 @@ describe('HeaderComponent', () => {
 
     describe('onLogout', () => {
       it('should call httpClient.get with the correct arguments', () => {
+        const successResponse = { success: true, error: '' };
+        userServiceMock.logout.and.returnValue(of(successResponse));
         component.onLogout();
 
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'deconnexion');
-        expect(req.request.method).toEqual('GET');
-
-        req.flush({ success: true }); // simule une réponse du serveur
+        expect(userServiceMock.logout).toHaveBeenCalled();
       });
 
       it('should call initService.logOut if the response is successful', () => {
+        const successResponse = { success: true, error: '' };
+        userServiceMock.logout.and.returnValue(of(successResponse));
         component.onLogout();
 
-        const req = httpTestingController.expectOne(environment.URL_SERVER + 'deconnexion');
-        req.flush({ success: true }); // simule une réponse du serveur
-
+        expect(userServiceMock.logout).toHaveBeenCalled();
         expect(initService.logOut).toHaveBeenCalled();
       });
     });
@@ -784,25 +783,28 @@ describe('HeaderComponent', () => {
       const modal = jasmine.createSpyObj('NgbActiveModal', ['dismiss', 'update', 'close']);
       const successResponse = { success: true, error: '' };
       const errorResponse = { success: false, error: 'Invalid title' };
+      const successBody = {
+        id_playlist: '123',
+        titre: 'newTitle'
+      };
       component.currentIdPlaylistEdit = '123';
+      userServiceMock.editTitlePlaylist.and.returnValue(of(successResponse));
 
       // Act
       component.onEditTitlePlaylist(form, modal);
 
       // Assert
-      let req = httpTestingController.expectOne(environment.URL_SERVER + 'edit_title');
-      expect(req.request.method).toEqual('POST');
-      expect(req.request.body).toEqual({ id_playlist: '123', titre: 'newTitle' });
-      req.flush(successResponse);
+      expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith(successBody);
       expect(playerService.editPlaylistTitle).toHaveBeenCalledWith('123', 'newTitle');
       expect(modal.dismiss).toHaveBeenCalled();
 
+      userServiceMock.editTitlePlaylist.and.returnValue(of(errorResponse));
+
       // Act
       component.onEditTitlePlaylist(form, modal);
 
       // Assert
-      req = httpTestingController.expectOne(environment.URL_SERVER + 'edit_title');
-      req.flush(errorResponse);
+      expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith(successBody);
       expect(component.error).toBe('Invalid title');
     });
 
@@ -817,13 +819,13 @@ describe('HeaderComponent', () => {
         }
       } as NgForm;
       const modal = jasmine.createSpyObj('NgbActiveModal', ['dismiss', 'update', 'close']);
+      userServiceMock.editTitlePlaylist.and.returnValue(throwError('error'));
 
       // Act
       component.onEditTitlePlaylist(form, modal);
 
       // Assert
-      const req = httpTestingController.expectOne(environment.URL_SERVER + 'edit_title');
-      req.error(new ErrorEvent('Network error'));
+      expect(userServiceMock.editTitlePlaylist).toHaveBeenCalled();
       expect(component.isConnected).toBe(false);
       expect(initService.onMessageUnlog).toHaveBeenCalled();
     });
