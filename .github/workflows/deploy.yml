@@ -30,11 +30,10 @@ jobs:
         run: npm run build -- --configuration=production --deploy-url /dist/
 
       - name: Deploy
-        uses: burnett01/rsync-deployments@6.0.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          switches: -avz --delete
-          path: dist/zeffyrmusic/
-          remote_path: www/dist/
-          remote_host: ${{ secrets.server }}
-          remote_user: ${{ secrets.username }}
-          remote_key: ${{ secrets.password }}
+          server: ${{ secrets.server }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          server-dir: www/dist/
+          local-dir: dist/zeffyrmusic/
