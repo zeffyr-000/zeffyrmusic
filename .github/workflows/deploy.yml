@@ -30,10 +30,11 @@ jobs:
         run: npm run build -- --configuration=production --deploy-url /dist/
 
       - name: Deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: milanmk/actions-file-deployer@master
         with:
-          server: ${{ secrets.server }}
-          username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
-          server-dir: www/dist/
-          local-dir: dist/zeffyrmusic/
+          remote-protocol: sftp
+          remote-host: ${{ secrets.server }}
+          remote-user: ${{ secrets.username }}
+          remote-password: ${{ secrets.password }}
+          local-path: dist/zeffyrmusic/
+          remote-path: www/dist/
