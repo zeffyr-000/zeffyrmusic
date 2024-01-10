@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run Tests
         run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
@@ -26,23 +27,16 @@ jobs:
         run: npm run lint
 
       - name: Build
-        run: npm run build -- --configuration=production --base-href /dist/
+        run: npm run build -- --configuration=production --deploy-url /dist/
 
-      - name: Clear deployment directory
+      - name: Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.server }}
           username: ${{ secrets.username }}
           password: ${{ secrets.password }}
-          script: rm -rf www/dist/*
-
-      - name: deploy
-        uses: pressidium/lftp-mirror-action@v1
-        with:
-          host: ${{ secrets.server }}
           port: 22
-          user: ${{ secrets.username }}
-          pass: ${{ secrets.password }}
-          localDir: "dist"
-          remoteDir: "www/dist"
-          reverse: false
+          script: |
+            sudo apt-get update
+            sudo apt-get install -y rsync
+            rsync -avz --delete dist/zeffyrmusic ${{ secrets.username }}@${{ secrets.server }}:www/dist
