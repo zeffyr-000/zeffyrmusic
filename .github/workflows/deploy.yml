@@ -30,11 +30,11 @@ jobs:
         run: npm run build -- --configuration=production --deploy-url /dist/
 
       - name: Deploy
-        uses: appleboy/ssh-action@master
+        uses: burnett01/rsync-deployments@6.0.0
         with:
-          host: ${{ secrets.server }}
-          username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
-          port: 22
-          script: |
-            rsync -avz -e "ssh -o StrictHostKeyChecking=no" --delete dist/*** ${{ secrets.username }}@${{ secrets.server }}:www/dist
+          switches: -avz --delete
+          path: dist/zeffyrmusic/
+          remote_path: www/dist/
+          remote_host: ${{ secrets.server }}
+          remote_user: ${{ secrets.username }}
+          remote_key: ${{ secrets.password }}
