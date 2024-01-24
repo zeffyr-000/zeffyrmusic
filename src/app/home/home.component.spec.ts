@@ -8,27 +8,6 @@ import { HomeAlbum } from '../models/album.model';
 import { HomeComponent } from './home.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-class TranslocoServiceStub {
-  translate(key: string) {
-    const translations: { [key: string]: string } = {
-      'title': 'title',
-      'meta_description': 'meta_description',
-      'titre': 'titre',
-    };
-    return translations[key] || key;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setDefaultLang(lang: string) {
-  }
-
-  getActiveLang() {
-    return 'en';
-  }
-
-  setActiveLang: jasmine.Spy = jasmine.createSpy('setActiveLang');
-}
-
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
@@ -42,7 +21,10 @@ describe('HomeComponent', () => {
       imports: [
         HttpClientTestingModule,
         TranslocoTestingModule.forRoot({
-          langs: { en: { meta_description: 'META_DESCRIPTION', title: 'TITLE' }, fr: { meta_description: 'META_DESCRIPTION_FR', title: 'TITLE_FR' } }
+          langs: {
+            en: { meta_description: 'meta_description', title: 'title', top_albums: 'top_albums' },
+            fr: { meta_description: 'meta_description', title: 'title', top_albums: 'top_albums' }
+          }
         }),
       ],
       declarations: [HomeComponent],
@@ -50,10 +32,9 @@ describe('HomeComponent', () => {
         Title,
         Meta,
         GoogleAnalyticsService,
-        { provide: TranslocoService, useClass: TranslocoServiceStub },
         {
           provide: TRANSLOCO_CONFIG, useValue: {
-            reRenderOnLangChange: true,
+            reRenderOnLangChange: false,
             availableLangs: ['en', 'fr'],
             defaultLang: 'en',
             prodMode: false,

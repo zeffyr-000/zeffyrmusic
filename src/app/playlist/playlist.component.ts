@@ -1,4 +1,4 @@
-import { Component, OnDestroy, NgZone } from '@angular/core';
+import { Component, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
@@ -33,13 +33,17 @@ export class PlaylistComponent implements OnDestroy {
     isConnected = false;
     idPerso = '';
     currentKey = '';
+    isPlaying = false;
+    currentIdPlaylistPlaying = '';
     subscriptionConnected: Subscription;
     subscriptionChangeKey: Subscription;
     subscriptionChangeFollow: Subscription;
-    subscriptionInitializePlaylist: Subscription;
     subscriptionListLikeVideo: Subscription;
+    subscriptionIsPlaying: Subscription;
+    subscriptionCurrentPlaylist: Subscription;
 
-    constructor(private readonly playlistService: PlaylistService,
+    constructor(private readonly ref: ChangeDetectorRef,
+        private readonly playlistService: PlaylistService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly initService: InitService,
         private readonly playerService: PlayerService,
@@ -80,6 +84,16 @@ export class PlaylistComponent implements OnDestroy {
             }
         });
 
+        this.subscriptionIsPlaying = this.playerService.subjectIsPlayingChange.subscribe(isPlaying => {
+            this.isPlaying = isPlaying;
+            setTimeout(() => {
+                this.ref.detectChanges();
+            });
+        });
+
+        this.subscriptionCurrentPlaylist = this.playerService.subjectCurrentPlaylistChange?.subscribe(list => {
+            this.currentIdPlaylistPlaying = list[0]?.id_playlist || '';
+        });
 
         if (this.activatedRoute.snapshot.url[0].path === 'like') {
             this.loadLike();
@@ -98,6 +112,7 @@ export class PlaylistComponent implements OnDestroy {
                 }
             }
 
+            this.currentIdPlaylistPlaying = this.playerService.currentIdPlaylist;
             this.loadPlaylist(url);
         }
     }
@@ -194,6 +209,10 @@ export class PlaylistComponent implements OnDestroy {
         this.playerService.runPlaylist(this.playlist, index);
     }
 
+    pausePlaylist() {
+        this.playerService.onPlayPause();
+    }
+
     addInCurrentList() {
         this.playerService.addInCurrentList(this.playlist);
     }
@@ -245,5 +264,8 @@ export class PlaylistComponent implements OnDestroy {
         this.subscriptionConnected.unsubscribe();
         this.subscriptionChangeKey.unsubscribe();
         this.subscriptionChangeFollow.unsubscribe();
+        this.subscriptionListLikeVideo?.unsubscribe();
+        this.subscriptionIsPlaying.unsubscribe();
+        this.subscriptionCurrentPlaylist.unsubscribe();
     }
 }

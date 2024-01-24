@@ -62,6 +62,7 @@ describe('PlaylistComponent', () => {
     playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({ currentKey: 'test-key', currentTitle: 'test-title', currentArtist: 'test-artist' });
     playerServiceMock.subjectListFollow = new BehaviorSubject([]);
     playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
+    playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
     activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
       snapshot: {
         paramMap: { get: () => '1' },

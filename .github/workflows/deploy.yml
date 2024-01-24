@@ -30,12 +30,14 @@ jobs:
       - name: Build
         run: npm run build -- --configuration=production --deploy-url /dist/
 
+      - name: Check Build Success
+        run: if [ ! -d "dist/zeffyrmusic/" ]; then exit 1; fi
+
       - name: Deploy
-        uses: milanmk/actions-file-deployer@master
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          remote-protocol: sftp
-          remote-host: ${{ secrets.server }}
-          remote-user: ${{ secrets.username }}
-          remote-password: ${{ secrets.password }}
-          local-path: dist/zeffyrmusic/
-          remote-path: www/dist/
+          server: ${{ secrets.server }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          local-dir: dist/zeffyrmusic/
+          server-dir: www/dist/

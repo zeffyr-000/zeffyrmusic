@@ -36,6 +36,7 @@ export class PlayerService implements OnDestroy {
     currentTitle = '';
     currentArtist = '';
     currentKey = '';
+    currentIdPlaylist = '';
     listLikeVideo: UserVideo[] = [];
 
     isAutoPlay: boolean;
@@ -593,6 +594,12 @@ export class PlayerService implements OnDestroy {
     }
 
     addInCurrentList(playlist: Video[]) {
+        if (this.listVideo.length === 0) {
+            this.currentIdPlaylist = playlist[0].id_playlist;
+        }
+        else {
+            this.currentIdPlaylist = '';
+        }
         this.listVideo = this.listVideo.concat(playlist);
 
         const index = this.tabIndexInitial.length;

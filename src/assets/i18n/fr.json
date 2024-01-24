@@ -67,6 +67,7 @@
   "ma_selection" : "Ma sélection",
   "veuillez_vous_reconnecter" : "Vous avez subi une deconnexion, veuillez vous reconnecter pour effectuer cette action",
   "lire" : "Lire",
+  "pause" : "Pause",
   "modifier" : "Modifier",
 
   "lecture_aleatoire" : "Lecture aléatoire",
@@ -109,5 +110,6 @@
   "album" : "Album",
 
   "active_autoplay" : "Appuyez sur le bouton de lecture YouTube ci-dessus",
-  "mes_likes": "Mes likes"
+  "mes_likes": "Mes likes",
+  "top_albums": "Top albums"
 }

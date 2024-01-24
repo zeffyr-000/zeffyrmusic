@@ -67,6 +67,7 @@
   "ma_selection" : "My lightbox",
   "veuillez_vous_reconnecter" : "You had a disconnection, please reconnect to perform this action",
   "lire" : "Play",
+  "pause" : "Pause",
   "modifier" : "Edit",
 
   "lecture_aleatoire" : "Shuffle",
@@ -107,5 +108,6 @@
   "extras" : "Extras",
   "album" : "Album",
 
-  "active_autoplay" : "Tap the YouTube play button above"
+  "active_autoplay" : "Tap the YouTube play button above",
+  "top_albums": "Top albums"
 }

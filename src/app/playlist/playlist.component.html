@@ -12,9 +12,16 @@
                     <p *ngIf="idTopCharts===null && titre===''" class="m-t-0">{{description}}</p>
 
                     <div>
-                        <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
+                        <button class="btn btn-primary btn-lg" (click)="runPlaylist()"
+                            *ngIf="idPlaylist !== currentIdPlaylistPlaying || !isPlaying">
                             <span class="material-icons">play_circle_outline</span>
                             {{ 'lire' | transloco }}
+                        </button>
+
+                        <button class="btn btn-primary btn-lg" (click)="pausePlaylist()"
+                            *ngIf="idPlaylist === currentIdPlaylistPlaying && isPlaying">
+                            <span class="material-icons">pause_circle_outline</span>
+                            {{ 'pause' | transloco }}
                         </button>
 
                         <button class="btn btn-secondary btn-lg"
