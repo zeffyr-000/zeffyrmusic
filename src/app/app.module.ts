@@ -25,6 +25,7 @@ import { SearchComponent } from './search/search.component';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
 import { ShareButtonsConfig } from 'ngx-sharebuttons';
+import { HashLocationStrategy, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
 const customConfig: ShareButtonsConfig = {
     include: ['facebook', 'twitter', 'whatsapp', 'copy'],
@@ -72,6 +73,11 @@ const customConfig: ShareButtonsConfig = {
             multi: true,
             useFactory: preload,
             deps: [TranslocoService]
+        },
+        {
+            provide: LocationStrategy,
+            useClass: ('standalone' in window.navigator && window.navigator.standalone) ?
+                HashLocationStrategy : PathLocationStrategy
         },
         translocoLoader,
         NgbActiveModal,
