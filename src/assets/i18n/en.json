@@ -109,5 +109,29 @@
   "album" : "Album",
 
   "active_autoplay" : "Tap the YouTube play button above",
-  "top_albums": "Top albums"
+  "top_albums": "Top albums",
+
+  "help_title" : "Help",
+  "help_install_android_title": "How to add this website to your Android home screen ",
+  "help_install_android_chrome_title": "How to add this website from Google Chrome to your home screen",
+  "help_install_android_chrome_content_1": "Open Google Chrome and go to the website.",
+  "help_install_android_chrome_content_2": "Tap the three vertical dots button at the top right corner of the screen.",
+  "help_install_android_chrome_content_3": "Select <b>Add to Home screen</b>.",
+  "help_install_android_chrome_content_4": "Tap <b>Add</b> to transfer it to the home screen.",
+  "help_install_android_chrome_content_5": "If you go back to your screen, you will see the icon. You will also see the Chrome icon attached, which means you cannot access this shortcut in another browser.",
+  "help_install_android_samsung_title": "How to add this website from Samsung Internet to your home screen",
+  "help_install_android_samsung_content_1": "If you’re using a Samsung device, your default browser may be the Samsung Internet Browser. There is a slight difference from Google Chrome, depending on the browser’s style.",
+  "help_install_android_samsung_content_2": "Go to the website on Samsung Internet.",
+  "help_install_android_samsung_content_3": "Tap the Hamburger icon at the bottom right corner of the screen. The menu options will appear.",
+  "help_install_android_samsung_content_4": "From the menu, select the <b>Add page to</b> button.",
+  "help_install_android_samsung_content_5": "Choose <b>Home Screen</b>.",
+  "help_install_android_samsung_content_6": "Then, tap <b>Add</b> to finish.",
+  "help_install_ios_title": "How to add this website to your iPhone home screen",
+  "help_install_ios_content_1": "The iPhone differs from Android because it doesn’t matter if the website has an app. You can still add it as an icon.",
+  "help_install_ios_content_2": "After going to the website via Safari, tap the Share menu button.",
+  "help_install_ios_content_3": "In the menu, scroll down and select <b>Add to Home Screen</b>.",
+  "help_install_ios_content_4": "If you want, edit the site’s title as it will appear on your screen.",
+  "help_install_ios_content_5": "When everything is to your satisfaction, tap <b>Add</b>.",
+  "help_install_ios_content_6": "The icon is now there, ready to use. However, when you tap the icon, the website will only open in Safari."
+
 }

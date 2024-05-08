@@ -1,0 +1,12 @@
+<div class="p-3">
+    <h1>{{ 'help_title' | transloco }}</h1>
+
+    <ul>
+        <li>
+            <a [routerLink]="['/help', 'install-android']">{{ 'help_install_android_title' | transloco }}</a>
+        </li>
+        <li>
+            <a [routerLink]="['/help', 'install-ios']">{{ 'help_install_ios_title' | transloco }}</a>
+        </li>
+    </ul>
+</div>
