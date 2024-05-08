@@ -33,11 +33,11 @@ jobs:
       - name: Check Build Success
         run: if [ ! -d "dist/zeffyrmusic/" ]; then exit 1; fi
 
-      - name: Deploy
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      - name: Copy files
+        uses: appleboy/scp-action@master
         with:
-          server: ${{ secrets.server }}
+          host: ${{ secrets.server }}
           username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
-          local-dir: ./dist/zeffyrmusic/
-          server-dir: www/dist/
+          key: ${{ secrets.password }}
+          source: "./dist/zeffyrmusic/"
+          target: "www/dist/"
