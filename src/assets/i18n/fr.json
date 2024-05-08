@@ -111,5 +111,29 @@
 
   "active_autoplay" : "Appuyez sur le bouton de lecture YouTube ci-dessus",
   "mes_likes": "Mes likes",
-  "top_albums": "Top albums"
+  "top_albums": "Top albums",
+
+  "help_title": "Aide",
+  "help_install_android_title": "Comment ajouter ce site Web à votre écran d'accueil Android",
+  "help_install_android_chrome_title": "Comment ajouter ce site Web de Google Chrome à votre écran d'accueil",
+  "help_install_android_chrome_content_1": "Ouvrez Google Chrome et accédez au site Web.",
+  "help_install_android_chrome_content_2": "Appuyez sur le bouton à trois points verticaux dans le coin supérieur droit de l'écran.",
+  "help_install_android_chrome_content_3": "Sélectionnez <b>Ajouter à l'écran d'accueil</b>.",
+  "help_install_android_chrome_content_4": "Appuyez sur <b>Ajouter</b> pour le transférer vers l'écran d'accueil.",
+  "help_install_android_chrome_content_5": "Si vous revenez à votre écran, vous verrez l'icône. Vous verrez également l'icône Chrome attachée, ce qui signifie que vous ne pouvez pas accéder à ce raccourci dans un autre navigateur.",
+  "help_install_android_samsung_title": "Comment ajouter ce site Web de Samsung Internet à votre écran d'accueil",
+  "help_install_android_samsung_content_1": "Si vous utilisez un appareil Samsung, votre navigateur par défaut peut être le navigateur Internet Samsung. Il existe une légère différence par rapport à Google Chrome, selon le style du navigateur.",
+  "help_install_android_samsung_content_2": "Accédez au site Web sur Samsung Internet.",
+  "help_install_android_samsung_content_3": "Appuyez sur l'icône Hamburger dans le coin inférieur droit de l'écran. Les options du menu apparaîtront.",
+  "help_install_android_samsung_content_4": "Dans le menu, sélectionnez le bouton <b>Ajouter une page à</b>.",
+  "help_install_android_samsung_content_5": "Choisissez <b>Écran d'accueil</b>.",
+  "help_install_android_samsung_content_6": "Ensuite, appuyez sur <b>Ajouter</b> pour terminer.",
+  "help_install_ios_title": "Comment ajouter ce site Web à l'écran d'accueil de votre iPhone",
+  "help_install_ios_content_1": "L’iPhone diffère d’Android car peu importe si le site Web dispose d’une application. Vous pouvez toujours l'ajouter sous forme d'icône.",
+  "help_install_ios_content_2": "Après avoir accédé au site Web via Safari, appuyez sur le bouton du menu Partager.",
+  "help_install_ios_content_3": "Dans le menu, faites défiler vers le bas et sélectionnez <b>Ajouter à l'écran d'accueil</b>.",
+  "help_install_ios_content_4": "Si vous le souhaitez, modifiez le titre du site tel qu'il apparaîtra sur votre écran.",
+  "help_install_ios_content_5": "Lorsque tout vous convient, appuyez sur <b>Ajouter</b>.",
+  "help_install_ios_content_6": "L'icône est maintenant là, prête à être utilisée. Cependant, lorsque vous appuyez sur l'icône, le site Web ne s'ouvrira que dans Safari."
+  
 }

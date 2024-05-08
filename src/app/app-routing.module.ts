@@ -4,6 +4,8 @@ import { ArtistComponent } from './artist/artist.component';
 import { HomeComponent } from './home/home.component';
 import { PlaylistComponent } from './playlist/playlist.component';
 import { SearchComponent } from './search/search.component';
+import { HelpComponent } from './help/help.component';
+import { HelpPageComponent } from './help/help-page/help-page.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -12,6 +14,8 @@ const routes: Routes = [
   { path: 'like', component: PlaylistComponent },
   { path: 'artist/:id_artist', component: ArtistComponent },
   { path: 'search/:query', component: SearchComponent },
+  { path: 'help/:page', component: HelpPageComponent },
+  { path: 'help', component: HelpComponent },
   { path: '**', redirectTo: '' }
 ];
 

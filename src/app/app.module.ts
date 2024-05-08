@@ -26,6 +26,8 @@ import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
 import { ShareButtonsConfig } from 'ngx-sharebuttons';
 import { HashLocationStrategy, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { HelpComponent } from './help/help.component';
+import { HelpPageComponent } from './help/help-page/help-page.component';
 
 const customConfig: ShareButtonsConfig = {
     include: ['facebook', 'twitter', 'whatsapp', 'copy'],
@@ -42,7 +44,9 @@ const customConfig: ShareButtonsConfig = {
         HeaderComponent,
         PlayerComponent,
         SearchBarComponent,
-        ToMMSSPipe
+        ToMMSSPipe,
+        HelpComponent,
+        HelpPageComponent
     ],
     imports: [
         BrowserModule,

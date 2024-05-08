@@ -1,0 +1,60 @@
+<div class="p-3">
+
+    <h1>{{ 'help_title' | transloco }}</h1>
+
+    <div *ngIf="page === 'install-android'">
+        <h2>{{ 'help_install_android_title' | transloco }}</h2>
+
+        <h3>{{ 'help_install_android_chrome_title' | transloco }}</h3>
+        <ul>
+            <li>{{ 'help_install_android_chrome_content_1' | transloco }}</li>
+            <li>{{ 'help_install_android_chrome_content_2' | transloco }}</li>
+            <li [innerHTML]="'help_install_android_chrome_content_3' | transloco"></li>
+            <li [innerHTML]="'help_install_android_chrome_content_4' | transloco"></li>
+        </ul>
+        <p>
+            <img src="assets/img/help/android_chrome_1.jpg" alt="Android Chrome 1" class="img-fluid">
+            <img src="assets/img/help/android_chrome_2.jpg" alt="Android Chrome 2" class="img-fluid">
+            <img src="assets/img/help/android_chrome_3.jpg" alt="Android Chrome 3" class="img-fluid">
+            <img src="assets/img/help/android_chrome_4.jpg" alt="Android Chrome 4" class="img-fluid">
+        </p>
+        <p>{{ 'help_install_android_chrome_content_5' | transloco }}</p>
+
+        <h3>{{ 'help_install_android_samsung_title' | transloco }}</h3>
+        <p>{{ 'help_install_android_samsung_content_1' | transloco }}</p>
+        <ul>
+            <li>{{ 'help_install_android_samsung_content_2' | transloco }}</li>
+            <li>{{ 'help_install_android_samsung_content_3' | transloco }}</li>
+            <li [innerHTML]="'help_install_android_samsung_content_4' | transloco"></li>
+            <li [innerHTML]="'help_install_android_samsung_content_5' | transloco"></li>
+            <li [innerHTML]="'help_install_android_samsung_content_6' | transloco"></li>
+        </ul>
+        <p>
+            <img src="assets/img/help/android_samsung_1.jpg" alt="Android Samsung 1" class="img-fluid">
+            <img src="assets/img/help/android_samsung_2.jpg" alt="Android Samsung 2" class="img-fluid">
+            <img src="assets/img/help/android_samsung_3.jpg" alt="Android Samsung 3" class="img-fluid">
+            <img src="assets/img/help/android_samsung_4.jpg" alt="Android Samsung 4" class="img-fluid">
+        </p>
+    </div>
+
+    <div *ngIf="page === 'install-ios'">
+        <h2>{{ 'help_install_ios_title' | transloco }}</h2>
+        <p>{{ 'help_install_ios_content_1' | transloco }}</p>
+        <ul>
+            <li>{{ 'help_install_ios_content_2' | transloco }}</li>
+            <li [innerHTML]="'help_install_ios_content_3' | transloco"></li>
+            <li>{{ 'help_install_ios_content_4' | transloco }}</li>
+            <li [innerHTML]="'help_install_ios_content_5' | transloco"></li>
+        </ul>
+        <p>
+            <img src="assets/img/help/ios_safari_1.jpg" alt="iOS Safari 1" class="img-fluid">
+            <img src="assets/img/help/ios_safari_2.jpg" alt="iOS Safari 2" class="img-fluid">
+            <img src="assets/img/help/ios_safari_3.jpg" alt="iOS Safari 3" class="img-fluid">
+        </p>
+        <p>{{ 'help_install_ios_content_6' | transloco }}</p>
+        <p>
+            <img src="assets/img/help/ios_safari_4.jpg" alt="iOS Safari 4" class="img-fluid">
+        </p>
+    </div>
+
+</div>
