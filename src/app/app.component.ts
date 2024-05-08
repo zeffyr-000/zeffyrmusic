@@ -74,7 +74,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         const linkElem = this.renderer.createElement('link');
         this.renderer.setAttribute(linkElem, 'rel', 'apple-touch-icon');
-        this.renderer.setAttribute(linkElem, 'href', `${environment.URL_ASSETS}/assets/img/apple-touch-icon.png`);
+        this.renderer.setAttribute(linkElem, 'href', `${environment.URL_ASSETS}assets/img/apple-touch-icon.png`);
         this.renderer.appendChild(this.document.head, linkElem);
     }
 
