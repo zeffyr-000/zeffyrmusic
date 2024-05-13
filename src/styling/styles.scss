@@ -28,8 +28,9 @@ a {
 }
 
 #main {
-	height: 80%;
-	height: calc(100% - 120px);
+	height: 100%;
+	padding-top: 60px;
+	padding-bottom: 60px;
 }
 
 #container, #gauche {
@@ -56,15 +57,6 @@ input[type="search"]::-webkit-search-cancel-button {
 	width: 100%;
 	text-align: center;
 	margin-bottom: 0;
-}
-
-#alert_active_autoplay {
-	position: absolute;
-	top: 0px;
-	width: 100%;
-	text-align: center;
-	margin-bottom: 0;
-	z-index: 10000;
 }
 
 #alert_deconnexion {
@@ -183,21 +175,6 @@ td[onclick], td[ng-click] {
 	margin: 0 auto;
 }
 
-#container.showTapVideoYT #container_player {
-	position: static !important;
-}
-
-#container.showTapVideoYT #gauche {
-	width: 100% !important;
-	height: 100% !important;
-	flex: none;
-    max-width: 100%;
-}
-
-#container.showTapVideoYT #content {
-	display: none !important;
-}
-
 .material-icons {
     display: inline-flex;
     vertical-align: top;
@@ -247,9 +224,12 @@ $cards-per-line: (
 		padding: 0;
 		margin: 0 0 100px 0;
 	}
+	#container_player {
+		z-index: -1;
+	}
 	#gauche, 
 	#container_player, #player {
-		height: 1px;
+		height: 0;
 	}
 	#liste_en_cours_content {
 		display: none;
@@ -292,15 +272,5 @@ $cards-per-line: (
 	}
 	.navbar {
 		margin-bottom: 0px;
-	}
-	
-	#container.showTapVideoYT #container_player, #container.showTapVideoYT #player {
-		height: 100% !important;
-		z-index: 1000 !important;
-		display: block !important;
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100% !important;
 	}
 }

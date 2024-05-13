@@ -1,22 +1,79 @@
-<div id="header_top" class="row g-0">
-    <div id="header_logo" class="col-3">
-        <a class="navbar-brand p-0" id="header_logo_lien" routerLink="">
-            <img src="{{URL_ASSETS}}assets/img/logo.png" alt="" />
-            <span class="material-icons">home</span>
+<div id="header_top" class="row g-0 justify-content-between">
+    <div id="header_burger" class="nav col-3 d-flex d-lg-none justify-content-center" ngbDropdown>
+        <button class="btn" ngbDropdownToggle>
+            <span class="material-icons">menu</span>
+        </button>
+        <ul ngbDropdownMenu>
+            <li *ngIf="!isConnected" ngbDropdownItem>
+                <a (click)="openModal(contentModalRegister)" role="presentation">
+                    <span class="material-icons">create_new_folder</span>{{'inscription' | transloco }}
+                </a>
+            </li>
+            <li *ngIf="!isConnected" ngbDropdownItem>
+                <a (click)="openModal(contentModalLogin)" role="presentation">
+                    <span class="material-icons">login</span>{{'connexion' |transloco }}
+                </a>
+            </li>
+            <li ngbDropdownItem>
+                <a routerLink="/help" role="presentation" class="btn p-0">
+                    <span class="material-icons">help</span>{{ 'help_title' | transloco }}
+                </a>
+            </li>
+            @if(isConnected) {
+            <li class="dropdown-divider"></li>
+            <li ngbDropdownItem>
+                {{pseudo}}
+            </li>
+            <li ngbDropdownItem>
+                <a class="text-decoration-none text-body" routerLink="/like" role="button">
+                    <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
+                </a>
+            </li>
+            <li ngbDropdownItem>
+                <a (click)="openModal(contentModalPlaylists)" role="presentation">
+                    <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
+                </a>
+            </li>
+            <li ngbDropdownItem>
+                <a (click)="openModal(contentModalFollows)" role="presentation">
+                    <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
+                </a>
+            </li>
+            <li ngbDropdownItem>
+                <a (click)="openModal(contentModalEditMail)" role="presentation">
+                    <span class="material-icons">email</span>{{ 'modifier_mail' | transloco}}
+                </a>
+            </li>
+            <li ngbDropdownItem>
+                <a (click)="openModal(contentModalEditPass)" role="presentation">
+                    <span class="material-icons">lock</span>{{ 'modifier_mot_de_passe' | transloco}}
+                </a>
+            </li>
+            <li class="dropdown-divider"></li>
+            <li ngbDropdownItem>
+                <a (click)="onLogout()" role="presentation">
+                    <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco}}
+                </a>
+            </li>
+            }
+        </ul>
+    </div>
+
+    <div id="header_logo" class="nav col-3">
+        <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="{ 'home' | transloco }" routerLink="">
+            <img src="{{URL_ASSETS}}assets/img/logo.png" alt="" class="d-none d-lg-block mx-auto" />
+            <img src="{{URL_ASSETS}}assets/img/logo_mobile.png" alt="" class="d-lg-none" />
         </a>
     </div>
 
-    <ul class="nav col-5 align-self-center" id="header_nav">
-        <li *ngIf="isConnected" class="nav-item align-self-center" ngbDropdown>
-            <a class="nav-link" id="header_toggle_mini" ngbDropdownToggle>
-                <span class="material-icons">menu</span>
-            </a>
-            <a id="header_toggle_big" class="btn btn-light" ngbDropdownToggle>
+    <ul class="nav col-5 d-none d-lg-flex" id="header_nav">
+        <li *ngIf="isConnected" class="nav-item align-self-center d-flex" ngbDropdown>
+            <a id="header_toggle_big" class="btn btn-light" role="button" ngbDropdownToggle>
                 {{pseudo}} <span class="caret"></span>
             </a>
             <ul ngbDropdownMenu>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/like">
+                    <a class="text-decoration-none text-body" routerLink="/like" role="button">
                         <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
                     </a>
                 </li>
@@ -49,19 +106,19 @@
             </ul>
         </li>
 
-        <li id="header_li_inscription" class="nav-item" *ngIf="!isConnected">
+        <li id="header_li_inscription" class="nav-item align-self-center d-flex d-none d-lg-block" *ngIf="!isConnected">
             <a class="btn btn-warning btn-outline-warning text-light" (click)="openModal(contentModalRegister)"
                 role="presentation">
                 {{'inscription' | transloco }}
             </a>
         </li>
-        <li id="header_li_connexion" class="nav-item" *ngIf="!isConnected">
+        <li id="header_li_connexion" class="nav-item align-self-center d-flex d-none d-lg-block" *ngIf="!isConnected">
             <a class="btn btn-primary text-light" (click)="openModal(contentModalLogin)" role="presentation">
                 {{'connexion' |transloco }}
             </a>
         </li>
 
-        <li id="header_li_help" class="nav-item">
+        <li id="header_li_help" class="nav-item align-self-center d-flex">
             <a class="btn btn-light" routerLink="/help" role="presentation">
                 <span class="material-icons">help</span>
             </a>
@@ -185,8 +242,8 @@
         </form>
         <div *ngIf="isRegistered">
             <p class="alert alert-success">{{ 'inscription_succes' | transloco }}</p>
-            <p><a (click)="modal.dismiss(''); openModal(contentModalLogin)" role="presentation">{{ 'connexion' |
-                    transloco}}</a></p>
+            <p><a (click)="modal.dismiss(''); openModal(contentModalLogin)" class="text-decoration-underline"
+                    role="presentation">{{ 'connexion' | transloco}}</a></p>
         </div>
     </div>
 </ng-template>
@@ -212,8 +269,8 @@
                     value="{{ 'connexion' | transloco}}" /></p>
             <p *ngIf="formLogIn.dirty && error!==''" class="alert alert-danger">{{error}}</p>
 
-            <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)" role="presentation">{{
-                    'mot_de_passe_oublie' | transloco}}</a>
+            <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)" class="text-decoration-underline"
+                    role="presentation">{{ 'mot_de_passe_oublie' | transloco}}</a>
             </p>
         </form>
     </div>

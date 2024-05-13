@@ -24,7 +24,6 @@ describe('AppComponent', () => {
         };
 
         playerServiceMock = {
-            subjectMessageTap: new BehaviorSubject<boolean>(false),
         };
 
         await TestBed.configureTestingModule({
@@ -82,12 +81,6 @@ describe('AppComponent', () => {
         expect(component.showMessageUnlog).toBeTrue();
     });
 
-    it('should subscribe to subjectMessageTap on PlayerService', () => {
-        expect(component.showTapVideoYT).toBeFalse();
-        playerServiceMock.subjectMessageTap.next(true);
-        expect(component.showTapVideoYT).toBeTrue();
-    });
-
     it('should set document lang on ngOnInit', () => {
         component.ngOnInit();
         expect(document.documentElement.lang).toBe('en');
@@ -105,10 +98,8 @@ describe('AppComponent', () => {
 
     it('should unsubscribe from subscriptions on ngOnDestroy', () => {
         spyOn(component.subscriptionMessageUnlog, 'unsubscribe');
-        spyOn(component.subscriptionMessageTap, 'unsubscribe');
         component.ngOnDestroy();
         expect(component.subscriptionMessageUnlog.unsubscribe).toHaveBeenCalled();
-        expect(component.subscriptionMessageTap.unsubscribe).toHaveBeenCalled();
     });
 
     it('should set canonical link on NavigationEnd', fakeAsync(() => {

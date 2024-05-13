@@ -108,10 +108,9 @@
   "morceaux" : "Morceaux",
   "extras" : "Extras",
   "album" : "Album",
-
-  "active_autoplay" : "Appuyez sur le bouton de lecture YouTube ci-dessus",
   "mes_likes": "Mes likes",
   "top_albums": "Top albums",
+  "home" : "Accueil",
 
   "help_title": "Aide",
   "help_install_android_title": "Comment ajouter ce site Web à votre écran d'accueil Android",

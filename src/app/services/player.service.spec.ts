@@ -535,45 +535,6 @@ describe('PlayerService', () => {
         expect(service.currentArtist).toBe('');
     });
 
-    it('should call launchFullInit on first play if not autoplay', () => {
-        service.isAutoPlay = false;
-        const spy = spyOn(service, 'launchFullInit');
-        service.firstLaunched = false;
-        service.finvideo({ data: 1 });
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should call testAutoPlay on first play if autoplay', () => {
-        service.isAutoPlay = true;
-        const spy = spyOn(service, 'testAutoPlay');
-        service.firstLaunched = false;
-        service.finvideo({ data: 1 });
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('should not call launchFullInit on subsequent plays', () => {
-        service.isAutoPlay = false;
-        const spy = spyOn(service, 'launchFullInit');
-        service.firstLaunched = true;
-        service.finvideo({ data: 1 });
-        expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should not call testAutoPlay on subsequent plays', () => {
-        service.isAutoPlay = true;
-        const spy = spyOn(service, 'testAutoPlay');
-        service.firstLaunched = true;
-        service.finvideo({ data: 1 });
-        expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should disable full init on play if showTapVideoYT is true', () => {
-        service.showTapVideoYT = true;
-        const spy = spyOn(service, 'disableFullInit');
-        service.finvideo({ data: 1 });
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('should set isPlaying to false on pause', () => {
         service.isPlaying = true;
         service.finvideo({ data: 2 });
@@ -666,7 +627,6 @@ describe('PlayerService', () => {
 
     it('should call player.playVideo on onPlayPause if paused', () => {
         service.isPlaying = false;
-        service.firstLaunched = true;
 
         service.onPlayPause();
         expect(service.player.playVideo).toHaveBeenCalled();
@@ -675,39 +635,11 @@ describe('PlayerService', () => {
 
     it('should call player.pauseVideo on onPlayPause if playing', () => {
         service.isPlaying = true;
-        service.firstLaunched = true;
         service.player.getPlayerState = () => 1;
 
         service.onPlayPause();
         expect(service.player.pauseVideo).toHaveBeenCalled();
         expect(service.isPlaying).toBe(false);
-    });
-
-    it('should call lecture on onPlayPause if not firstLaunched', () => {
-        const spy = spyOn(service, 'lecture');
-        service.isPlaying = false;
-        service.firstLaunched = false;
-        service.onPlayPause();
-        expect(spy).toHaveBeenCalledWith(0);
-    });
-
-    it('should not call launchFullInit on testAutoPlay if firstLaunched', () => {
-        const spy = spyOn(service, 'launchFullInit');
-        service.firstLaunched = true;
-        service.testAutoPlay();
-        expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should call launchFullInit on testAutoPlay if not firstLaunched mp3 only', () => {
-        const mockAudio = jasmine.createSpyObj('HTMLAudioElement', ['canPlayType', 'load', 'play', 'pause', 'addEventListener', 'removeEventListener']);
-        mockAudio.canPlayType.and.callFake((type: string) => {
-            return type !== 'audio/ogg';
-        });
-        const spyAudio = spyOn(window, 'Audio').and.returnValue(mockAudio);
-
-        service.firstLaunched = false;
-        service.testAutoPlay();
-        expect(spyAudio).toHaveBeenCalled();
     });
 
     it('should unsubscribe from subscriptionInitializePlaylist on ngOnDestroy', () => {

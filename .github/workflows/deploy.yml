@@ -38,6 +38,6 @@ jobs:
         with:
           host: ${{ secrets.server }}
           username: ${{ secrets.username }}
-          key: ${{ secrets.password }}
+          password: ${{ secrets.password }}
           source: "./dist/zeffyrmusic/"
           target: "www/dist/"

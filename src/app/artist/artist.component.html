@@ -1,16 +1,16 @@
 <div id="artist_content" class="card panel-profile border-0 h-auto mt-2">
-	
+
 	<div id="artist_haut" class="card-header clearfix border-0">
-        <div class="panel_head_content">
+		<div class="panel_head_content">
 			<div id="artist_haut_titre">
 				<h1>{{name}}</h1>
 				<share-buttons show="2" showText="true"></share-buttons>
 			</div>
 
-			<div >
+			<div>
 				<img id="artist_img_big" [src]="urlDeezer" class="rounded" alt="" />
 			</div>
-		</div>	
+		</div>
 	</div>
 
 	<div class="card-body">
@@ -18,7 +18,7 @@
 			<h3>{{ 'albums' | transloco }}</h3>
 		</div>
 
-		<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1" >
+		<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
 			<div *ngFor="let album of listAlbums" class="col m-0 mt-1 mb-1">
 				<a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
 					<img [src]="album.img_big" class="card-img-top" alt="" />

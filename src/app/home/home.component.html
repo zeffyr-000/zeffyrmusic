@@ -1,10 +1,12 @@
+@if( page !== 'albums') {
 <div class="card card-body mt-3 border-0">
     <div *ngIf="isLoading" class="content_loading">
         <div class="spinner-border"></div>
     </div>
 
-    <div *ngIf="!isLoading" class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1">
-        <div *ngFor="let chart of listTop" class="col m-0 mt-1 mb-1">
+    <div *ngIf="!isLoading" class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
+        [class.row-cols-xl-5]="page !== 'home'">
+        <div *ngFor="let chart of page === 'home' ? listTopSliced : listTop" class="col m-0 mt-1 mb-1">
             <a class="card h-100" routerLink="/top/{{chart.id}}">
                 <img src="{{chart.url_image}}" class="card-img-top" alt="" />
                 <div class="card-body">
@@ -15,17 +17,30 @@
                 </div>
             </a>
         </div>
+        @if( page === 'home') {
+        <div class="col m-0 mt-1 mb-1">
+            <a class="card h-100" routerLink="/top">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <h5 class="card-text text-decoration-underline">{{ 'more' | transloco }}</h5>
+                </div>
+            </a>
+        </div>
+        }
     </div>
 </div>
+}
 
+@if( page !== 'top') {
 <div class="card card-body mt-3 border-0">
     <h3 class="text-center border-0">{{'top_albums'| transloco}}</h3>
     <div *ngIf="isLoading" class="content_loading">
         <div class="spinner-border"></div>
     </div>
 
-    <div *ngIf="!isLoading" class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1">
-        <div *ngFor="let album of listTopAlbums; let i = index" class="col m-0 mt-1 mb-1">
+    <div *ngIf="!isLoading" class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
+        [class.row-cols-xl-5]="page !== 'home'">
+        <div *ngFor="let album of page === 'home' ? listTopAlbumsSliced : listTopAlbums; let i = index"
+            class="col m-0 mt-1 mb-1">
             <a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
                 <img src="{{album.url_image}}" class="card-img-top" alt="" />
                 <div class="card-body">
@@ -37,5 +52,15 @@
                 </div>
             </a>
         </div>
+        @if( page === 'home') {
+        <div class="col m-0 mt-1 mb-1">
+            <a class="card h-100 text-center" routerLink="/albums">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <h5 class="card-text text-decoration-underline">{{ 'more' | transloco }}</h5>
+                </div>
+            </a>
+        </div>
+        }
     </div>
 </div>
+}

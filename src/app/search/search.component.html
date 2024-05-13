@@ -3,7 +3,7 @@
 	<h1 class="m-t-0">{{ 'resultats_recherche' | transloco :{ query: query } }}</h1>
 
 	<h2 class="m-t-0">{{ 'artistes' | transloco }}</h2>
-	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1" *ngIf="!isLoading1">
+	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2" *ngIf="!isLoading1">
 		<div *ngFor="let artist of listArtists | slice:0:limitArtist" class="col m-0 mt-1 mb-1">
 			<a class="card h-100" routerLink="/artist/{{artist.id_artiste}}">
 				<img [src]="'https://api.deezer.com/artist/'+artist.id_artiste_deezer+'/image?size=big'"
@@ -26,7 +26,7 @@
 	</div>
 
 	<h2 class="m-t-0"> {{ 'albums' | transloco }}</h2>
-	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1" *ngIf="!isLoading1">
+	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2" *ngIf="!isLoading1">
 		<div *ngFor="let album of listAlbums | slice:0:limitAlbum" class="col m-0 mt-1 mb-1">
 			<a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
 				<img [src]="album.url_image" class="card-img-top" alt="" />

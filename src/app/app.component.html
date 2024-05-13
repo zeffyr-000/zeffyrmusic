@@ -1,7 +1,7 @@
-<app-header id="header" class="navbar navbar-inverse navbar-fixed-top"></app-header>
+<app-header id="header" class="navbar navbar-inverse fixed-top"></app-header>
 
 <div id="main" class="container-fluid">
-    <div id="container" class="row" [ngClass]="{'showTapVideoYT':showTapVideoYT}">
+    <div id="container" class="row">
 
         <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
 
@@ -17,7 +17,4 @@
 </ngb-alert>
 <ngb-alert *ngIf="showMessageUnlog" id="alert_deconnexion" (close)="showMessageUnlog = false" type="danger">
     {{ 'veuillez_vous_reconnecter' | transloco }}
-</ngb-alert>
-<ngb-alert *ngIf="showTapVideoYT" id="alert_active_autoplay" type="warning">
-    {{ 'active_autoplay' | transloco }}
 </ngb-alert>
