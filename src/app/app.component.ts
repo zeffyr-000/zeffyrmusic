@@ -17,10 +17,8 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'zeffyrmusic';
     isOnline = true;
     showMessageUnlog = false;
-    showTapVideoYT = false;
 
     subscriptionMessageUnlog: Subscription;
-    subscriptionMessageTap: Subscription;
     renderer: Renderer2;
 
     constructor(@Inject(DOCUMENT) private readonly document: Document,
@@ -36,10 +34,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe(isShow => {
             this.showMessageUnlog = isShow;
-        });
-
-        this.subscriptionMessageTap = this.playerService.subjectMessageTap.subscribe(isShow => {
-            this.showTapVideoYT = isShow;
         });
 
         this.router.events.subscribe((event: Event) => {
@@ -80,6 +74,5 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscriptionMessageUnlog.unsubscribe();
-        this.subscriptionMessageTap.unsubscribe();
     }
 }

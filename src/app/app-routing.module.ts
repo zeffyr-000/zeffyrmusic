@@ -9,6 +9,8 @@ import { HelpPageComponent } from './help/help-page/help-page.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'top', component: HomeComponent },
+  { path: 'albums', component: HomeComponent },
   { path: 'playlist/:id_playlist', component: PlaylistComponent },
   { path: 'top/:id', component: PlaylistComponent },
   { path: 'like', component: PlaylistComponent },

@@ -107,9 +107,8 @@
   "morceaux" : "Tracks",
   "extras" : "Extras",
   "album" : "Album",
-
-  "active_autoplay" : "Tap the YouTube play button above",
   "top_albums": "Top albums",
+  "home": "Home",
 
   "help_title" : "Help",
   "help_install_android_title": "How to add this website to your Android home screen ",
