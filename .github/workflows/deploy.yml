@@ -33,6 +33,9 @@ jobs:
       - name: Check Build Success
         run: if [ ! -d "dist/zeffyrmusic/" ]; then exit 1; fi
 
+      - name: Copy files to runner
+        uses: actions/checkout@v3
+
       - name: Copy files
         uses: appleboy/ssh-action@master
         with:
