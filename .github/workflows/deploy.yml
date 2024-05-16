@@ -44,4 +44,4 @@ jobs:
           password: ${{ secrets.password }}
           script: |
             rm -rf www/dist/*
-            scp -r ./dist/zeffyrmusic/* www/dist/
+            scp -r dist/zeffyrmusic/* www/dist/
