@@ -56,6 +56,7 @@ describe('PlaylistComponent', () => {
       'removeVideo',
       'addInCurrentList',
       'addVideoAfterCurrentInList',
+      'onPlayPause'
     ]);
     initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
     playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
@@ -504,5 +505,10 @@ describe('PlaylistComponent', () => {
     const result = component.sumDurationPlaylist();
 
     expect(result).toEqual('6 min');
+  });
+
+  it('should pause the playlist', () => {
+    component.pausePlaylist();
+    expect(playerService.onPlayPause).toHaveBeenCalled();
   });
 });

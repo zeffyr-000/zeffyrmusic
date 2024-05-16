@@ -4,6 +4,12 @@
             <span class="material-icons">menu</span>
         </button>
         <ul ngbDropdownMenu>
+            <li ngbDropdownItem>
+                <a routerLink="/current" role="presentation" class="btn p-0">
+                    <span class="material-icons">playlist_play</span>{{ 'play_list' | transloco }}
+                </a>
+            </li>
+            <li class="dropdown-divider"></li>
             <li *ngIf="!isConnected" ngbDropdownItem>
                 <a (click)="openModal(contentModalRegister)" role="presentation">
                     <span class="material-icons">create_new_folder</span>{{'inscription' | transloco }}
@@ -408,6 +414,7 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
+        <p class="bg-info p-2 rounded" *ngIf="listFollow.length===0">{{ 'selection_empty' | transloco }}</p>
         <table class="table table-condensed" id="tableau_selection">
             <tr *ngFor="let playlist of listFollow">
                 <td>

@@ -39,7 +39,7 @@ export class PlayerService implements OnDestroy {
     currentIdPlaylist = '';
     listLikeVideo: UserVideo[] = [];
 
-    subjectCurrentPlaylistChange: Subject<Video[]> = new Subject<Video[]>();
+    subjectCurrentPlaylistChange: BehaviorSubject<Video[]> = new BehaviorSubject<Video[]>([]);
     subjectRepeatChange: Subject<boolean> = new Subject<boolean>();
     subjectRandomChange: Subject<boolean> = new Subject<boolean>();
     subjectIsPlayingChange: BehaviorSubject<boolean> = new BehaviorSubject<
