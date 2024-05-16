@@ -65,10 +65,12 @@
   "ajouter" : "Add",
   "suivre" : "Follow",
   "ma_selection" : "My lightbox",
+  "selection_empty": "Lightbox: empty list, click on Follow to add albums or playlists to this list",
   "veuillez_vous_reconnecter" : "You had a disconnection, please reconnect to perform this action",
   "lire" : "Play",
   "pause" : "Pause",
   "modifier" : "Edit",
+  "play_list": "Playlist",
 
   "lecture_aleatoire" : "Shuffle",
   "repetition" : "Repeat",
@@ -107,6 +109,8 @@
   "morceaux" : "Tracks",
   "extras" : "Extras",
   "album" : "Album",
+  "mes_like": "Likes",
+  "likes_empty": "Likes: empty list, click on the heart to add music to this list",  
   "top_albums": "Top albums",
   "home": "Home",
 
@@ -131,6 +135,22 @@
   "help_install_ios_content_3": "In the menu, scroll down and select <b>Add to Home Screen</b>.",
   "help_install_ios_content_4": "If you want, edit the site’s title as it will appear on your screen.",
   "help_install_ios_content_5": "When everything is to your satisfaction, tap <b>Add</b>.",
-  "help_install_ios_content_6": "The icon is now there, ready to use. However, when you tap the icon, the website will only open in Safari."
-
+  "help_install_ios_content_6": "The icon is now there, ready to use. However, when you tap the icon, the website will only open in Safari.",
+  "help_screen_locked_title": "How to keep playing music on mobile with screen locked",
+  "help_screen_locked_content_1": "Preface: When you exit the music player app on your mobile device, the music usually stops automatically. This can be problematic if you want to continue listening to music with the screen locked, for example, when you're on the go or looking to save battery life. This tutorial will show you how to overcome this issue and continue playing music with the screen locked.",
+  "help_screen_locked_step_1_title":  "Step 1: Access ZeffyrMusic",
+  "help_screen_locked_step_1_content":  "Open the web browser on your mobile phone and go to ZeffyrMusic.",
+  "help_screen_locked_step_2_title":  "Step 2: Select the music to play",
+  "help_screen_locked_step_2_content":  "Choose the song, album, or playlist you want to listen to on ZeffyrMusic.",
+  "help_screen_locked_step_3_title":  "Step 3: Start playing",
+  "help_screen_locked_step_3_content":  "Tap the play button to start playing the music.",
+  "help_screen_locked_step_4_title":  "Step 4: Lock the screen",
+  "help_screen_locked_step_4_content":  "Once the music is playing, press the power button on your phone to lock the screen. This button is usually located on the side or top of your phone.",
+  "help_screen_locked_step_5_title":  "Step 5: Resume playing",
+  "help_screen_locked_step_5_content":  "To resume playing the music from the locked screen, press the power button to wake up the screen. Then, you can see the playback controls on the locked screen of your phone. Swipe your finger to unlock the screen if necessary.",
+  "help_screen_locked_step_6_title":  "Step 6: Control playback",
+  "help_screen_locked_step_6_content":  "Use the playback controls available on your phone's screen to control the music. You should see buttons to play, pause, skip to the next track, or go back to the previous track.",
+  "help_screen_locked_step_7_title":  "Step 7: Enjoy your music",
+  "help_screen_locked_step_7_content":  "You have now successfully continued playing your music on your mobile phone while locking the screen and resumed it from there. Enjoy your music wherever you are!",
+  "help_screen_locked_tips":  "Tip: Playing music with the screen locked can help save battery life on your phone, as the screen is one of the main battery consumers."
 }

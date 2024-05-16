@@ -1,5 +1,5 @@
 <div id="playlist_content" class="card panel-profile border-0 h-auto mt-2">
-    <div *ngIf="!isPrivate">
+    <div *ngIf="!isPrivate && (!isLikePage || playlist.length>0)">
         <div id="playlist_haut" class="card-header clearfix border-0">
             <div class="panel_head_content">
                 <div id="playlist_haut_titre">
@@ -140,5 +140,6 @@
         </div>
     </div>
 
-    <p *ngIf="isPrivate">{{ 'playlist_privee' | transloco }}</p>
+    <p class="bg-info p-2 rounded" *ngIf="isPrivate">{{ 'playlist_privee' | transloco }}</p>
+    <p class="bg-info p-2 rounded" *ngIf="isLikePage && playlist.length===0">{{ 'likes_empty' | transloco }}</p>
 </div>

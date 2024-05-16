@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -16,6 +16,7 @@ describe('HomeComponent', () => {
   let metaService: Meta;
   let translocoService: TranslocoService;
   let googleAnalyticsService: GoogleAnalyticsService;
+  let route: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -40,7 +41,10 @@ describe('HomeComponent', () => {
             defaultLang: 'en',
             prodMode: false,
           } as TranslocoConfig
-        }
+        },
+        {
+          provide: ActivatedRoute, useValue: { snapshot: { url: [] } }
+        },
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -56,10 +60,10 @@ describe('HomeComponent', () => {
     metaService = TestBed.inject(Meta);
     translocoService = TestBed.inject(TranslocoService);
     googleAnalyticsService = TestBed.inject(GoogleAnalyticsService);
+    route = TestBed.inject(ActivatedRoute);
     fixture.detectChanges();
   });
 
-  /*
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -74,7 +78,7 @@ describe('HomeComponent', () => {
     expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'description', content: 'meta_description' });
     expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/');
   });
-  
+
   it('should set isLoading to false after http request', () => {
     spyOn(component['initService'], 'getHomeInit').and.returnValue(of({ top: [], top_albums: [] }));
     component.ngOnInit();
@@ -87,6 +91,12 @@ describe('HomeComponent', () => {
         id: '1',
         titre: 'Titre Album',
         description: 'Description Album',
+        url_image: ''
+      },
+      {
+        id: '2',
+        titre: 'Titre Album 2',
+        description: 'Description Album 2',
         url_image: ''
       }],
       top_albums: [{ id: '2', titre: 'Titre Album 2', description: 'Description Album 2', url_image: '' }],
@@ -102,5 +112,22 @@ describe('HomeComponent', () => {
     component.ngOnInit();
     expect(component.isLoading).toBeFalse();
   });
-  */
+
+  it('should set page to "top" when url is "top"', () => {
+    route.snapshot.url = [new UrlSegment('top', {})];
+    component.ngOnInit();
+    expect(component['page']).toEqual('top');
+  });
+
+  it('should set page to "albums" when url is "albums"', () => {
+    route.snapshot.url = [new UrlSegment('albums', {})];
+    component.ngOnInit();
+    expect(component['page']).toEqual('albums');
+  });
+
+  it('should set page to "home" when url is not "top" or "albums"', () => {
+    route.snapshot.url = [new UrlSegment('not-top-or-albums', {})];
+    component.ngOnInit();
+    expect(component['page']).toEqual('home');
+  });
 });

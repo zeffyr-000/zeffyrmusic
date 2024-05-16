@@ -35,6 +35,7 @@ export class PlaylistComponent implements OnDestroy {
     currentKey = '';
     isPlaying = false;
     currentIdPlaylistPlaying = '';
+    isLikePage = false;
     subscriptionConnected: Subscription;
     subscriptionChangeKey: Subscription;
     subscriptionChangeFollow: Subscription;
@@ -177,6 +178,7 @@ export class PlaylistComponent implements OnDestroy {
         this.artist = null;
         this.idArtist = null;
         this.idPersoOwner = null;
+        this.isLikePage = true;
 
         this.subscriptionListLikeVideo = this.playerService.subjectListLikeVideo.subscribe(
             listLikeVideo => {
