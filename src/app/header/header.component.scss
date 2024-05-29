@@ -337,7 +337,7 @@
 
             #header_player_gauche{
                 width: 100%;
-                height: calc(100% - 230px);
+                height: calc(100% - 280px);
                 display: flex; 
                 flex-direction: column;
                 justify-content: center;
@@ -380,6 +380,11 @@
                 >.material-icons{
                     font-size: 40px;
                 }
+            }
+
+            #header_player_center_load{
+                height: 40px;
+                padding-top: 10px;
             }
 
             #header_player_gauche_liked,

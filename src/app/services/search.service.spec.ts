@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { SearchService } from './search.service';
 import { environment } from '../../environments/environment';
 import { SearchBarResponse, SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SearchService', () => {
   let service: SearchService;
@@ -10,9 +11,9 @@ describe('SearchService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [SearchService]
-    });
+    imports: [],
+    providers: [SearchService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(SearchService);
     httpMock = TestBed.inject(HttpTestingController);

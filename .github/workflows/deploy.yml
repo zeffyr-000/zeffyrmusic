@@ -22,7 +22,16 @@ jobs:
         run: npm ci
 
       - name: Run Tests
-        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI --code-coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
 
       - name: Lint
         run: npm run lint
@@ -31,7 +40,15 @@ jobs:
         run: npm run build -- --configuration=production --deploy-url /dist/
 
       - name: Check Build Success
-        run: if [ ! -d "dist/zeffyrmusic/" ]; then exit 1; fi
+        run: |
+          if [ ! -d "dist/" ]; then 
+            echo "Directory dist/ does not exist"
+            exit 1
+          fi
+          if [ -z "$(ls -A dist/)" ]; then
+            echo "Directory dist/ is empty"
+            exit 1
+          fi
 
       - name: Copy files to runner
         uses: actions/checkout@v3
@@ -44,4 +61,4 @@ jobs:
           password: ${{ secrets.password }}
           script: |
             rm -rf www/dist/*
-            scp -r ./dist/zeffyrmusic/* www/dist/
+            scp -r ./dist/* www/dist/

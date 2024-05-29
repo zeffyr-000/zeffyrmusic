@@ -7,7 +7,8 @@
             <tr *ngFor="let video of list; let index = index" (click)="play(index,true)"
                 [ngClass]="{'active' : video.key===currentKey}">
                 <td>
-                    <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
+                    <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" alt=""
+                        loading="lazy" />
                 </td>
                 <td>
                     <p><strong>{{video.titre}}</strong></p>

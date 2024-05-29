@@ -10,7 +10,7 @@ export const environment = {
     withCredentials: true
   },
   lang: 'fr',
-  URL_ASSETS : ''
+  URL_ASSETS: ''
 };
 
 /*

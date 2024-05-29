@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -38,6 +38,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     limitExtra: number;
 
     private subscriptionConnected: Subscription;
+    private paramMapSubscription: Subscription;
 
     constructor(private readonly searchService: SearchService,
         private readonly activatedRoute: ActivatedRoute,
@@ -49,47 +50,49 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.query = this.activatedRoute.snapshot.paramMap.get('query');
-        this.isLoading1 = true;
-        this.isLoading2 = true;
-        this.isLoading3 = true;
-
         this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
             this.isConnected = data.isConnected;
         });
 
-        this.searchService.fullSearch1(this.query)
-            .subscribe((data: { artist: ArtistResult[], playlist: PlaylistResult[] }) => {
-                this.isLoading1 = false;
+        this.paramMapSubscription = this.activatedRoute.paramMap.subscribe(params => {
+            this.query = params.get('query');
+            this.isLoading1 = true;
+            this.isLoading2 = true;
+            this.isLoading3 = true;
 
-                this.titleService.setTitle(this.translocoService.translate('resultats_recherche', { query: this.query }) +
-                    ' - Zeffyr Music');
+            this.searchService.fullSearch1(this.query)
+                .subscribe((data: { artist: ArtistResult[], playlist: PlaylistResult[] }) => {
+                    this.isLoading1 = false;
 
-                this.listArtists = data.artist;
-                this.limitArtist = 5;
+                    this.titleService.setTitle(this.translocoService.translate('resultats_recherche', { query: this.query }) +
+                        ' - Zeffyr Music');
 
-                this.listAlbums = data.playlist;
-                this.limitAlbum = 5;
+                    this.listArtists = data.artist;
+                    this.limitArtist = 5;
 
-            });
+                    this.listAlbums = data.playlist;
+                    this.limitAlbum = 5;
 
-        this.searchService.fullSearch2(this.query)
-            .subscribe((data: { tab_video: Video[] }) => {
-                this.isLoading2 = false;
+                });
 
-                this.listTracks = data.tab_video;
-                this.limitTrack = 5;
-            });
+            this.searchService.fullSearch2(this.query)
+                .subscribe((data: { tab_video: Video[] }) => {
+                    this.isLoading2 = false;
 
-        this.searchService.fullSearch3(this.query)
-            .subscribe((data: { tab_extra: Extra[] }) => {
-                this.isLoading3 = false;
+                    this.listTracks = data.tab_video;
+                    this.limitTrack = 5;
+                });
 
-                this.listExtras = data.tab_extra;
-                this.limitExtra = 5;
-            });
+            this.searchService.fullSearch3(this.query)
+                .subscribe((data: { tab_extra: Extra[] }) => {
+                    this.isLoading3 = false;
 
-        this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+                    this.listExtras = data.tab_extra;
+                    this.limitExtra = 5;
+                });
+
+            this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+        });
     }
 
     moreArtists() {
@@ -129,5 +132,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscriptionConnected.unsubscribe();
+        this.paramMapSubscription.unsubscribe();
     }
 }

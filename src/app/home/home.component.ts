@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
+import { map, switchMap, take } from 'rxjs';
 
 @Component({
     selector: 'app-home',
@@ -46,8 +47,23 @@ export class HomeComponent implements OnInit {
                 break;
         }
 
-        this.titleService.setTitle(this.translocoService.translate('title'));
-        this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('meta_description') });
+        this.translocoService.langChanges$
+            .pipe(
+                take(1),
+                switchMap(() => this.translocoService.selectTranslate('title'))
+            )
+            .subscribe(title => {
+                this.titleService.setTitle(title);
+            });
+
+        this.translocoService.langChanges$
+            .pipe(
+                take(1),
+                map(() => this.translocoService.translate('meta_description'))
+            )
+            .subscribe(description => {
+                this.metaService.updateTag({ name: 'description', content: description });
+            });
 
         this.initService.getHomeInit()
             .subscribe({

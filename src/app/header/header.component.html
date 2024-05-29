@@ -137,7 +137,7 @@
     </div>
 </div>
 
-<div id="header_player" class="row g-0" [class.expanded]="isPlayerExpanded">
+<div id="header_player" class="row g-0" [class.expanded]="isPlayerExpanded" appSwipeDown (swipeDown)="collapsePlayer()">
 
     <button id="header_player_collapse" class="btn btn-link" (click)="collapsePlayer()" role="presentation">
         <span class="material-icons">keyboard_arrow_down</span>

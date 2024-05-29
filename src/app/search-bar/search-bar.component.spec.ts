@@ -6,11 +6,12 @@ import { Subject, of } from 'rxjs';
 import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
 import { SearchBarComponent } from './search-bar.component';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { MockTestComponent } from '../mock-test.component';
 import { TestScheduler } from 'rxjs/testing';
 import { SearchService } from '../services/search.service';
 import { SearchBarResponse } from '../models/search.model';
+import { getTranslocoModule } from '../transloco-testing.module';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -52,26 +53,13 @@ describe('SearchBarComponent', () => {
         RouterTestingModule.withRoutes([
           { path: 'test', component: MockTestComponent },
         ]),
-        TranslocoTestingModule.forRoot({
-          langs: {
-            en: { meta_description: 'META_DESCRIPTION', title: 'TITLE', rechercher: 'rechercher' },
-            fr: { meta_description: 'META_DESCRIPTION_FR', title: 'TITLE_FR', rechercher: 'rechercher' }
-          }
-        }),],
+        getTranslocoModule()],
       declarations: [SearchBarComponent, MockTestComponent],
       providers: [
         { provide: SearchService, useValue: searchServiceMock },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpy },
         { provide: RouterTestingModule, useValue: routerSpy },
         { provide: ChangeDetectorRef, useValue: changeDetectorRefSpy },
-        {
-          provide: TRANSLOCO_CONFIG, useValue: {
-            reRenderOnLangChange: true,
-            availableLangs: ['en', 'fr'],
-            defaultLang: 'en',
-            prodMode: false,
-          } as TranslocoConfig
-        }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

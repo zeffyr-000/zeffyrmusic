@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { FollowItem } from '../models/follow.model';
 import { UserPlaylist } from '../models/playlist.model';
@@ -15,6 +15,7 @@ import { VideoItem } from '../models/video.model';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { LoginResponse } from '../models/user.model';
+import { getTranslocoModule } from '../transloco-testing.module';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -75,40 +76,8 @@ describe('HeaderComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         NgbModalModule,
-        TranslocoTestingModule.forRoot({
-          langs: {
-            en: {
-              repetition: 'repetition',
-              title: 'TITLE',
-              inscription: 'inscription',
-              login: 'login',
-              lecture_aleatoire: 'lecture_aleatoire',
-              connexion: 'connexion',
-              meta_description: 'META_DESCRIPTION',
-              video_plein_ecran: 'video_plein_ecran',
-              'Invalid credentials': 'Invalid credentials',
-              'Invalid playlist name': 'Invalid playlist name',
-              'Invalid email': 'Invalid email',
-              'Invalid title': 'Invalid title',
-              mot_de_passe_confirmer_invalide: 'mot_de_passe_confirmer_invalide'
-            },
-            fr: {
-              repetition: 'repetition',
-              title: 'TITLE_FR',
-              inscription: 'inscription',
-              login: 'login',
-              lecture_aleatoire: 'lecture_aleatoire',
-              connexion: 'connexion',
-              meta_description: 'META_DESCRIPTION_FR',
-              video_plein_ecran: 'video_plein_ecran',
-              'Invalid credentials': 'Invalid credentials',
-              'Invalid playlist name': 'Invalid playlist name',
-              'Invalid email': 'Invalid email',
-              'Invalid title': 'Invalid title',
-              mot_de_passe_confirmer_invalide: 'mot_de_passe_confirmer_invalide'
-            }
-          }
-        })],
+        getTranslocoModule()
+      ],
       declarations: [HeaderComponent],
       providers: [
         { provide: InitService, useValue: initServiceMock },
@@ -117,14 +86,6 @@ describe('HeaderComponent', () => {
         { provide: Router, useValue: routerSpyObj },
         { provide: ActivatedRoute, useValue: routeSpyObj },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpyObj },
-        {
-          provide: TRANSLOCO_CONFIG, useValue: {
-            reRenderOnLangChange: true,
-            availableLangs: ['en', 'fr'],
-            defaultLang: 'en',
-            prodMode: false,
-          } as TranslocoConfig
-        },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
       ],
@@ -310,6 +271,16 @@ describe('HeaderComponent', () => {
     component.onAfter();
 
     expect(playerService.after).toHaveBeenCalled();
+  });
+
+  it('should expand player', () => {
+    component.expandPlayer();
+    expect(component.isPlayerExpanded).toBe(true);
+  });
+
+  it('should collapse player', () => {
+    component.collapsePlayer();
+    expect(component.isPlayerExpanded).toBe(false);
   });
 
   it('should call playerService.updateVolume with the correct argument and update this.valueSliderVolume when onUpdateVolume is called', () => {
@@ -574,7 +545,7 @@ describe('HeaderComponent', () => {
         component.onSubmitEditPass(form);
 
         // Assert
-        expect(component.error).toBe('mot_de_passe_confirmer_invalide');
+        expect(component.error).toBe('Confirmation password is incorrect');
       });
 
       it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {

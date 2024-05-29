@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PlaylistService } from './playlist.service';
 import { Playlist } from '../models/playlist.model';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PlaylistService', () => {
   let service: PlaylistService;
@@ -9,9 +10,9 @@ describe('PlaylistService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [PlaylistService]
-    });
+    imports: [],
+    providers: [PlaylistService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     service = TestBed.inject(PlaylistService);
     httpMock = TestBed.inject(HttpTestingController);
