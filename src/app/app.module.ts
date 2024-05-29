@@ -33,6 +33,14 @@ import { CurrentComponent } from './current/current.component';
 const customConfig: ShareButtonsConfig = {
     include: ['facebook', 'twitter', 'whatsapp', 'copy'],
     gaTracking: true,
+    prop: {
+        copy: {
+            text: 'Copier le lien',
+            data: {
+                successText: 'Lien copié !'
+            }
+        }
+    }
 }
 
 @NgModule({

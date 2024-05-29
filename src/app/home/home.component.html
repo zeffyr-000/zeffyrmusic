@@ -1,5 +1,5 @@
 @if( page !== 'albums') {
-<div class="card card-body mt-3 border-0">
+<div class="card card-body mt-3 border-0" [id]="'content-top-' + page">
     <div *ngIf="isLoading" class="content_loading">
         <div class="spinner-border"></div>
     </div>
@@ -31,7 +31,7 @@
 }
 
 @if( page !== 'top') {
-<div class="card card-body mt-3 border-0">
+<div class="card card-body mt-3 border-0" [id]="'content-album-' + page">
     <h3 class="text-center border-0">{{'top_albums'| transloco}}</h3>
     <div *ngIf="isLoading" class="content_loading">
         <div class="spinner-border"></div>

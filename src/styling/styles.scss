@@ -73,33 +73,6 @@ input[type="search"]::-webkit-search-cancel-button {
 	padding: 2px 6px;
 }
 
-#playlist_haut {
-	min-height: 200px;
-	height: auto;
-	position: relative;
-	overflow: auto;
-}
-
-#playlist_haut_titre {
-	float: right;
-	width: 70%;
-	width: calc( 100% - 190px);
-	min-height: 170px;
-}
-
-#playlist_haut_titre>h3 {
-	margin-top: 2px;
-}
-
-#playlist_haut_titre>h3>a {
-	text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
-}
-
-#playlist_img_big {
-	width: 170px;
-	height: 170px;
-}
-
 .panel_head_content {
 	position: relative;
 }
