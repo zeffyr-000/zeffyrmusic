@@ -137,15 +137,19 @@
     </div>
 </div>
 
-<div id="header_player" class="row g-0">
+<div id="header_player" class="row g-0" [class.expanded]="isPlayerExpanded">
+
+    <button id="header_player_collapse" class="btn btn-link" (click)="collapsePlayer()" role="presentation">
+        <span class="material-icons">keyboard_arrow_down</span>
+    </button>
 
     <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
-        <button *ngIf="isConnected && playerService.isLiked(currentKey)"
+        <button *ngIf="isConnected && playerService.isLiked(currentKey)" id="header_player_gauche_liked"
             class="btn btn-sm btn-link text-decoration-none float-end"
             (click)="$event.stopPropagation();playerService.removeLike(currentKey)" role="presentation">
             <span class="material-icons">favorite</span>
         </button>
-        <button *ngIf="isConnected && !playerService.isLiked(currentKey)"
+        <button *ngIf="isConnected && !playerService.isLiked(currentKey)" id="header_player_gauche_like"
             class="btn btn-sm btn-link text-decoration-none text-body float-end"
             (click)="$event.stopPropagation();playerService.addLike(currentKey)" role="presentation">
             <span class="material-icons">favorite_border</span>
@@ -158,20 +162,26 @@
 
     <div id="header_player_centre" class="col-md-6">
         <div class="pl-lg-5 pr-lg-5 ml-lg-5 mr-lg-5">
+            <a id="header_player_centre_title" class="btn btn-light d-inline-block d-md-none" (click)="expandPlayer()"
+                role="presentation">
+                <div><b>{{currentTitle}}</b></div>
+                <div>{{currentArtist}}</div>
+            </a>
+
             <div class="btn-group btn-group-sm">
-                <a class="btn text-light w-100" (click)="onBefore()" role="presentation">
+                <a class="btn text-light w-100  d-none d-md-block" (click)="onBefore()" role="presentation">
                     <span class="material-icons">skip_previous</span>
                 </a>
-                <a id="play_button" class="btn text-light w-100" (click)="onPlayPause()" role="presentation">
+                <a id="play_button" class="btn text-light" (click)="onPlayPause()" role="presentation">
                     <span *ngIf="isPlaying" class="material-icons">pause</span>
                     <span *ngIf="!isPlaying" class="material-icons">play_arrow</span>
                 </a>
-                <a class="btn text-light w-100" (click)="onAfter()" role="presentation">
+                <a class="btn text-light w-100  d-none d-md-block" (click)="onAfter()" role="presentation">
                     <span class="material-icons">skip_next</span>
                 </a>
             </div>
 
-            <div class="btn-group btn-group-sm float-end">
+            <div id="header_player_centre_more_actions" class="btn-group btn-group-sm float-end d-none d-md-block">
                 <a (click)="goFullscreen('player')" class="btn text-light" placement="top"
                     ngbTooltip="{{'video_plein_ecran' | transloco}}" role="presentation">
                     <span class="material-icons">fullscreen</span>

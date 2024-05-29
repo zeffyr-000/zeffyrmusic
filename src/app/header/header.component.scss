@@ -1,11 +1,6 @@
 @import 'src/styling/custom';
 @import "node_modules/bootstrap/scss/bootstrap";
 
-#header {
-	height: 60px;
-	padding: 0;
-}
-
 #header_logo{
     width: 25%;
 }
@@ -241,6 +236,26 @@
     margin: 4px;
 }
 
+#header_player_centre_title {
+    width: calc( 100% - 64px );
+    transition: none !important;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    vertical-align: middle;
+    >div{
+        display: inline-block;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+#header_player_collapse{
+    display: none;
+}
+
 @media screen and (max-device-width:1199px), screen and (max-width:1199px) {
     #header_player_volume_content {
         margin: 0;
@@ -254,9 +269,6 @@
 @media (max-width: 750px) {
     #header_toggle_big {
         display: none;
-    }
-    #header {
-        height: 60px;
     }
     #header_player {
         height: 100px;
@@ -310,4 +322,78 @@
         overflow: hidden;
         text-align: center;
     }
+
+    #header_player{
+        transition: height 0.25s ease-out;
+
+        &.expanded{
+            height: calc(100% - 60px);
+            display: flex;
+            flex-direction: column;
+
+            #header_toggle_big {
+                display: block;
+            }
+
+            #header_player_gauche{
+                width: 100%;
+                height: calc(100% - 230px);
+                display: flex; 
+                flex-direction: column;
+                justify-content: center;
+                align-items: center; 
+
+                >img{
+                    max-height: 180px;
+                    float: none;
+                    display: block;
+                    margin-top: 30px;
+                    margin-bottom: 30px;
+                }
+
+                >div{
+                    font-size: 1.4em;
+                    text-align: center; 
+                    overflow: initial;
+                    white-space: initial;
+                    text-overflow: initial;
+                }
+            }
+
+            #header_player_centre_title{
+                display: none !important; 
+            }
+
+            #header_player_centre{
+                order: 2;
+
+                a:not(#header_player_centre_title),
+                #header_player_centre_more_actions{
+                    display: inline-block !important;
+                }
+            }
+
+            #header_player_collapse{
+                display: block;
+                width: 25%;
+                color: $white;
+                >.material-icons{
+                    font-size: 40px;
+                }
+            }
+
+            #header_player_gauche_liked,
+            #header_player_gauche_like{
+                margin-top: 0px;
+            }
+
+            #header_player_droite{
+                display: block;
+                order: 1;
+                width: 100%;
+                margin-top: 30px !important;
+                margin-bottom: 30px !important;
+            }
+        }
+    }   
 }

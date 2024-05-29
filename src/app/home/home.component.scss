@@ -1,3 +1,8 @@
 .card {
     height: auto;
 }
+
+#content-top-home .card-img-top,
+#content-album-home .card-img-top {
+	min-height: 10vw;
+}

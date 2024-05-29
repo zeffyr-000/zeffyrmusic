@@ -62,6 +62,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     addTitle: string;
     addDuration: number;
     URL_ASSETS: string;
+    isPlayerExpanded = false;
 
     listPlaylist: UserPlaylist[];
     listFollow: FollowItem[];
@@ -96,8 +97,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.subscriptionRepeat = this.playerService.subjectRepeatChange.subscribe(isRepeat => { this.isRepeat = isRepeat; }
         );
 
-        this.subscriptionRandom = this.playerService.subjectRandomChange.subscribe(isRandom => { this.isRandom = isRandom; }
-        );
+        this.subscriptionRandom = this.playerService.subjectRandomChange.subscribe(isRandom => { this.isRandom = isRandom; });
 
         this.subscriptionIsPlaying = this.playerService.subjectIsPlayingChange.subscribe(isPlaying => {
             this.isPlaying = isPlaying;
@@ -237,6 +237,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onAfter() {
         this.playerService.after();
+    }
+
+    expandPlayer() {
+        this.isPlayerExpanded = true;
+    }
+
+    collapsePlayer() {
+        this.isPlayerExpanded = false;
     }
 
     openModal(content: TemplateRef<unknown>) {

@@ -312,6 +312,12 @@ export class PlayerService implements OnDestroy {
     switchRandom() {
         this.isRandom = !this.isRandom;
 
+        if (this.isRandom) {
+            this.shuffle(this.tabIndex);
+        } else {
+            this.tabIndex = this.tabIndexInitial.slice(0);
+        }
+
         this.subjectRandomChange.next(this.isRandom);
     }
 

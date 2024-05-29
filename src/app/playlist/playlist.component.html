@@ -1,8 +1,13 @@
 <div id="playlist_content" class="card panel-profile border-0 h-auto mt-2">
     <div *ngIf="!isPrivate && (!isLikePage || playlist.length>0)">
         <div id="playlist_haut" class="card-header clearfix border-0">
-            <div class="panel_head_content">
-                <div id="playlist_haut_titre">
+            <div class="panel_head_content row">
+                <div *ngIf="imgBig && imgBig!==undefined && imgBig!==''" id="playlist_img_content"
+                    class="col col-4 p-0">
+                    <img id="playlist_img_big" [src]="imgBig" class="rounded" alt="" />
+                </div>
+
+                <div id="playlist_haut_titre" class="col col-8 p-0">
 
                     <h1 *ngIf="idTopCharts===null && titre!==''" class="m-t-0">{{titre}}</h1>
                     <h1 *ngIf="idTopCharts===null && titre===''" class="m-t-0">{{title}}</h1>
@@ -46,10 +51,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div *ngIf="imgBig && imgBig!==undefined && imgBig!==''">
-                    <img id="playlist_img_big" [src]="imgBig" class="rounded" alt="" />
-                </div>
             </div>
         </div>
 
@@ -57,11 +58,13 @@
             <table id="table_playlist" class="table table-hover">
                 <thead>
                     <tr>
-                        <th></th>
-                        <th></th>
-                        <th>{{ 'intitule_artiste' |transloco }}</th>
-                        <th>{{ 'intitule_titre' |transloco }}</th>
-                        <th></th>
+                        <th class="d-none d-md-table-cell"></th>
+                        <th class="d-none d-md-table-cell"></th>
+                        <th>
+                            <span class="d-none d-md-inline">{{ 'intitule_artiste' |transloco }}</span>
+                        </th>
+                        <th class="d-none d-md-table-cell">{{ 'intitule_titre' |transloco }}</th>
+                        <th class="d-none d-md-table-cell"></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -69,12 +72,13 @@
                 <tbody>
                     <tr *ngFor="let video of playlist; index as i" [attr.data-id-video]="video.key"
                         (click)="runPlaylist(i)" [ngClass]="{'active': video.key===currentKey}">
-                        <td>{{ i+1 }}</td>
-                        <td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
+                        <td class="d-none d-md-table-cell">{{ i+1 }}</td>
+                        <td class="d-none d-md-table-cell">
                             <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail"
                                 alt="" />
                         </td>
                         <td>
+                            <p class="d-block d-md-none"><strong>{{video.titre}}</strong></p>
                             <span *ngFor="let artist of video.artists; ; last as isLast">
                                 <a *ngIf="artist.id_artist" (click)="$event.stopPropagation()"
                                     routerLink="/artist/{{artist.id_artist}}">{{artist.label}}</a>
@@ -82,12 +86,12 @@
                                 <span *ngIf="!isLast">, </span>
                             </span>
                         </td>
-                        <td>{{video.titre}}</td>
-                        <td>
+                        <td class="d-none d-md-table-cell">{{video.titre}}</td>
+                        <td class="d-none d-md-table-cell">
                             <span *ngIf="video.duree>0">{{video.duree | toMMSS }}</span>
                         </td>
                         <td>
-                            <div>
+                            <div class="d-flex">
                                 <span *ngIf="isConnected && playerService.isLiked(video.key)"
                                     class="btn btn-sm btn-link text-decoration-none"
                                     (click)="$event.stopPropagation();playerService.removeLike(video.key)"
