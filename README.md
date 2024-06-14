@@ -26,5 +26,6 @@ Run `ng e2e` to execute the end-to-end tests via [Cypress](https://www.cypress.i
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
-[![CircleCI](https://circleci.com/gh/zeffyr-000/zeffyrmusic.svg?style=svg)](https://circleci.com/gh/zeffyr-000/zeffyrmusic)
-[Preprod server](https://next.zeffyrmusic.com/)
+[![codecov](https://codecov.io/github/zeffyr-000/zeffyrmusic/graph/badge.svg?token=HU7ROB7BDP)](https://codecov.io/github/zeffyr-000/zeffyrmusic)
+
+[Production server](https://www.zeffyrmusic.com/)

@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
-import { ShareModule } from 'ngx-sharebuttons';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { of } from 'rxjs';
@@ -10,6 +9,7 @@ import { Album } from '../models/album.model';
 import { ArtistComponent } from './artist.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ArtistService } from '../services/artist.service';
+import { getTranslocoModule } from '../transloco-testing.module';
 
 describe('ArtistComponent', () => {
     let component: ArtistComponent;
@@ -35,13 +35,7 @@ describe('ArtistComponent', () => {
 
         await TestBed.configureTestingModule({
             imports: [
-                TranslocoTestingModule.forRoot({
-                    langs: {
-                        en: { artist: 'Test Artist', albums: 'albums', description_partage_artist: 'description_partage_artist' },
-                        fr: { artist: 'Artiste de test', albums: 'albums', description_partage_artist: 'description_partage_artist' }
-                    }
-                }),
-                ShareModule
+                getTranslocoModule(),
             ],
             declarations: [ArtistComponent],
             providers: [
@@ -69,14 +63,6 @@ describe('ArtistComponent', () => {
                     useValue: {
                         pageView: () => { },
                     },
-                },
-                {
-                    provide: TRANSLOCO_CONFIG, useValue: {
-                        reRenderOnLangChange: false,
-                        availableLangs: ['en', 'fr'],
-                        defaultLang: 'en',
-                        prodMode: false,
-                    } as TranslocoConfig
                 },
             ],
             schemas: [NO_ERRORS_SCHEMA]

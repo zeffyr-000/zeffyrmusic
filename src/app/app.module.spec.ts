@@ -3,10 +3,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { NO_ERRORS_SCHEMA, NgZone } from '@angular/core';
+import { getTranslocoModule } from './transloco-testing.module';
 
 describe('AppComponent', () => {
     let component: AppComponent;
@@ -31,21 +32,12 @@ describe('AppComponent', () => {
                 RouterTestingModule.withRoutes([
                     { path: 'test-url', redirectTo: '' }
                 ]),
-                TranslocoTestingModule.forRoot({
-                    langs: { en: { meta_description: 'META_DESCRIPTION', title: 'TITLE' }, fr: { meta_description: 'META_DESCRIPTION_FR', title: 'TITLE_FR' } }
-                })],
+                getTranslocoModule(),
+            ],
             declarations: [AppComponent],
             providers: [
                 { provide: InitService, useValue: initServiceMock },
                 { provide: PlayerService, useValue: playerServiceMock },
-                {
-                    provide: TRANSLOCO_CONFIG, useValue: {
-                        reRenderOnLangChange: true,
-                        availableLangs: ['en', 'fr'],
-                        defaultLang: 'en',
-                        prodMode: false,
-                    } as TranslocoConfig
-                },
             ],
             schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();

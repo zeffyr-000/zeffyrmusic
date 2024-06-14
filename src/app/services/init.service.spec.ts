@@ -1,10 +1,12 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../environments/environment';
 import { InitService, PingResponse } from './init.service';
 import { HomeAlbum } from '../models/album.model';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { getTranslocoModule } from '../transloco-testing.module';
 
 describe('InitService', () => {
   let service: InitService;
@@ -22,26 +24,16 @@ describe('InitService', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        TranslocoTestingModule.forRoot({
-          langs: { en: { meta_description: 'META_DESCRIPTION', title: 'TITLE' }, fr: { meta_description: 'META_DESCRIPTION_FR', title: 'TITLE_FR' } }
-        }),],
+      imports: [getTranslocoModule()],
       providers: [
         InitService,
         {
           provide: DOCUMENT,
           useValue: documentMock,
         },
-        {
-          provide: TRANSLOCO_CONFIG, useValue: {
-            reRenderOnLangChange: true,
-            availableLangs: ['en', 'fr'],
-            defaultLang: 'en',
-            prodMode: false,
-          } as TranslocoConfig
-        }
-      ],
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
 
     service = TestBed.inject(InitService);

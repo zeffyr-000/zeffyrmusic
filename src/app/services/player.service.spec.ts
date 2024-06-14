@@ -1,15 +1,16 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { InitService } from './init.service';
 import { PlayerService } from './player.service';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { UserVideo, Video } from '../models/video.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { UserPlaylist } from '../models/playlist.model';
 import { FollowItem } from '../models/follow.model';
+import { getTranslocoModule } from '../transloco-testing.module';
 
 describe('PlayerService', () => {
     let service: PlayerService;
@@ -38,12 +39,7 @@ describe('PlayerService', () => {
         });
 
         await TestBed.configureTestingModule({
-            imports: [
-                HttpClientTestingModule,
-                TranslocoTestingModule.forRoot({
-                    langs: { en: { meta_description: 'META_DESCRIPTION', title: 'TITLE' }, fr: { meta_description: 'META_DESCRIPTION_FR', title: 'TITLE_FR' } }
-                })
-            ],
+            imports: [getTranslocoModule()],
             providers: [
                 {
                     provide: Title,
@@ -56,14 +52,9 @@ describe('PlayerService', () => {
                     useValue: initServiceMock,
                 },
                 PlayerService,
-                {
-                    provide: TRANSLOCO_CONFIG, useValue: {
-                        reRenderOnLangChange: true,
-                        availableLangs: ['en', 'fr'],
-                        defaultLang: 'en',
-                        prodMode: false,
-                    } as TranslocoConfig
-                },],
+                provideHttpClient(withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ]
         }).compileComponents();
         service = TestBed.inject(PlayerService);
         titleService = TestBed.inject(Title);
@@ -373,6 +364,16 @@ describe('PlayerService', () => {
 
         expect(service.isRandom).toBe(true);
         expect(service.subjectRandomChange.next).toHaveBeenCalledWith(true);
+    });
+
+    it('should switch isRandom and emit new value on switchRandom', () => {
+        service.isRandom = true;
+        spyOn(service.subjectRandomChange, 'next');
+
+        service.switchRandom();
+
+        expect(service.isRandom).toBe(false);
+        expect(service.subjectRandomChange.next).toHaveBeenCalledWith(false);
     });
 
     it('should remove video and call callback on removeVideo', () => {

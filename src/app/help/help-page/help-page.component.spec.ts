@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
 import { HelpPageComponent } from './help-page.component';
+import { getTranslocoModule } from 'src/app/transloco-testing.module';
 
 describe('HelpPageComponent', () => {
     let component: HelpPageComponent;
@@ -12,7 +12,7 @@ describe('HelpPageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [HelpPageComponent],
-            imports: [TranslocoModule],
+            imports: [getTranslocoModule()],
             providers: [
                 { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'test-page' } } } }
             ]

@@ -2,7 +2,12 @@
 
 	<h1 class="m-t-0">{{ 'resultats_recherche' | transloco :{ query: query } }}</h1>
 
-	<h2 class="m-t-0">{{ 'artistes' | transloco }}</h2>
+	<div class="d-flex justify-content-between align-items-center">
+		<h2>{{ 'artistes' | transloco }}</h2>
+		<div *ngIf="listArtists && listArtists.length>limitArtist">
+			<button class="btn btn-link" (click)="moreArtists()">{{ 'show_all' |transloco }}</button>
+		</div>
+	</div>
 	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2" *ngIf="!isLoading1">
 		<div *ngFor="let artist of listArtists | slice:0:limitArtist" class="col m-0 mt-1 mb-1">
 			<a class="card h-100" routerLink="/artist/{{artist.id_artiste}}">
@@ -13,19 +18,17 @@
 				</div>
 			</a>
 		</div>
-
-		<div *ngIf="listArtists && listArtists.length>limitArtist" class="card align-self-center"
-			(click)="moreArtists()" role="presentation">
-			<div class="card-body">
-				<h5 class="card-title">{{ 'more' | transloco }}</h5>
-			</div>
-		</div>
 	</div>
 	<div *ngIf="isLoading1" class="content_loading">
 		<div class="spinner-border"></div>
 	</div>
 
-	<h2 class="m-t-0"> {{ 'albums' | transloco }}</h2>
+	<div class="d-flex justify-content-between align-items-center">
+		<h2>{{ 'albums' | transloco }}</h2>
+		<div *ngIf="listAlbums && listAlbums.length>limitAlbum">
+			<button class="btn btn-link" (click)="moreAlbums()">{{ 'show_all' |transloco }}</button>
+		</div>
+	</div>
 	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2" *ngIf="!isLoading1">
 		<div *ngFor="let album of listAlbums | slice:0:limitAlbum" class="col m-0 mt-1 mb-1">
 			<a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
@@ -38,19 +41,17 @@
 				</div>
 			</a>
 		</div>
-
-		<div *ngIf="listAlbums && listAlbums.length>limitAlbum" class="card align-self-center" (click)="moreAlbums()"
-			role="presentation">
-			<div class="card-body">
-				<h5 class="card-title">{{ 'more' | transloco }}</h5>
-			</div>
-		</div>
 	</div>
 	<div *ngIf="isLoading1" class="content_loading">
 		<div class="spinner-border"></div>
 	</div>
 
-	<h2 class="m-t-0">{{ 'morceaux' | transloco }}</h2>
+	<div class="d-flex justify-content-between align-items-center">
+		<h2>{{ 'morceaux' | transloco }}</h2>
+		<div *ngIf="listTracks && listTracks.length>limitTrack">
+			<button class="btn btn-link" (click)="moreTracks()">{{ 'show_all' |transloco }}</button>
+		</div>
+	</div>
 	<table *ngIf="!isLoading2" id="table_playlist" class="table table-hover">
 		<thead>
 			<tr>
@@ -92,19 +93,18 @@
 					</span>
 				</td>
 			</tr>
-			<tr *ngIf="listTracks && listTracks.length>limitTrack">
-				<td colspan="7">
-					<a (click)="moreTracks()" role="presentation">{{ 'more' |transloco }}</a>
-				</td>
-			</tr>
 		</tbody>
 	</table>
 	<div *ngIf="isLoading2" class="content_loading">
 		<div class="spinner-border"></div>
 	</div>
 
-
-	<h2 class="m-t-0">{{ 'extras' |transloco }}</h2>
+	<div class="d-flex justify-content-between align-items-center">
+		<h2>{{ 'extras' | transloco }}</h2>
+		<div *ngIf="listExtras && listExtras.length>limitExtra">
+			<button class="btn btn-link" (click)="moreExtras()" role="presentation">{{ 'more' |transloco }}</button>
+		</div>
+	</div>
 	<table *ngIf="!isLoading3" id="table_extra" class="table table-hover">
 		<thead>
 			<tr>
@@ -127,11 +127,6 @@
 						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
 						<span class="material-icons">add</span>
 					</span>
-				</td>
-			</tr>
-			<tr *ngIf="listExtras && listExtras.length>limitExtra">
-				<td colspan="5">
-					<a (click)="moreExtras()" role="presentation">{{ 'more' |transloco }}</a>
 				</td>
 			</tr>
 		</tbody>

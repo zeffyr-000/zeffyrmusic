@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { BehaviorSubject, of } from 'rxjs';
 import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
@@ -13,6 +13,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '../services/search.service';
 import { MockTestComponent } from '../mock-test.component';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
+import { getTranslocoModule } from '../transloco-testing.module';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -24,6 +25,7 @@ describe('SearchComponent', () => {
   let playerService: PlayerService;
   let googleAnalyticsService: GoogleAnalyticsService;
   let searchServiceMock: Partial<SearchService>;
+  let activatedRouteMock: jasmine.SpyObj<ActivatedRoute>;
 
   const searchResults1: SearchResults1 = {
     artist: [{ id_artiste: '1', artiste: 'Test Artist', artist: 'Test Artist', id_artiste_deezer: '123' }],
@@ -58,25 +60,23 @@ describe('SearchComponent', () => {
       fullSearch2: jasmine.createSpy('fullSearch2').and.returnValue(of(searchResults2)),
       fullSearch3: jasmine.createSpy('fullSearch3').and.returnValue(of(searchResults3)),
     };
+    activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
+      snapshot: {
+        url: {
+          join: () => 'search/test'
+        }
+      },
+      params: new BehaviorSubject({ query: 'test' }),
+      paramMap: of(convertToParamMap({ query: 'test' })),
+    });
 
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([
           { path: 'test', component: MockTestComponent }
         ]),
-        TranslocoTestingModule.forRoot({
-          langs: {
-            en: {
-              resultats_recherche: 'resultats_recherche',
-              albums: 'albums', intitule_titre: 'intitule_titre', intitule_artiste: 'intitule_artiste',
-              morceaux: 'morceaux', extras: 'extras', artistes: 'artistes', playlists: 'playlists'
-            },
-            fr: {
-              resultats_recherche: 'resultats_recherche', albums: 'albums', intitule_titre: 'intitule_titre',
-              intitule_artiste: 'intitule_artiste', morceaux: 'morceaux', extras: 'extras', artistes: 'artistes', playlists: 'playlists'
-            }
-          }
-        })],
+        getTranslocoModule(),
+      ],
       declarations: [SearchComponent, ToMMSSPipe, MockTestComponent],
       providers: [
         {
@@ -85,28 +85,13 @@ describe('SearchComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: {
-                get: () => 'test',
-              },
-              url: ['search', 'test'],
-            },
-          },
+          useValue: activatedRouteMock,
         },
         {
           provide: Title,
           useValue: {
             setTitle: () => { },
           },
-        },
-        {
-          provide: TRANSLOCO_CONFIG, useValue: {
-            reRenderOnLangChange: true,
-            availableLangs: ['en', 'fr'],
-            defaultLang: 'en',
-            prodMode: false,
-          } as TranslocoConfig
         },
         {
           provide: InitService,
@@ -149,7 +134,7 @@ describe('SearchComponent', () => {
     spyOn(titleService, 'setTitle');
     spyOn(googleAnalyticsService, 'pageView');
     component.ngOnInit();
-    expect(titleService.setTitle).toHaveBeenCalledWith('resultats_recherche - Zeffyr Music');
+    expect(titleService.setTitle).toHaveBeenCalledWith('Search results "test" - Zeffyr Music');
     expect(component.listArtists).toEqual(searchResults1.artist);
     expect(component.listAlbums).toEqual(searchResults1.playlist);
     expect(component.listTracks).toEqual(searchResults2.tab_video);
@@ -277,9 +262,11 @@ describe('SearchComponent', () => {
 
   it('should unsubscribe from subscription on ngOnDestroy', () => {
     const unsubscribeSpy = spyOn(component['subscriptionConnected'], 'unsubscribe');
+    const unsubscribeSpy2 = spyOn(component['paramMapSubscription'], 'unsubscribe');
 
     component.ngOnDestroy();
 
     expect(unsubscribeSpy).toHaveBeenCalled();
+    expect(unsubscribeSpy2).toHaveBeenCalled();
   });
 });

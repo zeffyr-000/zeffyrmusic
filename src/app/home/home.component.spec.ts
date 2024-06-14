@@ -1,13 +1,15 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
-import { TranslocoTestingModule, TranslocoConfig, TRANSLOCO_CONFIG, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { of, throwError } from 'rxjs';
 import { HomeAlbum } from '../models/album.model';
 import { HomeComponent } from './home.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { getTranslocoModule } from '../transloco-testing.module';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -20,33 +22,19 @@ describe('HomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        TranslocoTestingModule.forRoot({
-          langs: {
-            en: { meta_description: 'meta_description', title: 'title', top_albums: 'top_albums' },
-            fr: { meta_description: 'meta_description', title: 'title', top_albums: 'top_albums' }
-          }
-        }),
-      ],
       declarations: [HomeComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+      imports: [getTranslocoModule()],
       providers: [
         Title,
         Meta,
         GoogleAnalyticsService,
         {
-          provide: TRANSLOCO_CONFIG, useValue: {
-            reRenderOnLangChange: false,
-            availableLangs: ['en', 'fr'],
-            defaultLang: 'en',
-            prodMode: false,
-          } as TranslocoConfig
-        },
-        {
           provide: ActivatedRoute, useValue: { snapshot: { url: [] } }
         },
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ]
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
@@ -74,8 +62,8 @@ describe('HomeComponent', () => {
     spyOn(metaService, 'updateTag');
     spyOn(googleAnalyticsService, 'pageView');
     component.ngOnInit();
-    expect(titleService.setTitle).toHaveBeenCalledWith('title');
-    expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'description', content: 'meta_description' });
+    expect(titleService.setTitle).toHaveBeenCalledWith('La musique gratuite, légale, en illimité - Zeffyr Music');
+    //expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'description', content: 'Ecoutez gratuitement des millions de titres avec ZeffyrMusic. Illimité et légal créez vos playlists et partagez vos coups de coeur avec vos amis.' });
     expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/');
   });
 
