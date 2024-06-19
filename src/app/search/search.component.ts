@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { InitService } from '../services/init.service';
@@ -43,6 +43,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     constructor(private readonly searchService: SearchService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly titleService: Title,
+        private readonly metaService: Meta,
         private readonly translocoService: TranslocoService,
         private readonly initService: InitService,
         private readonly playerService: PlayerService,
@@ -66,6 +67,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
                     this.titleService.setTitle(this.translocoService.translate('resultats_recherche', { query: this.query }) +
                         ' - Zeffyr Music');
+                    this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('description_search', { query: this.query }) });
 
                     this.listArtists = data.artist;
                     this.limitArtist = 5;

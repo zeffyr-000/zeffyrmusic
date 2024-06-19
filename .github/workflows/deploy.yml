@@ -53,12 +53,12 @@ jobs:
       - name: Copy files to runner
         uses: actions/checkout@v3
 
-      - name: Copy files
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.server }}
-          username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
-          script: |
-            rm -rf www/dist/*
-            scp -r ./dist/* www/dist/
+      # - name: Copy files
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.server }}
+      #     username: ${{ secrets.username }}
+      #     password: ${{ secrets.password }}
+      #     script: |
+      #       rm -rf www/dist/*
+      #       scp -r ./dist/* www/dist/

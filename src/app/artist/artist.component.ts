@@ -53,6 +53,7 @@ export class ArtistComponent implements OnInit {
                 });
                 this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
                 this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+                this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('description_artist', { artist: this.name, count: this.listAlbums.length }) });
 
                 this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
             });
