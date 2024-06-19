@@ -5,7 +5,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
-import { map, switchMap, take } from 'rxjs';
+import { switchMap, take } from 'rxjs';
 
 @Component({
     selector: 'app-home',
@@ -59,7 +59,7 @@ export class HomeComponent implements OnInit {
         this.translocoService.langChanges$
             .pipe(
                 take(1),
-                map(() => this.translocoService.translate('meta_description'))
+                switchMap(() => this.translocoService.selectTranslate('meta_description'))
             )
             .subscribe(description => {
                 this.metaService.updateTag({ name: 'description', content: description });

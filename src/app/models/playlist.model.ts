@@ -6,7 +6,7 @@ export interface Playlist {
     title: string;
     description: string;
     est_suivi: boolean
-    id_top: string;
+    id_top?: string;
     img_big: string;
     liste_video: string[];
     str_index: number[];
@@ -15,6 +15,7 @@ export interface Playlist {
     titre?: string;
     artiste?: string;
     id_artiste?: string;
+    year?: number
 }
 
 export interface PlaylistResult {

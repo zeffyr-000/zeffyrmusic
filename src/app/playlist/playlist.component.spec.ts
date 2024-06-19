@@ -14,6 +14,7 @@ import { UserVideo, Video } from '../models/video.model';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTranslocoModule } from '../transloco-testing.module';
 import { TranslocoService } from '@jsverse/transloco';
+import { Playlist } from '../models/playlist.model';
 
 describe('PlaylistComponent', () => {
   let component: PlaylistComponent;
@@ -475,5 +476,112 @@ describe('PlaylistComponent', () => {
   it('should pause the playlist', () => {
     component.pausePlaylist();
     expect(playerService.onPlayPause).toHaveBeenCalled();
+  });
+
+  it('should generate top description when id_top is defined', () => {
+    const data: Playlist = {
+      id_playlist: '1',
+      id_perso: '1',
+      description: 'description',
+      est_suivi: false,
+      id_top: '1',
+      title: 'Top Title',
+      img_big: 'img_big',
+      liste_video: ['1', '2', '3'],
+      str_index: [1, 2, 3],
+      tab_video: [{
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1'
+      }],
+    };
+    expect(component.getMetaDescription(data)).toBe('Discover "Top Title", description. Enjoy 1 must-listen tracks. Listen now!');
+  });
+
+  it('should generate album description when artiste and titre are defined', () => {
+    const data: Playlist = {
+      id_playlist: '1',
+      id_perso: '1',
+      description: 'description',
+      est_suivi: false,
+      title: 'Playlist Title',
+      artiste: 'Artiste 1',
+      titre: 'Titre 1',
+      img_big: 'img_big',
+      year: 2021,
+      liste_video: ['1', '2', '3'],
+      str_index: [1, 2, 3],
+      tab_video: [{
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1'
+      }],
+    };
+    expect(component.getMetaDescription(data)).toBe('Discover the album "Titre 1" by Artiste 1, released in 2021. Enjoy 1 captivating tracks. Listen now!');
+  });
+
+  it('should generate album description when titre are defined', () => {
+    const data: Playlist = {
+      id_playlist: '1',
+      id_perso: '1',
+      description: 'description',
+      est_suivi: false,
+      title: 'Playlist Title',
+      artiste: '',
+      titre: 'Titre 1',
+      img_big: 'img_big',
+      year: 2021,
+      liste_video: ['1', '2', '3'],
+      str_index: [1, 2, 3],
+      tab_video: [{
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1'
+      }],
+    };
+    expect(component.getMetaDescription(data)).toBe('Dive into "Titre 1", a 2021 album with 1 electrifying songs. Explore the album now!');
+  });
+
+  it('should generate playlist description when neither id_top nor artiste and titre are defined', () => {
+    const data: Playlist = {
+      id_playlist: '1',
+      id_perso: '1',
+      description: 'description',
+      est_suivi: false,
+      title: 'Playlist Title',
+      img_big: 'img_big',
+      liste_video: ['1', '2', '3'],
+      str_index: [1, 2, 3],
+      tab_video: [{
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1'
+      }],
+    };
+    expect(component.getMetaDescription(data)).toBe('Discover the playlist "Playlist Title". Enjoy 1 carefully selected songs. Listen now!');
   });
 });

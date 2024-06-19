@@ -8,13 +8,15 @@ describe('HelpPageComponent', () => {
     let fixture: ComponentFixture<HelpPageComponent>;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let route: ActivatedRoute;
+    let getSpy: jasmine.Spy;
 
     beforeEach(async () => {
+        getSpy = jasmine.createSpy().and.returnValue('test-page');
         await TestBed.configureTestingModule({
             declarations: [HelpPageComponent],
             imports: [getTranslocoModule()],
             providers: [
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'test-page' } } } }
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: getSpy } } } }
             ]
         })
             .compileComponents();
@@ -32,7 +34,26 @@ describe('HelpPageComponent', () => {
     });
 
     it('should set page on ngOnInit', () => {
+        getSpy.and.returnValue('test-page');
         component.ngOnInit();
         expect(component.page).toEqual('test-page');
+    });
+
+    it('should set the correct title for install-android', () => {
+        getSpy.and.returnValue('install-android');
+        component.ngOnInit();
+        expect(component.page).toEqual('install-android')
+    });
+
+    it('should set the correct title for install-ios', () => {
+        getSpy.and.returnValue('install-ios');
+        component.ngOnInit();
+        expect(component.page).toEqual('install-ios')
+    });
+
+    it('should set the correct title for locked-screen', () => {
+        getSpy.and.returnValue('locked-screen');
+        component.ngOnInit();
+        expect(component.page).toEqual('locked-screen')
     });
 });

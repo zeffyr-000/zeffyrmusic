@@ -118,6 +118,24 @@ export class PlaylistComponent implements OnDestroy {
         }
     }
 
+    getMetaDescription(data: Playlist) {
+        let description = '';
+
+        if (data.id_top !== undefined) {
+            description = this.translocoService.translate('description_top', { title: data.title, count: data.tab_video.length, description: data.description });
+        }
+        else {
+            if (data.artiste !== undefined && data.titre !== undefined) {
+                description = this.translocoService.translate(data.artiste ? 'description_album_artist' : 'description_album',
+                    { title: data.titre, artist: data.artiste, year: data.year, count: data.tab_video.length });
+            } else {
+                description = this.translocoService.translate('description_playlist',
+                    { title: data.title, count: data.tab_video.length });
+            }
+        }
+        return description;
+    }
+
     loadPlaylist(url: string) {
         this.playlistService.getPlaylist(url, this.idPlaylist)
             .subscribe((data: Playlist) => {
@@ -138,6 +156,10 @@ export class PlaylistComponent implements OnDestroy {
 
                     this.titleService.setTitle(data.title + ' - Zeffyr Music');
                     this.metaService.updateTag({ name: 'og:title', content: data.title + ' - Zeffyr Music' });
+                    this.metaService.updateTag({
+                        name: 'description',
+                        content: this.getMetaDescription(data)
+                    });
 
                     if (data.artiste !== undefined && data.titre !== undefined) {
                         this.metaService.updateTag({
