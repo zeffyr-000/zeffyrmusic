@@ -139,12 +139,11 @@ export class PlaylistComponent implements OnDestroy {
     loadPlaylist(url: string) {
         this.playlistService.getPlaylist(url, this.idPlaylist)
             .subscribe((data: Playlist) => {
-
                 if (data.est_prive === undefined) {
                     this.isPrivate = false;
                     this.idPlaylist = data.id_playlist;
                     this.playlist = data.tab_video;
-                    this.imgBig = data.img_big;
+                    this.imgBig = data.img_big || `${environment.URL_ASSETS}assets/img/default.jpg`;
                     this.idTopCharts = null;
                     this.title = data.title;
                     this.titre = data.titre || '';

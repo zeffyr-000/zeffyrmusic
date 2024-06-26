@@ -584,4 +584,21 @@ describe('PlaylistComponent', () => {
     };
     expect(component.getMetaDescription(data)).toBe('Discover the playlist "Playlist Title". Enjoy 1 carefully selected songs. Listen now!');
   });
+
+  it('should display the default image when img_big is not defined', () => {
+    const mockPlaylistDataImageDefault = { ...mockPlaylistData, img_big: undefined as string };
+
+    const httpClient = TestBed.inject(HttpClient);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistDataImageDefault));
+    const url = environment.URL_SERVER + 'json/playlist/1';
+
+    // Mock ActivatedRoute
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
+
+    component.loadPlaylist(url);
+
+    expect(component.imgBig).toBe('assets/img/default.jpg');
+  });
 });

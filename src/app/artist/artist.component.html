@@ -1,5 +1,7 @@
 <div id="artist_content" class="card panel-profile border-0 h-auto mt-2">
 
+	@if (isAvailable) {
+
 	<div id="artist_haut" class="card-header clearfix border-0 row">
 		<div id="artist_img_content" class="col col-4 p-0">
 			<img id="artist_img_big" [src]="urlDeezer" class="rounded" alt="" />
@@ -31,4 +33,8 @@
 			</div>
 		</div>
 	</div>
+	} @else {
+	<p class="bg-info p-2 rounded">{{ 'artist_not_available' | transloco }}</p>
+	<p><a routerLink="/">{{'back_home' | transloco}}</a></p>
+	}
 </div>

@@ -35,8 +35,8 @@ describe('SwipeDownDirective', () => {
   it('should emit swipeDown event when swiped down', () => {
     spyOn(component, 'onSwipeDown');
 
-    divEl.triggerEventHandler('touchstart', { touches: [{ clientY: 200 }] });
-    divEl.triggerEventHandler('touchend', { changedTouches: [{ clientY: 50 }] });
+    divEl.triggerEventHandler('touchstart', { touches: [{ clientY: 50 }] });
+    divEl.triggerEventHandler('touchend', { changedTouches: [{ clientY: 200 }] });
 
     expect(component.onSwipeDown).toHaveBeenCalled();
   });

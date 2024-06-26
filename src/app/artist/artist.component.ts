@@ -19,6 +19,7 @@ export class ArtistComponent implements OnInit {
     urlDeezer = '';
     idArtist: string;
     listAlbums: Album[];
+    isAvailable = false;
 
     constructor(private readonly artistService: ArtistService,
         private readonly activatedRoute: ActivatedRoute,
@@ -38,22 +39,28 @@ export class ArtistComponent implements OnInit {
 
         this.artistService.getArtist(idArtist)
             .subscribe((data: { nom: string, id_artiste_deezer: string, id_artist: string, list_albums: Album[] }) => {
-                this.name = data.nom;
-                this.idArtistDeezer = data.id_artiste_deezer;
-                this.urlDeezer = 'https://api.deezer.com/artist/' + data.id_artiste_deezer + '/image?size=big';
-                this.idArtist = data.id_artist;
-                this.listAlbums = data.list_albums;
+                if (data.nom) {
+                    this.isAvailable = true;
+                    this.name = data.nom;
+                    this.idArtistDeezer = data.id_artiste_deezer;
+                    this.urlDeezer = 'https://api.deezer.com/artist/' + data.id_artiste_deezer + '/image?size=big';
+                    this.idArtist = data.id_artist;
+                    this.listAlbums = data.list_albums;
 
-                this.titleService.setTitle(this.name + ' - Zeffyr Music');
+                    this.titleService.setTitle(this.name + ' - Zeffyr Music');
 
-                this.metaService.updateTag({ name: 'og:title', content: this.name + ' - Zeffyr Music' });
-                this.metaService.updateTag({
-                    name: 'og:description',
-                    content: this.translocoService.translate('description_partage_artist', { artist: this.name })
-                });
-                this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
-                this.metaService.updateTag({ name: 'og:url', content: document.location.href });
-                this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('description_artist', { artist: this.name, count: this.listAlbums.length }) });
+                    this.metaService.updateTag({ name: 'og:title', content: this.name + ' - Zeffyr Music' });
+                    this.metaService.updateTag({
+                        name: 'og:description',
+                        content: this.translocoService.translate('description_partage_artist', { artist: this.name })
+                    });
+                    this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
+                    this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+                    this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('description_artist', { artist: this.name, count: this.listAlbums.length }) });
+                }
+                else {
+                    this.isAvailable = false;
+                }
 
                 this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
             });
