@@ -145,5 +145,6 @@
     </div>
 
     <p class="bg-info p-2 rounded" *ngIf="isPrivate">{{ 'playlist_privee' | transloco }}</p>
+    <p *ngIf="isPrivate"><a routerLink="/">{{'back_home' | transloco}}</a></p>
     <p class="bg-info p-2 rounded" *ngIf="isLikePage && playlist.length===0">{{ 'likes_empty' | transloco }}</p>
 </div>

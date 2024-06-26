@@ -18,7 +18,7 @@ export class SwipeDownDirective {
   @HostListener('touchend', ['$event'])
   onTouchEnd(event: TouchEvent) {
     const endY = event.changedTouches[0].clientY;
-    if (this.startY - endY > 100) {
+    if (this.startY - endY < -60) {
       this.swipeDown.emit(event);
     }
   }

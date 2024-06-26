@@ -92,4 +92,10 @@ describe('ArtistComponent', () => {
         expect(titleService.setTitle).toHaveBeenCalledWith('Test Artist - Zeffyr Music');
         expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('artist/1');
     });
+
+    it('should set isAvaible to false if no data is returned', () => {
+        artistServiceMock.getArtist = jasmine.createSpy('getArtist').and.returnValue(of({}));
+        component.initLoad();
+        expect(component.isAvailable).toBeFalse();
+    });
 });
