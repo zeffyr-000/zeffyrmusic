@@ -342,7 +342,7 @@ describe('PlaylistComponent', () => {
     const playlistData = [{
       id_video: '1',
       artiste: 'Artiste 1',
-      artists: [{ id_artiste: '1', label: 'Artiste 1' }],
+      artists: [{ id_artist: '1', label: 'Artiste 1' }],
       duree: '100',
       id_playlist: '1',
       key: 'XXX-XXX',
@@ -361,7 +361,7 @@ describe('PlaylistComponent', () => {
     const playlistData = [{
       id_video: '1',
       artiste: 'Artiste 1',
-      artists: [{ id_artiste: '1', label: 'Artiste 1' }],
+      artists: [{ id_artist: '1', label: 'Artiste 1' }],
       duree: '100',
       id_playlist: '1',
       key: 'XXX-XXX',
@@ -379,7 +379,7 @@ describe('PlaylistComponent', () => {
     const playlistData = [{
       id_video: '1',
       artiste: 'Artiste 1',
-      artists: [{ id_artiste: '1', label: 'Artiste 1' }],
+      artists: [{ id_artist: '1', label: 'Artiste 1' }],
       duree: '100',
       id_playlist: '1',
       key: 'XXX-XXX',
@@ -410,7 +410,7 @@ describe('PlaylistComponent', () => {
     const videoData = {
       id_video: '1',
       artiste: 'Artiste 1',
-      artists: [{ id_artiste: '1', label: 'Artiste 1' }],
+      artists: [{ id_artist: '1', label: 'Artiste 1' }],
       duree: '100',
       id_playlist: '1',
       key: 'XXX-XXX',
@@ -428,7 +428,7 @@ describe('PlaylistComponent', () => {
     const videoData = {
       id_video: '1',
       artiste: 'Artiste 1',
-      artists: [{ id_artiste: '1', label: 'Artiste 1' }],
+      artists: [{ id_artist: '1', label: 'Artiste 1' }],
       duree: '100',
       id_playlist: '1',
       key: 'XXX-XXX',

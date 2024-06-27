@@ -1,0 +1,4 @@
+@for (artist of artists; track artist.id_artist) {
+@if (artist.id_artist) {<a [routerLink]="['/artist', artist.id_artist]">{{artist.label}}</a>}
+@else{{{artist.label}}}
+}
