@@ -11,9 +11,9 @@ describe('SearchService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [SearchService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [SearchService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    });
 
     service = TestBed.inject(SearchService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -57,7 +57,7 @@ describe('SearchService', () => {
       tab_video: [{
         id_video: 'test_id_video',
         artiste: 'test_artiste',
-        artists: [{ id_artiste: 'test_id_artiste', label: 'test_label' }],
+        artists: [{ id_artist: 'test_id_artiste', label: 'test_label' }],
         duree: '100',
         id_playlist: 'test_id_playlist',
         key: 'test_key',

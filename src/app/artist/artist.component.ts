@@ -19,7 +19,7 @@ export class ArtistComponent implements OnInit {
     urlDeezer = '';
     idArtist: string;
     listAlbums: Album[];
-    isAvailable = false;
+    isAvailable: boolean | undefined;
 
     constructor(private readonly artistService: ArtistService,
         private readonly activatedRoute: ActivatedRoute,

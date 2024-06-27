@@ -29,6 +29,7 @@ import { HelpPageComponent } from './help/help-page/help-page.component';
 import { CurrentComponent } from './current/current.component';
 import { appConfig } from './app.config';
 import { TranslocoHttpLoader } from './transloco.loader';
+import { ArtistListComponent } from './playlist/artist-list/artist-list.component';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import { TranslocoHttpLoader } from './transloco.loader';
         HelpComponent,
         HelpPageComponent,
         CurrentComponent,
-        SwipeDownDirective
+        SwipeDownDirective,
+        ArtistListComponent
     ],
     bootstrap: [AppComponent],
     imports: [

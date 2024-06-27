@@ -33,7 +33,7 @@
 			</div>
 		</div>
 	</div>
-	} @else {
+	} @else if (isAvailable === false){
 	<p class="bg-info p-2 rounded">{{ 'artist_not_available' | transloco }}</p>
 	<p><a routerLink="/">{{'back_home' | transloco}}</a></p>
 	}

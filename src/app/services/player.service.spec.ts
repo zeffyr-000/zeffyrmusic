@@ -200,7 +200,7 @@ describe('PlayerService', () => {
             {
                 id_video: '123',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '123', label: 'Test Artist' }],
+                artists: [{ id_artist: '123', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '123',
                 key: 'testId',
@@ -222,7 +222,7 @@ describe('PlayerService', () => {
             {
                 id_video: '123',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '123', label: 'Test Artist' }],
+                artists: [{ id_artist: '123', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '123',
                 key: 'XXX-123',
@@ -255,7 +255,7 @@ describe('PlayerService', () => {
             {
                 id_video: '123',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '123', label: 'Test Artist' }],
+                artists: [{ id_artist: '123', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '123',
                 key: 'XXX',
@@ -266,7 +266,7 @@ describe('PlayerService', () => {
             {
                 id_video: '456',
                 artiste: 'Test Artist 2',
-                artists: [{ id_artiste: '456', label: 'Test Artist 2' }],
+                artists: [{ id_artist: '456', label: 'Test Artist 2' }],
                 duree: '100',
                 id_playlist: '456',
                 key: 'YYY',
@@ -283,7 +283,7 @@ describe('PlayerService', () => {
             {
                 id_video: '456',
                 artiste: 'Test Artist 2',
-                artists: [{ id_artiste: '456', label: 'Test Artist 2' }],
+                artists: [{ id_artist: '456', label: 'Test Artist 2' }],
                 duree: '100',
                 id_playlist: '456',
                 key: 'YYY',
@@ -381,7 +381,7 @@ describe('PlayerService', () => {
             {
                 id_video: '1',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '1', label: 'Test Artist' }],
+                artists: [{ id_artist: '1', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '1',
                 key: 'XXX-XXX',
@@ -391,7 +391,7 @@ describe('PlayerService', () => {
             {
                 id_video: '2',
                 artiste: 'Test Artist 2',
-                artists: [{ id_artiste: '2', label: 'Test Artist 2' }],
+                artists: [{ id_artist: '2', label: 'Test Artist 2' }],
                 duree: '100',
                 id_playlist: '2',
                 key: 'YYY-YYY',
@@ -401,7 +401,7 @@ describe('PlayerService', () => {
             {
                 id_video: '3',
                 artiste: 'Test Artist 3',
-                artists: [{ id_artiste: '3', label: 'Test Artist 3' }],
+                artists: [{ id_artist: '3', label: 'Test Artist 3' }],
                 duree: '100',
                 id_playlist: '3',
                 key: 'ZZZ-ZZZ',
@@ -430,7 +430,7 @@ describe('PlayerService', () => {
             {
                 id_video: '1',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '1', label: 'Test Artist' }],
+                artists: [{ id_artist: '1', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '1',
                 key: 'XXX-XXX',
@@ -440,7 +440,7 @@ describe('PlayerService', () => {
             {
                 id_video: '2',
                 artiste: 'Test Artist 2',
-                artists: [{ id_artiste: '2', label: 'Test Artist 2' }],
+                artists: [{ id_artist: '2', label: 'Test Artist 2' }],
                 duree: '100',
                 id_playlist: '2',
                 key: 'YYY-YYY',
@@ -450,7 +450,7 @@ describe('PlayerService', () => {
             {
                 id_video: '3',
                 artiste: 'Test Artist 3',
-                artists: [{ id_artiste: '3', label: 'Test Artist 3' }],
+                artists: [{ id_artist: '3', label: 'Test Artist 3' }],
                 duree: '100',
                 id_playlist: '3',
                 key: 'ZZZ-ZZZ',
@@ -475,7 +475,7 @@ describe('PlayerService', () => {
             {
                 id_video: '123',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '123', label: 'Test Artist' }],
+                artists: [{ id_artist: '123', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '123',
                 key: 'XXX-123',
@@ -495,7 +495,7 @@ describe('PlayerService', () => {
             {
                 id_video: '123',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '123', label: 'Test Artist' }],
+                artists: [{ id_artist: '123', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '123',
                 key: 'XXX-123',
@@ -506,7 +506,7 @@ describe('PlayerService', () => {
             {
                 id_video: '456',
                 artiste: 'Test Artist 2',
-                artists: [{ id_artiste: '456', label: 'Test Artist 2' }],
+                artists: [{ id_artist: '456', label: 'Test Artist 2' }],
                 duree: '100',
                 id_playlist: '456',
                 key: 'YYY-456',
@@ -612,7 +612,7 @@ describe('PlayerService', () => {
             {
                 id_video: '123',
                 artiste: 'Test Artist',
-                artists: [{ id_artiste: '123', label: 'Test Artist' }],
+                artists: [{ id_artist: '123', label: 'Test Artist' }],
                 duree: '100',
                 id_playlist: '123',
                 key: 'XXX',

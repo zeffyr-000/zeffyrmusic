@@ -99,7 +99,7 @@ describe('InitService', () => {
           {
             id_video: '1',
             artiste: 'test_artiste',
-            artists: [{ id_artiste: 'test_id_artiste', label: 'test_nom_artiste' }],
+            artists: [{ id_artist: 'test_id_artiste', label: 'test_nom_artiste' }],
             duree: '100',
             id_playlist: '1',
             key: 'test_key',
@@ -110,7 +110,7 @@ describe('InitService', () => {
           {
             id_video: '2',
             artiste: 'test_artiste2',
-            artists: [{ id_artiste: 'test_id_artiste2', label: 'test_nom_artiste2' }],
+            artists: [{ id_artist: 'test_id_artiste2', label: 'test_nom_artiste2' }],
             duree: '100',
             id_playlist: '2',
             key: 'test_key2',

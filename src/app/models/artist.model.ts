@@ -1,7 +1,7 @@
 import { Album } from "./album.model";
 
 export interface Artist {
-    id_artiste: string;
+    id_artist?: string;
     label: string;
 }
 

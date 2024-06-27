@@ -79,12 +79,7 @@
                         </td>
                         <td>
                             <p class="d-block d-md-none"><strong>{{video.titre}}</strong></p>
-                            <span *ngFor="let artist of video.artists; ; last as isLast">
-                                <a *ngIf="artist.id_artist" (click)="$event.stopPropagation()"
-                                    routerLink="/artist/{{artist.id_artist}}">{{artist.label}}</a>
-                                <span *ngIf="!artist.id_artist">{{artist.label}}</span>
-                                <span *ngIf="!isLast">, </span>
-                            </span>
+                            <app-artist-list [artists]="video.artists"></app-artist-list>
                         </td>
                         <td class="d-none d-md-table-cell">{{video.titre}}</td>
                         <td class="d-none d-md-table-cell">

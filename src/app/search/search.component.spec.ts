@@ -33,7 +33,7 @@ describe('SearchComponent', () => {
   };
   const searchResults2: SearchResults2 = {
     tab_video: [{
-      id_video: '1', artiste: 'Test Artist', artists: [{ id_artiste: '1', label: 'Test Artist' }], duree: '100', id_playlist: '1', key: 'XXX-XXX', ordre: '1', titre: 'Test Track', titre_album: 'Test Album'
+      id_video: '1', artiste: 'Test Artist', artists: [{ id_artist: '1', label: 'Test Artist' }], duree: '100', id_playlist: '1', key: 'XXX-XXX', ordre: '1', titre: 'Test Track', titre_album: 'Test Album'
     }],
   };
   const searchResults3: SearchResults3 = {
@@ -186,7 +186,7 @@ describe('SearchComponent', () => {
     component.listTracks = [{
       id_video: '1',
       artiste: 'Test Artist',
-      artists: [{ id_artiste: '1', label: 'Test Artist' }],
+      artists: [{ id_artist: '1', label: 'Test Artist' }],
       duree: '100',
       id_playlist: '1',
       key: 'XXX-XXX',
@@ -211,7 +211,7 @@ describe('SearchComponent', () => {
     component.listTracks = [{
       id_video: '1',
       artiste: 'Test Artist',
-      artists: [{ id_artiste: '1', label: 'Test Artist' }],
+      artists: [{ id_artist: '1', label: 'Test Artist' }],
       duree: '100',
       id_playlist: '1',
       key: 'XXX-XXX',
@@ -222,7 +222,7 @@ describe('SearchComponent', () => {
     {
       id_video: '2',
       artiste: 'Test Artist 2',
-      artists: [{ id_artiste: '2', label: 'Test Artist 2' }],
+      artists: [{ id_artist: '2', label: 'Test Artist 2' }],
       duree: '100',
       id_playlist: '2',
       key: 'XXX-XXX',

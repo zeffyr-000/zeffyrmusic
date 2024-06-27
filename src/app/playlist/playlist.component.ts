@@ -209,7 +209,7 @@ export class PlaylistComponent implements OnDestroy {
 
                 listLikeVideo.forEach(element => {
                     const elementToPush = element as unknown as Video;
-                    elementToPush.artists = [{ label: element.artiste, id_artiste: '' }];
+                    elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
                     this.playlist.push(elementToPush);
                 });
             }
