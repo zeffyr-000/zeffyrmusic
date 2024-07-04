@@ -7,6 +7,8 @@ import { SearchComponent } from './search/search.component';
 import { HelpComponent } from './help/help.component';
 import { HelpPageComponent } from './help/help-page/help-page.component';
 import { CurrentComponent } from './current/current.component';
+import { SettingsComponent } from './settings/settings.component';
+import { AuthGuard } from './services/auth-guard.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -20,6 +22,7 @@ const routes: Routes = [
   { path: 'help/:page', component: HelpPageComponent },
   { path: 'help', component: HelpComponent },
   { path: 'current', component: CurrentComponent },
+  { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '' }
 ];
 

@@ -1,0 +1,73 @@
+<h1>{{'settings' | transloco}}</h1>
+
+<div class="list-group">
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <h5>{{'mot_de_passe' | transloco}}</h5>
+            <button class="btn btn-primary" (click)="openModal(contentModalEditPass)">
+                {{'modifier_mot_de_passe' | transloco}}
+            </button>
+        </div>
+    </div>
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <div class="d-flex flex-column align-items-start">
+                <h5>{{'mail' | transloco}}</h5>
+                <small>{{mail}}</small>
+            </div>
+            <button class="btn btn-primary" (click)="openModal(contentModalEditMail)">
+                {{'modifier_mail' | transloco}}
+            </button>
+        </div>
+    </div>
+</div>
+
+<ng-template #contentModalEditPass let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'modifier_mot_de_passe' | transloco}}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onSubmitEditPass(formEditPass)" #formEditPass="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="passwordold">{{ 'mot_de_passe_actuel' | transloco}}</label>
+                <input type="password" name="passwordold" id="passwordold" class="form-control" ngbAutofocus ngModel
+                    required />
+            </p>
+            <p class="form-group">
+                <label class="control-label" for="password1">{{ 'mot_de_passe_nouveau' | transloco}}</label>
+                <input type="password" name="password1" id="password1" class="form-control" ngModel required />
+            </p>
+            <p class="form-group">
+                <label class="control-label" for="password2">{{ 'mot_de_passe_repeter' | transloco}}</label>
+                <input type="password" name="password2" id="password2" class="form-control" ngModel required />
+            </p>
+
+            <p><input type="submit" class="btn btn-primary" [disabled]="formEditPass.invalid"
+                    value="{{ 'envoyer' | transloco}}" /></p>
+            <p *ngIf="formEditPass.dirty && error!==''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="successPass" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalEditMail let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'modifier_mail' | transloco}}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onSubmitEditMail(formEditMail)" #formEditMail="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
+                <input type="text" name="mail" id="mail" class="form-control" ngbAutofocus [(ngModel)]="mail" required
+                    email />
+            </p>
+
+            <p><input type="submit" class="btn btn-primary" [disabled]="formEditMail.invalid"
+                    value="{{ 'envoyer' | transloco}}" /></p>
+            <p *ngIf="formEditMail.dirty && error!==''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="successMail" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+        </form>
+    </div>
+</ng-template>

@@ -53,8 +53,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     error = '';
     isSuccess = false;
     langs = ['fr', 'en'];
-    successPass = false;
-    successMail = false;
     currentIdPlaylistEdit: string;
     playlistTitle: string;
     addKey: string;
@@ -273,7 +271,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                     if (data.success !== undefined && data.success) {
                         this.isConnected = true;
 
-                        this.initService.loginSuccess(data.pseudo, data.id_perso);
+                        this.initService.loginSuccess(data.pseudo, data.id_perso, data.mail);
 
                         this.mail = data.mail;
 
@@ -292,6 +290,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
             .subscribe((data: UserReponse) => {
                 if (data.success !== undefined && data.success) {
                     this.initService.logOut();
+                    const url = this.router.url;
+                    const urlProtected = this.router.config?.filter(route => route.canActivate !== undefined).map(route => route.path);
+                    if (urlProtected?.includes(url.split('/')[1])) {
+                        this.router.navigate(['/']);
+                    }
                 }
             });
     }
@@ -304,58 +307,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
                         this.isSuccess = true;
                     } else {
                         this.error = this.translocoService.translate(data.error);
-                    }
-                });
-        }
-    }
-
-    onSubmitEditPass(form: NgForm) {
-        if (form.valid) {
-            if (form.form.value.password1 === form.form.value.password2) {
-                this.userService.editPass(
-                    {
-                        passwordold: form.form.value.passwordold,
-                        passwordnew: form.form.value.password1
-                    })
-                    .subscribe({
-                        next: (data: UserReponse) => {
-                            if (data.success !== undefined && data.success) {
-                                this.successPass = true;
-                                setTimeout(() => {
-                                    this.successPass = false;
-                                }, 10000);
-                            } else {
-                                this.error = this.translocoService.translate(data.error);
-                            }
-                        },
-                        error: () => {
-                            this.isConnected = false;
-                            this.initService.onMessageUnlog();
-                        }
-                    });
-            } else {
-                this.error = this.translocoService.translate('mot_de_passe_confirmer_invalide');
-            }
-        }
-    }
-
-    onSubmitEditMail(form: NgForm) {
-        if (form.valid) {
-            this.userService.editMail(form.form.value)
-                .subscribe({
-                    next: (data: UserReponse) => {
-                        if (data.success !== undefined && data.success) {
-                            this.successMail = true;
-                            setTimeout(() => {
-                                this.successMail = false;
-                            }, 10000);
-                        } else {
-                            this.error = this.translocoService.translate(data.error);
-                        }
-                    },
-                    error: () => {
-                        this.isConnected = false;
-                        this.initService.onMessageUnlog();
                     }
                 });
         }

@@ -194,11 +194,12 @@ describe('InitService', () => {
     it('should set isConnected to true and update pseudo and idPerso', () => {
       spyOn(service, 'onChangeIsConnected');
 
-      service.loginSuccess('test_pseudo', 'test_id_perso');
+      service.loginSuccess('test_pseudo', 'test_id_perso', 'test_mail');
 
       expect(service['isConnected']).toBeTrue();
       expect(service['pseudo']).toBe('test_pseudo');
       expect(service['idPerso']).toBe('test_id_perso');
+      expect(service['mail']).toBe('test_mail');
 
       expect(service.onChangeIsConnected).toHaveBeenCalled();
     });

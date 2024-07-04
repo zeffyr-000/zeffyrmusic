@@ -114,10 +114,11 @@ export class InitService {
         });
     }
 
-    loginSuccess(pseudo: string, idPerso: string) {
+    loginSuccess(pseudo: string, idPerso: string, mail: string) {
         this.isConnected = true;
         this.idPerso = idPerso;
         this.pseudo = pseudo;
+        this.mail = mail;
 
         this.onChangeIsConnected();
     }
@@ -126,6 +127,7 @@ export class InitService {
         this.isConnected = false;
         this.idPerso = '';
         this.pseudo = '';
+        this.mail = '';
 
         document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
 
@@ -143,4 +145,7 @@ export class InitService {
         return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
     }
 
+    getIsConnected(): boolean {
+        return this.isConnected;
+    }
 }
