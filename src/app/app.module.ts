@@ -30,6 +30,8 @@ import { CurrentComponent } from './current/current.component';
 import { appConfig } from './app.config';
 import { TranslocoHttpLoader } from './transloco.loader';
 import { ArtistListComponent } from './playlist/artist-list/artist-list.component';
+import { DefaultImageDirective } from './directives/default-image.directive';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
     declarations: [
@@ -46,7 +48,9 @@ import { ArtistListComponent } from './playlist/artist-list/artist-list.componen
         HelpPageComponent,
         CurrentComponent,
         SwipeDownDirective,
-        ArtistListComponent
+        ArtistListComponent,
+        DefaultImageDirective,
+        SettingsComponent
     ],
     bootstrap: [AppComponent],
     imports: [

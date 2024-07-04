@@ -44,6 +44,7 @@
   "mot_de_passe_modifie_succes": "Votre mot de passe a été modifié",
   "ancien_passe_incorrect": "Ancien mot de passe incorrect",
   "mot_de_passe_invalide": "Ce mot de passe est invalide (minimum 4 caractères)",
+  "settings": "Paramètres",
 
   "modifier_mail": "Modifier son e-mail",
   "mail_inexistant": "Ce mail n'existe pas",

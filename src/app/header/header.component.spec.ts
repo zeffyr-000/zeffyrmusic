@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoService } from '@jsverse/transloco';
@@ -436,7 +436,7 @@ describe('HeaderComponent', () => {
         expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
 
         expect(component.isConnected).toBeTrue();
-        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso);
+        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail);
         expect(component.mail).toBe(mail);
         expect(playerService.onLoadListLogin).toHaveBeenCalledWith(liste_playlist, liste_suivi);
         expect(activeModalSpy.dismiss).toHaveBeenCalledWith('');
@@ -485,145 +485,6 @@ describe('HeaderComponent', () => {
 
         expect(userServiceMock.resetPass).toHaveBeenCalledWith(form.form.value);
         expect(component.error).toBe('Invalid credentials');
-      });
-    });
-
-    describe('onSubmitEditPass', () => {
-      it('should call httpClient.post with the correct arguments and update this.successPass or this.error based on the server response', fakeAsync(() => {
-        // Arrange
-        const form = {
-          valid: true,
-          form: {
-            value: {
-              password1: 'testPassword',
-              password2: 'testPassword',
-              passwordold: 'oldPassword'
-            }
-          }
-        } as NgForm;
-        const successResponse = { success: true, error: '' };
-        const errorResponse = { success: false, error: 'Invalid credentials' };
-        const expectedBody = {
-          passwordold: 'oldPassword',
-          passwordnew: 'testPassword'
-        };
-
-        userServiceMock.editPass.and.returnValue(of(successResponse));
-
-        // Act
-        component.onSubmitEditPass(form);
-
-        // Assert
-        expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
-        tick(10000);
-        expect(component.successPass).toBe(false);
-
-
-        userServiceMock.editPass.and.returnValue(of(errorResponse));
-        // Act
-        component.onSubmitEditPass(form);
-
-        // Assert
-        expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
-        expect(component.error).toBe('Invalid credentials');
-      }));
-
-      it('should set this.error to "mot_de_passe_confirmer_invalide" when the passwords are not identical', () => {
-        // Arrange
-        const form = {
-          valid: true,
-          form: {
-            value: {
-              password1: 'testPassword',
-              password2: 'differentPassword',
-              passwordold: 'oldPassword'
-            }
-          }
-        } as NgForm;
-
-        // Act
-        component.onSubmitEditPass(form);
-
-        // Assert
-        expect(component.error).toBe('Confirmation password is incorrect');
-      });
-
-      it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
-        // Arrange
-        const form = {
-          valid: true,
-          form: {
-            value: {
-              password1: 'testPassword',
-              password2: 'testPassword',
-              passwordold: 'oldPassword'
-            }
-          }
-        } as NgForm;
-        userServiceMock.editPass.and.returnValue(throwError('error'));
-
-        // Act
-        component.onSubmitEditPass(form);
-
-        // Assert
-        expect(userServiceMock.editPass).toHaveBeenCalled();
-        expect(component.isConnected).toBe(false);
-        expect(initService.onMessageUnlog).toHaveBeenCalled();
-      });
-    });
-
-    describe('onSubmitEditMail', () => {
-      it('should call httpClient.post with the correct arguments and update this.successMail or this.error based on the server response', fakeAsync(() => {
-        // Arrange
-        const form = {
-          valid: true,
-          form: {
-            value: {
-              email: 'testEmail'
-            }
-          }
-        } as NgForm;
-        const successResponse = { success: true, error: '' };
-        const errorResponse = { success: false, error: 'Invalid email' };
-        userServiceMock.editMail.and.returnValue(of(successResponse));
-
-        // Act
-        component.onSubmitEditMail(form);
-
-        // Assert
-        expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
-        tick(10000);
-        expect(component.successMail).toBe(false);
-
-        userServiceMock.editMail.and.returnValue(of(errorResponse));
-        // Act
-        component.onSubmitEditMail(form);
-
-        // Assert
-        expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
-        expect(component.error).toBe('Invalid email');
-      }));
-
-      it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
-        // Arrange
-        const form = {
-          valid: true,
-          form: {
-            value: {
-              email: 'testEmail'
-            }
-          }
-        } as NgForm;
-        const errorResponse = { success: false, error: 'Invalid email' };
-        userServiceMock.editMail.and.returnValue(throwError(errorResponse));
-
-        // Act
-        component.onSubmitEditMail(form);
-
-        // Assert
-        expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
-        expect(component.isConnected).toBe(false);
-        expect(initService.onMessageUnlog).toHaveBeenCalled();
       });
     });
 

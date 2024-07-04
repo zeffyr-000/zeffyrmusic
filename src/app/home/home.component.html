@@ -8,7 +8,7 @@
         [class.row-cols-xl-5]="page !== 'home'">
         <div *ngFor="let chart of page === 'home' ? listTopSliced : listTop" class="col m-0 mt-1 mb-1">
             <a class="card h-100" routerLink="/top/{{chart.id}}">
-                <img src="{{chart.url_image}}" class="card-img-top" alt="" />
+                <img src="{{chart.url_image}}" class="card-img-top" alt="" appDefaultImage />
                 <div class="card-body">
                     <h5 class="card-title">{{chart.titre}}</h5>
                 </div>
@@ -42,7 +42,7 @@
         <div *ngFor="let album of page === 'home' ? listTopAlbumsSliced : listTopAlbums; let i = index"
             class="col m-0 mt-1 mb-1">
             <a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
-                <img src="{{album.url_image}}" class="card-img-top" alt="" />
+                <img src="{{album.url_image}}" class="card-img-top" alt="" appDefaultImage />
                 <div class="card-body">
                     <h5 class="card-title">
                         <span class="badge bg-primary text-light">{{i+1}}</span>

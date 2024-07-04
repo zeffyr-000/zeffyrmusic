@@ -44,6 +44,7 @@
   "mot_de_passe_modifie_succes": "Your password has been edited",
   "ancien_passe_incorrect": "Former password is incorrect",
   "mot_de_passe_invalide": "This password is not valid (between 4 and 16 characters)",
+  "settings": "Settings",
 
   "modifier_mail": "Edit your email",
   "mail_inexistant": "This email doesn't exist",
