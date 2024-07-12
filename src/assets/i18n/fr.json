@@ -49,6 +49,7 @@
   "modifier_mail": "Modifier son e-mail",
   "mail_inexistant": "Ce mail n'existe pas",
   "mail_invalide": "Ce mail n'est pas valide",
+  "enable_dark_mode": "Activer le mode sombre",
 
   "playlist_privee": "La playlist est devenue privée vous n'y avez plus accès.",
   "perte_connexion": "Perte de connexion à internet détectée",

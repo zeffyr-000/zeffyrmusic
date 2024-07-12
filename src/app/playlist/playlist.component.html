@@ -1,20 +1,22 @@
-<div id="playlist_content" class="card panel-profile border-0 h-auto mt-2">
+<div id="playlist_content" class="card panel-profile border-0 h-auto mt-2" itemscope
+    [attr.itemtype]="!idTopCharts ? 'http://schema.org/MusicAlbum': 'http://schema.org/MusicGroup'">
     <div *ngIf="!isPrivate && (!isLikePage || playlist.length>0)">
         <div id="playlist_haut" class="card-header clearfix border-0">
             <div class="panel_head_content row">
                 <div *ngIf="imgBig && imgBig!==undefined && imgBig!==''" id="playlist_img_content"
                     class="col col-4 p-0">
-                    <img id="playlist_img_big" [src]="imgBig" class="rounded" alt="" appDefaultImage />
+                    <img id="playlist_img_big" [src]="imgBig" class="rounded" alt="" appDefaultImage itemprop="image" />
                 </div>
 
                 <div id="playlist_haut_titre" class="col col-8 p-0">
 
-                    <h1 *ngIf="idTopCharts===null && titre!==''" class="m-t-0">{{titre}}</h1>
-                    <h1 *ngIf="idTopCharts===null && titre===''" class="m-t-0">{{title}}</h1>
+                    <h1 *ngIf="idTopCharts===null && titre!==''" class="m-t-0" itemprop="name">{{titre}}</h1>
+                    <h1 *ngIf="idTopCharts===null && titre===''" class="m-t-0" itemprop="name">{{title}}</h1>
 
-                    <h3 *ngIf="artist!==null && artist!==''"><a routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
+                    <h3 *ngIf="artist!==null && artist!==''"><a itemprop="byArtist url"
+                            routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
 
-                    <p *ngIf="idTopCharts===null && titre===''" class="m-t-0">{{description}}</p>
+                    <p *ngIf="idTopCharts===null && titre===''" class="m-t-0" itemtype="description">{{description}}</p>
 
                     <div>
                         <button class="btn btn-primary btn-lg" (click)="runPlaylist()"
@@ -71,17 +73,18 @@
 
                 <tbody>
                     <tr *ngFor="let video of playlist; index as i" [attr.data-id-video]="video.key"
-                        (click)="runPlaylist(i)" [ngClass]="{'active': video.key===currentKey}">
-                        <td class="d-none d-md-table-cell">{{ i+1 }}</td>
+                        (click)="runPlaylist(i)" [ngClass]="{'active': video.key===currentKey}" itemprop="track"
+                        itemscope itemtype="http://schema.org/MusicRecording">
+                        <td class="d-none d-md-table-cell" itemprop="position">{{ i+1 }}</td>
                         <td class="d-none d-md-table-cell">
                             <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail"
                                 alt="" />
                         </td>
                         <td>
-                            <p class="d-block d-md-none"><strong>{{video.titre}}</strong></p>
+                            <p class="d-block d-md-none" itemprop="name"><strong>{{video.titre}}</strong></p>
                             <app-artist-list [artists]="video.artists"></app-artist-list>
                         </td>
-                        <td class="d-none d-md-table-cell">{{video.titre}}</td>
+                        <td class="d-none d-md-table-cell" itemprop="name">{{video.titre}}</td>
                         <td class="d-none d-md-table-cell">
                             <span *ngIf="video.duree>0">{{video.duree | toMMSS }}</span>
                         </td>

@@ -57,6 +57,7 @@ describe('InitService', () => {
         pseudo: 'test_pseudo',
         id_perso: 'test_id_perso',
         mail: 'test_mail',
+        dark_mode_enabled: false,
         liste_playlist: [
           {
             id_playlist: '1',
@@ -141,6 +142,7 @@ describe('InitService', () => {
         pseudo: '',
         id_perso: '',
         mail: '',
+        dark_mode_enabled: false,
         liste_playlist: [],
         liste_suivi: [],
         like_video: [],
@@ -161,7 +163,7 @@ describe('InitService', () => {
       expect(service['mail']).toBe('');
 
       service.subjectConnectedChange.subscribe(value => {
-        expect(value).toEqual({ isConnected: false, pseudo: '', idPerso: '', mail: '' });
+        expect(value).toEqual({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false });
       });
       service.subjectInitializePlaylist.subscribe(value => {
         expect(value).toEqual({
@@ -186,6 +188,7 @@ describe('InitService', () => {
         pseudo: '',
         idPerso: '',
         mail: '',
+        darkModeEnabled: false,
       });
     });
   });
@@ -194,7 +197,7 @@ describe('InitService', () => {
     it('should set isConnected to true and update pseudo and idPerso', () => {
       spyOn(service, 'onChangeIsConnected');
 
-      service.loginSuccess('test_pseudo', 'test_id_perso', 'test_mail');
+      service.loginSuccess('test_pseudo', 'test_id_perso', 'test_mail', false);
 
       expect(service['isConnected']).toBeTrue();
       expect(service['pseudo']).toBe('test_pseudo');

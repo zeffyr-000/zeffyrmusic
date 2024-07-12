@@ -24,6 +24,7 @@ export interface LoginResponse {
     pseudo: string;
     id_perso: string;
     mail: string;
+    dark_mode_enabled: boolean;
     liste_playlist: UserPlaylist[];
     liste_suivi: FollowItem[];
     error?: string;

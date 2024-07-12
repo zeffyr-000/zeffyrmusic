@@ -62,8 +62,10 @@
 
     <div id="header_logo" class="nav col-3">
         <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="{ 'home' | transloco }" routerLink="">
-            <img src="{{URL_ASSETS}}assets/img/logo.png" alt="" class="d-none d-lg-block mx-auto" />
-            <img src="{{URL_ASSETS}}assets/img/logo_mobile.png" alt="" class="d-lg-none" />
+            <img [src]="this.darkModeEnabled ? URL_ASSETS + 'assets/img/logo_dark.png' : URL_ASSETS + 'assets/img/logo.png'"
+                alt="" class="d-none d-lg-block mx-auto" />
+            <img [src]="this.darkModeEnabled ?  URL_ASSETS + 'assets/img/logo_mobile_dark.png' : URL_ASSETS + 'assets/img/logo_mobile.png'"
+                alt="" class="d-lg-none" />
         </a>
     </div>
 

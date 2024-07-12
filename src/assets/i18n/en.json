@@ -49,6 +49,7 @@
   "modifier_mail": "Edit your email",
   "mail_inexistant": "This email doesn't exist",
   "mail_invalide": "This email is not valid",
+  "enable_dark_mode": "Enable dark mode",
 
   "playlist_privee": "Playlist has become private you no longer have access.",
   "perte_connexion": "Loss of internet connection detected",

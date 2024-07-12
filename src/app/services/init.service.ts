@@ -14,6 +14,7 @@ export interface PingResponse {
     pseudo: string;
     id_perso: string;
     mail: string;
+    dark_mode_enabled: boolean;
     liste_playlist: UserPlaylist[];
     liste_suivi: FollowItem[];
     like_video: UserVideo[];
@@ -31,22 +32,26 @@ export class InitService {
     private pseudo = '';
     private idPerso = '';
     private mail = '';
+    private darkModeEnabled = false;
 
     subjectConnectedChange: BehaviorSubject<{
         isConnected: boolean,
         pseudo: string,
         idPerso: string,
         mail: string
+        darkModeEnabled: boolean
     }> = new BehaviorSubject<{
         isConnected: boolean,
         pseudo: string,
         idPerso: string,
-        mail: string
+        mail: string,
+        darkModeEnabled: boolean
     }>({
         isConnected: this.isConnected,
         pseudo: this.pseudo,
         idPerso: this.idPerso,
-        mail: this.mail
+        mail: this.mail,
+        darkModeEnabled: this.darkModeEnabled
     });
 
     subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
@@ -83,6 +88,7 @@ export class InitService {
                     this.pseudo = data.pseudo;
                     this.idPerso = data.id_perso;
                     this.mail = data.mail;
+                    this.darkModeEnabled = data.dark_mode_enabled;
 
                     listPlaylist = data.liste_playlist;
                     listFollow = data.liste_suivi;
@@ -110,15 +116,17 @@ export class InitService {
             isConnected: this.isConnected,
             pseudo: this.pseudo,
             idPerso: this.idPerso,
-            mail: this.mail
+            mail: this.mail,
+            darkModeEnabled: this.darkModeEnabled
         });
     }
 
-    loginSuccess(pseudo: string, idPerso: string, mail: string) {
+    loginSuccess(pseudo: string, idPerso: string, mail: string, darkModeEnabled: boolean) {
         this.isConnected = true;
         this.idPerso = idPerso;
         this.pseudo = pseudo;
         this.mail = mail;
+        this.darkModeEnabled = darkModeEnabled
 
         this.onChangeIsConnected();
     }
@@ -128,6 +136,7 @@ export class InitService {
         this.idPerso = '';
         this.pseudo = '';
         this.mail = '';
+        this.darkModeEnabled = false;
 
         document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
 

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -12,6 +12,7 @@ import { UserPlaylist } from '../models/playlist.model';
 import { FollowItem } from '../models/follow.model';
 import { UserService } from '../services/user.service';
 import { CreatePlaylistResponse, LoginResponse, UserReponse } from '../models/user.model';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
     selector: 'app-header',
@@ -61,6 +62,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     addDuration: number;
     URL_ASSETS: string;
     isPlayerExpanded = false;
+    darkModeEnabled = false;
 
     listPlaylist: UserPlaylist[];
     listFollow: FollowItem[];
@@ -80,7 +82,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         private readonly router: Router,
         private readonly route: ActivatedRoute,
         private readonly googleAnalyticsService: GoogleAnalyticsService,
-        private readonly translocoService: TranslocoService) {
+        private readonly translocoService: TranslocoService,
+        private renderer: Renderer2,
+        @Inject(DOCUMENT) private document: Document) {
         this.isConnected = false;
         this.URL_ASSETS = environment.URL_ASSETS;
     }
@@ -90,6 +94,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.isConnected = data.isConnected;
             this.pseudo = data.pseudo;
             this.mail = data.mail;
+            this.darkModeEnabled = data.darkModeEnabled;
+
+            if (data.darkModeEnabled) {
+                this.renderer.setAttribute(this.document.body, 'data-bs-theme', 'dark');
+            } else {
+                this.renderer.removeAttribute(this.document.body, 'data-bs-theme');
+            }
         });
 
         this.subscriptionRepeat = this.playerService.subjectRepeatChange.subscribe(isRepeat => { this.isRepeat = isRepeat; }
@@ -271,7 +282,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                     if (data.success !== undefined && data.success) {
                         this.isConnected = true;
 
-                        this.initService.loginSuccess(data.pseudo, data.id_perso, data.mail);
+                        this.initService.loginSuccess(data.pseudo, data.id_perso, data.mail, data.dark_mode_enabled);
 
                         this.mail = data.mail;
 

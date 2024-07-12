@@ -35,6 +35,10 @@ export class UserService {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'options/mail', data, environment.httpClientConfig);
   }
 
+  editDarkMode(data: { dark_mode_enabled: boolean }): Observable<UserReponse> {
+    return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'options/dark_mode', data, environment.httpClientConfig);
+  }
+
   createPlaylist(data: ICreatePlaylist): Observable<CreatePlaylistResponse> {
     return this.httpClient.post<CreatePlaylistResponse>(environment.URL_SERVER + 'playlist-creer', data, environment.httpClientConfig);
   }

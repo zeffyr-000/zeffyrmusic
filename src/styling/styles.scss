@@ -19,6 +19,12 @@ a {
 	background-color: $white-two;
 }
 
+body[data-bs-theme="dark"] {
+	.navbar-inverse {
+		background-color: $black;
+	}
+}
+
 #player {
 	position: absolute;
 	top: 0;

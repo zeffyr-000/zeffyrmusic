@@ -22,6 +22,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   mail = '';
   pseudo = '';
   idPerso = '';
+  darkModeEnabled = false;
   subscriptionConnected: Subscription;
 
   constructor(public activeModal: NgbActiveModal,
@@ -38,6 +39,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.mail = data.mail;
       this.pseudo = data.pseudo;
       this.idPerso = data.idPerso;
+      this.darkModeEnabled = data.darkModeEnabled;
     });
   }
 
@@ -61,7 +63,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
                   isConnected: this.isConnected,
                   pseudo: this.pseudo,
                   idPerso: this.idPerso,
-                  mail: this.mail
+                  mail: this.mail,
+                  darkModeEnabled: this.darkModeEnabled
                 });
                 setTimeout(() => {
                   this.successPass = false;
@@ -102,6 +105,30 @@ export class SettingsComponent implements OnInit, OnDestroy {
           }
         });
     }
+  }
+
+  onSwitchDarkMode() {
+    console.log('onSwitchDarkMode', this.darkModeEnabled);
+    this.userService.editDarkMode({ dark_mode_enabled: this.darkModeEnabled })
+      .subscribe({
+        next: (data: UserReponse) => {
+          if (data.success !== undefined && data.success) {
+            this.initService.subjectConnectedChange.next({
+              isConnected: this.isConnected,
+              pseudo: this.pseudo,
+              idPerso: this.idPerso,
+              mail: this.mail,
+              darkModeEnabled: this.darkModeEnabled
+            });
+          } else {
+            this.error = this.translocoService.translate(data.error);
+          }
+        },
+        error: () => {
+          this.isConnected = false;
+          this.initService.onMessageUnlog();
+        }
+      });
   }
 
   ngOnDestroy() {
