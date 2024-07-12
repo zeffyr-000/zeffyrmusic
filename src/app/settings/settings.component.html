@@ -20,6 +20,15 @@
             </button>
         </div>
     </div>
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <h5>{{'enable_dark_mode' | transloco}}</h5>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="darkModeSwitch" (change)="onSwitchDarkMode()"
+                    [(ngModel)]="darkModeEnabled">
+            </div>
+        </div>
+    </div>
 </div>
 
 <ng-template #contentModalEditPass let-modal>

@@ -60,7 +60,7 @@ describe('HeaderComponent', () => {
     const modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open']);
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
 
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: false, pseudo: '', id_perso: '' });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: false, pseudo: '', id_perso: '', mail: '', darkModeEnabled: false });
     initServiceMock.logOut = jasmine.createSpy('logOut');
     playerServiceMock.subjectRepeatChange = new BehaviorSubject(false);
     playerServiceMock.subjectRandomChange = new BehaviorSubject(false);
@@ -400,7 +400,7 @@ describe('HeaderComponent', () => {
           }
         };
 
-        const loginResponse = { success: true, pseudo: '', id_perso: '', mail: '', liste_playlist: [], liste_suivi: [] } as LoginResponse;
+        const loginResponse = { success: true, pseudo: '', id_perso: '', mail: '', dark_mode_enabled: false, liste_playlist: [], liste_suivi: [] } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
         component.onLogIn(form, activeModalSpy);
@@ -427,8 +427,9 @@ describe('HeaderComponent', () => {
         const mail = 'testuser@example.com';
         const liste_playlist: UserPlaylist[] = [];
         const liste_suivi: FollowItem[] = [];
+        const darkModeEnabled = false;
 
-        const loginResponse = { success: true, pseudo, id_perso, mail, liste_playlist, liste_suivi } as LoginResponse;
+        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, liste_playlist, liste_suivi } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
         component.onLogIn(form, activeModalSpy);
@@ -436,7 +437,7 @@ describe('HeaderComponent', () => {
         expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
 
         expect(component.isConnected).toBeTrue();
-        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail);
+        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled);
         expect(component.mail).toBe(mail);
         expect(playerService.onLoadListLogin).toHaveBeenCalledWith(liste_playlist, liste_suivi);
         expect(activeModalSpy.dismiss).toHaveBeenCalledWith('');

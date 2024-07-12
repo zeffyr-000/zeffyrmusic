@@ -78,7 +78,7 @@ describe('PlayerComponent', () => {
   });
 
   it('should set isConnected on connected change', () => {
-    const data = { isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' };
+    const data = { isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail', darkModeEnabled: false };
     initService.subjectConnectedChange.next(data);
     expect(component.isConnected).toEqual(data.isConnected);
   });

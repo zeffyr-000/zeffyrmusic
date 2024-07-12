@@ -11,9 +11,9 @@ describe('UserService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [UserService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [UserService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    });
 
     service = TestBed.inject(UserService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -52,6 +52,7 @@ describe('UserService', () => {
       pseudo: 'test_pseudo',
       id_perso: 'test_id_perso',
       mail: 'test_mail',
+      dark_mode_enabled: false,
       liste_playlist: [],
       liste_suivi: [],
       error: '',
