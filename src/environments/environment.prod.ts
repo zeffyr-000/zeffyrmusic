@@ -3,5 +3,6 @@ export const environment = {
   URL_SERVER: 'https://www.zeffyrmusic.com/',
   httpClientConfig: {},
   lang: 'fr',
+  availableLangs: ['fr', 'en'],
   URL_ASSETS: 'dist/'
 };

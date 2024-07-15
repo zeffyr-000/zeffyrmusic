@@ -80,11 +80,11 @@ import { SettingsComponent } from './settings/settings.component';
         appConfig.providers,
         provideTransloco({
             config: {
-                availableLangs: [environment.lang],
+                availableLangs: environment.availableLangs,
                 defaultLang: environment.lang,
                 fallbackLang: environment.lang,
                 prodMode: environment.production,
-                reRenderOnLangChange: false,
+                reRenderOnLangChange: true,
             },
             loader: TranslocoHttpLoader,
         })

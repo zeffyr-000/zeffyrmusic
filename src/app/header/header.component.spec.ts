@@ -428,8 +428,9 @@ describe('HeaderComponent', () => {
         const liste_playlist: UserPlaylist[] = [];
         const liste_suivi: FollowItem[] = [];
         const darkModeEnabled = false;
+        const language = 'en';
 
-        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, liste_playlist, liste_suivi } as LoginResponse;
+        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, language, liste_playlist, liste_suivi } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
         component.onLogIn(form, activeModalSpy);
@@ -437,7 +438,7 @@ describe('HeaderComponent', () => {
         expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
 
         expect(component.isConnected).toBeTrue();
-        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled);
+        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled, language);
         expect(component.mail).toBe(mail);
         expect(playerService.onLoadListLogin).toHaveBeenCalledWith(liste_playlist, liste_suivi);
         expect(activeModalSpy.dismiss).toHaveBeenCalledWith('');
@@ -474,6 +475,7 @@ describe('HeaderComponent', () => {
         const errorResponse = { success: false, error: 'Invalid credentials' };
 
         userServiceMock.resetPass.and.returnValue(of(successResponse));
+        spyOn(translocoService, 'translate').and.returnValue('Invalid credentials');
 
         component.onSubmitResetPass(form);
 
@@ -503,6 +505,7 @@ describe('HeaderComponent', () => {
         const successResponse = { success: true, id_playlist: '123', titre: 'testPlaylist', error: '' };
         const errorResponse = { success: false, id_playlist: '', titre: '', error: 'Invalid playlist name' };
         userServiceMock.createPlaylist.and.returnValue(of(successResponse));
+        spyOn(translocoService, 'translate').and.returnValue('Invalid playlist name');
 
         // Act
         component.onCreatePlaylist(form);
@@ -622,6 +625,7 @@ describe('HeaderComponent', () => {
       };
       component.currentIdPlaylistEdit = '123';
       userServiceMock.editTitlePlaylist.and.returnValue(of(successResponse));
+      spyOn(translocoService, 'translate').and.returnValue('Invalid title');
 
       // Act
       component.onEditTitlePlaylist(form, modal);

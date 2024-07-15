@@ -10,6 +10,7 @@ export const environment = {
     withCredentials: true
   },
   lang: 'fr',
+  availableLangs: ['fr', 'en'],
   URL_ASSETS: ''
 };
 

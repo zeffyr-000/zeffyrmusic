@@ -15,6 +15,7 @@ export interface PingResponse {
     id_perso: string;
     mail: string;
     dark_mode_enabled: boolean;
+    language: string;
     liste_playlist: UserPlaylist[];
     liste_suivi: FollowItem[];
     like_video: UserVideo[];
@@ -33,25 +34,29 @@ export class InitService {
     private idPerso = '';
     private mail = '';
     private darkModeEnabled = false;
+    private language = 'fr';
 
     subjectConnectedChange: BehaviorSubject<{
         isConnected: boolean,
         pseudo: string,
         idPerso: string,
-        mail: string
-        darkModeEnabled: boolean
+        mail: string,
+        darkModeEnabled: boolean,
+        language: string
     }> = new BehaviorSubject<{
         isConnected: boolean,
         pseudo: string,
         idPerso: string,
         mail: string,
-        darkModeEnabled: boolean
+        darkModeEnabled: boolean,
+        language: string
     }>({
         isConnected: this.isConnected,
         pseudo: this.pseudo,
         idPerso: this.idPerso,
         mail: this.mail,
-        darkModeEnabled: this.darkModeEnabled
+        darkModeEnabled: this.darkModeEnabled,
+        language: this.language
     });
 
     subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
@@ -89,6 +94,7 @@ export class InitService {
                     this.idPerso = data.id_perso;
                     this.mail = data.mail;
                     this.darkModeEnabled = data.dark_mode_enabled;
+                    this.language = data.language;
 
                     listPlaylist = data.liste_playlist;
                     listFollow = data.liste_suivi;
@@ -117,16 +123,18 @@ export class InitService {
             pseudo: this.pseudo,
             idPerso: this.idPerso,
             mail: this.mail,
-            darkModeEnabled: this.darkModeEnabled
+            darkModeEnabled: this.darkModeEnabled,
+            language: this.language
         });
     }
 
-    loginSuccess(pseudo: string, idPerso: string, mail: string, darkModeEnabled: boolean) {
+    loginSuccess(pseudo: string, idPerso: string, mail: string, darkModeEnabled: boolean, language: string) {
         this.isConnected = true;
         this.idPerso = idPerso;
         this.pseudo = pseudo;
         this.mail = mail;
-        this.darkModeEnabled = darkModeEnabled
+        this.darkModeEnabled = darkModeEnabled;
+        this.language = language;
 
         this.onChangeIsConnected();
     }
@@ -137,6 +145,7 @@ export class InitService {
         this.pseudo = '';
         this.mail = '';
         this.darkModeEnabled = false;
+        this.language = 'fr';
 
         document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
 

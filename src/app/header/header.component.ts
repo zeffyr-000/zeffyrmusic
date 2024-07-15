@@ -53,7 +53,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     isRegistered = false;
     error = '';
     isSuccess = false;
-    langs = ['fr', 'en'];
     currentIdPlaylistEdit: string;
     playlistTitle: string;
     addKey: string;
@@ -95,6 +94,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.pseudo = data.pseudo;
             this.mail = data.mail;
             this.darkModeEnabled = data.darkModeEnabled;
+
+            this.translocoService.setActiveLang(data.language);
 
             if (data.darkModeEnabled) {
                 this.renderer.setAttribute(this.document.body, 'data-bs-theme', 'dark');
@@ -269,7 +270,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
                         this.googleAnalyticsService.pageView('/inscription/succes');
                     } else {
-                        this.error = this.translocoService.translate(data.error);
+                        this.error = this.translocoService.translate(data?.error || 'generic_error');
                     }
                 });
         }
@@ -282,7 +283,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                     if (data.success !== undefined && data.success) {
                         this.isConnected = true;
 
-                        this.initService.loginSuccess(data.pseudo, data.id_perso, data.mail, data.dark_mode_enabled);
+                        this.initService.loginSuccess(data.pseudo, data.id_perso, data.mail, data.dark_mode_enabled, data.language);
 
                         this.mail = data.mail;
 
@@ -290,7 +291,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
                         modal.dismiss('');
                     } else {
-                        this.error = this.translocoService.translate(data.error);
+                        this.error = this.translocoService.translate(data?.error || 'generic_error');
                     }
                 });
         }
@@ -317,7 +318,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                     if (data.success !== undefined && data.success) {
                         this.isSuccess = true;
                     } else {
-                        this.error = this.translocoService.translate(data.error);
+                        this.error = this.translocoService.translate(data?.error || 'generic_error');
                     }
                 });
         }
@@ -331,7 +332,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                         if (data.success !== undefined && data.success) {
                             this.playerService.addNewPlaylist(data.id_playlist, data.titre);
                         } else {
-                            this.error = this.translocoService.translate(data.error);
+                            this.error = this.translocoService.translate(data?.error || 'generic_error');
                         }
                     },
                     error: () => {
@@ -371,7 +372,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                             this.playerService.editPlaylistTitle(this.currentIdPlaylistEdit, form.form.value.playlist_titre);
                             modal.dismiss();
                         } else {
-                            this.error = this.translocoService.translate(data.error);
+                            this.error = this.translocoService.translate(data?.error || 'generic_error');
                         }
                     },
                     error: () => {

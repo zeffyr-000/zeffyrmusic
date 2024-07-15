@@ -39,6 +39,14 @@ export class UserService {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'options/dark_mode', data, environment.httpClientConfig);
   }
 
+  editLanguage(data: { language: string }): Observable<UserReponse> {
+    return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'options/language', data, environment.httpClientConfig);
+  }
+
+  deleteAccount(data: { password: string }): Observable<UserReponse> {
+    return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'options/delete', data, environment.httpClientConfig);
+  }
+
   createPlaylist(data: ICreatePlaylist): Observable<CreatePlaylistResponse> {
     return this.httpClient.post<CreatePlaylistResponse>(environment.URL_SERVER + 'playlist-creer', data, environment.httpClientConfig);
   }
