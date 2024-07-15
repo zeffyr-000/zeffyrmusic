@@ -50,6 +50,13 @@
   "mail_inexistant": "Ce mail n'existe pas",
   "mail_invalide": "Ce mail n'est pas valide",
   "enable_dark_mode": "Activer le mode sombre",
+  "language": "Langue",
+  "selected_language": "Langue sélectionnée",
+  "change_language": "Changer de langue",
+  "language_updated_succesfully": "Langue mise à jour avec succès",
+  "delete_account": "Supprimer le compte",
+  "delete_account_warning": "Attention, cette action est irréversible. Voulez-vous vraiment supprimer votre compte?",
+  "account_deleted_succesfully": "Votre compte a été supprimé avec succès",
 
   "playlist_privee": "La playlist est devenue privée vous n'y avez plus accès.",
   "perte_connexion": "Perte de connexion à internet détectée",
@@ -127,6 +134,7 @@
   "show_all": "Tout afficher",
   "artist_not_available": "Artiste non disponible",
   "back_home": "Retour à l'accueil",
+  "generic_error": "Une erreur s'est produite. Veuillez réessayer plus tard.",
 
   "help_title": "Aide",
   "help_meta_title": "Annuaire des Astuces et Tutoriels - Zeffyr Music",

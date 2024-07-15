@@ -29,6 +29,25 @@
             </div>
         </div>
     </div>
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <div class="d-flex flex-column align-items-start">
+                <h5>{{'language' | transloco}}</h5>
+                <small>{{'selected_language' | transloco}} : {{'langue_'+language | transloco}}</small>
+            </div>
+            <button class="btn btn-primary" (click)="openModal(contentModalEditLanguage)">
+                {{'change_language' | transloco}}
+            </button>
+        </div>
+    </div>
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <h5>{{'delete_account' | transloco}}</h5>
+            <button class="btn btn-danger" (click)="openModal(contentModalDelete)">
+                {{'delete_account' | transloco}}
+            </button>
+        </div>
+    </div>
 </div>
 
 <ng-template #contentModalEditPass let-modal>
@@ -77,6 +96,51 @@
                     value="{{ 'envoyer' | transloco}}" /></p>
             <p *ngIf="formEditMail.dirty && error!==''" class="alert alert-danger">{{error}}</p>
             <p *ngIf="successMail" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalEditLanguage let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'language' | transloco}}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="onSubmitEditLanguage(formEditLanguage)" #formEditLanguage="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="mail">{{ 'language' | transloco}}</label>
+                <select name="language" id="language" class="form-control" ngbAutofocus [(ngModel)]="language" required>
+                    <option *ngFor="let lang of availableLanguages" [value]="lang">{{'langue_'+lang | transloco}}
+                    </option>
+                </select>
+            </p>
+
+            <p><input type="submit" class="btn btn-primary" [disabled]="formEditLanguage.invalid"
+                    value="{{ 'envoyer' | transloco}}" /></p>
+            <p *ngIf="formEditLanguage.dirty && error!==''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="successLanguage" class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalDelete let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'delete_account' | transloco}}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-danger">{{ 'delete_account_warning' | transloco}}</div>
+        <form (ngSubmit)="onSubmitDeleteAccount(formDeleteAccount)" #formDeleteAccount="ngForm">
+            <p class="form-group">
+                <label class="control-label" for="password">{{ 'mot_de_passe' | transloco}}</label>
+                <input type="password" name="password" id="password" class="form-control" ngbAutofocus ngModel
+                    required />
+            </p>
+
+            <p><input type="submit" class="btn btn-danger" [disabled]="formDeleteAccount.invalid"
+                    value="{{ 'envoyer' | transloco}}" /></p>
+            <p *ngIf="formDeleteAccount.dirty && error!==''" class="alert alert-danger">{{error}}</p>
+            <p *ngIf="successDelete" class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
         </form>
     </div>
 </ng-template>

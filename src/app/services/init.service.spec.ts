@@ -39,7 +39,7 @@ describe('InitService', () => {
     service = TestBed.inject(InitService);
     httpMock = TestBed.inject(HttpTestingController);
     translocoService = TestBed.inject(TranslocoService);
-    translocoService.setDefaultLang('en');
+    translocoService.setDefaultLang('fr');
   });
 
   afterEach(() => {
@@ -58,6 +58,7 @@ describe('InitService', () => {
         id_perso: 'test_id_perso',
         mail: 'test_mail',
         dark_mode_enabled: false,
+        language: 'fr',
         liste_playlist: [
           {
             id_playlist: '1',
@@ -143,6 +144,7 @@ describe('InitService', () => {
         id_perso: '',
         mail: '',
         dark_mode_enabled: false,
+        language: 'fr',
         liste_playlist: [],
         liste_suivi: [],
         like_video: [],
@@ -163,7 +165,7 @@ describe('InitService', () => {
       expect(service['mail']).toBe('');
 
       service.subjectConnectedChange.subscribe(value => {
-        expect(value).toEqual({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false });
+        expect(value).toEqual({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false, language: 'fr' });
       });
       service.subjectInitializePlaylist.subscribe(value => {
         expect(value).toEqual({
@@ -189,6 +191,7 @@ describe('InitService', () => {
         idPerso: '',
         mail: '',
         darkModeEnabled: false,
+        language: 'fr'
       });
     });
   });
@@ -197,12 +200,14 @@ describe('InitService', () => {
     it('should set isConnected to true and update pseudo and idPerso', () => {
       spyOn(service, 'onChangeIsConnected');
 
-      service.loginSuccess('test_pseudo', 'test_id_perso', 'test_mail', false);
+      service.loginSuccess('test_pseudo', 'test_id_perso', 'test_mail', false, 'fr');
 
       expect(service['isConnected']).toBeTrue();
       expect(service['pseudo']).toBe('test_pseudo');
       expect(service['idPerso']).toBe('test_id_perso');
       expect(service['mail']).toBe('test_mail');
+      expect(service['darkModeEnabled']).toBeFalse();
+      expect(service['language']).toBe('fr');
 
       expect(service.onChangeIsConnected).toHaveBeenCalled();
     });

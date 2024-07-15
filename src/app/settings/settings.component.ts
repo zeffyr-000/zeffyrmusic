@@ -17,12 +17,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   successPass = false;
   successMail = false;
+  successLanguage = false;
+  successDelete = false;
   error = '';
   isConnected = true;
   mail = '';
   pseudo = '';
   idPerso = '';
   darkModeEnabled = false;
+  language = 'fr';
+  availableLanguages: string[] = [];
   subscriptionConnected: Subscription;
 
   constructor(public activeModal: NgbActiveModal,
@@ -34,12 +38,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('settings') + ' - Zeffyr Music');
+    this.availableLanguages = this.translocoService.getAvailableLangs() as string[];
+
     this.subscriptionConnected = this.initService.subjectConnectedChange?.subscribe(data => {
       this.isConnected = data.isConnected;
       this.mail = data.mail;
       this.pseudo = data.pseudo;
       this.idPerso = data.idPerso;
       this.darkModeEnabled = data.darkModeEnabled;
+      this.language = data.language
     });
   }
 
@@ -64,7 +71,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
                   pseudo: this.pseudo,
                   idPerso: this.idPerso,
                   mail: this.mail,
-                  darkModeEnabled: this.darkModeEnabled
+                  darkModeEnabled: this.darkModeEnabled,
+                  language: this.language
                 });
                 setTimeout(() => {
                   this.successPass = false;
@@ -108,7 +116,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   onSwitchDarkMode() {
-    console.log('onSwitchDarkMode', this.darkModeEnabled);
     this.userService.editDarkMode({ dark_mode_enabled: this.darkModeEnabled })
       .subscribe({
         next: (data: UserReponse) => {
@@ -118,7 +125,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
               pseudo: this.pseudo,
               idPerso: this.idPerso,
               mail: this.mail,
-              darkModeEnabled: this.darkModeEnabled
+              darkModeEnabled: this.darkModeEnabled,
+              language: this.language
             });
           } else {
             this.error = this.translocoService.translate(data.error);
@@ -129,6 +137,60 @@ export class SettingsComponent implements OnInit, OnDestroy {
           this.initService.onMessageUnlog();
         }
       });
+  }
+
+  onSubmitEditLanguage(form: NgForm) {
+    if (form.valid) {
+      this.userService.editLanguage(form.form.value)
+        .subscribe({
+          next: (data: UserReponse) => {
+            if (data.success !== undefined && data.success) {
+              this.successLanguage = true;
+              this.initService.subjectConnectedChange.next({
+                isConnected: this.isConnected,
+                pseudo: this.pseudo,
+                idPerso: this.idPerso,
+                mail: this.mail,
+                darkModeEnabled: this.darkModeEnabled,
+                language: this.language
+              });
+
+              setTimeout(() => {
+                this.successLanguage = false;
+              }, 10000);
+            } else {
+              this.error = this.translocoService.translate(data.error);
+            }
+          },
+          error: () => {
+            this.isConnected = false;
+            this.initService.onMessageUnlog();
+          }
+        });
+    }
+  }
+
+  onSubmitDeleteAccount(form: NgForm) {
+    if (form.valid) {
+      this.userService.deleteAccount(form.form.value)
+        .subscribe({
+          next: (data: UserReponse) => {
+            if (data.success !== undefined && data.success) {
+              this.successDelete = true;
+              setTimeout(() => {
+                this.successDelete = false;
+              }, 10000);
+              this.initService.logOut();
+            } else {
+              this.error = this.translocoService.translate(data.error);
+            }
+          },
+          error: () => {
+            this.isConnected = false;
+            this.initService.onMessageUnlog();
+          }
+        });
+    }
   }
 
   ngOnDestroy() {

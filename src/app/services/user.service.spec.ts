@@ -53,6 +53,7 @@ describe('UserService', () => {
       id_perso: 'test_id_perso',
       mail: 'test_mail',
       dark_mode_enabled: false,
+      language: 'en',
       liste_playlist: [],
       liste_suivi: [],
       error: '',
