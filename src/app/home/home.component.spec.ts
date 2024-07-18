@@ -62,7 +62,7 @@ describe('HomeComponent', () => {
     spyOn(metaService, 'updateTag');
     spyOn(googleAnalyticsService, 'pageView');
     component.ngOnInit();
-    expect(titleService.setTitle).toHaveBeenCalledWith('La musique gratuite, légale, en illimité - Zeffyr Music');
+    expect(titleService.setTitle).toHaveBeenCalledWith('Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic');
     //expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'description', content: 'Ecoutez gratuitement des millions de titres avec ZeffyrMusic. Illimité et légal créez vos playlists et partagez vos coups de coeur avec vos amis.' });
     expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/');
   });

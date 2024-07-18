@@ -501,7 +501,7 @@ describe('PlaylistComponent', () => {
         titre_album: 'Titre album 1'
       }],
     };
-    expect(component.getMetaDescription(data)).toBe('Discover "Top Title", description. Enjoy 1 must-listen tracks. Listen now!');
+    expect(component.getMetaDescription(data)).toBe('Discover "{title}", {description}. Enjoy {count, plural, =1 {one must-hear track} other {# must-hear tracks}}. Listen now!');
   });
 
   it('should generate album description when artiste and titre are defined', () => {
@@ -529,7 +529,7 @@ describe('PlaylistComponent', () => {
         titre_album: 'Titre album 1'
       }],
     };
-    expect(component.getMetaDescription(data)).toBe('Discover the album "Titre 1" by Artiste 1, released in 2021. Enjoy 1 captivating tracks. Listen now!');
+    expect(component.getMetaDescription(data)).toBe('Discover the album "{title}" by {artist}, released in {year}. Enjoy {count, plural, =1 {one captivating track} other {# captivating tracks}}. Listen now!');
   });
 
   it('should generate album description when titre are defined', () => {
@@ -557,7 +557,7 @@ describe('PlaylistComponent', () => {
         titre_album: 'Titre album 1'
       }],
     };
-    expect(component.getMetaDescription(data)).toBe('Dive into "Titre 1", a 2021 album with 1 electrifying songs. Explore the album now!');
+    expect(component.getMetaDescription(data)).toBe('Dive into "{title}", a {year} album with {count, plural, =1 {one electrifying track} other {# electrifying tracks}}. Explore the album now!');
   });
 
   it('should generate playlist description when neither id_top nor artiste and titre are defined', () => {
@@ -582,7 +582,7 @@ describe('PlaylistComponent', () => {
         titre_album: 'Titre album 1'
       }],
     };
-    expect(component.getMetaDescription(data)).toBe('Discover the playlist "Playlist Title". Enjoy 1 carefully selected songs. Listen now!');
+    expect(component.getMetaDescription(data)).toBe('Discover the playlist "{title}". Enjoy {count, plural, =1 {one carefully selected track} other {# carefully selected tracks}}. Listen now!');
   });
 
   it('should display the default image when img_big is not defined', () => {
