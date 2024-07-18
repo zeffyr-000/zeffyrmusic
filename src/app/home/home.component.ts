@@ -50,16 +50,17 @@ export class HomeComponent implements OnInit {
         this.translocoService.langChanges$
             .pipe(
                 take(1),
-                switchMap(() => this.translocoService.selectTranslate('title'))
+                switchMap(() => this.translocoService.selectTranslate('title_' + this.page))
             )
             .subscribe(title => {
                 this.titleService.setTitle(title);
+                console.log('title:', title);
             });
 
         this.translocoService.langChanges$
             .pipe(
                 take(1),
-                switchMap(() => this.translocoService.selectTranslate('meta_description'))
+                switchMap(() => this.translocoService.selectTranslate('meta_description_' + this.page))
             )
             .subscribe(description => {
                 this.metaService.updateTag({ name: 'description', content: description });
@@ -83,5 +84,4 @@ export class HomeComponent implements OnInit {
                 }
             });
     }
-
 }

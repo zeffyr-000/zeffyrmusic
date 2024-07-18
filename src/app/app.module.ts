@@ -32,6 +32,7 @@ import { TranslocoHttpLoader } from './transloco.loader';
 import { ArtistListComponent } from './playlist/artist-list/artist-list.component';
 import { DefaultImageDirective } from './directives/default-image.directive';
 import { SettingsComponent } from './settings/settings.component';
+import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 
 @NgModule({
     declarations: [
@@ -87,7 +88,8 @@ import { SettingsComponent } from './settings/settings.component';
                 reRenderOnLangChange: true,
             },
             loader: TranslocoHttpLoader,
-        })
+        }),
+        provideTranslocoMessageformat()
     ]
 })
 export class AppModule { }
