@@ -7,8 +7,8 @@
             <tr *ngFor="let video of list; let index = index" (click)="play(index,true)"
                 [ngClass]="{'active' : video.key===currentKey}">
                 <td>
-                    <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" alt=""
-                        loading="lazy" />
+                    <img [appLazyLoadImage]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail"
+                        alt="" />
                 </td>
                 <td>
                     <p><strong>{{video.titre}}</strong></p>
@@ -20,17 +20,19 @@
                         <span class="material-icons" role="button" ngbDropdownToggle>more_vert</span>
                         <ul ngbDropdownMenu>
                             <li ngbDropdownItem>
-                                <a (click)="removeToPlaylist(index)" role="presentation">
+                                <button (click)="removeToPlaylist(index)"
+                                    class="btn btn-link text-body text-decoration-none p-0">
                                     <span class="material-icons">clear</span>
                                     {{'supprimer_liste_lecture' | transloco}}
-                                </a>
+                                </button>
                             </li>
                             <li ngbDropdownItem *ngIf="isConnected">
-                                <a (click)="playerService.addVideoInPlaylist(video.key,video.artiste,video.titre, video.duree)"
-                                    role="presentation">
+                                <button
+                                    (click)="playerService.addVideoInPlaylist(video.key,video.artiste,video.titre, video.duree)"
+                                    class="btn btn-link text-body text-decoration-none p-0">
                                     <span class="material-icons">add</span>
                                     {{'ajouter_a_une_playlist' | transloco}}
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </span>

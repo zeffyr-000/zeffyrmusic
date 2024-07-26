@@ -12,15 +12,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
 
-import { ArtistComponent } from './artist/artist.component';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
-import { ToMMSSPipe } from './pipes/to-mmss.pipe';
-import { SwipeDownDirective } from './directives/swipe-down.directive';
 import { PlayerComponent } from './player/player.component';
 import { PlaylistComponent } from './playlist/playlist.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
-import { SearchComponent } from './search/search.component';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
 import { HashLocationStrategy, LocationStrategy, PathLocationStrategy } from '@angular/common';
@@ -30,28 +26,21 @@ import { CurrentComponent } from './current/current.component';
 import { appConfig } from './app.config';
 import { TranslocoHttpLoader } from './transloco.loader';
 import { ArtistListComponent } from './playlist/artist-list/artist-list.component';
-import { DefaultImageDirective } from './directives/default-image.directive';
-import { SettingsComponent } from './settings/settings.component';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
+import { SharedModule } from './routing/shared/shared.module';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomeComponent,
         PlaylistComponent,
-        ArtistComponent,
-        SearchComponent,
         HeaderComponent,
         PlayerComponent,
         SearchBarComponent,
-        ToMMSSPipe,
         HelpComponent,
         HelpPageComponent,
         CurrentComponent,
-        SwipeDownDirective,
-        ArtistListComponent,
-        DefaultImageDirective,
-        SettingsComponent
+        ArtistListComponent
     ],
     bootstrap: [AppComponent],
     imports: [
@@ -63,7 +52,8 @@ import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat'
         NgxGoogleAnalyticsModule.forRoot(environment.production ? 'UA-1664521-8' : 'UA-FAKE-ID'),
         ShareButtons,
         NgbTooltipModule,
-        TranslocoModule
+        TranslocoModule,
+        SharedModule
     ],
     providers: [
         {

@@ -1,13 +1,19 @@
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Translation, TranslocoLoader } from "@jsverse/transloco";
-import { HttpClient } from "@angular/common/http";
-import { environment } from "src/environments/environment";
+
+import en from "src/assets/i18n/en.json";
+import fr from "src/assets/i18n/fr.json";
 
 @Injectable({ providedIn: 'root' })
 export class TranslocoHttpLoader implements TranslocoLoader {
-  private http = inject(HttpClient);
+  private translations: Record<string, Translation> = {
+    en: en,
+    fr: fr
+  };
 
   getTranslation(lang: string) {
-    return this.http.get<Translation>(`${environment.URL_ASSETS}assets/i18n/${lang}.json`);
+    return new Promise<Translation>((resolve) => {
+      resolve(this.translations[lang]);
+    });
   }
 }

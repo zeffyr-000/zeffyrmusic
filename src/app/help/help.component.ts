@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService } from '@jsverse/transloco';
-import { switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-help',
@@ -17,23 +16,8 @@ export class HelpComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.translocoService.langChanges$
-      .pipe(
-        take(1),
-        switchMap(() => this.translocoService.selectTranslate('help_meta_title'))
-      )
-      .subscribe(title => {
-        this.titleService.setTitle(title);
-      });
-
-    this.translocoService.langChanges$
-      .pipe(
-        take(1),
-        switchMap(() => this.translocoService.selectTranslate('help_meta_description'))
-      )
-      .subscribe(description => {
-        this.metaService.updateTag({ name: 'description', content: description });
-      });
+    this.titleService.setTitle(this.translocoService.translate('help_meta_title'));
+    this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('help_meta_description') });
   }
 
 }

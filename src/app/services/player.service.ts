@@ -72,7 +72,12 @@ export class PlayerService implements OnDestroy {
         private readonly httpClient: HttpClient,
         private readonly initService: InitService
     ) {
-        this.init();
+        if ('requestIdleCallback' in window) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (window as any).requestIdleCallback(() => this.init());
+        } else {
+            setTimeout(() => this.init(), 0);
+        }
 
         this.subscriptionInitializePlaylist = this.initService.subjectInitializePlaylist.subscribe(
             data => {
