@@ -77,8 +77,8 @@
                         itemscope itemtype="http://schema.org/MusicRecording">
                         <td class="d-none d-md-table-cell" itemprop="position">{{ i+1 }}</td>
                         <td class="d-none d-md-table-cell">
-                            <img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail"
-                                alt="" />
+                            <img [appLazyLoadImage]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'"
+                                class="thumbnail" alt="" />
                         </td>
                         <td>
                             <p class="d-block d-md-none" itemprop="name"><strong>{{video.titre}}</strong></p>
@@ -107,29 +107,32 @@
                                     <span class="material-icons" role="button" ngbDropdownToggle>more_vert</span>
                                     <ul ngbDropdownMenu>
                                         <li ngbDropdownItem>
-                                            <a (click)="addVideoAfterCurrentInList(video)" role="presentation">
+                                            <button (click)="addVideoAfterCurrentInList(video)"
+                                                class="btn btn-link text-body text-decoration-none p-0">
                                                 <span class="material-icons">queue_music</span>
                                                 {{'ajouter_apres_courant' | transloco}}
-                                            </a>
+                                            </button>
                                         </li>
                                         <li ngbDropdownItem>
-                                            <a (click)="addVideoInEndCurrentList(video)" role="presentation">
+                                            <button (click)="addVideoInEndCurrentList(video)"
+                                                class="btn btn-link text-body text-decoration-none p-0">
                                                 <span class="material-icons">playlist_add</span>
                                                 {{'ajouter_liste_en_cours' | transloco}}
-                                            </a>
+                                            </button>
                                         </li>
                                         <li ngbDropdownItem *ngIf="isConnected">
-                                            <a (click)="addVideo(video.key,video.artiste,video.titre,video.duree)"
-                                                role="presentation">
+                                            <button (click)="addVideo(video.key,video.artiste,video.titre,video.duree)"
+                                                class="btn btn-link text-body text-decoration-none p-0">
                                                 <span class="material-icons">add</span>
                                                 {{'ajouter_a_une_playlist' | transloco}}
-                                            </a>
+                                            </button>
                                         </li>
                                         <li ngbDropdownItem *ngIf="isConnected && idPersoOwner===idPerso">
-                                            <a (click)="removeVideo(video.id_video)" role="presentation">
+                                            <button (click)="removeVideo(video.id_video)"
+                                                class="btn btn-link text-body text-decoration-none p-0">
                                                 <span class="material-icons">clear</span>
                                                 {{'supprimer' | transloco}}
-                                            </a>
+                                            </button>
                                         </li>
                                     </ul>
                                 </span>

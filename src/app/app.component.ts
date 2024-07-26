@@ -70,6 +70,18 @@ export class AppComponent implements OnInit, OnDestroy {
         this.renderer.setAttribute(linkElem, 'rel', 'apple-touch-icon');
         this.renderer.setAttribute(linkElem, 'href', `${environment.URL_ASSETS}assets/img/apple-touch-icon.png`);
         this.renderer.appendChild(this.document.head, linkElem);
+
+        const linkLoading = this.renderer.createElement('link');
+        this.renderer.setAttribute(linkLoading, 'rel', 'preload');
+        this.renderer.setAttribute(linkLoading, 'as', 'image');
+        this.renderer.setAttribute(linkLoading, 'href', `${environment.URL_ASSETS}assets/img/loading.jpg`);
+        this.renderer.appendChild(document.head, linkLoading);
+
+        const link = this.renderer.createElement('link');
+        this.renderer.setAttribute(link, 'rel', 'preload');
+        this.renderer.setAttribute(link, 'as', 'image');
+        this.renderer.setAttribute(link, 'href', `${environment.URL_ASSETS}assets/img/default.jpg`);
+        this.renderer.appendChild(document.head, link);
     }
 
     ngOnDestroy() {

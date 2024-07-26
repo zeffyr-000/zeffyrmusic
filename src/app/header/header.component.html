@@ -27,7 +27,7 @@
             </li>
             @if(isConnected) {
             <li class="dropdown-divider"></li>
-            <li ngbDropdownItem>
+            <li ngbDropdownItem class="bg-primary text-white">
                 {{pseudo}}
             </li>
             <li ngbDropdownItem>
@@ -36,14 +36,16 @@
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a (click)="openModal(contentModalPlaylists)" role="presentation">
+                <button (click)="openModal(contentModalPlaylists)"
+                    class="btn btn-link text-body text-decoration-none p-0">
                     <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
-                </a>
+                </button>
             </li>
             <li ngbDropdownItem>
-                <a (click)="openModal(contentModalFollows)" role="presentation">
+                <button (click)="openModal(contentModalFollows)"
+                    class="btn btn-link text-body text-decoration-none p-0">
                     <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-                </a>
+                </button>
             </li>
             <li ngbDropdownItem>
                 <a class="text-decoration-none text-body" routerLink="/settings" role="button">
@@ -52,9 +54,9 @@
             </li>
             <li class="dropdown-divider"></li>
             <li ngbDropdownItem>
-                <a (click)="onLogout()" role="presentation">
+                <button (click)="onLogout()" class="btn btn-link text-body text-decoration-none p-0">
                     <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco}}
-                </a>
+                </button>
             </li>
             }
         </ul>
@@ -81,14 +83,16 @@
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalPlaylists)" role="presentation">
+                    <button (click)="openModal(contentModalPlaylists)"
+                        class="btn btn-link text-body text-decoration-none p-0">
                         <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
-                    </a>
+                    </button>
                 </li>
                 <li ngbDropdownItem>
-                    <a (click)="openModal(contentModalFollows)" role="presentation">
+                    <button (click)="openModal(contentModalFollows)"
+                        class="btn btn-link text-body text-decoration-none p-0">
                         <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-                    </a>
+                    </button>
                 </li>
                 <li ngbDropdownItem>
                     <a class="text-decoration-none text-body" routerLink="/settings" role="button">
@@ -97,9 +101,9 @@
                 </li>
                 <li class="dropdown-divider"></li>
                 <li ngbDropdownItem>
-                    <a (click)="onLogout()" role="presentation">
+                    <button (click)="onLogout()" class="btn btn-link text-body text-decoration-none p-0">
                         <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco}}
-                    </a>
+                    </button>
                 </li>
             </ul>
         </li>

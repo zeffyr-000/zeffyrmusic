@@ -2,7 +2,6 @@ import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DefaultImageDirective } from './default-image.directive';
 import { By } from '@angular/platform-browser';
-import { environment } from 'src/environments/environment';
 
 @Component({
   template: `<img src="url/image/invalide.jpg" alt="" appDefaultImage>`
@@ -25,11 +24,12 @@ describe('DefaultImageDirective', () => {
     fixture.detectChanges();
   });
 
-  it('should replace src with the default image in case of error', () => {
-    const defaultImage = `${environment.URL_ASSETS}assets/img/default.jpg`;
+  it('should not replace src if the image is valid', () => {
+    const src = 'url/image/valid.jpg';
 
+    imgEl.nativeElement.src = src;
     imgEl.triggerEventHandler('error', null);
     fixture.detectChanges();
-    expect(imgEl.nativeElement.src).toContain(defaultImage);
+    expect(imgEl.nativeElement.src).toContain(src);
   });
 });

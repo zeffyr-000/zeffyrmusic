@@ -5,7 +5,6 @@ import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
-import { switchMap, take } from 'rxjs';
 
 @Component({
     selector: 'app-home',
@@ -30,7 +29,6 @@ export class HomeComponent implements OnInit {
         private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     ngOnInit() {
-
         this.isLoading = true;
         this.lang = this.translocoService.getActiveLang();
 
@@ -47,24 +45,11 @@ export class HomeComponent implements OnInit {
                 break;
         }
 
-        this.translocoService.langChanges$
-            .pipe(
-                take(1),
-                switchMap(() => this.translocoService.selectTranslate('title_' + this.page))
-            )
-            .subscribe(title => {
-                this.titleService.setTitle(title);
-                console.log('title:', title);
-            });
-
-        this.translocoService.langChanges$
-            .pipe(
-                take(1),
-                switchMap(() => this.translocoService.selectTranslate('meta_description_' + this.page))
-            )
-            .subscribe(description => {
-                this.metaService.updateTag({ name: 'description', content: description });
-            });
+        this.titleService.setTitle(this.translocoService.translate('title_' + this.page));
+        this.metaService.updateTag({
+            name: 'description',
+            content: this.translocoService.translate('meta_description_' + this.page)
+        });
 
         this.initService.getHomeInit()
             .subscribe({
