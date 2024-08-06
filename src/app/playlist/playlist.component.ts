@@ -136,6 +136,18 @@ export class PlaylistComponent implements OnDestroy {
         return description;
     }
 
+    getMetaTitle(data: Playlist) {
+        let title = '';
+
+        if (data.id_top !== undefined) {
+            title = this.translocoService.translate('title_top_element', { title: data.title });
+        }
+        else {
+            title = data.title;
+        }
+        return title;
+    }
+
     loadPlaylist(url: string) {
         this.playlistService.getPlaylist(url, this.idPlaylist)
             .subscribe((data: Playlist) => {
@@ -153,8 +165,8 @@ export class PlaylistComponent implements OnDestroy {
                     this.idArtist = data.id_artiste;
                     this.idPersoOwner = data.id_perso;
 
-                    this.titleService.setTitle(data.title + ' - Zeffyr Music');
-                    this.metaService.updateTag({ name: 'og:title', content: data.title + ' - Zeffyr Music' });
+                    this.titleService.setTitle(this.getMetaTitle(data));
+                    this.metaService.updateTag({ name: 'og:title', content: this.getMetaTitle(data) });
                     this.metaService.updateTag({
                         name: 'description',
                         content: this.getMetaDescription(data)

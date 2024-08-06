@@ -27,6 +27,7 @@
   "pseudo_ou_mail": "Pseudo ou mail",
   "pass_incorrect": "Mot de passe incorrect",
   "pseudo_inconnu": "Pseudo ou mail inconnu",
+  "or": "ou",
 
   "deconnexion": "Déconnexion",
   "mot_de_passe_oublie": "Mot de passe oublié",
@@ -59,6 +60,15 @@
   "delete_account": "Supprimer le compte",
   "delete_account_warning": "Attention, cette action est irréversible. Voulez-vous vraiment supprimer votre compte?",
   "account_deleted_succesfully": "Votre compte a été supprimé avec succès",
+  "associate_google_account": "Associer un compte Google",
+  "associate": "Associer",
+  "associate_google_account_description": "Associez votre compte Google à votre compte Zeffyr Music pour une connexion plus rapide et plus facile. Cela vous permettra de vous connecter à Zeffyr Music en un seul clic, sans avoir à saisir votre pseudo et votre mot de passe à chaque fois.",
+  "associate_google_account_succesfully": "Votre compte Google a été associé avec succès à votre compte Zeffyr Music.",
+  "associate_google_account_error": "Une erreur s'est produite lors de l'association de votre compte Google. Veuillez réessayer plus tard.",
+  "associate_google_account_error_already_associated": "Votre compte Google est déjà associé à ce compte Zeffyr Music.",
+  "associate_google_account_error_already_associated_other_account": "Ce compte Google est déjà associé à un autre compte Zeffyr Music.",
+  "associate_google_account_error_invalid_token": "Le jeton d'authentification Google est invalide. Veuillez réessayer.",
+  "associate_google_account_error_token_missing": "Le jeton d'authentification Google est manquant. Veuillez réessayer.",
 
   "playlist_privee": "La playlist est devenue privée vous n'y avez plus accès.",
   "perte_connexion": "Perte de connexion à internet détectée",
@@ -92,6 +102,9 @@
   "modifier_nom": "Modifier le nom",
   "ajouter_liste_en_cours": "Ajouter à la liste de lecture",
   "ajouter_apres_courant": "Lire après courant",
+
+  "title_artist": "{{artist}} - Albums, Chansons et Plus | Zeffyr Music",
+  "title_top_element": "{{title}} - Les Incontournables du Moment | Zeffyr Music",
 
   "description_partage": "Je viens d'écouter l'album {{album}} de {{artiste}} sur ZeffyrMusic.",
   "description_partage_playlist": "Venez écouter ma playlist {{playlist}} sur ZeffyrMusic.",

@@ -403,9 +403,9 @@ describe('HeaderComponent', () => {
         const loginResponse = { success: true, pseudo: '', id_perso: '', mail: '', dark_mode_enabled: false, liste_playlist: [], liste_suivi: [] } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
-        component.onLogIn(form, activeModalSpy);
+        component.onLogIn(form, activeModalSpy, null);
 
-        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value, null);
 
         expect(component.isConnected).toBeTrue();
         expect(initService.loginSuccess).toHaveBeenCalled();
@@ -433,9 +433,9 @@ describe('HeaderComponent', () => {
         const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, language, liste_playlist, liste_suivi } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
-        component.onLogIn(form, activeModalSpy);
+        component.onLogIn(form, activeModalSpy, null);
 
-        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value, null);
 
         expect(component.isConnected).toBeTrue();
         expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled, language);
@@ -460,9 +460,9 @@ describe('HeaderComponent', () => {
         const loginResponse = { success: false, error } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
-        component.onLogIn(form, activeModalSpy);
+        component.onLogIn(form, activeModalSpy, null);
 
-        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value);
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value, null);
 
         expect(component.error).toBe('Invalid credentials');
       });
