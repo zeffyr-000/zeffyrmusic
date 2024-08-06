@@ -1,24 +1,31 @@
-import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UserReponse } from '../models/user.model';
 import { UserService } from '../services/user.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { Title } from '@angular/platform-browser';
 import { InitService } from '../services/init.service';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
+
+// eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
+declare var google: any;
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
-export class SettingsComponent implements OnInit, OnDestroy {
+export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  @ViewChild('contentModalAssociateGoogleAccount') contentModalAssociateGoogleAccount: TemplateRef<any>;
 
   successPass = false;
   successMail = false;
   successLanguage = false;
   successDelete = false;
+  successGoogleAccount = false;
   error = '';
   isConnected = true;
   mail = '';
@@ -34,7 +41,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private readonly userService: UserService,
     private readonly translocoService: TranslocoService,
     private readonly titleService: Title,
-    private readonly initService: InitService) { }
+    private readonly initService: InitService,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('settings') + ' - Zeffyr Music');
@@ -48,6 +56,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.darkModeEnabled = data.darkModeEnabled;
       this.language = data.language
     });
+  }
+
+  ngAfterViewInit() {
+    this.initializeGoogleSignIn();
   }
 
   openModal(content: TemplateRef<unknown>) {
@@ -191,6 +203,66 @@ export class SettingsComponent implements OnInit, OnDestroy {
           }
         });
     }
+  }
+
+  initializeGoogleSignIn() {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.initialize({
+        client_id: environment.GOOGLE_CLIENT_ID,
+        callback: this.handleCredentialResponse.bind(this)
+      });
+    }
+  }
+
+  renderGoogleSignInButton() {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.renderButton(
+        document.getElementById('google-signin-button'),
+        {}
+      );
+    }
+  }
+
+  openGoogleAccountModal() {
+    const modalRef: NgbModalRef = this.modalService.open(this.contentModalAssociateGoogleAccount, { size: 'lg' });
+    modalRef.result.then(
+      () => this.renderGoogleSignInButton(),
+      () => this.renderGoogleSignInButton()
+    );
+
+    setTimeout(() => {
+      this.renderGoogleSignInButton();
+    }, 0);
+  }
+
+  handleCredentialResponse(response: { credential: string }) {
+    this.userService.associateGoogleAccount({ id_token: response.credential })
+      .subscribe({
+        next: (data: UserReponse) => {
+          if (data.success !== undefined && data.success) {
+            this.successGoogleAccount = true;
+            this.initService.subjectConnectedChange.next({
+              isConnected: this.isConnected,
+              pseudo: this.pseudo,
+              idPerso: this.idPerso,
+              mail: this.mail,
+              darkModeEnabled: this.darkModeEnabled,
+              language: this.language
+            });
+
+            this.cdr.detectChanges();
+
+            setTimeout(() => {
+              this.successGoogleAccount = false;
+              this.cdr.detectChanges();
+            }, 10000);
+          }
+          else {
+            this.error = this.translocoService.translate(data.error);
+            this.cdr.detectChanges();
+          }
+        }
+      });
   }
 
   ngOnDestroy() {

@@ -42,6 +42,14 @@
     </div>
     <div class="list-group-item">
         <div class="d-flex w-100 justify-content-between">
+            <h5>{{'associate_google_account' | transloco}}</h5>
+            <button class="btn btn-primary" (click)="openGoogleAccountModal()">
+                {{'associate' | transloco}}
+            </button>
+        </div>
+    </div>
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
             <h5>{{'delete_account' | transloco}}</h5>
             <button class="btn btn-danger" (click)="openModal(contentModalDelete)">
                 {{'delete_account' | transloco}}
@@ -142,5 +150,20 @@
             <p *ngIf="formDeleteAccount.dirty && error!==''" class="alert alert-danger">{{error}}</p>
             <p *ngIf="successDelete" class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
         </form>
+    </div>
+</ng-template>
+
+<ng-template #contentModalAssociateGoogleAccount let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{ 'associate_google_account' | transloco}}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <p class="bg-info p-2 rounded">{{ 'associate_google_account_description' | transloco }}</p>
+        <div id="google-signin-button"></div>
+        <p *ngIf="error!==''" class="alert alert-danger">{{error}}</p>
+        <p *ngIf="successGoogleAccount" class="alert alert-success">
+            {{ 'associate_google_account_succesfully' | transloco }}
+        </p>
     </div>
 </ng-template>

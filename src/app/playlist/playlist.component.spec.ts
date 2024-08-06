@@ -254,7 +254,7 @@ describe('PlaylistComponent', () => {
     expect(component.isPrivate).toBeFalse();
     expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
     // Vérifiez les autres propriétés de la même manière
-    expect(titleServiceSpy).toHaveBeenCalledWith(mockPlaylistData.title + ' - Zeffyr Music');
+    expect(titleServiceSpy).toHaveBeenCalledWith('title_top_element');
     //expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:description', content: 'description_partage_playlist' });
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
   });

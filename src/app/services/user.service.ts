@@ -15,8 +15,8 @@ export class UserService {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'inscription', data, environment.httpClientConfig);
   }
 
-  login(data: ILogin): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(environment.URL_SERVER + 'login', data, environment.httpClientConfig);
+  login(data: ILogin, token: string): Observable<LoginResponse> {
+    return this.httpClient.post<LoginResponse>(environment.URL_SERVER + 'login', { ...data, token }, environment.httpClientConfig);
   }
 
   logout(): Observable<UserReponse> {
@@ -55,4 +55,7 @@ export class UserService {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'edit_title', data, environment.httpClientConfig);
   }
 
+  associateGoogleAccount(data: { id_token: string }): Observable<UserReponse> {
+    return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'options/associate_google_account', data, environment.httpClientConfig);
+  }
 }

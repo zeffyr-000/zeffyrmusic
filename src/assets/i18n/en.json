@@ -27,6 +27,7 @@
   "pseudo_ou_mail": "Username or mail",
   "pass_incorrect": "Invalid password",
   "pseudo_inconnu": "Username or mail unknown",
+  "or": "or",
 
   "deconnexion": "Log out",
   "mot_de_passe_oublie": "Password forgot",
@@ -59,6 +60,15 @@
   "delete_account": "Delete account",
   "delete_account_warning": "Warning: this action is irreversible and will delete all your data.",
   "account_deleted_succesfully": "Your account has been deleted",
+  "associate_google_account": "Associate Google account",
+  "associate": "Associate",
+  "associate_google_account_description": "Link your Google account to your Zeffyr Music account for faster and easier login. This will allow you to sign in to Zeffyr Music with a single click, without having to enter your username and password each time.",
+  "associate_google_account_succesfully": "Your Google account has been successfully linked to your Zeffyr Music account.",
+  "associate_google_account_error": "An error occurred while linking your Google account. Please try again later.",
+  "associate_google_account_error_already_associated": "Your Google account is already linked to this Zeffyr Music account.",
+  "associate_google_account_error_already_associated_other_account": "This Google account is already linked to another Zeffyr Music account.",
+  "associate_google_account_error_invalid_token": "The Google authentication token is invalid. Please try again.",
+  "associate_google_account_error_token_missing": "The Google authentication token is missing. Please try again.",
 
   "playlist_privee": "Playlist has become private you no longer have access.",
   "perte_connexion": "Loss of internet connection detected",
@@ -91,6 +101,8 @@
   "supprimer_liste_lecture": "Delete from the playlist",
   "modifier_nom": "Change the name",
   "ajouter_liste_en_cours": "Add to playlist",
+
+  "title_artist": "{{artist}} - Albums, Songs and More | Zeffyr Music",
 
   "description_partage": "I just listened to the album {{album}} of {{artiste}} on ZeffyrMusic.",
   "description_partage_playlist": "Come listen to my playlist {{playlist}} on ZeffyrMusic.",

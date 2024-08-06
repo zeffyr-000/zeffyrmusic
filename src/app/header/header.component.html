@@ -16,7 +16,7 @@
                 </a>
             </li>
             <li *ngIf="!isConnected" ngbDropdownItem>
-                <a (click)="openModal(contentModalLogin)" role="presentation">
+                <a (click)="openModalLogin()" role="presentation">
                     <span class="material-icons">login</span>{{'connexion' |transloco }}
                 </a>
             </li>
@@ -115,7 +115,7 @@
             </a>
         </li>
         <li id="header_li_connexion" class="nav-item align-self-center d-flex d-none d-lg-block" *ngIf="!isConnected">
-            <a class="btn btn-primary text-light" (click)="openModal(contentModalLogin)" role="presentation">
+            <a class="btn btn-primary text-light" (click)="openModalLogin()" role="presentation">
                 {{'connexion' |transloco }}
             </a>
         </li>
@@ -254,8 +254,8 @@
         </form>
         <div *ngIf="isRegistered">
             <p class="alert alert-success">{{ 'inscription_succes' | transloco }}</p>
-            <p><a (click)="modal.dismiss(''); openModal(contentModalLogin)" class="text-decoration-underline"
-                    role="presentation">{{ 'connexion' | transloco}}</a></p>
+            <p><a (click)="modal.dismiss(''); openModalLogin()" class="text-decoration-underline" role="presentation">{{
+                    'connexion' | transloco}}</a></p>
         </div>
     </div>
 </ng-template>
@@ -266,6 +266,14 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
+        <div id="google-signin-button-header" class="my-3"></div>
+        <div class="d-flex align-items-center my-3">
+            <hr class="flex-grow-1" />
+            <span class="mx-2">
+                {{ 'or' | transloco}}
+            </span>
+            <hr class="flex-grow-1" />
+        </div>
         <form (ngSubmit)="onLogIn(formLogIn, modal)" #formLogIn="ngForm">
             <p class="form-group">
                 <label class="control-label" for="pseudo">{{ 'pseudo_ou_mail' | transloco}}</label>

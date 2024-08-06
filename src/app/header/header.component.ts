@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
@@ -14,12 +14,18 @@ import { UserService } from '../services/user.service';
 import { CreatePlaylistResponse, LoginResponse, UserReponse } from '../models/user.model';
 import { DOCUMENT } from '@angular/common';
 
+// eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
+declare var google: any;
+
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    @ViewChild('contentModalLogin') contentModalLogin: TemplateRef<any>;
+
 
     isConnected: boolean;
     pseudo: string;
@@ -276,9 +282,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
     }
 
-    onLogIn(form: NgForm, modal: NgbActiveModal) {
-        if (form.valid) {
-            this.userService.login(form.form.value)
+    onLogIn(form: NgForm, modal: NgbActiveModal, token: string) {
+        if (token || form.valid) {
+            this.userService.login(form?.form?.value, token)
                 .subscribe((data: LoginResponse) => {
                     if (data.success !== undefined && data.success) {
                         this.isConnected = true;
@@ -289,7 +295,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
                         this.playerService.onLoadListLogin(data.liste_playlist, data.liste_suivi);
 
-                        modal.dismiss('');
+                        if (modal) {
+                            modal.dismiss('');
+                        } else {
+                            this.modalService.dismissAll();
+                        }
                     } else {
                         this.error = this.translocoService.translate(data?.error || 'generic_error');
                     }
@@ -400,6 +410,35 @@ export class HeaderComponent implements OnInit, OnDestroy {
     onAddVideo(idPlaylist: string, modal: NgbActiveModal) {
         this.playerService.addVideoInPlaylistRequest(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration);
         modal.dismiss();
+    }
+
+    openModalLogin() {
+        const modalRef: NgbModalRef = this.modalService.open(this.contentModalLogin, { size: 'lg' });
+        modalRef.result.then(
+            () => this.renderGoogleSignInButton(),
+            () => this.renderGoogleSignInButton()
+        );
+
+        setTimeout(() => {
+            this.renderGoogleSignInButton();
+        }, 0);
+    }
+
+    renderGoogleSignInButton() {
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            google.accounts.id.initialize({
+                client_id: environment.GOOGLE_CLIENT_ID,
+                callback: this.handleCredentialResponse.bind(this)
+            });
+            google.accounts.id.renderButton(
+                document.getElementById('google-signin-button-header'),
+                {}
+            );
+        }
+    }
+
+    handleCredentialResponse(response: { credential: string }) {
+        this.onLogIn(null, null, response.credential);
     }
 
     ngOnDestroy() {

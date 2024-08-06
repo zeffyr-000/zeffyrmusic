@@ -48,8 +48,9 @@ export class ArtistComponent implements OnInit {
                     this.listAlbums = data.list_albums;
 
                     this.titleService.setTitle(this.name + ' - Zeffyr Music');
+                    this.titleService.setTitle(this.translocoService.translate('title_artist', { artist: this.name }));
 
-                    this.metaService.updateTag({ name: 'og:title', content: this.name + ' - Zeffyr Music' });
+                    this.metaService.updateTag({ name: 'og:title', content: this.translocoService.translate('title_artist', { artist: this.name }) });
                     this.metaService.updateTag({
                         name: 'og:description',
                         content: this.translocoService.translate('description_partage_artist', { artist: this.name })
