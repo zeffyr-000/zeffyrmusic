@@ -1,16 +1,18 @@
-import { Component, OnDestroy, OnInit, NgZone } from '@angular/core';
+import { Component, OnDestroy, NgZone, AfterViewInit, ViewChild } from '@angular/core';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
 import { Video } from '../models/video.model';
+import { YouTubePlayer } from '@angular/youtube-player';
 
 @Component({
     selector: 'app-player',
     templateUrl: './player.component.html',
     styleUrls: ['./player.component.scss']
 })
-export class PlayerComponent implements OnInit, OnDestroy {
+export class PlayerComponent implements OnDestroy, AfterViewInit {
 
+    @ViewChild('youtubePlayer') youtubePlayer: YouTubePlayer;
     isConnected = false;
     list: Video[];
     currentKey: string;
@@ -37,7 +39,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnInit() {
+    ngAfterViewInit() {
         this.playerService.launchYTApi();
     }
 

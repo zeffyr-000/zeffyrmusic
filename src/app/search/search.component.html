@@ -32,7 +32,7 @@
 	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2" *ngIf="!isLoading1">
 		<div *ngFor="let album of listAlbums | slice:0:limitAlbum" class="col m-0 mt-1 mb-1">
 			<a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
-				<img [src]="album.url_image" class="card-img-top" alt="" />
+				<img [src]="album.url_image" class="card-img-top" [alt]="album.titre" appDefaultImage />
 				<div class="card-body">
 					<h5 class="card-title">{{album.titre}}</h5>
 				</div>

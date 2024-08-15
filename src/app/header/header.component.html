@@ -63,11 +63,11 @@
     </div>
 
     <div id="header_logo" class="nav col-3">
-        <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="{ 'home' | transloco }" routerLink="">
+        <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="" routerLink="">
             <img [src]="this.darkModeEnabled ? URL_ASSETS + 'assets/img/logo_dark.png' : URL_ASSETS + 'assets/img/logo.png'"
-                alt="" class="d-none d-lg-block mx-auto" />
+                [alt]=" 'home' | transloco " height="50" width="199" class="d-none d-lg-block mx-auto" />
             <img [src]="this.darkModeEnabled ?  URL_ASSETS + 'assets/img/logo_mobile_dark.png' : URL_ASSETS + 'assets/img/logo_mobile.png'"
-                alt="" class="d-lg-none" />
+                [alt]=" 'home' | transloco " class="d-lg-none" />
         </a>
     </div>
 
