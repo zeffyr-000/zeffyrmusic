@@ -23,7 +23,8 @@
 			<div *ngFor="let album of listAlbums" class="col m-0 mt-1 mb-1" itemscope
 				itemtype="http://schema.org/MusicAlbum">
 				<a class="card h-100" [routerLink]="'/playlist/' + album.id_playlist" itemprop="url">
-					<img [src]="album.img_big" class="card-img-top" [alt]="album.titre + ' cover'" itemprop="image" />
+					<img [src]="album.img_big" class="card-img-top" [alt]="album.titre + ' cover'" itemprop="image"
+						appDefaultImage />
 					<div class="card-body">
 						<h5 class="card-title" itemprop="name">{{album.titre}}</h5>
 					</div>

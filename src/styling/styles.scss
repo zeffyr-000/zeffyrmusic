@@ -26,11 +26,26 @@ body[data-bs-theme="dark"] {
 }
 
 #player {
-	position: absolute;
+    position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
+
+    iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0; 
+    }
+
+    > youtube-player-placeholder {
+        width: 100% !important;
+        height: 100% !important;
+        overflow: hidden;
+    }
 }
 
 #main {

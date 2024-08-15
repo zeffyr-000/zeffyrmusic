@@ -84,7 +84,7 @@ describe('PlayerComponent', () => {
   });
 
   it('should call launchYTApi on init', () => {
-    component.ngOnInit();
+    component.ngAfterViewInit();
     expect(playerService.launchYTApi).toHaveBeenCalled();
   });
 

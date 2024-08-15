@@ -28,6 +28,7 @@ import { TranslocoHttpLoader } from './transloco.loader';
 import { ArtistListComponent } from './playlist/artist-list/artist-list.component';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { SharedModule } from './routing/shared/shared.module';
+import { YouTubePlayerModule } from '@angular/youtube-player';
 
 @NgModule({
     declarations: [
@@ -53,7 +54,8 @@ import { SharedModule } from './routing/shared/shared.module';
         ShareButtons,
         NgbTooltipModule,
         TranslocoModule,
-        SharedModule
+        SharedModule,
+        YouTubePlayerModule
     ],
     providers: [
         {
