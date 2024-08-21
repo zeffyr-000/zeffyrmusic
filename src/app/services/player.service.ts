@@ -72,6 +72,13 @@ export class PlayerService implements OnDestroy {
         private readonly httpClient: HttpClient,
         private readonly initService: InitService
     ) {
+        if ('requestIdleCallback' in window) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (window as any).requestIdleCallback(() => this.init());
+        } else {
+            setTimeout(() => this.init(), 0);
+        }
+
         this.subscriptionInitializePlaylist = this.initService.subjectInitializePlaylist.subscribe(
             data => {
                 this.listPlaylist = data.listPlaylist;
@@ -637,5 +644,12 @@ export class PlayerService implements OnDestroy {
 
     ngOnDestroy() {
         this.subscriptionInitializePlaylist.unsubscribe();
+    }
+
+    private init() {
+        const tag = document.createElement("script");
+        tag.src = "//www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     }
 }

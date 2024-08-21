@@ -13,11 +13,19 @@ class TestComponent { }
 describe('LazyLoadImageDirective', () => {
   let fixture: ComponentFixture<TestComponent>;
   let imgEl: ElementRef;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let renderer2Mock: any;
 
   beforeEach(() => {
+    renderer2Mock = {
+      setAttribute: jasmine.createSpy('setAttribute')
+    };
+
     TestBed.configureTestingModule({
       declarations: [TestComponent, LazyLoadImageDirective],
-      providers: [Renderer2]
+      providers: [
+        { provide: Renderer2, useValue: renderer2Mock }
+      ]
     });
 
     fixture = TestBed.createComponent(TestComponent);
@@ -30,7 +38,6 @@ describe('LazyLoadImageDirective', () => {
     expect(directive).toBeTruthy();
   });
 
-  /*
   it('should set src attribute when image is in viewport', () => {
     const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2));
     directive.src = 'https://example.com/image.jpg';
@@ -48,7 +55,6 @@ describe('LazyLoadImageDirective', () => {
     directive['observer'].observe(imgEl.nativeElement);
     directive.ngOnInit();
 
-    expect(imgEl.nativeElement.getAttribute('src')).toBe('https://example.com/image.jpg');
+    expect(renderer2Mock.setAttribute).toHaveBeenCalledWith(imgEl.nativeElement, 'src', 'https://example.com/image.jpg');
   });
-  */
 });

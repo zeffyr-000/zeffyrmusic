@@ -151,6 +151,60 @@ describe('UserService', () => {
     req.flush(mockEditMailResponse);
   });
 
+  it('should send a POST request to edit dark mode', () => {
+    const mockResponse: UserReponse = {
+      success: true,
+      error: '',
+    };
+    const data = { dark_mode_enabled: true };
+
+    service.editDarkMode(data).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'options/dark_mode');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(data);
+
+    req.flush(mockResponse);
+  });
+
+  it('should send a POST request to edit language', () => {
+    const mockResponse: UserReponse = {
+      success: true,
+      error: ''
+    };
+    const data = { language: 'en' };
+
+    service.editLanguage(data).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'options/language');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(data);
+
+    req.flush(mockResponse);
+  });
+
+  it('should send a POST request to delete account', () => {
+    const mockResponse: UserReponse = {
+      success: true,
+      error: ''
+    };
+    const data = { password: 'test_password' };
+
+    service.deleteAccount(data).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'options/delete');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(data);
+
+    req.flush(mockResponse);
+  });
+
   it('should perform a POST request for create playlist', () => {
     const mockCreatePlaylistData: ICreatePlaylist = {
       titre: 'test_titre',
@@ -194,5 +248,23 @@ describe('UserService', () => {
     expect(req.request.method).toBe('POST');
 
     req.flush(mockEditTitlePlaylistResponse);
+  });
+
+  it('should send a POST request to associate Google account', () => {
+    const mockResponse: UserReponse = {
+      success: true,
+      error: ''
+    };
+    const data = { id_token: 'test_id_token' };
+
+    service.associateGoogleAccount(data).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'options/associate_google_account');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(data);
+
+    req.flush(mockResponse);
   });
 });

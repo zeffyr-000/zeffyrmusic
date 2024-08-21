@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 import { DefaultImageDirective } from 'src/app/directives/default-image.directive';
 import { SwipeDownDirective } from 'src/app/directives/swipe-down.directive';
-import { LazyLoadImageDirective } from 'src/app/directive/lazy-load-image.directive';
+import { LazyLoadImageDirective } from 'src/app/directives/lazy-load-image.directive';
 
 @NgModule({
   declarations: [
