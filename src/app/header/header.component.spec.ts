@@ -16,6 +16,7 @@ import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { LoginResponse } from '../models/user.model';
 import { getTranslocoModule } from '../transloco-testing.module';
+import { environment } from 'src/environments/environment';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -33,9 +34,11 @@ describe('HeaderComponent', () => {
   let routerSpyObj: jasmine.SpyObj<Router>;
   let routeSpyObj: jasmine.SpyObj<ActivatedRoute>;
   let userServiceMock: jasmine.SpyObj<UserService>;
+  let modalServiceSpyObj: jasmine.SpyObj<NgbModal>;
+  let initServiceMock: jasmine.SpyObj<InitService>;
 
   beforeEach(async () => {
-    const initServiceMock = jasmine.createSpyObj('InitService', ['loginSuccess', 'logOut', 'onMessageUnlog']);
+    initServiceMock = jasmine.createSpyObj('InitService', ['loginSuccess', 'logOut', 'onMessageUnlog']);
     const playerServiceMock = jasmine.createSpyObj('PlayerService', [
       'switchRepeat',
       'switchRandom',
@@ -57,10 +60,10 @@ describe('HeaderComponent', () => {
     routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
     routeSpyObj = jasmine.createSpyObj('ActivatedRoute', [], { snapshot: { paramMap: { get: () => '1' } } });
     const googleAnalyticsServiceSpyObj = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
-    const modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open']);
+    modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open', 'dismissAll']);
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
 
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: false, pseudo: '', id_perso: '', mail: '', darkModeEnabled: false });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false, language: 'en' });
     initServiceMock.logOut = jasmine.createSpy('logOut');
     playerServiceMock.subjectRepeatChange = new BehaviorSubject(false);
     playerServiceMock.subjectRandomChange = new BehaviorSubject(false);
@@ -384,6 +387,27 @@ describe('HeaderComponent', () => {
       expect(component.error).toBe('Invalid email');
     });
 
+    it('should set error to the genric message if the response is unsuccessful', () => {
+      const form = <NgForm>{
+        valid: true,
+        form: {
+          value: {
+            email: 'test@example.com',
+            password: 'password',
+          }
+        }
+      };
+      spyOn(translocoService, 'translate').and.returnValue('generic_error');
+      const registerResponse = { success: false, error: '' };
+      userServiceMock.register.and.returnValue(of(registerResponse));
+
+      component.onSubmitRegister(form);
+
+      expect(userServiceMock.register).toHaveBeenCalledWith(form.form.value);
+
+      expect(component.error).toBe('generic_error');
+    });
+
     describe('onLogIn', () => {
       afterEach(() => {
         userServiceMock.login.calls.reset();
@@ -466,6 +490,58 @@ describe('HeaderComponent', () => {
 
         expect(component.error).toBe('Invalid credentials');
       });
+
+      it('should set error to the generic error message if the response is unsuccessful', () => {
+        const form = <NgForm>{
+          valid: true,
+          form: {
+            value: {
+              email: 'test@example.com',
+              password: 'password',
+            }
+          },
+        };
+        spyOn(translocoService, 'translate').and.returnValue('generic_error');
+
+        const loginResponse = { success: false, error: '' } as LoginResponse;
+        userServiceMock.login.and.returnValue(of(loginResponse));
+
+        component.onLogIn(form, activeModalSpy, null);
+
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value, null);
+
+        expect(component.error).toBe('generic_error');
+      });
+
+      it('should set isConnected to true, call initService.loginSuccess, set mail, call playerService.onLoadListLogin, and dismiss all modals if the response is successful', () => {
+        const form = <NgForm>{
+          valid: true,
+          form: {
+            value: {
+              email: 'test@example.com',
+              password: 'password',
+            }
+          }
+        };
+        const pseudo = 'testuser';
+        const id_perso = '123';
+        const mail = 'testuser@example.com';
+        const liste_playlist: UserPlaylist[] = [];
+        const liste_suivi: FollowItem[] = [];
+        const darkModeEnabled = false;
+        const language = 'en';
+
+        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, language, liste_playlist, liste_suivi } as LoginResponse;
+        userServiceMock.login.and.returnValue(of(loginResponse));
+
+        component.onLogIn(form, null, null);
+
+        expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value, null);
+
+        expect(component.isConnected).toBeTrue();
+        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled, language);
+        expect(modalServiceSpyObj.dismissAll).toHaveBeenCalled();
+      });
     });
 
     describe('onSumbitResetPass', () => {
@@ -473,6 +549,7 @@ describe('HeaderComponent', () => {
         const form = { valid: true, form: { value: 'testValue' } } as NgForm;
         const successResponse = { success: true, error: '' };
         const errorResponse = { success: false, error: 'Invalid credentials' };
+        const errorResponse2 = { success: false, error: '' };
 
         userServiceMock.resetPass.and.returnValue(of(successResponse));
         spyOn(translocoService, 'translate').and.returnValue('Invalid credentials');
@@ -484,6 +561,12 @@ describe('HeaderComponent', () => {
 
         userServiceMock.resetPass.and.returnValue(of(errorResponse));
 
+        component.onSubmitResetPass(form);
+
+        expect(userServiceMock.resetPass).toHaveBeenCalledWith(form.form.value);
+        expect(component.error).toBe('Invalid credentials');
+
+        userServiceMock.resetPass.and.returnValue(of(errorResponse2));
         component.onSubmitResetPass(form);
 
         expect(userServiceMock.resetPass).toHaveBeenCalledWith(form.form.value);
@@ -504,6 +587,7 @@ describe('HeaderComponent', () => {
         } as NgForm;
         const successResponse = { success: true, id_playlist: '123', titre: 'testPlaylist', error: '' };
         const errorResponse = { success: false, id_playlist: '', titre: '', error: 'Invalid playlist name' };
+        const errorResponse2 = { success: false, id_playlist: '', titre: '', error: '' };
         userServiceMock.createPlaylist.and.returnValue(of(successResponse));
         spyOn(translocoService, 'translate').and.returnValue('Invalid playlist name');
 
@@ -515,6 +599,14 @@ describe('HeaderComponent', () => {
         expect(playerService.addNewPlaylist).toHaveBeenCalledWith('123', 'testPlaylist');
 
         userServiceMock.createPlaylist.and.returnValue(of(errorResponse));
+        // Act
+        component.onCreatePlaylist(form);
+
+        // Assert
+        expect(userServiceMock.createPlaylist).toHaveBeenCalledWith(form.form.value);
+        expect(component.error).toBe('Invalid playlist name');
+
+        userServiceMock.createPlaylist.and.returnValue(of(errorResponse2));
         // Act
         component.onCreatePlaylist(form);
 
@@ -619,6 +711,7 @@ describe('HeaderComponent', () => {
       const modal = jasmine.createSpyObj('NgbActiveModal', ['dismiss', 'update', 'close']);
       const successResponse = { success: true, error: '' };
       const errorResponse = { success: false, error: 'Invalid title' };
+      const errorResponse2 = { success: false, error: '' };
       const successBody = {
         id_playlist: '123',
         titre: 'newTitle'
@@ -638,6 +731,13 @@ describe('HeaderComponent', () => {
       userServiceMock.editTitlePlaylist.and.returnValue(of(errorResponse));
 
       // Act
+      component.onEditTitlePlaylist(form, modal);
+
+      // Assert
+      expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith(successBody);
+      expect(component.error).toBe('Invalid title');
+
+      userServiceMock.editTitlePlaylist.and.returnValue(of(errorResponse2));
       component.onEditTitlePlaylist(form, modal);
 
       // Assert
@@ -720,5 +820,65 @@ describe('HeaderComponent', () => {
     // Assert
     expect(playerService.addVideoInPlaylistRequest).toHaveBeenCalledWith(idPlaylist, 'key', 'title', 'artist', 100);
     expect(modal.dismiss).toHaveBeenCalled();
+  });
+
+  it('should open modal and call renderGoogleSignInButton', () => {
+    const modalRefSpyObj = jasmine.createSpyObj('NgbModalRef', ['result']);
+    modalRefSpyObj.result = of().toPromise();
+    modalServiceSpyObj.open.and.returnValue(modalRefSpyObj);
+
+    spyOn(component, 'renderGoogleSignInButton');
+
+    component.openModalLogin();
+
+    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(component.contentModalLogin, { size: 'lg' });
+  });
+
+  it('should initialize and render Google Sign-In button', () => {
+    const google = {
+      accounts: {
+        id: {
+          initialize: jasmine.createSpy('initialize'),
+          renderButton: jasmine.createSpy('renderButton')
+        }
+      }
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).google = google;
+
+    const mockElement = document.createElement('div');
+    mockElement.id = 'google-signin-button-header';
+    document.body.appendChild(mockElement);
+
+    component.renderGoogleSignInButton();
+
+    expect(google.accounts.id.initialize).toHaveBeenCalledWith({
+      client_id: environment.GOOGLE_CLIENT_ID,
+      callback: jasmine.any(Function)
+    });
+    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(
+      mockElement,
+      {}
+    );
+
+    document.body.removeChild(mockElement);
+  });
+
+  it('should call onLogIn with the correct arguments when handleCredentialResponse is called', () => {
+    spyOn(component, 'onLogIn');
+
+    const mockResponse = { credential: 'mockCredential' };
+
+    component.handleCredentialResponse(mockResponse);
+
+    expect(component.onLogIn).toHaveBeenCalledWith(null, null, 'mockCredential');
+  });
+
+  it('should react to darkModeEnabled being true', () => {
+    initServiceMock.subjectConnectedChange.next({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: true, language: 'en' });
+
+    fixture.detectChanges();
+
+    expect(document.body.getAttribute('data-bs-theme')).toBe('dark');
   });
 });

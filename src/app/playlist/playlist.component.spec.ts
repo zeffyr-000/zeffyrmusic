@@ -601,4 +601,13 @@ describe('PlaylistComponent', () => {
 
     expect(component.imgBig).toBe('assets/img/default.jpg');
   });
+
+  it('should assign title from data', () => {
+    const data = { title: 'Test Title' } as Playlist;
+    component.title = data.title;
+
+    const title = component.getMetaTitle(data);
+
+    expect(title).toBe('Test Title');
+  });
 });

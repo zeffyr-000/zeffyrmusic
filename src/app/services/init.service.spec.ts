@@ -259,4 +259,14 @@ describe('InitService', () => {
       req.flush(mockHomeInitData);
     });
   });
+
+  it('should return the correct connection status', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (service as any).isConnected = true;
+    expect(service.getIsConnected()).toBe(true);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (service as any).isConnected = false;
+    expect(service.getIsConnected()).toBe(false);
+  });
 });

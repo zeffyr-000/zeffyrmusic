@@ -1039,4 +1039,33 @@ describe('PlayerService', () => {
 
         expect(initService.onMessageUnlog).toHaveBeenCalled();
     });
+
+    it('should insert YouTube iframe API script into the DOM', () => {
+        const createElementSpy = spyOn(document, 'createElement').and.callThrough();
+        const getElementsByTagNameSpy = spyOn(document, 'getElementsByTagName').and.callThrough();
+        const insertBeforeSpy = spyOn(document.getElementsByTagName('script')[0].parentNode, 'insertBefore').and.callThrough();
+
+        service['init']();
+
+        expect(createElementSpy).toHaveBeenCalledWith('script');
+
+        expect(getElementsByTagNameSpy).toHaveBeenCalledWith('script');
+
+        expect(insertBeforeSpy).toHaveBeenCalled();
+    });
+
+    it('should call init using requestIdleCallback if available', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).requestIdleCallback = (callback: () => void) => callback();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const initSpy = spyOn(service as any, 'init');
+        service['init']();
+
+        expect(initSpy).toHaveBeenCalled();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (window as any).requestIdleCallback;
+    });
+
 });
