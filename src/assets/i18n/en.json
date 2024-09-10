@@ -103,13 +103,16 @@
   "ajouter_liste_en_cours": "Add to playlist",
 
   "title_artist": "{{artist}} - Albums, Songs and More | Zeffyr Music",
+  "title_top_element": "{{title}} - The Must-Haves of the Moment | Zeffyr Music",
+  "title_album_artist": "{{title}} ({{year}}): The album by {{artist}} – {count, plural, =1 {# track} other {# tracks}} to listen to",
+  "title_album": "{{title}} ({{year}}) – {count, plural, =1 {# track} other {#tracks}} to listen to",
 
   "description_partage": "I just listened to the album {{album}} of {{artiste}} on ZeffyrMusic.",
   "description_partage_playlist": "Come listen to my playlist {{playlist}} on ZeffyrMusic.",
   "description_partage_artist": "I like {{artist}}.",
 
-  "description_album_artist": "Discover the album \"{title}\" by {artist}, released in {year}. Enjoy {count, plural, =1 {one captivating track} other {# captivating tracks}}. Listen now!",
-  "description_album": "Dive into \"{title}\", a {year} album with {count, plural, =1 {one electrifying track} other {# electrifying tracks}}. Explore the album now!",
+  "description_album_artist": "Discover '{{title}}', the album by {{artist}} released in {{year}}. Enjoy {count, plural, =1 {one captivating track} other {# captivating tracks}}. Listen for free on Zeffyr Music!",
+  "description_album": "Discover '{{title}}', released in {{year}}. Enjoy {count, plural, =1 {one captivating track} other {# captivating tracks}}. Listen for free on Zeffyr Music!",
   "description_top": "Discover \"{title}\", {description}. Enjoy {count, plural, =1 {one must-hear track} other {# must-hear tracks}}. Listen now!",
   "description_playlist": "Discover the playlist \"{title}\". Enjoy {count, plural, =1 {one carefully selected track} other {# carefully selected tracks}}. Listen now!",
   "description_artist_bio": "Discover {artist}, {description}. Explore {count, plural, =0 {no albums available} =1 {one album available} other {# albums available}}. Listen now!",
