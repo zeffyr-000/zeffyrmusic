@@ -222,8 +222,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.sliderVolumeRef.nativeElement.style.transform = 'none';
     }
 
-    onClickSliderVolume(e: { x: number; }) {
-        this.onUpdateVolume(e.x);
+    onClickSliderVolume(e: { offsetX: number; }) {
+        this.onUpdateVolume(e.offsetX);
         this.sliderVolumeRef.nativeElement.style.transform = 'none';
     }
 

@@ -105,13 +105,15 @@
 
   "title_artist": "{{artist}} - Albums, Chansons et Plus | Zeffyr Music",
   "title_top_element": "{{title}} - Les Incontournables du Moment | Zeffyr Music",
+  "title_album_artist": "{{title}} ({{year}}) : L'album de {{artist}} – {count, plural, =1 {# titre} other {# titres}} à écouter",
+  "title_album": "{{title}} ({{year}}) – {count, plural, =1 {# titre} other {# titres}} à écouter",
 
   "description_partage": "Je viens d'écouter l'album {{album}} de {{artiste}} sur ZeffyrMusic.",
   "description_partage_playlist": "Venez écouter ma playlist {{playlist}} sur ZeffyrMusic.",
   "description_partage_artist": "J'adore {{artist}}.",
 
-  "description_album_artist": "Découvrez l'album \"{title}\" de {artist}, sorti en {year}. Profitez de {count, plural, =1 {un titre captivant} other {# titres captivants}}. Écoutez maintenant!",
-  "description_album": "Plongez dans \"{title}\", un album de {year} avec {count, plural, =1 {un morceau électrisant} other {# morceaux électrisants}}. Explorez l'album dès maintenant!",
+  "description_album_artist": "Découvrez '{{title}}', l'album de {{artist}} sorti en {{year}}. Profitez de {count, plural, =1 {un titre captivant} other {# titres captivants}}. Écoutez gratuitement sur Zeffyr Music !",
+  "description_album": "Découvrez '{{title}}', sorti en {{year}}. Profitez de {count, plural, =1 {un titre captivant} other {# titres captivants}}. Écoutez gratuitement sur Zeffyr Music !",
   "description_top": "Découvrez \"{title}\", {description}. Profitez {count, plural, =1 {du titre incontournable} other {de # titres incontournables}}. Écoutez maintenant!",
   "description_playlist": "Découvrez la playlist \"{title}\". Profitez {count, plural, =1 {du morceau soigneusement sélectionné} other {de # morceaux soigneusement sélectionnés}}. Écoutez maintenant!",
   "description_artist_bio": "Découvrez {artist}, {description}. Explorez {count, plural, =0 {aucun album disponible} =1 {d'un album disponible} other {de # albums disponibles}}. Écoutez maintenant!",

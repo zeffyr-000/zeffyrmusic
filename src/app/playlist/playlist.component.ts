@@ -143,7 +143,12 @@ export class PlaylistComponent implements OnDestroy {
             title = this.translocoService.translate('title_top_element', { title: data.title });
         }
         else {
-            title = data.title;
+            if (data.artiste !== undefined && data.titre !== undefined) {
+                title = this.translocoService.translate(data.artiste ? 'title_album_artist' : 'title_album',
+                    { title: data.titre, artist: data.artiste, year: data.year, count: data.tab_video.length });
+            } else {
+                title = data.title;
+            }
         }
         return title;
     }
@@ -161,7 +166,7 @@ export class PlaylistComponent implements OnDestroy {
                     this.titre = data.titre || '';
                     this.description = data.description || '';
                     this.isFollower = data.est_suivi;
-                    this.artist = data.artiste;
+                    this.artist = data.artiste || '';
                     this.idArtist = data.id_artiste;
                     this.idPersoOwner = data.id_perso;
 

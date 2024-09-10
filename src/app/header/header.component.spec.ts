@@ -252,7 +252,7 @@ describe('HeaderComponent', () => {
   });
 
   it('should call onUpdateVolume when onClickSliderVolume is called', () => {
-    const event = { x: 100 };
+    const event = { x: 100, offsetX: 100 };
 
     component.onClickSliderVolume(event);
     expect(onUpdateVolumeSpy).toHaveBeenCalledWith(event.x);
