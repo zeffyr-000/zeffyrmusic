@@ -25,7 +25,7 @@ declare var google: any;
 export class HeaderComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChild('contentModalLogin') contentModalLogin: TemplateRef<any>;
-
+    @ViewChild('contentModalRegister') contentModalRegister: TemplateRef<unknown>;
 
     isConnected: boolean;
     pseudo: string;
@@ -439,6 +439,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     handleCredentialResponse(response: { credential: string }) {
         this.onLogIn(null, null, response.credential);
+    }
+
+    renderGoogleRegisterButton() {
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            google.accounts.id.initialize({
+                client_id: environment.GOOGLE_CLIENT_ID,
+                callback: this.handleCredentialResponse.bind(this)
+            });
+            google.accounts.id.renderButton(
+                document.getElementById('google-register-button-header'),
+                {}
+            );
+        }
+    }
+
+    openModalRegister() {
+        const modalRef: NgbModalRef = this.modalService.open(this.contentModalRegister, { size: 'lg' });
+        modalRef.result.then(
+            () => this.renderGoogleRegisterButton(),
+            () => this.renderGoogleRegisterButton()
+        );
+
+        setTimeout(() => {
+            this.renderGoogleRegisterButton();
+        }, 0);
     }
 
     ngOnDestroy() {

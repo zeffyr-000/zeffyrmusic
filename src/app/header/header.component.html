@@ -11,7 +11,7 @@
             </li>
             <li class="dropdown-divider"></li>
             <li *ngIf="!isConnected" ngbDropdownItem>
-                <a (click)="openModal(contentModalRegister)" role="presentation">
+                <a (click)="openModalRegister()" role="presentation">
                     <span class="material-icons">create_new_folder</span>{{'inscription' | transloco }}
                 </a>
             </li>
@@ -109,8 +109,7 @@
         </li>
 
         <li id="header_li_inscription" class="nav-item align-self-center d-flex d-none d-lg-block" *ngIf="!isConnected">
-            <a class="btn btn-warning btn-outline-warning text-light" (click)="openModal(contentModalRegister)"
-                role="presentation">
+            <a class="btn btn-warning btn-outline-warning text-light" (click)="openModalRegister()" role="presentation">
                 {{'inscription' | transloco }}
             </a>
         </li>
@@ -233,6 +232,14 @@
     </div>
     <div class="modal-body">
         <p class="bg-info p-2 rounded">{{ 'inscription_description' | transloco }}</p>
+        <div id="google-register-button-header" class="my-3"></div>
+        <div class="d-flex align-items-center my-3">
+            <hr class="flex-grow-1" />
+            <span class="mx-2">
+                {{ 'or' | transloco}}
+            </span>
+            <hr class="flex-grow-1" />
+        </div>
         <form *ngIf="!isRegistered" (ngSubmit)="onSubmitRegister(formRegister)" #formRegister="ngForm">
             <p class="form-group">
                 <label class="control-label" for="pseudo">{{ 'pseudo' | transloco}}</label>
