@@ -105,7 +105,12 @@
 			<button class="btn btn-link" (click)="moreExtras()" role="presentation">{{ 'more' |transloco }}</button>
 		</div>
 	</div>
-	<table *ngIf="!isLoading3" id="table_extra" class="table table-hover">
+	@if (!isConnected) {
+	<div class="bg-info p-2 rounded">
+		{{ 'extras_info' | transloco }}
+	</div>
+	}
+	<table *ngIf="!isLoading3 && isConnected" id="table_extra" class="table table-hover">
 		<thead>
 			<tr>
 				<th></th>

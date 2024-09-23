@@ -59,7 +59,9 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.query = params.get('query');
             this.isLoading1 = true;
             this.isLoading2 = true;
-            this.isLoading3 = true;
+            if (this.isConnected) {
+                this.isLoading3 = true;
+            }
 
             this.searchService.fullSearch1(this.query)
                 .subscribe((data: { artist: ArtistResult[], playlist: PlaylistResult[] }) => {
@@ -85,13 +87,15 @@ export class SearchComponent implements OnInit, OnDestroy {
                     this.limitTrack = 5;
                 });
 
-            this.searchService.fullSearch3(this.query)
-                .subscribe((data: { tab_extra: Extra[] }) => {
-                    this.isLoading3 = false;
+            if (this.isConnected) {
+                this.searchService.fullSearch3(this.query)
+                    .subscribe((data: { tab_extra: Extra[] }) => {
+                        this.isLoading3 = false;
 
-                    this.listExtras = data.tab_extra;
-                    this.limitExtra = 5;
-                });
+                        this.listExtras = data.tab_extra;
+                        this.limitExtra = 5;
+                    });
+            }
 
             this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
         });
