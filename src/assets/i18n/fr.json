@@ -132,6 +132,7 @@
   "more": "Plus...",
   "morceaux": "Morceaux",
   "extras": "Extras",
+  "extras_info": "La recherche d'extras est limitée aux utilisateurs connectés. Connectez-vous pour accéder avoir accès à plus de résultats.",
   "album": "Album",
   "mes_likes": "Mes likes",
   "likes_empty": "Likes: liste vide, cliquez sur le coeur pour ajouter des musiques à cette liste",
