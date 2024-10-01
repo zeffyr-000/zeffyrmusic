@@ -122,15 +122,16 @@ export class PlaylistComponent implements OnDestroy {
         let description = '';
 
         if (data.id_top !== undefined) {
-            description = this.translocoService.translate('description_top', { title: data.title, count: data.tab_video.length, description: data.description });
+            description = this.translocoService.translate('description_top',
+                { title: data.title, count: data.tab_video?.length || 0, description: data.description });
         }
         else {
             if (data.artiste !== undefined && data.titre !== undefined) {
                 description = this.translocoService.translate(data.artiste ? 'description_album_artist' : 'description_album',
-                    { title: data.titre, artist: data.artiste, year: data.year, count: data.tab_video.length });
+                    { title: data.titre, artist: data.artiste, year: data.year, count: data.tab_video?.length || 0 });
             } else {
                 description = this.translocoService.translate('description_playlist',
-                    { title: data.title, count: data.tab_video.length });
+                    { title: data.title, count: data.tab_video?.length || 0 });
             }
         }
         return description;
@@ -145,7 +146,7 @@ export class PlaylistComponent implements OnDestroy {
         else {
             if (data.artiste !== undefined && data.titre !== undefined) {
                 title = this.translocoService.translate(data.artiste ? 'title_album_artist' : 'title_album',
-                    { title: data.titre, artist: data.artiste, year: data.year, count: data.tab_video.length });
+                    { title: data.titre, artist: data.artiste, year: data.year, count: data.tab_video?.length || 0 });
             } else {
                 title = data.title;
             }
@@ -207,7 +208,7 @@ export class PlaylistComponent implements OnDestroy {
         this.isPrivate = false;
         this.idPlaylist = '';
         this.playlist = [];
-        this.imgBig = '';
+        this.imgBig = `${environment.URL_ASSETS}assets/img/default.jpg`;
         this.idTopCharts = null;
         this.title = '';
         this.titre = '' || '';

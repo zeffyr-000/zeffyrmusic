@@ -12,6 +12,9 @@
 
                     <h1 *ngIf="idTopCharts===null && titre!==''" class="m-t-0" itemprop="name">{{titre}}</h1>
                     <h1 *ngIf="idTopCharts===null && titre===''" class="m-t-0" itemprop="name">{{title}}</h1>
+                    @if(isLikePage){
+                    <h1 class="m-t-0">{{ 'mes_likes' | transloco }}</h1>
+                    }
 
                     <h3 *ngIf="artist!==null && artist!==''"><a itemprop="byArtist url"
                             routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
@@ -39,7 +42,9 @@
                         <button class="btn btn-secondary btn-lg" (click)="addInCurrentList()">{{'ajouter_liste_en_cours'
                             | transloco}}</button>
 
+                        @if(!isLikePage) {
                         <share-buttons class="d-inline-block" show="2" showText="true"></share-buttons>
+                        }
                     </div>
 
                     <div class="row m-t">
