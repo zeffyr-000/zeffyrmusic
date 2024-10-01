@@ -87,7 +87,7 @@
 				</td>
 				<td>
 					<span *ngIf="isConnected" class="btn btn-default"
-						(click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre)"
+						(click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre,video.duree)"
 						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
 						<span class="material-icons">add</span>
 					</span>
@@ -114,6 +114,7 @@
 		<thead>
 			<tr>
 				<th></th>
+				<th></th>
 				<th>{{ 'intitule_titre' |transloco }}</th>
 				<th></th>
 				<th></th>
@@ -123,13 +124,17 @@
 		<tbody>
 			<tr *ngFor="let extra of listExtras | slice:0:limitExtra; let index=index" [attr.data-id-video]="extra.key">
 				<td>{{ index+1 }}</td>
+				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
+					<img [src]="'https://img.youtube.com/vi/'+extra.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
+				</td>
 				<td (click)="runPlaylistExtra(index)">{{extra.title}}</td>
 				<td>
 					<span *ngIf="extra.duree>0">{{extra.duree | toMMSS }}</span>
 				</td>
 				<td>
-					<span *ngIf="isConnected" class="btn btn-default" (click)="addVideo(extra.key,'',extra.title);"
-						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
+					<span *ngIf="isConnected" class="btn btn-default"
+						(click)="addVideo(extra.key,'',extra.title,extra.duree);" placement="left"
+						ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
 						<span class="material-icons">add</span>
 					</span>
 				</td>

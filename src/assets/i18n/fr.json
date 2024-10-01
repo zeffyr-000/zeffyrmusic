@@ -83,6 +83,7 @@
   "prive": "Privé",
   "playlist_modifier_titre": "Modifier le titre de la playlist",
   "ajouter_musique_playlist": "Ajouter une musique à une playlist",
+  "ajouter_musique_playlist_empty": "Vous n'avez pas de playlist pour ajouter des musiques, veuillez en créer une (lien dans le menu)",
   "ajouter": "Ajouter",
   "suivre": "Suivre",
   "ma_selection": "Ma sélection",

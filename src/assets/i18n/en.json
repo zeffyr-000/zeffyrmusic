@@ -83,6 +83,7 @@
   "prive": "Private",
   "playlist_modifier_titre": "Change the title of the playlist",
   "ajouter_musique_playlist": "Add music to a playlist",
+  "ajouter_musique_playlist_empty": "You don't have a playlist to add music to, please create one (link in the menu)",
   "ajouter": "Add",
   "suivre": "Follow",
   "ma_selection": "My lightbox",

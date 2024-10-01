@@ -443,10 +443,17 @@
     <div class="modal-body">
         <p>{{'ajouter' | transloco}}: {{addTitle}} {{addArtist}}</p>
         <p *ngIf="error!==''" class="alert alert-danger">{{error}}</p>
+        @if (listPlaylist.length===0) {
+        <div class="bg-info p-2 rounded">
+            {{ 'ajouter_musique_playlist_empty' | transloco }}
+        </div>
+        }
         <table class="table">
             <tr *ngFor="let playlist of listPlaylist">
                 <td>
-                    <a (click)="onAddVideo(playlist.id_playlist, modal)" role="presentation">{{playlist.titre}}</a>
+                    <bouton class="btn btn-link" (click)="onAddVideo(playlist.id_playlist, modal)">
+                        {{playlist.titre}}
+                    </bouton>
                 </td>
             </tr>
         </table>
