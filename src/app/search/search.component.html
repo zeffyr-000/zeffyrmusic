@@ -19,6 +19,19 @@
 			</a>
 		</div>
 	</div>
+	@if(listArtists && listArtists.length===0)
+	{
+	<div class="col m-0 mt-1 mb-1">
+		<div class="card h-100">
+			<div class="card-body">
+				<h5 class="card-title">
+					<span class="material-icons">search_off</span>
+					{{ 'no_artist_found' | transloco }}
+				</h5>
+			</div>
+		</div>
+	</div>
+	}
 	<div *ngIf="isLoading1" class="content_loading">
 		<div class="spinner-border"></div>
 	</div>
@@ -42,6 +55,19 @@
 			</a>
 		</div>
 	</div>
+	@if(listAlbums && listAlbums.length===0)
+	{
+	<div class="col m-0 mt-1 mb-1">
+		<div class="card h-100">
+			<div class="card-body">
+				<h5 class="card-title">
+					<span class="material-icons">search_off</span>
+					{{ 'no_album_found' | transloco }}
+				</h5>
+			</div>
+		</div>
+	</div>
+	}
 	<div *ngIf="isLoading1" class="content_loading">
 		<div class="spinner-border"></div>
 	</div>
@@ -52,7 +78,7 @@
 			<button class="btn btn-link" (click)="moreTracks()">{{ 'show_all' |transloco }}</button>
 		</div>
 	</div>
-	<table *ngIf="!isLoading2" id="table_playlist" class="table table-hover">
+	<table *ngIf="!isLoading2 && listTracks && listTracks.length>0" id="table_playlist" class="table table-hover">
 		<thead>
 			<tr>
 				<th></th>
@@ -95,6 +121,19 @@
 			</tr>
 		</tbody>
 	</table>
+	@if(listTracks && listTracks.length===0)
+	{
+	<div class="col m-0 mt-1 mb-1">
+		<div class="card h-100">
+			<div class="card-body">
+				<h5 class="card-title">
+					<span class="material-icons">search_off</span>
+					{{ 'no_track_found' | transloco }}
+				</h5>
+			</div>
+		</div>
+	</div>
+	}
 	<div *ngIf="isLoading2" class="content_loading">
 		<div class="spinner-border"></div>
 	</div>
@@ -110,7 +149,8 @@
 		{{ 'extras_info' | transloco }}
 	</div>
 	}
-	<table *ngIf="!isLoading3 && isConnected" id="table_extra" class="table table-hover">
+	<table *ngIf="!isLoading3 && isConnected && listExtras && listExtras.length>0" id="table_extra"
+		class="table table-hover">
 		<thead>
 			<tr>
 				<th></th>
@@ -141,6 +181,19 @@
 			</tr>
 		</tbody>
 	</table>
+	@if(listExtras && listExtras.length===0)
+	{
+	<div class="col m-0 mt-1 mb-1">
+		<div class="card h-100">
+			<div class="card-body">
+				<h5 class="card-title">
+					<span class="material-icons">search_off</span>
+					{{ 'no_extra_found' | transloco }}
+				</h5>
+			</div>
+		</div>
+	</div>
+	}
 	<div *ngIf="isLoading3" class="content_loading">
 		<div class="spinner-border"></div>
 	</div>

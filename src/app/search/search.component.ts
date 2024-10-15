@@ -28,13 +28,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     listArtists: ArtistResult[];
     limitArtist: number;
 
-    listAlbums: Album[] = [];
+    listAlbums: Album[];
     limitAlbum: number;
 
-    listTracks: Video[] = [];
+    listTracks: Video[];
     limitTrack: number;
 
-    listExtras: Extra[] = [];
+    listExtras: Extra[];
     limitExtra: number;
 
     private subscriptionConnected: Subscription;
@@ -62,6 +62,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             if (this.isConnected) {
                 this.isLoading3 = true;
             }
+            this.listArtists = undefined;
+            this.listAlbums = undefined;
+            this.listTracks = undefined;
+            this.listExtras = undefined;
 
             this.searchService.fullSearch1(this.query)
                 .subscribe((data: { artist: ArtistResult[], playlist: PlaylistResult[] }) => {
@@ -92,7 +96,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                     .subscribe((data: { tab_extra: Extra[] }) => {
                         this.isLoading3 = false;
 
-                        this.listExtras = data.tab_extra;
+                        this.listExtras = data.tab_extra || [];
                         this.limitExtra = 5;
                     });
             }
