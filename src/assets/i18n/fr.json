@@ -103,6 +103,7 @@
   "modifier_nom": "Modifier le nom",
   "ajouter_liste_en_cours": "Ajouter à la liste de lecture",
   "ajouter_apres_courant": "Lire après courant",
+  "back_current_playlist": "Retour à la playlist en cours",
 
   "title_artist": "{{artist}} - Albums, Chansons et Plus | Zeffyr Music",
   "title_top_element": "{{title}} - Les Incontournables du Moment | Zeffyr Music",

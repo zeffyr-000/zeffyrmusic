@@ -11,7 +11,7 @@
                 <div id="playlist_haut_titre" class="col col-8 p-0">
 
                     <h1 *ngIf="idTopCharts===null && titre!==''" class="m-t-0" itemprop="name">{{titre}}</h1>
-                    <h1 *ngIf="idTopCharts===null && titre===''" class="m-t-0" itemprop="name">{{title}}</h1>
+                    <h1 *ngIf="titre===''" class="m-t-0" itemprop="name">{{title}}</h1>
                     @if(isLikePage){
                     <h1 class="m-t-0">{{ 'mes_likes' | transloco }}</h1>
                     }
@@ -19,7 +19,7 @@
                     <h3 *ngIf="artist!==null && artist!==''"><a itemprop="byArtist url"
                             routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
 
-                    <p *ngIf="idTopCharts===null && titre===''" class="m-t-0" itemtype="description">{{description}}</p>
+                    <p *ngIf="titre===''" class="m-t-0" itemtype="description">{{description}}</p>
 
                     <div>
                         <button class="btn btn-primary btn-lg" (click)="runPlaylist()"

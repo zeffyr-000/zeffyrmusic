@@ -93,7 +93,7 @@
 
 		<tbody>
 			<tr *ngFor="let video of listTracks | slice:0:limitTrack; let index=index" [attr.data-id-video]="video.key"
-				(click)="runPlaylistTrack(index)">
+				[class.active]="video.key === currentKey" (click)="runPlaylistTrack(index)">
 				<td>{{ index+1 }}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
 					<img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
@@ -162,7 +162,8 @@
 		</thead>
 
 		<tbody>
-			<tr *ngFor="let extra of listExtras | slice:0:limitExtra; let index=index" [attr.data-id-video]="extra.key">
+			<tr *ngFor="let extra of listExtras | slice:0:limitExtra; let index=index" [attr.data-id-video]="extra.key"
+				[class.active]="extra.key === currentKey">
 				<td>{{ index+1 }}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
 					<img [src]="'https://img.youtube.com/vi/'+extra.key+'/mqdefault.jpg'" class="thumbnail" alt="" />

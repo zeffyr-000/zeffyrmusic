@@ -37,6 +37,7 @@ export class PlayerService implements OnDestroy {
     currentArtist = '';
     currentKey = '';
     currentIdPlaylist = '';
+    currentIdTopCharts = '';
     listLikeVideo: UserVideo[] = [];
 
     subjectCurrentPlaylistChange: BehaviorSubject<Video[]> = new BehaviorSubject<Video[]>([]);
@@ -278,6 +279,8 @@ export class PlayerService implements OnDestroy {
     }
 
     removeToPlaylist(index: number) {
+        this.currentIdTopCharts = '';
+        this.currentIdPlaylist = '';
         this.listVideo.splice(index, 1);
         this.tabIndexInitial.pop();
         this.tabIndex = this.tabIndexInitial.slice(0);
@@ -542,12 +545,14 @@ export class PlayerService implements OnDestroy {
             });
     }
 
-    addInCurrentList(playlist: Video[]) {
+    addInCurrentList(playlist: Video[], idTopCharts: string | null = '') {
         if (this.listVideo.length === 0) {
             this.currentIdPlaylist = playlist[0].id_playlist;
+            this.currentIdTopCharts = idTopCharts;
         }
         else {
             this.currentIdPlaylist = '';
+            this.currentIdTopCharts = '';
         }
         this.listVideo = this.listVideo.concat(playlist);
 
@@ -582,11 +587,11 @@ export class PlayerService implements OnDestroy {
         this.onChangeCurrentPlaylist();
     }
 
-    runPlaylist(playlist: Video[], index: number) {
+    runPlaylist(playlist: Video[], index: number, idTopCharts: string | null = '') {
         this.listVideo = [];
         this.tabIndexInitial = [];
         this.tabIndex = [];
-        this.addInCurrentList(playlist);
+        this.addInCurrentList(playlist, idTopCharts);
 
         this.lecture(index, true);
     }

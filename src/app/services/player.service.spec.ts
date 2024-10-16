@@ -972,7 +972,7 @@ describe('PlayerService', () => {
         expect(service.listVideo).toEqual([]);
         expect(service.tabIndexInitial).toEqual([]);
         expect(service.tabIndex).toEqual([]);
-        expect(spyAddInCurrentList).toHaveBeenCalledWith(playlist);
+        expect(spyAddInCurrentList).toHaveBeenCalledWith(playlist, '');
         expect(spyLecture).toHaveBeenCalledWith(index, true);
     });
 

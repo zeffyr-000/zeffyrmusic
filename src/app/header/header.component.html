@@ -164,17 +164,19 @@
             </a>
 
             <div class="btn-group btn-group-sm">
-                <a class="btn text-light w-100  d-none d-md-block border-0"
+                <a class="btn text-light w-100  d-none d-md-block"
                     [class.disabled]="playerService.currentIndex === 0 && currentTimeStr === '0:00'"
+                    [class.border-0]="playerService.currentIndex === 0 && currentTimeStr === '0:00'"
                     (click)="onBefore()" role="presentation">
                     <span class="material-icons">skip_previous</span>
                 </a>
-                <a id="play_button" class="btn text-light border-0" (click)="onPlayPause()" role="presentation">
+                <a id="play_button" class="btn text-light" (click)="onPlayPause()" role="presentation">
                     <span *ngIf="isPlaying" class="material-icons">pause</span>
                     <span *ngIf="!isPlaying" class="material-icons">play_arrow</span>
                 </a>
-                <a class="btn text-light w-100  d-none d-md-block border-0"
+                <a class="btn text-light w-100  d-none d-md-block"
                     [class.disabled]="playerService.currentIndex === playerService?.tabIndex?.length - 1"
+                    [class.border-0]="playerService.currentIndex === playerService?.tabIndex?.length - 1"
                     (click)="onAfter()" role="presentation">
                     <span class="material-icons">skip_next</span>
                 </a>

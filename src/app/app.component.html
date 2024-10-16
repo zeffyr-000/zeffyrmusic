@@ -6,6 +6,14 @@
         <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
 
         <div class="col-xs-9 col-md-9" id="content">
+            @if((playerService.currentIdTopCharts || playerService.currentIdPlaylist) &&
+            !isRedirectingToCurrentUrl()){
+            <a
+                [routerLink]="playerService.currentIdTopCharts?['top', playerService.currentIdTopCharts]: ['playlist', playerService.currentIdPlaylist]">
+                <span class="material-icons">chevron_left</span>
+                {{ 'back_current_playlist' | transloco }}
+            </a>
+            }
             <router-outlet></router-outlet>
         </div>
 
