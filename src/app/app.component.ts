@@ -4,7 +4,7 @@ import { Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 
@@ -17,6 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'zeffyrmusic';
     isOnline = true;
     showMessageUnlog = false;
+    currentUrl: string;
 
     subscriptionMessageUnlog: Subscription;
     renderer: Renderer2;
@@ -24,7 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
     constructor(@Inject(DOCUMENT) private readonly document: Document,
         private rendererFactory: RendererFactory2,
         private readonly initService: InitService,
-        private readonly playerService: PlayerService,
+        protected readonly playerService: PlayerService,
         private readonly router: Router,
         private readonly metaService: Meta,
         private readonly translocoService: TranslocoService) {
@@ -34,6 +35,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe(isShow => {
             this.showMessageUnlog = isShow;
+        });
+
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd)
+        ).subscribe((event: NavigationEnd) => {
+            this.currentUrl = event.urlAfterRedirects;
         });
 
         this.router.events.subscribe((event: Event) => {
@@ -82,6 +89,13 @@ export class AppComponent implements OnInit, OnDestroy {
         this.renderer.setAttribute(link, 'as', 'image');
         this.renderer.setAttribute(link, 'href', `${environment.URL_ASSETS}assets/img/default.jpg`);
         this.renderer.appendChild(document.head, link);
+    }
+
+    isRedirectingToCurrentUrl(): boolean {
+        const targetUrl = this.playerService.currentIdTopCharts
+            ? `/top/${this.playerService.currentIdTopCharts}`
+            : `/playlist/${this.playerService.currentIdPlaylist}`;
+        return this.currentUrl === targetUrl;
     }
 
     ngOnDestroy() {

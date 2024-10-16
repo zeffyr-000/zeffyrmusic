@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -19,6 +19,7 @@ import { SearchService } from '../services/search.service';
 })
 export class SearchComponent implements OnInit, OnDestroy {
 
+    currentKey: string;
     isConnected: boolean;
     query: string;
     isLoading1: boolean;
@@ -38,6 +39,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     limitExtra: number;
 
     private subscriptionConnected: Subscription;
+    subscriptionChangeKey: Subscription;
     private paramMapSubscription: Subscription;
 
     constructor(private readonly searchService: SearchService,
@@ -47,12 +49,19 @@ export class SearchComponent implements OnInit, OnDestroy {
         private readonly translocoService: TranslocoService,
         private readonly initService: InitService,
         private readonly playerService: PlayerService,
-        private readonly googleAnalyticsService: GoogleAnalyticsService) {
+        private readonly googleAnalyticsService: GoogleAnalyticsService,
+        private readonly ngZone: NgZone) {
     }
 
     ngOnInit() {
         this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
             this.isConnected = data.isConnected;
+        });
+
+        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
+            this.ngZone.run(() => {
+                this.currentKey = data.currentKey;
+            });
         });
 
         this.paramMapSubscription = this.activatedRoute.paramMap.subscribe(params => {
@@ -142,6 +151,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscriptionConnected.unsubscribe();
+        this.subscriptionChangeKey.unsubscribe();
         this.paramMapSubscription.unsubscribe();
     }
 }

@@ -54,6 +54,7 @@ describe('SearchComponent', () => {
       'addInCurrentList',
       'addVideoAfterCurrentInList',
     ]);
+    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({ currentKey: 'test-key', currentTitle: 'test-title', currentArtist: 'test-artist' });
     initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
     searchServiceMock = {
       fullSearch1: jasmine.createSpy('fullSearch1').and.returnValue(of(searchResults1)),

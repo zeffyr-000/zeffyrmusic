@@ -102,6 +102,7 @@
   "supprimer_liste_lecture": "Delete from the playlist",
   "modifier_nom": "Change the name",
   "ajouter_liste_en_cours": "Add to playlist",
+  "back_current_playlist": "Back to current playlist",
 
   "title_artist": "{{artist}} - Albums, Songs and More | Zeffyr Music",
   "title_top_element": "{{title}} - The Must-Haves of the Moment | Zeffyr Music",

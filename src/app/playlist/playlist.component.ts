@@ -162,7 +162,7 @@ export class PlaylistComponent implements OnDestroy {
                     this.idPlaylist = data.id_playlist;
                     this.playlist = data.tab_video;
                     this.imgBig = data.img_big || `${environment.URL_ASSETS}assets/img/default.jpg`;
-                    this.idTopCharts = null;
+                    this.idTopCharts = data.id_top || null;
                     this.title = data.title;
                     this.titre = data.titre || '';
                     this.description = data.description || '';
@@ -211,8 +211,8 @@ export class PlaylistComponent implements OnDestroy {
         this.imgBig = `${environment.URL_ASSETS}assets/img/default.jpg`;
         this.idTopCharts = null;
         this.title = '';
-        this.titre = '' || '';
-        this.description = '' || '';
+        this.titre = '';
+        this.description = '';
         this.isFollower = false;
         this.artist = null;
         this.idArtist = null;
@@ -247,7 +247,7 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     runPlaylist(index = 0) {
-        this.playerService.runPlaylist(this.playlist, index);
+        this.playerService.runPlaylist(this.playlist, index, this.idTopCharts);
     }
 
     pausePlaylist() {
@@ -255,7 +255,7 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     addInCurrentList() {
-        this.playerService.addInCurrentList(this.playlist);
+        this.playerService.addInCurrentList(this.playlist, this.idTopCharts);
     }
 
     addVideo(key: string, artist: string, title: string, duration: number) {
@@ -271,7 +271,7 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     addVideoInEndCurrentList(video: Video) {
-        this.playerService.addInCurrentList([video]);
+        this.playerService.addInCurrentList([video], this.idTopCharts);
     }
 
     sumDurationPlaylist() {

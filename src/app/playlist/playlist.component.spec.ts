@@ -354,7 +354,7 @@ describe('PlaylistComponent', () => {
 
     component.runPlaylist(0);
 
-    expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0);
+    expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0, null);
   });
 
   it('should call playerService.runPlaylist without arguments', () => {
@@ -372,7 +372,7 @@ describe('PlaylistComponent', () => {
     component.playlist = playlistData;
     component.runPlaylist();
 
-    expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0);
+    expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0, null);
   });
 
   it('should call playerService.addInCurrentList with correct arguments when addInCurrentList is called', () => {
@@ -391,7 +391,7 @@ describe('PlaylistComponent', () => {
 
     component.addInCurrentList();
 
-    expect(playerService.addInCurrentList).toHaveBeenCalledWith(playlistData);
+    expect(playerService.addInCurrentList).toHaveBeenCalledWith(playlistData, null);
   });
 
   it('should call playerService.addVideoInPlaylist with correct arguments when addVideo is called', () => {
@@ -439,7 +439,7 @@ describe('PlaylistComponent', () => {
 
     component.addVideoInEndCurrentList(videoData);
 
-    expect(playerService.addInCurrentList).toHaveBeenCalledWith([videoData]);
+    expect(playerService.addInCurrentList).toHaveBeenCalledWith([videoData], null);
   });
 
   it('should return correct duration when sumDurationPlaylist is called with playlist', () => {
