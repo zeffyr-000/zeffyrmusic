@@ -1,0 +1,24 @@
+<h1>{{'ma_selection' |transloco}}</h1>
+
+@if(listFollow.length===0){
+<p class="bg-info p-2 rounded">{{ 'selection_empty' | transloco }}</p>
+}
+
+<table class="table">
+    <tbody>
+        @for(playlist of listFollow; track playlist.id_playlist) {
+        <tr>
+            <td>
+                <a [routerLink]="['/playlist', playlist.id_playlist]">{{playlist.titre}}</a>
+            </td>
+
+            <td>
+                <a class="btn btn-secondary" (click)="onDeleteFollow(playlist.id_playlist)" role="presentation">
+                    <span class="material-icons">clear</span>
+                    {{'supprimer' | transloco}}
+                </a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

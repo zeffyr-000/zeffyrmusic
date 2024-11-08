@@ -31,6 +31,16 @@ const routes: Routes = [
     loadChildren: () => import('./routing/settings.module').then(m => m.SettingsModule),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'my-playlists',
+    loadChildren: () => import('./routing/my-playlists.module').then(m => m.MyPlaylistsModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'my-selection',
+    loadChildren: () => import('./routing/my-selection.module').then(m => m.MySelectionModule),
+    canActivate: [AuthGuard]
+  },
   { path: '**', redirectTo: '' }
 ];
 

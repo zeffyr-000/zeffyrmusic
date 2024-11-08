@@ -36,16 +36,14 @@
                 </a>
             </li>
             <li ngbDropdownItem>
-                <button (click)="openModal(contentModalPlaylists)"
-                    class="btn btn-link text-body text-decoration-none p-0">
+                <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button">
                     <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
-                </button>
+                </a>
             </li>
             <li ngbDropdownItem>
-                <button (click)="openModal(contentModalFollows)"
-                    class="btn btn-link text-body text-decoration-none p-0">
+                <a class="text-decoration-none text-body" routerLink="/my-selection" role="button">
                     <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-                </button>
+                </a>
             </li>
             <li ngbDropdownItem>
                 <a class="text-decoration-none text-body" routerLink="/settings" role="button">
@@ -83,16 +81,14 @@
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <button (click)="openModal(contentModalPlaylists)"
-                        class="btn btn-link text-body text-decoration-none p-0">
+                    <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button">
                         <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
-                    </button>
+                    </a>
                 </li>
                 <li ngbDropdownItem>
-                    <button (click)="openModal(contentModalFollows)"
-                        class="btn btn-link text-body text-decoration-none p-0">
+                    <a class="text-decoration-none text-body" routerLink="/my-selection" role="button">
                         <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-                    </button>
+                    </a>
                 </li>
                 <li ngbDropdownItem>
                     <a class="text-decoration-none text-body" routerLink="/settings" role="button">
@@ -325,119 +321,6 @@
             <p *ngIf="formResetPass.dirty && error!==''" class="alert alert-danger">{{error}}</p>
         </form>
         <p *ngIf="isSuccess" class="alert alert-success">{{ 'mail_pass_envoye_succes' | transloco }}</p>
-    </div>
-</ng-template>
-
-<ng-template #contentModalPlaylists let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'mes_playlists' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <form (ngSubmit)="onCreatePlaylist(formCreatePlaylist)" #formCreatePlaylist="ngForm">
-            <div class="input-group">
-                <input type="text" class="form-control" name="titre"
-                    placeholder="{{ 'creer_nouvelle_playlist' | transloco }}" ngbAutofocus ngModel required>
-                <span class="input-group-btn">
-                    <input class="btn btn-primary" type="submit" [disabled]="formCreatePlaylist.invalid"
-                        value="{{ 'creer' | transloco }}" />
-                </span>
-            </div>
-        </form>
-        <hr />
-        <table class="table table-condensed" id="tableau_musique">
-            <tr *ngFor="let playlist of listPlaylist">
-                <td>
-                    <a (click)="onCloseModalPlaylists(playlist.id_playlist,modal)"
-                        role="presentation">{{playlist.titre}}</a>
-                </td>
-
-                <td>
-                    <a (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)"
-                        role="presentation">
-                        <span class="material-icons" placement="right"
-                            ngbTooltip="{{'modifier_nom' | transloco}}">edit</span>
-                    </a>
-                </td>
-
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button type="button" [ngClass]="{'btn btn-light' : true,
-                                                            'active' : !playlist.prive}"
-                            (click)="onSwitchVisibility(playlist.id_playlist,'public')">{{ 'public' | transloco
-                            }}</button>
-                        <button type="button" [ngClass]="{'btn btn-light' : true,
-                                                            'active' : playlist.prive}"
-                            (click)="onSwitchVisibility(playlist.id_playlist,'prive')">{{ 'prive' | transloco
-                            }}</button>
-                    </div>
-                </td>
-
-                <td>
-                    <a (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
-                        role="presentation">
-                        <span class="material-icons" placement="right"
-                            ngbTooltip="{{'supprimer' | transloco}}">clear</span>
-                    </a>
-                </td>
-            </tr>
-        </table>
-    </div>
-</ng-template>
-
-<ng-template #contentModalFollows let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'ma_selection' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <p class="bg-info p-2 rounded" *ngIf="listFollow.length===0">{{ 'selection_empty' | transloco }}</p>
-        <table class="table table-condensed" id="tableau_selection">
-            <tr *ngFor="let playlist of listFollow">
-                <td>
-                    <a class="btn btn-link" (click)="onCloseModalPlaylists(playlist.id_playlist, modal)"
-                        role="presentation">{{playlist.titre}}</a>
-                </td>
-
-                <td>
-                    <a (click)="onDeleteFollow(playlist.id_playlist)" placement="right"
-                        ngbTooltip="{{'supprimer' | transloco}}" role="presentation">
-                        <span class="material-icons">clear</span>
-                    </a>
-                </td>
-            </tr>
-        </table>
-    </div>
-</ng-template>
-
-<ng-template #contentModalConfirmDeletePlaylist let-modal>
-    <div class="modal-body">
-        {{ 'supprimer_playlist_confirmer' | transloco }}
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">{{ 'annuler' |
-            transloco}}</button>
-        <button type="button" class="btn btn-primary" (click)="onDeletePlaylist(modal)">{{ 'confirmer' |
-            transloco}}</button>
-    </div>
-</ng-template>
-
-<ng-template #contentModalConfirmEditTitle let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'playlist_modifier_titre' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <form (ngSubmit)="onEditTitlePlaylist(formEditTitle, modal)" #formEditTitle="ngForm">
-            <div class="input-group">
-                <input type="text" class="form-control" name="playlist_titre" [(ngModel)]="playlistTitle" required>
-                <span class="input-group-btn">
-                    <input class="btn btn-primary" type="submit" [disabled]="formEditTitle.invalid"
-                        value="{{ 'modifier' | transloco }}" />
-                </span>
-            </div>
-            <p *ngIf="formEditTitle.dirty && error!==''" class="alert alert-danger">{{error}}</p>
-        </form>
     </div>
 </ng-template>
 
