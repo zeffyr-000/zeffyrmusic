@@ -8,10 +8,8 @@ import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
-import { UserPlaylist } from '../models/playlist.model';
-import { FollowItem } from '../models/follow.model';
 import { UserService } from '../services/user.service';
-import { CreatePlaylistResponse, LoginResponse, UserReponse } from '../models/user.model';
+import { LoginResponse, UserReponse } from '../models/user.model';
 import { DOCUMENT } from '@angular/common';
 
 // eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
@@ -43,8 +41,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     subscriptionIsPlaying: Subscription;
     subscriptionVolume: Subscription;
     subscriptionPlayerRunning: Subscription;
-    subscriptionListPlaylist: Subscription;
-    subscriptionListFollow: Subscription;
     subscriptionAddVideo: Subscription;
     subscriptionChangeKey: Subscription;
 
@@ -68,9 +64,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     URL_ASSETS: string;
     isPlayerExpanded = false;
     darkModeEnabled = false;
-
-    listPlaylist: UserPlaylist[];
-    listFollow: FollowItem[];
 
     @ViewChild('sliderPlayer', {}) sliderPlayerRef: ElementRef;
     @ViewChild('sliderVolume', {}) sliderVolumeRef: ElementRef;
@@ -143,14 +136,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
             }
         }
         );
-
-        this.subscriptionListPlaylist = this.playerService.subjectListPlaylist.subscribe(data => {
-            this.listPlaylist = data;
-        });
-
-        this.subscriptionListFollow = this.playerService.subjectListFollow.subscribe(data => {
-            this.listFollow = data;
-        });
 
         this.subscriptionAddVideo = this.playerService.subjectAddVideo.subscribe(data => {
             this.addKey = data.key;
@@ -334,79 +319,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
     }
 
-    onCreatePlaylist(form: NgForm) {
-        if (form.valid) {
-            this.userService.createPlaylist(form.form.value)
-                .subscribe({
-                    next: (data: CreatePlaylistResponse) => {
-                        if (data.success !== undefined && data.success) {
-                            this.playerService.addNewPlaylist(data.id_playlist, data.titre);
-                        } else {
-                            this.error = this.translocoService.translate(data?.error || 'generic_error');
-                        }
-                    },
-                    error: () => {
-                        this.isConnected = false;
-                        this.initService.onMessageUnlog();
-                    }
-                });
-        }
-    }
-
-    onCloseModalPlaylists(idPlaylist: string, modal: NgbActiveModal) {
-        modal.dismiss();
-        this.router.navigate(['/playlist', idPlaylist], { relativeTo: this.route });
-    }
-
-    onSwitchVisibility(idPlaylist: string, isPrivate: string) {
-        this.playerService.switchVisibilityPlaylist(idPlaylist, isPrivate === 'prive');
-    }
-
-    onConfirmEditTitlePlaylist(idPlaylist: string, title: string, contentModalConfirmEditTitle: TemplateRef<unknown>) {
-        this.modalService.open(contentModalConfirmEditTitle);
-        this.currentIdPlaylistEdit = idPlaylist;
-        this.playlistTitle = title;
-    }
-
-    onEditTitlePlaylist(form: NgForm, modal: NgbActiveModal) {
-        if (form.valid) {
-            this.userService.editTitlePlaylist(
-                {
-                    id_playlist: this.currentIdPlaylistEdit,
-                    titre: form.form.value.playlist_titre
-                }
-            )
-                .subscribe({
-                    next: (data: UserReponse) => {
-                        if (data.success !== undefined && data.success) {
-                            this.playerService.editPlaylistTitle(this.currentIdPlaylistEdit, form.form.value.playlist_titre);
-                            modal.dismiss();
-                        } else {
-                            this.error = this.translocoService.translate(data?.error || 'generic_error');
-                        }
-                    },
-                    error: () => {
-                        this.isConnected = false;
-                        this.initService.onMessageUnlog();
-                    }
-                });
-        }
-    }
-
-    onConfirmDeletePlaylist(idPlaylist: string, contentModalConfirmDeletePlaylist: TemplateRef<unknown>) {
-        this.modalService.open(contentModalConfirmDeletePlaylist);
-        this.currentIdPlaylistEdit = idPlaylist;
-    }
-
-    onDeletePlaylist(modal: NgbActiveModal) {
-        this.playerService.deletePlaylist(this.currentIdPlaylistEdit);
-        modal.dismiss();
-    }
-
-    onDeleteFollow(idPlaylist: string) {
-        this.playerService.deleteFollow(idPlaylist);
-    }
-
     onAddVideo(idPlaylist: string, modal: NgbActiveModal) {
         this.playerService.addVideoInPlaylistRequest(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration);
         modal.dismiss();
@@ -473,8 +385,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.subscriptionIsPlaying.unsubscribe();
         this.subscriptionVolume.unsubscribe();
         this.subscriptionPlayerRunning.unsubscribe();
-        this.subscriptionListPlaylist.unsubscribe();
-        this.subscriptionListFollow.unsubscribe();
         this.subscriptionChangeKey.unsubscribe();
     }
 }
