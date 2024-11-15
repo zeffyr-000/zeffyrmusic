@@ -24,8 +24,7 @@ describe('AppComponent', () => {
             subjectMessageUnlog: new BehaviorSubject<boolean>(false),
         };
 
-        playerServiceMock = {
-        };
+        playerServiceMock = jasmine.createSpyObj('PlayerService', ['currentIdTopCharts', 'currentIdPlaylist']);
 
         await TestBed.configureTestingModule({
             imports: [
@@ -113,4 +112,52 @@ describe('AppComponent', () => {
             router.navigate([url]);
         });
     }));
+
+    it('should return true if currentUrl matches the targetUrl for top charts', () => {
+        component['playerService'].currentIdTopCharts = '123';
+        component.currentUrl = '/top/123';
+
+        const result = component.isRedirectingToCurrentUrl();
+
+        expect(result).toBe(true);
+    });
+
+    it('should return false if currentUrl does not match the targetUrl for top charts', () => {
+        component['playerService'].currentIdTopCharts = '123';
+        component.currentUrl = '/top/456';
+
+        const result = component.isRedirectingToCurrentUrl();
+
+        expect(result).toBe(false);
+    });
+
+    it('should return true if currentUrl matches the targetUrl for playlist', () => {
+        component['playerService'].currentIdTopCharts = null;
+        component['playerService'].currentIdPlaylist = '456';
+        component.currentUrl = '/playlist/456';
+
+        const result = component.isRedirectingToCurrentUrl();
+
+        expect(result).toBe(true);
+    });
+
+    it('should return false if currentUrl does not match the targetUrl for playlist', () => {
+        component['playerService'].currentIdTopCharts = null;
+        component['playerService'].currentIdPlaylist = '456';
+        component.currentUrl = '/playlist/789';
+
+        const result = component.isRedirectingToCurrentUrl();
+
+        expect(result).toBe(false);
+    });
+
+    it('should return false if neither currentIdTopCharts nor currentIdPlaylist are defined', () => {
+        component['playerService'].currentIdTopCharts = null;
+        component['playerService'].currentIdPlaylist = null;
+        component.currentUrl = '/some/other/url';
+
+        const result = component.isRedirectingToCurrentUrl();
+
+        expect(result).toBe(false);
+    });
 });
