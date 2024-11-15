@@ -9,7 +9,9 @@
         @for(playlist of listFollow; track playlist.id_playlist) {
         <tr>
             <td>
-                <a [routerLink]="['/playlist', playlist.id_playlist]">{{playlist.titre}}</a>
+                <a [routerLink]="playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]">
+                    {{playlist.titre}}
+                </a>
             </td>
 
             <td>
