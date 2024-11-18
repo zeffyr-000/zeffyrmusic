@@ -655,7 +655,8 @@ describe('PlayerService', () => {
 
         const listPlaylist: UserPlaylist[] = [{ id_playlist: '1', titre: 'Test', prive: false }];
         const listFollow: FollowItem[] = [{ id_playlist: '1', titre: 'Test' }];
-        service.onLoadListLogin(listPlaylist, listFollow);
+        const listLike: UserVideo[] = [{ id: '1', key: 'XXX', titre: 'Test', duree: '100', artiste: 'Test' }];
+        service.onLoadListLogin(listPlaylist, listFollow, listLike);
 
         expect(service.listPlaylist).toEqual(listPlaylist);
         expect(service.listFollow).toEqual(listFollow);

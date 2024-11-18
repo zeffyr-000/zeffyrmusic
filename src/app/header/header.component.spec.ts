@@ -11,7 +11,7 @@ import { NgForm } from '@angular/forms';
 import { BehaviorSubject, of } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { PlayerRunning } from '../models/player-running.model';
-import { VideoItem } from '../models/video.model';
+import { UserVideo, VideoItem } from '../models/video.model';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { LoginResponse } from '../models/user.model';
@@ -451,10 +451,11 @@ describe('HeaderComponent', () => {
         const mail = 'testuser@example.com';
         const liste_playlist: UserPlaylist[] = [];
         const liste_suivi: FollowItem[] = [];
+        const like_video: UserVideo[] = [];
         const darkModeEnabled = false;
         const language = 'en';
 
-        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, language, liste_playlist, liste_suivi } as LoginResponse;
+        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, language, liste_playlist, liste_suivi, like_video } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
         component.onLogIn(form, activeModalSpy, null);
@@ -464,7 +465,7 @@ describe('HeaderComponent', () => {
         expect(component.isConnected).toBeTrue();
         expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled, language);
         expect(component.mail).toBe(mail);
-        expect(playerService.onLoadListLogin).toHaveBeenCalledWith(liste_playlist, liste_suivi);
+        expect(playerService.onLoadListLogin).toHaveBeenCalledWith(liste_playlist, liste_suivi, like_video);
         expect(activeModalSpy.dismiss).toHaveBeenCalledWith('');
       });
 

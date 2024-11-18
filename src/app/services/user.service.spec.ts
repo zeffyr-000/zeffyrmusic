@@ -56,6 +56,7 @@ describe('UserService', () => {
       language: 'en',
       liste_playlist: [],
       liste_suivi: [],
+      like_video: [],
       error: '',
     };
 

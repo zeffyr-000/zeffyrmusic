@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DOCUMENT } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
@@ -35,6 +35,7 @@ export class InitService {
     private mail = '';
     private darkModeEnabled = false;
     private language = 'fr';
+    private changeIsConnectedCalled = false;
 
     subjectConnectedChange: BehaviorSubject<{
         isConnected: boolean,
@@ -118,6 +119,8 @@ export class InitService {
     }
 
     onChangeIsConnected() {
+        this.changeIsConnectedCalled = true;
+
         this.subjectConnectedChange.next({
             isConnected: this.isConnected,
             pseudo: this.pseudo,
@@ -163,7 +166,16 @@ export class InitService {
         return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
     }
 
-    getIsConnected(): boolean {
-        return this.isConnected;
+    getIsConnected(): boolean | Observable<boolean> {
+        if (this.changeIsConnectedCalled) {
+            return this.isConnected;
+        }
+        else {
+            return this.subjectConnectedChange.asObservable().pipe(
+                map(data => {
+                    return data.isConnected;
+                })
+            );
+        }
     }
 }

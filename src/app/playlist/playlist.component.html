@@ -1,3 +1,4 @@
+@if(!isLoading){
 <div id="playlist_content" class="card panel-profile border-0 h-auto mt-2" itemscope
     [attr.itemtype]="!idTopCharts ? 'http://schema.org/MusicAlbum': 'http://schema.org/MusicGroup'">
     <div *ngIf="!isPrivate && (!isLikePage || playlist.length>0)">
@@ -154,3 +155,9 @@
     <p *ngIf="isPrivate"><a routerLink="/">{{'back_home' | transloco}}</a></p>
     <p class="bg-info p-2 rounded" *ngIf="isLikePage && playlist.length===0">{{ 'likes_empty' | transloco }}</p>
 </div>
+} @else {
+<div class="d-flex justify-content-center align-items-center">
+    <div class="spinner-border text-primary" role="status">
+    </div>
+</div>
+}

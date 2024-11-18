@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'albums', component: HomeComponent },
   { path: 'playlist/:id_playlist', component: PlaylistComponent },
   { path: 'top/:id', component: PlaylistComponent },
-  { path: 'like', component: PlaylistComponent },
+  { path: 'like', component: PlaylistComponent, canActivate: [AuthGuard] },
   {
     path: 'artist',
     loadChildren: () => import('./routing/artist.module').then(m => m.ArtistModule)
