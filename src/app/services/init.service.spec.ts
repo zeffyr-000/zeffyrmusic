@@ -263,10 +263,14 @@ describe('InitService', () => {
   it('should return the correct connection status', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (service as any).isConnected = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (service as any).changeIsConnectedCalled = true;
     expect(service.getIsConnected()).toBe(true);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (service as any).isConnected = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (service as any).changeIsConnectedCalled = true;
     expect(service.getIsConnected()).toBe(false);
   });
 });

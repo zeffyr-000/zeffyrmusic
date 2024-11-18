@@ -2,7 +2,7 @@
 <div class="card card-body mt-3 border-0" [id]="'content-top-' + page" itemscope
     itemtype="http://schema.org/MusicPlaylist">
     <div *ngIf="isLoading" class="content_loading">
-        <div class="spinner-border"></div>
+        <div class="spinner-border text-primary"></div>
     </div>
 
     <div *ngIf="!isLoading" class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
@@ -38,7 +38,7 @@
     itemtype="http://schema.org/MusicPlaylist">
     <h3 class="text-center border-0" itemprop="name">{{'top_albums'| transloco}}</h3>
     <div *ngIf="isLoading" class="content_loading">
-        <div class="spinner-border"></div>
+        <div class="spinner-border text-primary"></div>
     </div>
 
     <div *ngIf="!isLoading" class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"

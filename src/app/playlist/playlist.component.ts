@@ -18,6 +18,7 @@ import { PlaylistService } from '../services/playlist.service';
 })
 export class PlaylistComponent implements OnDestroy {
 
+    isLoading = true;
     isPrivate = false;
     idPlaylist: string | null = null;
     playlist: Video[] = [];
@@ -55,6 +56,7 @@ export class PlaylistComponent implements OnDestroy {
         private readonly ngZone: NgZone) {
 
         activatedRoute.params.subscribe(() => {
+            this.isLoading = true;
             this.initLoad();
         });
     }
@@ -157,6 +159,8 @@ export class PlaylistComponent implements OnDestroy {
     loadPlaylist(url: string) {
         this.playlistService.getPlaylist(url, this.idPlaylist)
             .subscribe((data: Playlist) => {
+                this.isLoading = false;
+
                 if (data.est_prive === undefined) {
                     this.isPrivate = false;
                     this.idPlaylist = data.id_playlist;
@@ -205,6 +209,7 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     loadLike() {
+        this.isLoading = false;
         this.isPrivate = false;
         this.idPlaylist = '';
         this.playlist = [];

@@ -4,7 +4,7 @@ describe('Home page', () => {
   })
 
   it('Checks if title is well initialized', () => {
-    cy.title().should('eq', 'La musique gratuite, légale, en illimité - Zeffyr Music')
+    cy.title().should('eq', 'Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic')
   })
 
   it('Checks if the search form is present', () => {

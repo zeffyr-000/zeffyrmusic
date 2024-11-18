@@ -395,12 +395,14 @@ export class PlayerService implements OnDestroy {
         this.subjectListLikeVideo.next(this.listLikeVideo);
     }
 
-    onLoadListLogin(listPlaylist: UserPlaylist[], listFollow: FollowItem[]) {
+    onLoadListLogin(listPlaylist: UserPlaylist[], listFollow: FollowItem[], listLike: UserVideo[]) {
         this.listPlaylist = listPlaylist;
         this.listFollow = listFollow;
+        this.listLikeVideo = listLike;
 
         this.onChangeListPlaylist();
         this.onChangeListFollow();
+        this.onChangeListLikeVideo();
     }
 
     addNewPlaylist(idPlaylist: string, title: string) {

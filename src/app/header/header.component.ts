@@ -278,7 +278,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
                         this.mail = data.mail;
 
-                        this.playerService.onLoadListLogin(data.liste_playlist, data.liste_suivi);
+                        this.playerService.onLoadListLogin(data.liste_playlist, data.liste_suivi, data.like_video);
 
                         if (modal) {
                             modal.dismiss('');

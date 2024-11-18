@@ -4,7 +4,7 @@ describe('Top 1 page', () => {
     })
 
     it('Checks if title is correct', () => {
-        cy.title().should('eq', 'La Hit List - Zeffyr Music')
+        cy.title().should('eq', 'La Hit List - Les Incontournables du Moment | Zeffyr Music')
     })
 
     it('Checks if image is present', () => {

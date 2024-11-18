@@ -1,5 +1,6 @@
 import { FollowItem } from "./follow.model";
 import { UserPlaylist } from "./playlist.model";
+import { UserVideo } from "./video.model";
 
 export interface IRegister {
     pseudo: string;
@@ -28,6 +29,7 @@ export interface LoginResponse {
     language: string;
     liste_playlist: UserPlaylist[];
     liste_suivi: FollowItem[];
+    like_video: UserVideo[];
     error?: string;
 }
 
