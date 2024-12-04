@@ -248,7 +248,7 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     switchFollow() {
-        this.playerService.switchFollow(this.idPlaylist, this.title);
+        this.playerService.switchFollow(this.idPlaylist, this.titre, this.artist, this.imgBig);
     }
 
     runPlaylist(index = 0) {

@@ -88,6 +88,7 @@
   "suivre": "Follow",
   "ma_selection": "My lightbox",
   "selection_empty": "Lightbox: empty list, click on Follow to add albums or playlists to this list",
+  "remove_from_selection": "Remove from selection",
   "veuillez_vous_reconnecter": "You had a disconnection, please reconnect to perform this action",
   "lire": "Play",
   "pause": "Pause",
@@ -149,6 +150,8 @@
   "generic_error": "An error occurred, please try again later.",
 
   "help_title": "Help",
+  "help_title_directory": "Directory of Tips and Tutorials",
+  "help_description_directory": "Find practical tips and answers to common questions to make the most of Zeffyr Music. Easily access information on managing your account, playlists, and other features.",
   "help_meta_title": "Directory of Tips and Tutorials - Zeffyr Music",
   "help_meta_description": "Discover our directory of tips and tutorials. Find practical guides and advice to help you get the most out of our services. Explore now!",
   "help_install_android_title": "How to add this website to your Android home screen ",

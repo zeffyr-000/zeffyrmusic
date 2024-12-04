@@ -4,23 +4,28 @@
 <p class="bg-info p-2 rounded">{{ 'selection_empty' | transloco }}</p>
 }
 
-<table class="table">
-    <tbody>
-        @for(playlist of listFollow; track playlist.id_playlist) {
-        <tr>
-            <td>
-                <a [routerLink]="playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]">
-                    {{playlist.titre}}
-                </a>
-            </td>
-
-            <td>
-                <a class="btn btn-secondary" (click)="onDeleteFollow(playlist.id_playlist)" role="presentation">
-                    <span class="material-icons">clear</span>
-                    {{'supprimer' | transloco}}
-                </a>
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+<div class="card card-body mt-3 border-0">
+    <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
+        <div *ngFor="let playlist of listFollow" class="col m-0 mt-1 mb-1">
+            <a class="card h-100"
+                [routerLink]="playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]">
+                <img src="{{playlist.url_image}}" class="card-img-top" alt="{{playlist.titre}}" itemprop="image"
+                    appDefaultImage />
+                <div class="card-body">
+                    <h5 class="card-title">{{playlist.titre}}</h5>
+                    @if(playlist.artiste!==''){
+                    <p class="card-text">{{playlist.artiste}}</p>
+                    }
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-danger"
+                        (click)="$event.stopPropagation(); $event.preventDefault(); onDeleteFollow(playlist.id_playlist)"
+                        role="presentation">
+                        <span class="material-icons">clear</span>
+                        {{'remove_from_selection' | transloco}}
+                    </a>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

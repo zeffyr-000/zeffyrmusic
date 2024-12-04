@@ -331,11 +331,13 @@ describe('PlaylistComponent', () => {
 
   it('should call playerService.switchFollow with correct arguments when switchFollow is called', () => {
     component.idPlaylist = 'testId';
-    component.title = 'testTitle';
+    component.titre = 'testTitle';
+    component.artist = 'testArtist';
+    component.imgBig = 'testImgBig';
 
     component.switchFollow();
 
-    expect(playerService.switchFollow).toHaveBeenCalledWith('testId', 'testTitle');
+    expect(playerService.switchFollow).toHaveBeenCalledWith('testId', 'testTitle', 'testArtist', 'testImgBig');
   });
 
   it('should call playerService.runPlaylist with correct arguments when runPlaylist is called', () => {

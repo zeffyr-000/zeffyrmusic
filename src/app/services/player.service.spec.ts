@@ -819,10 +819,12 @@ describe('PlayerService', () => {
         const spyFollow = spyOn(service, 'onChangeListFollow');
         const idPlaylist = '2';
         const title = 'Test';
-        service.switchFollow(idPlaylist, title);
+        const artist = 'Test Artist';
+        const url_image = 'test.jpg';
+        service.switchFollow(idPlaylist, title, artist, url_image);
 
         const follow = service.listFollow.find(a => a.id_playlist === idPlaylist);
-        expect(follow).toEqual({ id_playlist: idPlaylist, titre: title });
+        expect(follow).toEqual({ id_playlist: idPlaylist, titre: title, artiste: artist, url_image });
 
         expect(spyFollow).toHaveBeenCalled();
         expect(initService.onMessageUnlog).not.toHaveBeenCalled();
