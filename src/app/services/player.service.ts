@@ -487,7 +487,7 @@ export class PlayerService implements OnDestroy {
         this.switchFollow(idPlaylist);
     }
 
-    switchFollow(idPlaylist: string, title = "") {
+    switchFollow(idPlaylist: string, title = "", artist = "", urlImage = "") {
         this.httpClient
             .get(
                 environment.URL_SERVER + "switch_suivi/" + idPlaylist,
@@ -499,7 +499,9 @@ export class PlayerService implements OnDestroy {
                         if (data.est_suivi) {
                             this.listFollow.unshift({
                                 id_playlist: idPlaylist,
-                                titre: title
+                                titre: title,
+                                artiste: artist,
+                                url_image: urlImage
                             });
                         } else {
                             for (let i = 0; i < this.listFollow.length; i++) {

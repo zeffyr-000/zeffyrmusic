@@ -88,6 +88,7 @@
   "suivre": "Suivre",
   "ma_selection": "Ma sélection",
   "selection_empty": "Sélection: liste vide, cliquez sur Suivre pour ajouter des albums ou des playlists à cette liste",
+  "remove_from_selection": "Retirer de la sélection",
   "veuillez_vous_reconnecter": "Vous avez subi une deconnexion, veuillez vous reconnecter pour effectuer cette action",
   "lire": "Lire",
   "pause": "Pause",
@@ -150,6 +151,8 @@
   "generic_error": "Une erreur s'est produite. Veuillez réessayer plus tard.",
 
   "help_title": "Aide",
+  "help_title_directory": "Annuaire des Astuces et Tutoriels",
+  "help_description_directory": "Découvrez des conseils pratiques et des réponses aux questions courantes pour utiliser Zeffyr Music au mieux. Trouvez facilement des informations sur la gestion de votre compte, des playlists et d'autres fonctionnalités.",
   "help_meta_title": "Annuaire des Astuces et Tutoriels - Zeffyr Music",
   "help_meta_description": "Découvrez notre annuaire des astuces et tutoriels. Trouvez des guides pratiques et des conseils pour vous aider à tirer le meilleur parti de nos services. Explorez maintenant!",
   "help_install_android_title": "Comment ajouter ce site Web à votre écran d'accueil Android",
