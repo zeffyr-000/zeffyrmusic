@@ -4,7 +4,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 @Component({
-  template: `<div appSwipeDown (swipeDown)="onSwipeDown($event)"></div>`
+  template: `<div appSwipeDown (swipeDown)="onSwipeDown($event)"></div>`,
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 class TestComponent {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

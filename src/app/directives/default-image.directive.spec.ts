@@ -4,7 +4,9 @@ import { DefaultImageDirective } from './default-image.directive';
 import { By } from '@angular/platform-browser';
 
 @Component({
-  template: `<img src="url/image/invalide.jpg" alt="" appDefaultImage>`
+  template: `<img src="url/image/invalide.jpg" alt="" appDefaultImage>`,
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 class TestComponent { }
 

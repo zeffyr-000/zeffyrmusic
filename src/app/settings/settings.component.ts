@@ -15,7 +15,9 @@ declare var google: any;
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css'
+  styleUrl: './settings.component.css',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -5,7 +5,9 @@ import { TranslocoService } from '@jsverse/transloco';
 @Component({
   selector: 'app-help',
   templateUrl: './help.component.html',
-  styleUrl: './help.component.css'
+  styleUrl: './help.component.css',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class HelpComponent implements OnInit {
 

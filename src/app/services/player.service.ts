@@ -307,6 +307,7 @@ export class PlayerService implements OnDestroy {
             v[i] = v[j],
             v[j] = x
         ) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             null;
         }
     }

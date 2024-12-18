@@ -9,7 +9,9 @@ import { ArtistService } from '../services/artist.service';
 @Component({
     selector: 'app-artist',
     templateUrl: './artist.component.html',
-    styleUrls: ['./artist.component.scss']
+    styleUrls: ['./artist.component.scss'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 
 export class ArtistComponent implements OnInit {

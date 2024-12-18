@@ -11,7 +11,9 @@ import { SearchBarResponse } from '../models/search.model';
 @Component({
     selector: 'app-search-bar',
     templateUrl: './search-bar.component.html',
-    styleUrls: ['./search-bar.component.scss']
+    styleUrls: ['./search-bar.component.scss'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class SearchBarComponent implements OnInit {
 

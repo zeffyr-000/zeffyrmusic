@@ -18,7 +18,9 @@ declare var google: any;
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss']
+    styleUrls: ['./header.component.scss'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class HeaderComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

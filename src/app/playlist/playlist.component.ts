@@ -14,7 +14,9 @@ import { PlaylistService } from '../services/playlist.service';
 @Component({
     selector: 'app-playlist',
     templateUrl: './playlist.component.html',
-    styleUrls: ['./playlist.component.scss']
+    styleUrls: ['./playlist.component.scss'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class PlaylistComponent implements OnDestroy {
 

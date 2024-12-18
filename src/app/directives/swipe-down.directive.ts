@@ -1,7 +1,9 @@
 import { Directive, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[appSwipeDown]'
+  selector: '[appSwipeDown]',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class SwipeDownDirective {
   @Output() swipeDown = new EventEmitter();

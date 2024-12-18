@@ -1,7 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-    name: 'toMMSS'
+    name: 'toMMSS',
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class ToMMSSPipe implements PipeTransform {
 
