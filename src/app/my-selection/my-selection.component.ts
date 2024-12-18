@@ -8,7 +8,9 @@ import { TranslocoService } from '@jsverse/transloco';
 @Component({
   selector: 'app-my-selection',
   templateUrl: './my-selection.component.html',
-  styleUrl: './my-selection.component.css'
+  styleUrl: './my-selection.component.css',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class MySelectionComponent implements OnInit, OnDestroy {
   listFollow: FollowItem[];

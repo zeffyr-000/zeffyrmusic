@@ -11,7 +11,9 @@ import { environment } from 'src/environments/environment';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css']
+    styleUrls: ['./app.component.css'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
     title = 'zeffyrmusic';

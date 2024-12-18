@@ -2,6 +2,7 @@ import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@ang
 
 @Directive({
   selector: '[appLazyLoadImage]',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
 export class LazyLoadImageDirective implements OnInit, OnDestroy {

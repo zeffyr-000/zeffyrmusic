@@ -7,7 +7,9 @@ import { PlayerService } from '../services/player.service';
 @Component({
   selector: 'app-current',
   templateUrl: './current.component.html',
-  styleUrl: './current.component.css'
+  styleUrl: './current.component.css',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class CurrentComponent implements OnInit, OnDestroy {
 

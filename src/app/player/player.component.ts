@@ -8,7 +8,9 @@ import { YouTubePlayer } from '@angular/youtube-player';
 @Component({
     selector: 'app-player',
     templateUrl: './player.component.html',
-    styleUrls: ['./player.component.scss']
+    styleUrls: ['./player.component.scss'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class PlayerComponent implements OnDestroy, AfterViewInit {
 

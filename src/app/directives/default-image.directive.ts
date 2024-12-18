@@ -2,7 +2,9 @@ import { Directive, ElementRef, Renderer2, Input, OnInit, OnChanges, SimpleChang
 import { environment } from 'src/environments/environment';
 
 @Directive({
-  selector: 'img[appDefaultImage]'
+  selector: 'img[appDefaultImage]',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class DefaultImageDirective implements OnInit, OnChanges {
   @Input() src: string;

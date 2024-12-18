@@ -7,7 +7,9 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-help-page',
   templateUrl: './help-page.component.html',
-  styleUrl: './help-page.component.css'
+  styleUrl: './help-page.component.css',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class HelpPageComponent implements OnInit {
   page: string;

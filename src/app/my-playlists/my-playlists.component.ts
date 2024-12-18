@@ -12,7 +12,9 @@ import { UserPlaylist } from '../models/playlist.model';
 @Component({
   selector: 'app-my-playlists',
   templateUrl: './my-playlists.component.html',
-  styleUrl: './my-playlists.component.css'
+  styleUrl: './my-playlists.component.css',
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 export class MyPlaylistsComponent implements OnInit, OnDestroy {
   error: string;

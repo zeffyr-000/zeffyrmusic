@@ -6,7 +6,9 @@ import { LazyLoadImageDirective } from './lazy-load-image.directive';
 import { MockIntersectionObserver } from './mock-intersection-observer';
 
 @Component({
-  template: `<img appLazyLoadImage="https://example.com/image.jpg" alt="" />`
+  template: `<img appLazyLoadImage="https://example.com/image.jpg" alt="" />`,
+  // eslint-disable-next-line @angular-eslint/prefer-standalone
+  standalone: false
 })
 class TestComponent { }
 

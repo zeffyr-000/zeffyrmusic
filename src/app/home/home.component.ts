@@ -9,7 +9,9 @@ import { InitService } from '../services/init.service';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss']
+    styleUrls: ['./home.component.scss'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class HomeComponent implements OnInit {
     isLoading = false;

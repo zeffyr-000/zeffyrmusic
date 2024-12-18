@@ -15,7 +15,9 @@ import { SearchService } from '../services/search.service';
 @Component({
     selector: 'app-search',
     templateUrl: './search.component.html',
-    styleUrls: ['./search.component.css']
+    styleUrls: ['./search.component.css'],
+    // eslint-disable-next-line @angular-eslint/prefer-standalone
+    standalone: false
 })
 export class SearchComponent implements OnInit, OnDestroy {
 
