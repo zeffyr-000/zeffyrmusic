@@ -5,11 +5,7 @@ import { LazyLoadImageDirective } from './lazy-load-image.directive';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MockIntersectionObserver } from './mock-intersection-observer';
 
-@Component({
-  template: `<img appLazyLoadImage="https://example.com/image.jpg" alt="" />`,
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
-})
+@Component({ template: `<img appLazyLoadImage="https://example.com/image.jpg" alt="" />` })
 class TestComponent { }
 
 describe('LazyLoadImageDirective', () => {
@@ -24,11 +20,11 @@ describe('LazyLoadImageDirective', () => {
     };
 
     TestBed.configureTestingModule({
-      declarations: [TestComponent, LazyLoadImageDirective],
-      providers: [
+    imports: [TestComponent, LazyLoadImageDirective],
+    providers: [
         { provide: Renderer2, useValue: renderer2Mock }
-      ]
-    });
+    ]
+});
 
     fixture = TestBed.createComponent(TestComponent);
     imgEl = fixture.debugElement.children[0];

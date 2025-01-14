@@ -15,12 +15,12 @@ const routes: Routes = [
   { path: 'top/:id', component: PlaylistComponent },
   { path: 'like', component: PlaylistComponent, canActivate: [AuthGuard] },
   {
-    path: 'artist',
-    loadChildren: () => import('./routing/artist.module').then(m => m.ArtistModule)
+    path: 'artist/:id_artist',
+    loadComponent: () => import('./artist/artist.component').then(m => m.ArtistComponent)
   },
   {
     path: 'search/:query',
-    loadChildren: () => import('./routing/search.module').then(m => m.SearchModule)
+    loadComponent: () => import('./search/search.component').then(m => m.SearchComponent)
 
   },
   { path: 'help/:page', component: HelpPageComponent },
@@ -28,17 +28,17 @@ const routes: Routes = [
   { path: 'current', component: CurrentComponent },
   {
     path: 'settings',
-    loadChildren: () => import('./routing/settings.module').then(m => m.SettingsModule),
+    loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
     canActivate: [AuthGuard]
   },
   {
     path: 'my-playlists',
-    loadChildren: () => import('./routing/my-playlists.module').then(m => m.MyPlaylistsModule),
+    loadComponent: () => import('./my-playlists/my-playlists.component').then(m => m.MyPlaylistsComponent),
     canActivate: [AuthGuard]
   },
   {
     path: 'my-selection',
-    loadChildren: () => import('./routing/my-selection.module').then(m => m.MySelectionModule),
+    loadComponent: () => import('./my-selection/my-selection.component').then(m => m.MySelectionComponent),
     canActivate: [AuthGuard]
   },
   { path: '**', redirectTo: '' }

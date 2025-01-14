@@ -13,12 +13,11 @@ describe('HelpPageComponent', () => {
     beforeEach(async () => {
         getSpy = jasmine.createSpy().and.returnValue('test-page');
         await TestBed.configureTestingModule({
-            declarations: [HelpPageComponent],
-            imports: [getTranslocoModule()],
-            providers: [
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: getSpy } } } }
-            ]
-        })
+    imports: [getTranslocoModule(), HelpPageComponent],
+    providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: getSpy } } } }
+    ]
+})
             .compileComponents();
     });
 

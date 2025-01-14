@@ -1,23 +1,23 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UserReponse } from '../models/user.model';
 import { UserService } from '../services/user.service';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { Title } from '@angular/platform-browser';
 import { InitService } from '../services/init.service';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { NgIf, NgFor } from '@angular/common';
 
 // eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
 declare var google: any;
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css',
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+    selector: 'app-settings',
+    templateUrl: './settings.component.html',
+    styleUrl: './settings.component.css',
+    imports: [FormsModule, NgIf, NgFor, TranslocoPipe]
 })
 export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

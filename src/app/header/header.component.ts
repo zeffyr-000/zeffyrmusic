@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { TranslocoService } from '@jsverse/transloco';
+import { NgForm, FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { NgbActiveModal, NgbModal, NgbModalRef, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
@@ -10,7 +10,10 @@ import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { LoginResponse, UserReponse } from '../models/user.model';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgIf, NgClass, NgFor } from '@angular/common';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { SwipeDownDirective } from '../directives/swipe-down.directive';
+import { AngularDraggableModule } from 'angular2-draggable';
 
 // eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
 declare var google: any;
@@ -19,8 +22,7 @@ declare var google: any;
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, RouterLink, NgIf, SearchBarComponent, SwipeDownDirective, NgbTooltip, NgClass, AngularDraggableModule, FormsModule, NgFor, TranslocoPipe]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

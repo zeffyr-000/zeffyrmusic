@@ -1,20 +1,21 @@
 import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreatePlaylistResponse, UserReponse } from '../models/user.model';
 import { PlayerService } from '../services/player.service';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
 import { UserPlaylist } from '../models/playlist.model';
+import { NgFor, NgClass, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-my-playlists',
-  templateUrl: './my-playlists.component.html',
-  styleUrl: './my-playlists.component.css',
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+    selector: 'app-my-playlists',
+    templateUrl: './my-playlists.component.html',
+    styleUrl: './my-playlists.component.css',
+    imports: [FormsModule, NgFor, RouterLink, NgClass, NgIf, TranslocoPipe]
 })
 export class MyPlaylistsComponent implements OnInit, OnDestroy {
   error: string;

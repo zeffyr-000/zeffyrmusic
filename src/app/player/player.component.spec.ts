@@ -24,19 +24,19 @@ describe('PlayerComponent', () => {
     initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
 
     await TestBed.configureTestingModule({
-      declarations: [PlayerComponent],
-      providers: [
+    imports: [PlayerComponent],
+    providers: [
         {
-          provide: InitService,
-          useValue: initServiceMock,
+            provide: InitService,
+            useValue: initServiceMock,
         },
         {
-          provide: PlayerService,
-          useValue: playerServiceMock,
+            provide: PlayerService,
+            useValue: playerServiceMock,
         },
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
+}).compileComponents();
   });
 
   beforeEach(() => {

@@ -17,7 +17,7 @@
     </li>
     <li *ngFor="let element of resultsAlbum">
         <a class="list-group-item" (click)="reset(element, true,'/playlist/'+element.id_playlist)" role="presentation">
-            <h4><img [src]="element.url_image" class="img-rounded" alt="" /> {{element.titre}}
+            <h4><img [src]="element.url_image" class="img-rounded" alt="" appdefaultimage /> {{element.titre}}
                 <small>{{element.artiste}}</small>
             </h4>
         </a>

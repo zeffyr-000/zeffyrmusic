@@ -18,25 +18,23 @@
               "browser": ""
             },
             "index": "src/index.html",
-            "polyfills": [
-              "src/polyfills.ts",
-              "@angular/localize/init"
-            ],
+            "polyfills": ["src/polyfills.ts", "@angular/localize/init"],
             "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "src/styling/styles.scss",
               "node_modules/material-icons/iconfont/material-icons.css"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": [
-                ".",
-                "src/styling",
-                "."
-              ]
+              "includePaths": [".", "src/styling", "."],
+              "sass": {
+                "silenceDeprecations": [
+                  "mixed-decls",
+                  "color-functions",
+                  "global-builtin",
+                  "import"
+                ]
+              }
             },
             "scripts": [],
             "extractLicenses": false,
@@ -127,23 +125,15 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styling/styles.scss"
-            ],
+            "styles": ["src/styling/styles.scss"],
             "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ]
+            "assets": ["src/favicon.ico", "src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         },
         "cypress-run": {
@@ -254,9 +244,6 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@cypress/schematic",
-      "@schematics/angular"
-    ]
+    "schematicCollections": ["@cypress/schematic", "@schematics/angular"]
   }
 }

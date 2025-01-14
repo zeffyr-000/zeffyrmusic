@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArtistListComponent } from './artist-list.component';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('ArtistListComponent', () => {
     let component: ArtistListComponent;
@@ -7,7 +9,15 @@ describe('ArtistListComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ArtistListComponent]
+            imports: [ArtistListComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        params: of({ id_artist: '123' })
+                    }
+                }
+            ]
         })
             .compileComponents();
     });

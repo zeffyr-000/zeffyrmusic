@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
+import { NgIf, NgFor } from '@angular/common';
+import { DefaultImageDirective } from '../directives/default-image.directive';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [NgIf, NgFor, RouterLink, DefaultImageDirective, TranslocoPipe]
 })
 export class HomeComponent implements OnInit {
     isLoading = false;

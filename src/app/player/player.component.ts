@@ -4,13 +4,16 @@ import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
 import { Video } from '../models/video.model';
 import { YouTubePlayer } from '@angular/youtube-player';
+import { NgFor, NgClass, NgIf } from '@angular/common';
+import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
+import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-player',
     templateUrl: './player.component.html',
     styleUrls: ['./player.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [YouTubePlayer, NgFor, NgClass, LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgIf, TranslocoPipe]
 })
 export class PlayerComponent implements OnDestroy, AfterViewInit {
 

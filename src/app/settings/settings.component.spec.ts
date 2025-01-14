@@ -49,20 +49,20 @@ describe('SettingsComponent', () => {
     cdrMock = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
 
     await TestBed.configureTestingModule({
-      imports: [
+    imports: [
         NgbModalModule,
-        getTranslocoModule()
-      ],
-      declarations: [SettingsComponent],
-      providers: [
+        getTranslocoModule(),
+        SettingsComponent
+    ],
+    providers: [
         { provide: InitService, useValue: initServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: AuthGuard, useValue: authGuardMock },
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
+}).compileComponents();
 
     initService = TestBed.inject(InitService);
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
