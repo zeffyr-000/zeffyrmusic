@@ -1,7 +1,7 @@
 import { Component, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
@@ -10,13 +10,19 @@ import { Video } from '../models/video.model';
 import { Playlist } from '../models/playlist.model';
 import { Subscription } from 'rxjs';
 import { PlaylistService } from '../services/playlist.service';
+import { NgIf, NgClass, NgFor } from '@angular/common';
+import { DefaultImageDirective } from '../directives/default-image.directive';
+import { ShareButtons } from 'ngx-sharebuttons/buttons';
+import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
+import { ArtistListComponent } from './artist-list/artist-list.component';
+import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
+import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 
 @Component({
     selector: 'app-playlist',
     templateUrl: './playlist.component.html',
     styleUrls: ['./playlist.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [NgIf, DefaultImageDirective, RouterLink, NgClass, ShareButtons, NgFor, LazyLoadImageDirective, ArtistListComponent, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe, ToMMSSPipe]
 })
 export class PlaylistComponent implements OnDestroy {
 

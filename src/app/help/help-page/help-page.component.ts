@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { environment } from 'src/environments/environment';
+import { NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-help-page',
-  templateUrl: './help-page.component.html',
-  styleUrl: './help-page.component.css',
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+    selector: 'app-help-page',
+    templateUrl: './help-page.component.html',
+    styleUrl: './help-page.component.css',
+    imports: [NgIf, TranslocoPipe]
 })
 export class HelpPageComponent implements OnInit {
   page: string;

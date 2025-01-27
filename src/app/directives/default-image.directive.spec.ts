@@ -3,11 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DefaultImageDirective } from './default-image.directive';
 import { By } from '@angular/platform-browser';
 
-@Component({
-  template: `<img src="url/image/invalide.jpg" alt="" appDefaultImage>`,
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
-})
+@Component({ template: `<img src="url/image/invalide.jpg" alt="" appDefaultImage>` })
 class TestComponent { }
 
 describe('DefaultImageDirective', () => {
@@ -18,8 +14,8 @@ describe('DefaultImageDirective', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TestComponent, DefaultImageDirective]
-    });
+    imports: [TestComponent, DefaultImageDirective]
+});
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
     imgEl = fixture.debugElement.query(By.css('img'));

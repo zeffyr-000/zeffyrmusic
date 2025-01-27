@@ -1,19 +1,21 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgIf } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
-import { Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { Event, NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
 import { filter, Subscription } from 'rxjs';
 import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
+import { HeaderComponent } from './header/header.component';
+import { PlayerComponent } from './player/player.component';
+import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [HeaderComponent, PlayerComponent, RouterLink, RouterOutlet, NgIf, NgbAlert, TranslocoPipe]
 })
 export class AppComponent implements OnInit, OnDestroy {
     title = 'zeffyrmusic';

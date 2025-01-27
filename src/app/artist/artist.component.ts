@@ -1,17 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Album } from '../models/album.model';
 import { ArtistService } from '../services/artist.service';
+import { ShareButtons } from 'ngx-sharebuttons/buttons';
+import { NgFor } from '@angular/common';
+import { DefaultImageDirective } from '../directives/default-image.directive';
 
 @Component({
     selector: 'app-artist',
     templateUrl: './artist.component.html',
     styleUrls: ['./artist.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [ShareButtons, NgFor, RouterLink, DefaultImageDirective, TranslocoPipe]
 })
 
 export class ArtistComponent implements OnInit {

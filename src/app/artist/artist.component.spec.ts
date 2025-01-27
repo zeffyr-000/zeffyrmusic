@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService } from '@jsverse/transloco';
-
+import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { of } from 'rxjs';
 import { Album } from '../models/album.model';
@@ -36,20 +36,27 @@ describe('ArtistComponent', () => {
         await TestBed.configureTestingModule({
             imports: [
                 getTranslocoModule(),
+                ArtistComponent,
+                FontAwesomeTestingModule
             ],
-            declarations: [ArtistComponent],
             providers: [
                 { provide: ArtistService, useValue: artistServiceMock },
                 {
                     provide: ActivatedRoute,
                     useValue: {
+                        useValue: {
+                            params: of({ id_artist: '123' })
+                        },
+                        params: of({ id_artist: '1' }),
                         snapshot: {
                             paramMap: {
                                 get: () => '1',
                             },
-                            url: ['artist', '1'],
-                        },
-                        params: of({ id_artist: '1' }),
+                            url: [
+                                'artist',
+                                '1'
+                            ]
+                        }
                     },
                 },
                 {

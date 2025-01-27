@@ -7,13 +7,15 @@ import { Subject } from 'rxjs';
 import { debounceTime, switchMap, filter, distinctUntilChanged } from 'rxjs/operators';
 import { SearchService } from '../services/search.service';
 import { SearchBarResponse } from '../models/search.model';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor } from '@angular/common';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-search-bar',
     templateUrl: './search-bar.component.html',
     styleUrls: ['./search-bar.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [FormsModule, NgIf, NgFor, TranslocoPipe]
 })
 export class SearchBarComponent implements OnInit {
 

@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-help',
-  templateUrl: './help.component.html',
-  styleUrl: './help.component.css',
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+    selector: 'app-help',
+    templateUrl: './help.component.html',
+    styleUrl: './help.component.css',
+    imports: [RouterLink, TranslocoPipe]
 })
 export class HelpComponent implements OnInit {
 

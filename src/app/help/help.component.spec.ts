@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HelpComponent } from './help.component';
 import { getTranslocoModule } from '../transloco-testing.module';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('HelpComponent', () => {
     let component: HelpComponent;
@@ -8,8 +10,27 @@ describe('HelpComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [HelpComponent],
-            imports: [getTranslocoModule()]
+            imports: [getTranslocoModule(), HelpComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        useValue: {
+                            params: of({ id_artist: '123' })
+                        },
+                        params: of({ id_artist: '1' }),
+                        snapshot: {
+                            paramMap: {
+                                get: () => '1',
+                            },
+                            url: [
+                                'artist',
+                                '1'
+                            ]
+                        }
+                    },
+                }
+            ]
         })
             .compileComponents();
     });

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { FollowItem } from '../models/follow.model';
 import { UserPlaylist } from '../models/playlist.model';
 import { PlayerService } from '../services/player.service';
@@ -12,11 +13,25 @@ import { BehaviorSubject, of } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { PlayerRunning } from '../models/player-running.model';
 import { UserVideo, VideoItem } from '../models/video.model';
-import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { LoginResponse } from '../models/user.model';
 import { getTranslocoModule } from '../transloco-testing.module';
 import { environment } from 'src/environments/environment';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MockTestComponent } from '../mock-test.component';
+import { CommonModule } from '@angular/common';
+import { SearchService } from '../services/search.service';
+import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
+
+@Component({
+  selector: 'app-search-bar',
+  template: '',
+  standalone: true,
+  imports: [CommonModule]
+})
+class MockSearchBarComponent { }
+
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -36,6 +51,20 @@ describe('HeaderComponent', () => {
   let userServiceMock: jasmine.SpyObj<UserService>;
   let modalServiceSpyObj: jasmine.SpyObj<NgbModal>;
   let initServiceMock: jasmine.SpyObj<InitService>;
+  let searchServiceMock: Partial<SearchService>;
+
+  const searchResults1: SearchResults1 = {
+    artist: [{ id_artiste: '1', artiste: 'Test Artist', artist: 'Test Artist', id_artiste_deezer: '123' }],
+    playlist: [{ id_playlist: '1', artiste: 'Test Artist', ordre: '1', titre: 'Test Album', url_image: '', year_release: 2021 }],
+  };
+  const searchResults2: SearchResults2 = {
+    tab_video: [{
+      id_video: '1', artiste: 'Test Artist', artists: [{ id_artist: '1', label: 'Test Artist' }], duree: '100', id_playlist: '1', key: 'XXX-XXX', ordre: '1', titre: 'Test Track', titre_album: 'Test Album'
+    }],
+  };
+  const searchResults3: SearchResults3 = {
+    tab_extra: [{ key: 'TEST', title: 'TITLE', duree: 100 }],
+  };
 
   beforeEach(async () => {
     initServiceMock = jasmine.createSpyObj('InitService', ['loginSuccess', 'logOut', 'onMessageUnlog']);
@@ -58,7 +87,19 @@ describe('HeaderComponent', () => {
     ]);
     userServiceMock = jasmine.createSpyObj('UserService', ['register', 'login', 'resetPass', 'editPass', 'editMail', 'createPlaylist', 'logout', 'editTitlePlaylist']);
     routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
-    routeSpyObj = jasmine.createSpyObj('ActivatedRoute', [], { snapshot: { paramMap: { get: () => '1' } } });
+    routeSpyObj = jasmine.createSpyObj('ActivatedRoute', [], {
+      snapshot: {
+        paramMap: {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          get: (key: string) => '123',
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          has: (key: string) => true,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          getAll: (key: string) => ['123'],
+          keys: ['id']
+        }
+      }
+    });
     const googleAnalyticsServiceSpyObj = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
     modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open', 'dismissAll']);
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
@@ -75,22 +116,36 @@ describe('HeaderComponent', () => {
     playerServiceMock.subjectAddVideo = new BehaviorSubject(null);
     playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject('XXXX-XXX');
     playerServiceMock.player = { setVolume: jasmine.createSpy('setVolume') };
+    searchServiceMock = {
+      fullSearch1: jasmine.createSpy('fullSearch1').and.returnValue(of(searchResults1)),
+      fullSearch2: jasmine.createSpy('fullSearch2').and.returnValue(of(searchResults2)),
+      fullSearch3: jasmine.createSpy('fullSearch3').and.returnValue(of(searchResults3)),
+    };
 
     await TestBed.configureTestingModule({
       imports: [
         NgbModalModule,
-        getTranslocoModule()
+        getTranslocoModule(),
+        HeaderComponent,
+        FontAwesomeTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: 'test', component: MockTestComponent },
+        ]),
+        MockSearchBarComponent
       ],
-      declarations: [HeaderComponent],
       providers: [
         { provide: InitService, useValue: initServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: UserService, useValue: userServiceMock },
-        { provide: Router, useValue: routerSpyObj },
+        { provide: RouterTestingModule, useValue: routerSpyObj },
         { provide: ActivatedRoute, useValue: routeSpyObj },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpyObj },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
+        {
+          provide: SearchService,
+          useValue: searchServiceMock,
+        }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

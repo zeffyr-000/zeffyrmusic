@@ -49,20 +49,22 @@ describe('SearchBarComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
+    imports: [
         RouterTestingModule.withRoutes([
-          { path: 'test', component: MockTestComponent },
+            { path: 'test', component: MockTestComponent },
         ]),
-        getTranslocoModule()],
-      declarations: [SearchBarComponent, MockTestComponent],
-      providers: [
+        getTranslocoModule(),
+        SearchBarComponent
+    ],
+    declarations: [MockTestComponent],
+    providers: [
         { provide: SearchService, useValue: searchServiceMock },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpy },
         { provide: RouterTestingModule, useValue: routerSpy },
         { provide: ChangeDetectorRef, useValue: changeDetectorRefSpy },
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
+}).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');

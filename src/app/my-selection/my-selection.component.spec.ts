@@ -38,15 +38,14 @@ describe('MySelectionComponent', () => {
     initServiceMock.logOut = jasmine.createSpy('logOut')
 
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
-      declarations: [MySelectionComponent],
-      providers: [
+    imports: [getTranslocoModule(), MySelectionComponent],
+    providers: [
         { provide: InitService, useValue: initServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: AuthGuard, useValue: authGuardMock },
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
+}).compileComponents();
 
     initService = TestBed.inject(InitService);
     translocoService = TestBed.inject(TranslocoService);

@@ -1,7 +1,7 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -11,13 +11,15 @@ import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
 import { Video } from '../models/video.model';
 import { SearchService } from '../services/search.service';
+import { NgIf, NgFor, SlicePipe } from '@angular/common';
+import { DefaultImageDirective } from '../directives/default-image.directive';
+import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 
 @Component({
     selector: 'app-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.css'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
-    standalone: false
+    imports: [NgIf, NgFor, RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe]
 })
 export class SearchComponent implements OnInit, OnDestroy {
 

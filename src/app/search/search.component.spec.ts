@@ -72,45 +72,46 @@ describe('SearchComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [
+    imports: [
         RouterTestingModule.withRoutes([
-          { path: 'test', component: MockTestComponent }
+            { path: 'test', component: MockTestComponent }
         ]),
         getTranslocoModule(),
-      ],
-      declarations: [SearchComponent, ToMMSSPipe, MockTestComponent],
-      providers: [
+        SearchComponent, ToMMSSPipe,
+    ],
+    declarations: [MockTestComponent],
+    providers: [
         {
-          provide: SearchService,
-          useValue: searchServiceMock,
+            provide: SearchService,
+            useValue: searchServiceMock,
         },
         {
-          provide: ActivatedRoute,
-          useValue: activatedRouteMock,
+            provide: ActivatedRoute,
+            useValue: activatedRouteMock,
         },
         {
-          provide: Title,
-          useValue: {
-            setTitle: () => { },
-          },
+            provide: Title,
+            useValue: {
+                setTitle: () => { },
+            },
         },
         {
-          provide: InitService,
-          useValue: initServiceMock,
+            provide: InitService,
+            useValue: initServiceMock,
         },
         {
-          provide: PlayerService,
-          useValue: playerServiceMock,
+            provide: PlayerService,
+            useValue: playerServiceMock,
         },
         {
-          provide: GoogleAnalyticsService,
-          useValue: {
-            pageView: () => { },
-          },
+            provide: GoogleAnalyticsService,
+            useValue: {
+                pageView: () => { },
+            },
         },
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
+}).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
