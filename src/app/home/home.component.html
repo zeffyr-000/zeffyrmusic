@@ -1,14 +1,15 @@
 @if( page !== 'albums') {
 <div class="card card-body mt-3 border-0" [id]="'content-top-' + page" itemscope
     itemtype="http://schema.org/MusicPlaylist">
-    <div *ngIf="isLoading" class="content_loading">
+    @if(isLoading) {
+    <div class="content_loading">
         <div class="spinner-border text-primary"></div>
     </div>
-
-    <div *ngIf="!isLoading" class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
+    } @else {
+    <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
         [class.row-cols-xl-5]="page !== 'home'">
-        <div *ngFor="let chart of page === 'home' ? listTopSliced : listTop" class="col m-0 mt-1 mb-1" itemprop="track"
-            itemscope itemtype="http://schema.org/MusicRecording">
+        @for (chart of page === 'home' ? listTopSliced : listTop; track chart.id) {
+        <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
             <a class="card h-100" routerLink="/top/{{chart.id}}" itemprop="url">
                 <img src="{{chart.url_image}}" class="card-img-top" alt="{{chart.titre}}" itemprop="image"
                     appDefaultImage />
@@ -20,6 +21,7 @@
                 </div>
             </a>
         </div>
+        }
         @if( page === 'home') {
         <div class="col m-0 mt-1 mb-1">
             <a class="card h-100" routerLink="/top">
@@ -30,6 +32,7 @@
         </div>
         }
     </div>
+    }
 </div>
 }
 
@@ -37,14 +40,15 @@
 <div class="card card-body mt-3 border-0" [id]="'content-album-' + page" itemscope
     itemtype="http://schema.org/MusicPlaylist">
     <h3 class="text-center border-0" itemprop="name">{{'top_albums'| transloco}}</h3>
-    <div *ngIf="isLoading" class="content_loading">
+    @if(isLoading) {
+    <div class="content_loading">
         <div class="spinner-border text-primary"></div>
     </div>
-
-    <div *ngIf="!isLoading" class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
+    } @else {
+    <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
         [class.row-cols-xl-5]="page !== 'home'" itemscope itemtype="http://schema.org/MusicAlbum">
-        <div *ngFor="let album of page === 'home' ? listTopAlbumsSliced : listTopAlbums; let i = index"
-            class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
+        @for (album of page === 'home' ? listTopAlbumsSliced : listTopAlbums; track album.id_playlist; let i = $index) {
+        <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
             <a class="card h-100" routerLink="/playlist/{{album.id_playlist}}" itemprop="url">
                 <img src="{{album.url_image}}" class="card-img-top" alt="{{album.titre}}" itemprop="image"
                     appDefaultImage />
@@ -53,10 +57,13 @@
                         <span class="badge bg-primary text-light">{{i+1}}</span>
                         {{album.titre}}
                     </h5>
-                    <p *ngIf="album.artiste!==''" class="card-text" itemprop="byArtist">{{album.artiste}}</p>
+                    @if(album.artiste!=='') {
+                    <p class="card-text" itemprop="byArtist">{{album.artiste}}</p>
+                    }
                 </div>
             </a>
         </div>
+        }
         @if( page === 'home') {
         <div class="col m-0 mt-1 mb-1">
             <a class="card h-100 text-center" routerLink="/albums">
@@ -67,5 +74,6 @@
         </div>
         }
     </div>
+    }
 </div>
 }

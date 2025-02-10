@@ -11,7 +11,7 @@ import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
 import { Video } from '../models/video.model';
 import { SearchService } from '../services/search.service';
-import { NgIf, NgFor, SlicePipe } from '@angular/common';
+import { SlicePipe } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 
@@ -19,7 +19,7 @@ import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
     selector: 'app-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.css'],
-    imports: [NgIf, NgFor, RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe]
+    imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe]
 })
 export class SearchComponent implements OnInit, OnDestroy {
 

@@ -3,13 +3,12 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { environment } from 'src/environments/environment';
-import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'app-help-page',
-    templateUrl: './help-page.component.html',
-    styleUrl: './help-page.component.css',
-    imports: [NgIf, TranslocoPipe]
+  selector: 'app-help-page',
+  templateUrl: './help-page.component.html',
+  styleUrl: './help-page.component.css',
+  imports: [TranslocoPipe]
 })
 export class HelpPageComponent implements OnInit {
   page: string;

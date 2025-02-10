@@ -5,14 +5,13 @@ import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
-import { NgIf, NgFor } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    imports: [NgIf, NgFor, RouterLink, DefaultImageDirective, TranslocoPipe]
+    imports: [RouterLink, DefaultImageDirective, TranslocoPipe]
 })
 export class HomeComponent implements OnInit {
     isLoading = false;

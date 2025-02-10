@@ -6,14 +6,13 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Album } from '../models/album.model';
 import { ArtistService } from '../services/artist.service';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
-import { NgFor } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 
 @Component({
     selector: 'app-artist',
     templateUrl: './artist.component.html',
     styleUrls: ['./artist.component.scss'],
-    imports: [ShareButtons, NgFor, RouterLink, DefaultImageDirective, TranslocoPipe]
+    imports: [ShareButtons, RouterLink, DefaultImageDirective, TranslocoPipe]
 })
 
 export class ArtistComponent implements OnInit {

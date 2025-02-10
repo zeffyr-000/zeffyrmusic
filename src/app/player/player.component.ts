@@ -4,7 +4,7 @@ import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
 import { Video } from '../models/video.model';
 import { YouTubePlayer } from '@angular/youtube-player';
-import { NgFor, NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
 import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -13,7 +13,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
     selector: 'app-player',
     templateUrl: './player.component.html',
     styleUrls: ['./player.component.scss'],
-    imports: [YouTubePlayer, NgFor, NgClass, LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgIf, TranslocoPipe]
+    imports: [YouTubePlayer, NgClass, LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe]
 })
 export class PlayerComponent implements OnDestroy, AfterViewInit {
 

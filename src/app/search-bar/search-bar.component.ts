@@ -8,7 +8,6 @@ import { debounceTime, switchMap, filter, distinctUntilChanged, tap } from 'rxjs
 import { SearchService } from '../services/search.service';
 import { SearchBarResponse } from '../models/search.model';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgFor } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 
@@ -16,7 +15,7 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
     selector: 'app-search-bar',
     templateUrl: './search-bar.component.html',
     styleUrls: ['./search-bar.component.scss'],
-    imports: [FormsModule, NgIf, NgFor, TranslocoPipe, DefaultImageDirective]
+    imports: [FormsModule, TranslocoPipe, DefaultImageDirective]
 })
 export class SearchBarComponent implements OnInit {
 

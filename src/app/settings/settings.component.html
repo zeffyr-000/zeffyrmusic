@@ -81,8 +81,12 @@
 
             <p><input type="submit" class="btn btn-primary" [disabled]="formEditPass.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formEditPass.dirty && error!==''" class="alert alert-danger">{{error}}</p>
-            <p *ngIf="successPass" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+            @if(formEditPass.dirty && error!=='') {
+            <p class="alert alert-danger">{{error}}</p>
+            }
+            @if(successPass) {
+            <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+            }
         </form>
     </div>
 </ng-template>
@@ -102,8 +106,12 @@
 
             <p><input type="submit" class="btn btn-primary" [disabled]="formEditMail.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formEditMail.dirty && error!==''" class="alert alert-danger">{{error}}</p>
-            <p *ngIf="successMail" class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+            @if(formEditMail.dirty && error!=='') {
+            <p class="alert alert-danger">{{error}}</p>
+            }
+            @if(successMail) {
+            <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+            }
         </form>
     </div>
 </ng-template>
@@ -118,15 +126,21 @@
             <p class="form-group">
                 <label class="control-label" for="mail">{{ 'language' | transloco}}</label>
                 <select name="language" id="language" class="form-control" ngbAutofocus [(ngModel)]="language" required>
-                    <option *ngFor="let lang of availableLanguages" [value]="lang">{{'langue_'+lang | transloco}}
+                    @for (lang of availableLanguages; track lang) {
+                    <option [value]="lang">{{'langue_'+lang | transloco}}
                     </option>
+                    }
                 </select>
             </p>
 
             <p><input type="submit" class="btn btn-primary" [disabled]="formEditLanguage.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formEditLanguage.dirty && error!==''" class="alert alert-danger">{{error}}</p>
-            <p *ngIf="successLanguage" class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
+            @if(formEditLanguage.dirty && error!=='') {
+            <p class="alert alert-danger">{{error}}</p>
+            }
+            @if(successLanguage){
+            <p class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
+            }
         </form>
     </div>
 </ng-template>
@@ -147,8 +161,12 @@
 
             <p><input type="submit" class="btn btn-danger" [disabled]="formDeleteAccount.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>
-            <p *ngIf="formDeleteAccount.dirty && error!==''" class="alert alert-danger">{{error}}</p>
-            <p *ngIf="successDelete" class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
+            @if(formDeleteAccount.dirty && error!=='') {
+            <p class="alert alert-danger">{{error}}</p>
+            }
+            @if(successDelete){
+            <p class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
+            }
         </form>
     </div>
 </ng-template>
@@ -161,9 +179,13 @@
     <div class="modal-body">
         <p class="bg-info p-2 rounded">{{ 'associate_google_account_description' | transloco }}</p>
         <div id="google-signin-button"></div>
-        <p *ngIf="error!==''" class="alert alert-danger">{{error}}</p>
-        <p *ngIf="successGoogleAccount" class="alert alert-success">
+        @if(error!=='') {
+        <p class="alert alert-danger">{{error}}</p>
+        }
+        @if(successGoogleAccount){
+        <p class="alert alert-success">
             {{ 'associate_google_account_succesfully' | transloco }}
         </p>
+        }
     </div>
 </ng-template>

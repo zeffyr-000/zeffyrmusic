@@ -1,4 +1,4 @@
-import { DOCUMENT, NgIf } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
 import { Event, NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -15,7 +15,7 @@ import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
-    imports: [HeaderComponent, PlayerComponent, RouterLink, RouterOutlet, NgIf, NgbAlert, TranslocoPipe]
+    imports: [HeaderComponent, PlayerComponent, RouterLink, RouterOutlet, NgbAlert, TranslocoPipe]
 })
 export class AppComponent implements OnInit, OnDestroy {
     title = 'zeffyrmusic';
