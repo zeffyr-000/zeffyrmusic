@@ -2,20 +2,25 @@
     [(ngModel)]="query" (input)="search()" />
 
 <ul class="list-group list-unstyled" id="liste_resultat_recherche">
-    <li *ngIf="query && query.length>0">
+    @if(query && query.length>0) {
+    <li>
         <a class="list-group-item all_results" (click)="reset(element, false,'/search/'+query)" role="presentation">
             <h4>
                 <span class="material-icons img_artiste_recherche">search</span> {{ 'tous_les_resultats' | transloco }}
             </h4>
         </a>
     </li>
-    <li *ngFor="let element of resultsArtist">
+    }
+    @for (element of resultsArtist; track element.id_artiste) {
+    <li>
         <a class="list-group-item" (click)="reset(element, true,'/artist/'+element.id_artiste)" role="presentation">
             <h4><img [src]="'https://api.deezer.com/artist/'+element.id_artiste_deezer+'/image'"
                     class="img-rounded img_artiste_recherche" alt="" /> {{element.artiste}}</h4>
         </a>
     </li>
-    <li *ngFor="let element of resultsAlbum">
+    }
+    @for (element of resultsAlbum; track element.id_playlist) {
+    <li>
         <a class="list-group-item" (click)="reset(element, true,'/playlist/'+element.id_playlist)" role="presentation">
             <h4><img [src]="element.url_image" class="img-rounded img_artiste_recherche" alt="" appDefaultImage />
                 {{element.titre}}
@@ -23,4 +28,5 @@
             </h4>
         </a>
     </li>
+    }
 </ul>

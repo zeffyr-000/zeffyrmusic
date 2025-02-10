@@ -20,9 +20,13 @@
     </div>
 </div>
 
-<ngb-alert *ngIf="!isOnline" id="alert_perte_connexion" (close)="isOnline = true" type="danger">
+@if(!isOnline){
+<ngb-alert id="alert_perte_connexion" (close)="isOnline = true" type="danger">
     {{ 'perte_connexion' | transloco }}
 </ngb-alert>
-<ngb-alert *ngIf="showMessageUnlog" id="alert_deconnexion" (close)="showMessageUnlog = false" type="danger">
+}
+@if(showMessageUnlog){
+<ngb-alert id="alert_deconnexion" (close)="showMessageUnlog = false" type="danger">
     {{ 'veuillez_vous_reconnecter' | transloco }}
 </ngb-alert>
+}

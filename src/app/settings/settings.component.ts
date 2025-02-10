@@ -8,16 +8,15 @@ import { Title } from '@angular/platform-browser';
 import { InitService } from '../services/init.service';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { NgIf, NgFor } from '@angular/common';
 
 // eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
 declare var google: any;
 
 @Component({
-    selector: 'app-settings',
-    templateUrl: './settings.component.html',
-    styleUrl: './settings.component.css',
-    imports: [FormsModule, NgIf, NgFor, TranslocoPipe]
+  selector: 'app-settings',
+  templateUrl: './settings.component.html',
+  styleUrl: './settings.component.css',
+  imports: [FormsModule, TranslocoPipe]
 })
 export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

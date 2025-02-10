@@ -4,12 +4,14 @@
 
 	<div class="d-flex justify-content-between align-items-center">
 		<h2>{{ 'artistes' | transloco }}</h2>
-		<div *ngIf="listArtists && listArtists.length>limitArtist">
-			<button class="btn btn-link" (click)="moreArtists()">{{ 'show_all' |transloco }}</button>
-		</div>
+		@if(listArtists && listArtists.length>limitArtist) {
+		<button class="btn btn-link" (click)="moreArtists()">{{ 'show_all' |transloco }}</button>
+		}
 	</div>
-	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2" *ngIf="!isLoading1">
-		<div *ngFor="let artist of listArtists | slice:0:limitArtist" class="col m-0 mt-1 mb-1">
+	@if(!isLoading1){
+	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+		@for (artist of listArtists | slice:0:limitArtist ; track artist.id_artiste) {
+		<div class="col m-0 mt-1 mb-1">
 			<a class="card h-100" routerLink="/artist/{{artist.id_artiste}}">
 				<img [src]="'https://api.deezer.com/artist/'+artist.id_artiste_deezer+'/image?size=big'"
 					class="card-img-top" alt="" />
@@ -18,7 +20,9 @@
 				</div>
 			</a>
 		</div>
+		}
 	</div>
+	}
 	@if(listArtists && listArtists.length===0)
 	{
 	<div class="col m-0 mt-1 mb-1">
@@ -32,18 +36,22 @@
 		</div>
 	</div>
 	}
-	<div *ngIf="isLoading1" class="content_loading">
+	@if(isLoading1){
+	<div class="content_loading">
 		<div class="spinner-border text-primary"></div>
 	</div>
+	}
 
 	<div class="d-flex justify-content-between align-items-center">
 		<h2>{{ 'albums' | transloco }}</h2>
-		<div *ngIf="listAlbums && listAlbums.length>limitAlbum">
-			<button class="btn btn-link" (click)="moreAlbums()">{{ 'show_all' |transloco }}</button>
-		</div>
+		@if(listAlbums && listAlbums.length>limitAlbum) {
+		<button class="btn btn-link" (click)="moreAlbums()">{{ 'show_all' |transloco }}</button>
+		}
 	</div>
-	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2" *ngIf="!isLoading1">
-		<div *ngFor="let album of listAlbums | slice:0:limitAlbum" class="col m-0 mt-1 mb-1">
+	@if(!isLoading1){
+	<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+		@for (album of listAlbums | slice:0:limitAlbum ; track album.id_playlist) {
+		<div class="col m-0 mt-1 mb-1">
 			<a class="card h-100" routerLink="/playlist/{{album.id_playlist}}">
 				<img [src]="album.url_image" class="card-img-top" [alt]="album.titre" appDefaultImage />
 				<div class="card-body">
@@ -54,7 +62,9 @@
 				</div>
 			</a>
 		</div>
+		}
 	</div>
+	}
 	@if(listAlbums && listAlbums.length===0)
 	{
 	<div class="col m-0 mt-1 mb-1">
@@ -68,17 +78,20 @@
 		</div>
 	</div>
 	}
-	<div *ngIf="isLoading1" class="content_loading">
+	@if(isLoading1){
+	<div class="content_loading">
 		<div class="spinner-border text-primary"></div>
 	</div>
+	}
 
 	<div class="d-flex justify-content-between align-items-center">
 		<h2>{{ 'morceaux' | transloco }}</h2>
-		<div *ngIf="listTracks && listTracks.length>limitTrack">
-			<button class="btn btn-link" (click)="moreTracks()">{{ 'show_all' |transloco }}</button>
-		</div>
+		@if(listTracks && listTracks.length>limitTrack) {
+		<button class="btn btn-link" (click)="moreTracks()">{{ 'show_all' |transloco }}</button>
+		}
 	</div>
-	<table *ngIf="!isLoading2 && listTracks && listTracks.length>0" id="table_playlist" class="table table-hover">
+	@if(!isLoading2 && listTracks && listTracks.length>0){
+	<table id="table_playlist" class="table table-hover">
 		<thead>
 			<tr>
 				<th></th>
@@ -92,35 +105,46 @@
 		</thead>
 
 		<tbody>
-			<tr *ngFor="let video of listTracks | slice:0:limitTrack; let index=index" [attr.data-id-video]="video.key"
-				[class.active]="video.key === currentKey" (click)="runPlaylistTrack(index)">
+			@for (video of listTracks | slice:0:limitTrack ; track video.id_video; let index = $index) {
+			<tr [attr.data-id-video]="video.key" [class.active]="video.key === currentKey"
+				(click)="runPlaylistTrack(index)">
 				<td>{{ index+1 }}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
 					<img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
 				</td>
 				<td>
-					<p *ngIf="video.id_artiste===undefined || video.id_artiste<=0">{{video.artiste}}</p>
-					<a *ngIf="video.id_artiste>0" (click)="$event.stopPropagation()"
-						routerLink="/artist/{{video.id_artiste}}">{{video.artiste}}</a>
+					@if(video.id_artiste===undefined || video.id_artiste<=0) { <p>{{video.artiste}}</p>}
+						@if(video.id_artiste>0){
+						<a (click)="$event.stopPropagation()"
+							routerLink="/artist/{{video.id_artiste}}">{{video.artiste}}</a>
+						}
 				</td>
 				<td>{{video.titre}}</td>
 				<td>
-					<a *ngIf="video.titre_album!==undefined" (click)="$event.stopPropagation()"
+					@if(video.titre_album!==undefined){
+					<a (click)="$event.stopPropagation()"
 						routerLink="/playlist/{{video.id_playlist}}">{{video.titre_album}}</a>
+					}
 				</td>
 				<td>
-					<span *ngIf="video.duree>0">{{video.duree | toMMSS }}</span>
+					@if(video.duree>0){
+					<span>{{video.duree | toMMSS }}</span>
+					}
 				</td>
 				<td>
-					<span *ngIf="isConnected" class="btn btn-default"
+					@if(isConnected){
+					<span class="btn btn-default"
 						(click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre,video.duree)"
 						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
 						<span class="material-icons">add</span>
 					</span>
+					}
 				</td>
 			</tr>
+			}
 		</tbody>
 	</table>
+	}
 	@if(listTracks && listTracks.length===0)
 	{
 	<div class="col m-0 mt-1 mb-1">
@@ -134,23 +158,25 @@
 		</div>
 	</div>
 	}
-	<div *ngIf="isLoading2" class="content_loading">
+	@if(isLoading2){
+	<div class="content_loading">
 		<div class="spinner-border text-primary"></div>
 	</div>
+	}
 
 	<div class="d-flex justify-content-between align-items-center">
 		<h2>{{ 'extras' | transloco }}</h2>
-		<div *ngIf="listExtras && listExtras.length>limitExtra">
-			<button class="btn btn-link" (click)="moreExtras()" role="presentation">{{ 'more' |transloco }}</button>
-		</div>
+		@if(listExtras && listExtras.length>limitExtra) {
+		<button class="btn btn-link" (click)="moreExtras()" role="presentation">{{ 'more' |transloco }}</button>
+		}
 	</div>
 	@if (!isConnected) {
 	<div class="bg-info p-2 rounded">
 		{{ 'extras_info' | transloco }}
 	</div>
 	}
-	<table *ngIf="!isLoading3 && isConnected && listExtras && listExtras.length>0" id="table_extra"
-		class="table table-hover">
+	@if(!isLoading3 && isConnected && listExtras && listExtras.length>0){
+	<table id="table_extra" class="table table-hover">
 		<thead>
 			<tr>
 				<th></th>
@@ -162,26 +188,31 @@
 		</thead>
 
 		<tbody>
-			<tr *ngFor="let extra of listExtras | slice:0:limitExtra; let index=index" [attr.data-id-video]="extra.key"
-				[class.active]="extra.key === currentKey">
+			@for (extra of listExtras | slice:0:limitExtra ; track extra.id_video; let index = $index) {
+			<tr [attr.data-id-video]="extra.key" [class.active]="extra.key === currentKey">
 				<td>{{ index+1 }}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
 					<img [src]="'https://img.youtube.com/vi/'+extra.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
 				</td>
 				<td (click)="runPlaylistExtra(index)">{{extra.title}}</td>
 				<td>
-					<span *ngIf="extra.duree>0">{{extra.duree | toMMSS }}</span>
+					@if(extra.duree>0){
+					<span>{{extra.duree | toMMSS }}</span>
+					}
 				</td>
 				<td>
-					<span *ngIf="isConnected" class="btn btn-default"
-						(click)="addVideo(extra.key,'',extra.title,extra.duree);" placement="left"
-						ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
+					@if(isConnected) {
+					<span class="btn btn-default" (click)="addVideo(extra.key,'',extra.title,extra.duree);"
+						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
 						<span class="material-icons">add</span>
 					</span>
+					}
 				</td>
 			</tr>
+			}
 		</tbody>
 	</table>
+	}
 	@if(listExtras && listExtras.length===0)
 	{
 	<div class="col m-0 mt-1 mb-1">
@@ -195,8 +226,10 @@
 		</div>
 	</div>
 	}
-	<div *ngIf="isLoading3" class="content_loading">
+	@if(isLoading3) {
+	<div class="content_loading">
 		<div class="spinner-border text-primary"></div>
 	</div>
+	}
 
 </div>

@@ -6,7 +6,8 @@
 
 <div class="card card-body mt-3 border-0">
     <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
-        <div *ngFor="let playlist of listFollow" class="col m-0 mt-1 mb-1">
+        @for (playlist of listFollow; track playlist.id_playlist) {
+        <div class="col m-0 mt-1 mb-1">
             <a class="card h-100"
                 [routerLink]="playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]">
                 <img src="{{playlist.url_image}}" class="card-img-top" alt="{{playlist.titre}}" itemprop="image"
@@ -27,5 +28,6 @@
                 </div>
             </a>
         </div>
+        }
     </div>
 </div>

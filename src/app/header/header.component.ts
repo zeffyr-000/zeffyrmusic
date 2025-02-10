@@ -10,7 +10,7 @@ import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { LoginResponse, UserReponse } from '../models/user.model';
-import { DOCUMENT, NgIf, NgClass, NgFor } from '@angular/common';
+import { DOCUMENT, NgClass } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
 import { AngularDraggableModule } from 'angular2-draggable';
@@ -22,7 +22,7 @@ declare var google: any;
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    imports: [NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, RouterLink, NgIf, SearchBarComponent, SwipeDownDirective, NgbTooltip, NgClass, AngularDraggableModule, FormsModule, NgFor, TranslocoPipe]
+    imports: [NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, RouterLink, SearchBarComponent, SwipeDownDirective, NgbTooltip, NgClass, AngularDraggableModule, FormsModule, TranslocoPipe]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
