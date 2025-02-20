@@ -55,11 +55,11 @@ Zeffyrmusic is a music web application developed with Angular. This project demo
 
 ### ZeffyrMusic in 2014
 
-![ZeffyrMusic 2014](assets/img/screenshots/2014.jpg)
+![ZeffyrMusic 2014](src/assets/img/screenshots/2014.jpg)
 
 ### ZeffyrMusic in 2020
 
-![ZeffyrMusic 2020](assets/img/screenshots/2020.jpg)
+![ZeffyrMusic 2020](src/assets/img/screenshots/2020.jpg)
 
 [![codecov](https://codecov.io/github/zeffyr-000/zeffyrmusic/graph/badge.svg?token=HU7ROB7BDP)](https://codecov.io/github/zeffyr-000/zeffyrmusic)
 
