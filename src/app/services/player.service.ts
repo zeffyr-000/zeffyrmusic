@@ -339,7 +339,7 @@ export class PlayerService implements OnDestroy {
             (Math.round(currentTime % 60) < 10 ? "0" : "") +
             Math.round(currentTime % 60);
 
-        const totalTime = this.player.getDuration() || 0;
+        const totalTime: number = this.player.getDuration() || 0;
 
         const totalTimeStr =
             Math.floor(totalTime / 60) +
@@ -351,8 +351,17 @@ export class PlayerService implements OnDestroy {
 
         const loadVideo = 100 * this.player.getVideoLoadedFraction();
 
+        const newPlayerRunning = new PlayerRunning(
+            this.currentKey,
+            currentTimeStr,
+            totalTimeStr,
+            slideLength,
+            loadVideo,
+            totalTime
+        );
+
         this.subjectPlayerRunningChange.next(
-            new PlayerRunning(currentTimeStr, totalTimeStr, slideLength, loadVideo)
+            newPlayerRunning
         );
     }
 
