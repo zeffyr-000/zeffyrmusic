@@ -66,6 +66,7 @@ describe('PlaylistComponent', () => {
     playerServiceMock.subjectListFollow = new BehaviorSubject([]);
     playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
     playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
+    playerServiceMock.subjectPlayerRunningChange = new BehaviorSubject([]);
     activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
       snapshot: {
         paramMap: { get: () => '1' },
@@ -75,32 +76,32 @@ describe('PlaylistComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-    schemas: [NO_ERRORS_SCHEMA],
-    imports: [getTranslocoModule(), PlaylistComponent],
-    providers: [
+      schemas: [NO_ERRORS_SCHEMA],
+      imports: [getTranslocoModule(), PlaylistComponent],
+      providers: [
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         {
-            provide: GoogleAnalyticsService,
-            useValue: {
-                pageView: () => { },
-            },
+          provide: GoogleAnalyticsService,
+          useValue: {
+            pageView: () => { },
+          },
         },
         {
-            provide: InitService,
-            useValue: initServiceMock,
+          provide: InitService,
+          useValue: initServiceMock,
         },
         {
-            provide: PlayerService,
-            useValue: playerServiceMock,
+          provide: PlayerService,
+          useValue: playerServiceMock,
         },
         {
-            provide: Meta,
-            useValue: metaServiceMock,
+          provide: Meta,
+          useValue: metaServiceMock,
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-}).compileComponents();
+      ]
+    }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');

@@ -8,7 +8,7 @@ import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Video } from '../models/video.model';
 import { Playlist } from '../models/playlist.model';
-import { Subscription } from 'rxjs';
+import { distinctUntilChanged, Subscription } from 'rxjs';
 import { PlaylistService } from '../services/playlist.service';
 import { NgClass } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
@@ -51,6 +51,7 @@ export class PlaylistComponent implements OnDestroy {
     subscriptionListLikeVideo: Subscription;
     subscriptionIsPlaying: Subscription;
     subscriptionCurrentPlaylist: Subscription;
+    subscriptionPlayerRunning: Subscription;
 
     constructor(private readonly ref: ChangeDetectorRef,
         private readonly playlistService: PlaylistService,
@@ -104,6 +105,14 @@ export class PlaylistComponent implements OnDestroy {
 
         this.subscriptionCurrentPlaylist = this.playerService.subjectCurrentPlaylistChange?.subscribe(list => {
             this.currentIdPlaylistPlaying = list[0]?.id_playlist || '';
+        });
+
+        this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange?.pipe(
+            distinctUntilChanged((prev, curr) => prev && curr && prev.equals(curr))
+        ).subscribe(data => {
+            if (data && data.totalTimeStr !== '0:00' && !!this.currentKey) {
+                this.adjustPlaylistDuration(data.totalTime);
+            }
         });
 
         if (this.activatedRoute.snapshot.url[0].path === 'like') {
@@ -314,6 +323,15 @@ export class PlaylistComponent implements OnDestroy {
         }
     }
 
+    adjustPlaylistDuration(totalTime: number) {
+        this.playlist.map(video => {
+            if (video.key === this.currentKey) {
+                video.duree = totalTime.toString();
+                this.ref.detectChanges();
+            }
+        });
+    }
+
     ngOnDestroy() {
         this.subscriptionConnected.unsubscribe();
         this.subscriptionChangeKey.unsubscribe();
@@ -321,5 +339,6 @@ export class PlaylistComponent implements OnDestroy {
         this.subscriptionListLikeVideo?.unsubscribe();
         this.subscriptionIsPlaying.unsubscribe();
         this.subscriptionCurrentPlaylist.unsubscribe();
+        this.subscriptionPlayerRunning.unsubscribe();
     }
 }

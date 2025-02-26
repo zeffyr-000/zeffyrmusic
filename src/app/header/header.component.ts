@@ -7,7 +7,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
-import { Subscription } from 'rxjs';
+import { distinctUntilChanged, Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { LoginResponse, UserReponse } from '../models/user.model';
 import { DOCUMENT, NgClass } from '@angular/common';
@@ -124,8 +124,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
         );
 
-        this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange.subscribe(data => {
-
+        this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange?.pipe(
+            distinctUntilChanged((prev, curr) => prev && curr && prev.equals(curr))
+        ).subscribe(data => {
             if (!data) {
                 return;
             }
