@@ -68,6 +68,9 @@ export class PlayerService implements OnDestroy {
 
     subscriptionInitializePlaylist: Subscription;
 
+    private errorMessageSubject = new BehaviorSubject<string | null>(null);
+    errorMessage$ = this.errorMessageSubject.asObservable();
+
     constructor(
         private readonly titleService: Title,
         private readonly httpClient: HttpClient,
@@ -145,6 +148,29 @@ export class PlayerService implements OnDestroy {
         this.updateVolume(parseInt(localStorage.volume, 10));
     }
 
+    onErrorYT(event: { data: number }) {
+        let errorMessage: string;
+        switch (event.data) {
+            case 2:
+                errorMessage = 'error_invalid_parameter';
+                break;
+            case 5:
+                errorMessage = 'error_html_player';
+                break;
+            case 100:
+                errorMessage = 'error_request_not_found';
+                break;
+            case 101:
+            case 150:
+                errorMessage = 'error_request_access_denied';
+                break;
+            default:
+                errorMessage = 'error_unknown';
+                break;
+        }
+        this.errorMessageSubject.next(errorMessage);
+    }
+
     launchYTApi() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).onYouTubeIframeAPIReady = () => {
@@ -159,7 +185,8 @@ export class PlayerService implements OnDestroy {
                 },
                 events: {
                     onStateChange: this.onStateChangeYT.bind(this),
-                    onReady: this.onReadyYT.bind(this)
+                    onReady: this.onReadyYT.bind(this),
+                    onError: this.onErrorYT.bind(this)
                 }
             });
         };
@@ -235,12 +262,14 @@ export class PlayerService implements OnDestroy {
     }
 
     before() {
+        this.clearErrorMessage();
         if (this.listVideo[this.tabIndex[this.currentIndex - 1]] !== undefined) {
             this.lecture(this.currentIndex - 1);
         }
     }
 
     after() {
+        this.clearErrorMessage();
         if (this.tabIndex[this.currentIndex + 1] !== undefined) {
             this.lecture(this.currentIndex + 1);
         } else if (this.isRepeat) {
@@ -659,6 +688,10 @@ export class PlayerService implements OnDestroy {
                     this.initService.onMessageUnlog();
                 }
             });
+    }
+
+    clearErrorMessage() {
+        this.errorMessageSubject.next(null);
     }
 
     ngOnDestroy() {
