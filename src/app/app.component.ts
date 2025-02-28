@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnDestroy, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
 import { Event, NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
@@ -25,6 +25,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
     subscriptionMessageUnlog: Subscription;
     renderer: Renderer2;
+    errorMessage: string | null = null;
+    private errorMessageSubscription: Subscription;
 
     constructor(@Inject(DOCUMENT) private readonly document: Document,
         private rendererFactory: RendererFactory2,
@@ -32,7 +34,8 @@ export class AppComponent implements OnInit, OnDestroy {
         protected readonly playerService: PlayerService,
         private readonly router: Router,
         private readonly metaService: Meta,
-        private readonly translocoService: TranslocoService) {
+        private readonly translocoService: TranslocoService,
+        private cdr: ChangeDetectorRef) {
         this.initService.getPing();
 
         this.renderer = this.rendererFactory.createRenderer(null, null);
@@ -93,6 +96,13 @@ export class AppComponent implements OnInit, OnDestroy {
         this.renderer.setAttribute(link, 'as', 'image');
         this.renderer.setAttribute(link, 'href', `${environment.URL_ASSETS}assets/img/default.jpg`);
         this.renderer.appendChild(document.head, link);
+
+        this.errorMessageSubscription = this.playerService.errorMessage$.subscribe(
+            message => {
+                this.errorMessage = message;
+                this.cdr.detectChanges();
+            }
+        );
     }
 
     isRedirectingToCurrentUrl(): boolean {
@@ -102,7 +112,12 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.currentUrl === targetUrl;
     }
 
+    clearErrorMessage() {
+        this.playerService.clearErrorMessage();
+    }
+
     ngOnDestroy() {
         this.subscriptionMessageUnlog.unsubscribe();
+        this.errorMessageSubscription.unsubscribe();
     }
 }

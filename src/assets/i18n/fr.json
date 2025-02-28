@@ -150,6 +150,12 @@
   "back_home": "Retour à l'accueil",
   "generic_error": "Une erreur s'est produite. Veuillez réessayer plus tard.",
 
+  "error_invalid_parameter": "Paramètre invalide",
+  "error_html_player": "Erreur du lecteur HTML5",
+  "error_request_not_found": "La vidéo demandée n'a pas été trouvée",
+  "error_request_access_denied": "Le propriétaire de la vidéo demandée n'autorise pas sa lecture dans des lecteurs intégrés",
+  "error_unkown": "Une erreur s'est produite",
+
   "help_title": "Aide",
   "help_title_directory": "Annuaire des Astuces et Tutoriels",
   "help_description_directory": "Découvrez des conseils pratiques et des réponses aux questions courantes pour utiliser Zeffyr Music au mieux. Trouvez facilement des informations sur la gestion de votre compte, des playlists et d'autres fonctionnalités.",
