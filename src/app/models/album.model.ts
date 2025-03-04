@@ -12,4 +12,5 @@ export interface HomeAlbum {
     titre: string;
     description: string;
     url_image: string;
+    decade?: boolean;
 }

@@ -22,19 +22,19 @@ describe('HomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    schemas: [NO_ERRORS_SCHEMA],
-    imports: [getTranslocoModule(), HomeComponent],
-    providers: [
+      schemas: [NO_ERRORS_SCHEMA],
+      imports: [getTranslocoModule(), HomeComponent],
+      providers: [
         Title,
         Meta,
         GoogleAnalyticsService,
         {
-            provide: ActivatedRoute, useValue: { snapshot: { url: [] } }
+          provide: ActivatedRoute, useValue: { snapshot: { url: [] } }
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-}).compileComponents();
+      ]
+    }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
