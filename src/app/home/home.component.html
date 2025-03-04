@@ -6,6 +6,30 @@
         <div class="spinner-border text-primary"></div>
     </div>
     } @else {
+
+    @if(page === 'top') {
+    <h3 itemprop="name">{{'hits_by_decade'| transloco}}</h3>
+
+    <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
+        @for(chart of listTopDecade; track chart.id) {
+        <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
+            <a class="card h-100" routerLink="/top/{{chart.id}}" itemprop="url">
+                <img src="{{chart.url_image}}" class="card-img-top" alt="{{chart.titre}}" itemprop="image"
+                    appDefaultImage />
+                <div class="card-body">
+                    <h5 class="card-title" itemprop="name">{{chart.titre}}</h5>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted" itemprop="description">{{chart.description}}</small>
+                </div>
+            </a>
+        </div>
+        }
+    </div>
+
+    <h3 class="mt-3" itemprop="name">{{'top_charts'| transloco}}</h3>
+    }
+
     <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
         [class.row-cols-xl-5]="page !== 'home'">
         @for (chart of page === 'home' ? listTopSliced : listTop; track chart.id) {

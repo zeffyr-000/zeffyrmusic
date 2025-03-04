@@ -148,6 +148,8 @@
   "artist_not_available": "Artist not available",
   "back_home": "Back to home",
   "generic_error": "An error occurred, please try again later.",
+  "hits_by_decade": "Hits by decade",
+  "top_charts": "Top Charts",
 
   "error_invalid_parameter": "Invalid parameter",
   "error_html_player": "HTML5 player error",

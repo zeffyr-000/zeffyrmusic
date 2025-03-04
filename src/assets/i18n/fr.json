@@ -149,6 +149,8 @@
   "artist_not_available": "Artiste non disponible",
   "back_home": "Retour à l'accueil",
   "generic_error": "Une erreur s'est produite. Veuillez réessayer plus tard.",
+  "hits_by_decade": "Hits par décennie",
+  "top_charts": "Top Charts",
 
   "error_invalid_parameter": "Paramètre invalide",
   "error_html_player": "Erreur du lecteur HTML5",

@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit {
     isLoading = false;
 
     private listTop: HomeAlbum[];
+    private listTopDecade: HomeAlbum[];
     private listTopSliced: HomeAlbum[];
     private listTopAlbums: HomeAlbum[];
     private listTopAlbumsSliced: HomeAlbum[];
@@ -59,7 +60,8 @@ export class HomeComponent implements OnInit {
                     this.isLoading = false;
 
                     this.listTopSliced = data.top.sort(() => Math.random() - 0.5).slice(0, 5);
-                    this.listTop = data.top;
+                    this.listTop = data.top.filter((album: HomeAlbum) => !album.decade);
+                    this.listTopDecade = data.top.filter((album: HomeAlbum) => album.decade).sort((a, b) => a.id.localeCompare(b.id));
 
                     this.listTopAlbumsSliced = data.top_albums.slice(0, 5);
                     this.listTopAlbums = data.top_albums
