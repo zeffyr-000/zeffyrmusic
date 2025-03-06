@@ -7,6 +7,7 @@ export interface Playlist {
     description: string;
     est_suivi: boolean
     id_top?: string;
+    decade?: boolean;
     img_big: string;
     liste_video: string[];
     str_index: number[];

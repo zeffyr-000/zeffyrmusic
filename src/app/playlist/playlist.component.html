@@ -13,17 +13,17 @@
             <div id="playlist_haut_titre" class="col col-8 p-0">
 
                 @if(idTopCharts===null && titre!=='') {
-                <h1 class="m-t-0" itemprop="name">{{titre}}</h1>
+                <h1 class="m-t-0 h3" itemprop="name">{{titre}}</h1>
                 }
                 @if(titre==='') {
-                <h1 class="m-t-0" itemprop="name">{{title}}</h1>
+                <h1 class="m-t-0 h3" itemprop="name">{{title}}</h1>
                 }
                 @if(isLikePage){
-                <h1 class="m-t-0">{{ 'mes_likes' | transloco }}</h1>
+                <h1 class="m-t-0 h3">{{ 'mes_likes' | transloco }}</h1>
                 }
 
                 @if(artist!==null && artist!=='') {
-                <h3><a itemprop="byArtist url" routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
+                <h3 class="h4"><a itemprop="byArtist url" routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
                 }
 
                 @if(titre==='') {

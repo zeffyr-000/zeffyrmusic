@@ -14,6 +14,7 @@ import { DOCUMENT, NgClass } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
 import { AngularDraggableModule } from 'angular2-draggable';
+import { UserPlaylist } from '../models/playlist.model';
 
 // eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
 declare var google: any;
@@ -38,6 +39,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     currentTitle: string;
     currentArtist: string;
     currentKey: string;
+    listPlaylist: UserPlaylist[];
 
     subscriptionConnected: Subscription;
     subscriptionRepeat: Subscription;
@@ -47,6 +49,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     subscriptionPlayerRunning: Subscription;
     subscriptionAddVideo: Subscription;
     subscriptionChangeKey: Subscription;
+    subscriptionListPlaylist: Subscription;
 
     valueSliderPlayer: number;
     valueSliderVolume: number;
@@ -155,6 +158,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.currentTitle = data.currentTitle;
             this.currentArtist = data.currentArtist;
             this.currentKey = data.currentKey;
+        });
+
+        this.subscriptionListPlaylist = this.playerService.subjectListPlaylist.subscribe(data => {
+            this.listPlaylist = data;
         });
     }
 
@@ -391,5 +398,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.subscriptionVolume.unsubscribe();
         this.subscriptionPlayerRunning.unsubscribe();
         this.subscriptionChangeKey.unsubscribe();
+        this.subscriptionListPlaylist.unsubscribe();
     }
 }
