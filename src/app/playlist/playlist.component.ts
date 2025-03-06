@@ -160,7 +160,11 @@ export class PlaylistComponent implements OnDestroy {
         let title = '';
 
         if (data.id_top !== undefined) {
-            title = this.translocoService.translate('title_top_element', { title: data.title });
+            if (data.decade) {
+                title = this.translocoService.translate('title_top_decade', { title: data.title });
+            } else {
+                title = this.translocoService.translate('title_top_element', { title: data.title });
+            }
         }
         else {
             if (data.artiste !== undefined && data.titre !== undefined) {

@@ -8,7 +8,7 @@
     } @else {
 
     @if(page === 'top') {
-    <h3 itemprop="name">{{'hits_by_decade'| transloco}}</h3>
+    <h1 class="h3" itemprop="name">{{'hits_by_decade'| transloco}}</h1>
 
     <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
         @for(chart of listTopDecade; track chart.id) {
@@ -27,7 +27,7 @@
         }
     </div>
 
-    <h3 class="mt-3" itemprop="name">{{'top_charts'| transloco}}</h3>
+    <h1 class="mt-3 h3" itemprop="name">{{'top_charts'| transloco}}</h1>
     }
 
     <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
@@ -63,7 +63,7 @@
 @if( page !== 'top') {
 <div class="card card-body mt-3 border-0" [id]="'content-album-' + page" itemscope
     itemtype="http://schema.org/MusicPlaylist">
-    <h3 class="text-center border-0" itemprop="name">{{'top_albums'| transloco}}</h3>
+    <h1 class="border-0 h3" [class.text-center]="page==='home'" itemprop="name">{{'top_albums'| transloco}}</h1>
     @if(isLoading) {
     <div class="content_loading">
         <div class="spinner-border text-primary"></div>

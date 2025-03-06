@@ -109,6 +109,7 @@
   "title_top_element": "{{title}} - The Must-Haves of the Moment | Zeffyr Music",
   "title_album_artist": "{{title}} ({{year}}): The album by {{artist}} – {count, plural, =1 {# track} other {# tracks}} to listen to",
   "title_album": "{{title}} ({{year}}) – {count, plural, =1 {# track} other {#tracks}} to listen to",
+  "title_top_decade": "{{title}} - The Must-Haves of the decade | Zeffyr Music",
 
   "description_partage": "I just listened to the album {{album}} of {{artiste}} on ZeffyrMusic.",
   "description_partage_playlist": "Come listen to my playlist {{playlist}} on ZeffyrMusic.",
@@ -150,6 +151,7 @@
   "generic_error": "An error occurred, please try again later.",
   "hits_by_decade": "Hits by decade",
   "top_charts": "Top Charts",
+  "visibility": "Visibility",
 
   "error_invalid_parameter": "Invalid parameter",
   "error_html_player": "HTML5 player error",

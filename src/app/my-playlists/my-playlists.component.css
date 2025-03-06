@@ -1,0 +1,7 @@
+table > thead > tr > th:first-child  {
+    width: auto;
+  }
+
+table > thead > tr > th:not(:first-child)  {
+  width: 15%;
+}

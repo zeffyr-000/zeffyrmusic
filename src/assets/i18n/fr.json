@@ -110,6 +110,7 @@
   "title_top_element": "{{title}} - Les Incontournables du Moment | Zeffyr Music",
   "title_album_artist": "{{title}} ({{year}}) : L'album de {{artist}} – {count, plural, =1 {# titre} other {# titres}} à écouter",
   "title_album": "{{title}} ({{year}}) – {count, plural, =1 {# titre} other {# titres}} à écouter",
+  "title_top_decade": "{{title}} - Les hits incontournables de la décennie | Zeffyr Music",
 
   "description_partage": "Je viens d'écouter l'album {{album}} de {{artiste}} sur ZeffyrMusic.",
   "description_partage_playlist": "Venez écouter ma playlist {{playlist}} sur ZeffyrMusic.",
@@ -151,6 +152,7 @@
   "generic_error": "Une erreur s'est produite. Veuillez réessayer plus tard.",
   "hits_by_decade": "Hits par décennie",
   "top_charts": "Top Charts",
+  "visibility": "Visibilité",
 
   "error_invalid_parameter": "Paramètre invalide",
   "error_html_player": "Erreur du lecteur HTML5",
