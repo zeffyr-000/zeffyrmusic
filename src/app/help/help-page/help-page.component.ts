@@ -39,6 +39,22 @@ export class HelpPageComponent implements OnInit {
         pageTitle = 'help_screen_locked_title';
         pageDescription = 'help_screen_locked_description';
         break;
+      case 'listen':
+        pageTitle = 'help_listen_title';
+        pageDescription = 'help_listen_description';
+        break;
+      case 'legal':
+        pageTitle = 'help_legal_title';
+        pageDescription = 'help_legal_description';
+        break;
+      case 'download':
+        pageTitle = 'help_download_title';
+        pageDescription = 'help_download_description';
+        break;
+      case 'issues':
+        pageTitle = 'help_issues_title';
+        pageDescription = 'help_issues_description';
+        break;
     }
 
     this.titleService.setTitle(this.translocoService.translate(pageTitle) + ' - Zeffyr Music');
