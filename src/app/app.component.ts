@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2, RendererFactory2 } from '@angular/core';
 import { Event, NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
@@ -27,8 +27,10 @@ export class AppComponent implements OnInit, OnDestroy {
     renderer: Renderer2;
     errorMessage: string | null = null;
     private errorMessageSubscription: Subscription;
+    private isBrowser: boolean;
 
     constructor(@Inject(DOCUMENT) private readonly document: Document,
+        @Inject(PLATFORM_ID) private platformId: object,
         private rendererFactory: RendererFactory2,
         private readonly initService: InitService,
         protected readonly playerService: PlayerService,
@@ -36,6 +38,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private readonly metaService: Meta,
         private readonly translocoService: TranslocoService,
         private cdr: ChangeDetectorRef) {
+        this.isBrowser = isPlatformBrowser(this.platformId);
+
         this.initService.getPing();
 
         this.renderer = this.rendererFactory.createRenderer(null, null);
@@ -43,35 +47,41 @@ export class AppComponent implements OnInit, OnDestroy {
         this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe(isShow => {
             this.showMessageUnlog = isShow;
         });
+        if (this.isBrowser) {
+            this.router.events.pipe(
+                filter(event => event instanceof NavigationEnd)
+            ).subscribe((event: NavigationEnd) => {
+                this.currentUrl = event.urlAfterRedirects;
+            });
 
-        this.router.events.pipe(
-            filter(event => event instanceof NavigationEnd)
-        ).subscribe((event: NavigationEnd) => {
-            this.currentUrl = event.urlAfterRedirects;
-        });
+            this.router.events.subscribe((event: Event) => {
+                if (event instanceof NavigationStart) {
+                    // Show loading indicator
+                }
 
-        this.router.events.subscribe((event: Event) => {
-            if (event instanceof NavigationStart) {
-                // Show loading indicator
-            }
+                if (event instanceof NavigationEnd) {
+                    // Hide loading indicator
+                    document.querySelector('link[rel="canonical"]').setAttribute('href', location.origin + event.url);
+                }
+            });
 
-            if (event instanceof NavigationEnd) {
-                // Hide loading indicator
-                document.querySelector('link[rel="canonical"]').setAttribute('href', location.origin + event.url);
-            }
-        });
 
-        window.addEventListener('offline', () => {
-            this.isOnline = false;
-        });
+            window.addEventListener('offline', () => {
+                this.isOnline = false;
+            });
 
-        window.addEventListener('online', () => {
-            this.isOnline = true;
-        });
+            window.addEventListener('online', () => {
+                this.isOnline = true;
+            });
+        }
 
     }
 
     ngOnInit() {
+        if (!this.isBrowser) {
+            return;
+        }
+
         if (this.document) {
             this.document.documentElement.lang = this.translocoService.getActiveLang();
         }
@@ -117,7 +127,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscriptionMessageUnlog.unsubscribe();
-        this.errorMessageSubscription.unsubscribe();
+        this.subscriptionMessageUnlog?.unsubscribe();
+        this.errorMessageSubscription?.unsubscribe();
     }
 }

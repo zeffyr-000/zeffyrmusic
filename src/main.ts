@@ -1,13 +1,13 @@
 import { enableProdMode, importProvidersFrom } from '@angular/core';
 
 import { environment } from './environments/environment';
-import { LocationStrategy, HashLocationStrategy, PathLocationStrategy } from '@angular/common';
+import { LocationStrategy, HashLocationStrategy, PathLocationStrategy, APP_BASE_HREF } from '@angular/common';
 import { NgbActiveModal, NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { InitService } from './app/services/init.service';
 import { PlayerService } from './app/services/player.service';
-import { Title, Meta, BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+import { Title, Meta, BrowserModule, bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { TranslocoService, provideTransloco, TranslocoModule } from '@jsverse/transloco';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { appConfig } from './app/app.config';
 import { TranslocoHttpLoader } from './app/transloco.loader';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
@@ -25,6 +25,7 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
     providers: [
         importProvidersFrom(BrowserModule, AppRoutingModule, FormsModule, NgbModule, AngularDraggableModule, NgxGoogleAnalyticsModule.forRoot(environment.production ? 'UA-1664521-8' : 'UA-FAKE-ID'), NgbTooltipModule, TranslocoModule, YouTubePlayerModule),
+        { provide: APP_BASE_HREF, useValue: '/' },
         {
             provide: LocationStrategy,
             useClass: ('standalone' in window.navigator && window.navigator.standalone) ?
@@ -36,7 +37,7 @@ bootstrapApplication(AppComponent, {
         Title,
         Meta,
         TranslocoService,
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withInterceptorsFromDi(), withFetch()),
         appConfig.providers,
         provideTransloco({
             config: {
@@ -48,7 +49,7 @@ bootstrapApplication(AppComponent, {
             },
             loader: TranslocoHttpLoader,
         }),
-        provideTranslocoMessageformat(),
+        provideTranslocoMessageformat(), provideClientHydration(withEventReplay()),
     ]
 })
     // tslint:disable-next-line: no-console

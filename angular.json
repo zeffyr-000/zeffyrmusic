@@ -13,10 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": {
-              "base": "dist",
-              "browser": ""
-            },
+            "outputPath": "dist",
             "index": "src/index.html",
             "polyfills": ["src/polyfills.ts", "@angular/localize/init"],
             "tsConfig": "src/tsconfig.app.json",
@@ -46,7 +43,12 @@
               "jsverse-transloco-locale",
               "flat"
             ],
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "server": "src/main.server.ts",
+            "prerender": true,
+            "ssr": {
+              "entry": "src/server.ts"
+            }
           },
           "configurations": {
             "production": {
@@ -72,6 +74,21 @@
                   "maximumWarning": "6kb"
                 }
               ]
+            },
+            "production-no-ssr": {
+              "ssr": false,
+              "prerender": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": false
             },
             "staging": {
               "fileReplacements": [

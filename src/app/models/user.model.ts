@@ -59,3 +59,14 @@ export interface IEditTitlePlaylist {
     id_playlist: string;
     titre: string;
 }
+
+export interface ISendPass {
+    id_perso: string;
+    token: string;
+    password: string;
+}
+
+export interface SendPassResponse {
+    success: boolean;
+    error?: string;
+}

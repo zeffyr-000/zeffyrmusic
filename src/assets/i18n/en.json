@@ -211,6 +211,7 @@
   "help_category_3": "Help & FAQs",
 
   "help_listen_title": "How to listen to music on Zeffyr Music",
+  "help_listen_description": "Discover how to listen to music on Zeffyr Music. Find songs, albums and playlists, and learn how to control playback to fully enjoy your music experience.",
   "help_listen_step_1_title": "Search for a Song or Playlist",
   "help_listen_step_1_content1": "Use the search bar to find an artist, album, or song.",
   "help_listen_step_1_content2": "Explore featured playlists and recommendations.",
@@ -223,6 +224,7 @@
   "help_listen_step_3_content3": "Use the player options to enable shuffle, repeat, or switch to full-screen mode.",
 
   "help_legal_title": "Is Zeffyr Music legal?",
+  "help_legal_description": "Discover if Zeffyr Music is a legal service and how it respects copyright. Learn more about the platform's legality and how it works.",
   "help_legal_content": "Yes, Zeffyr Music is a legal service.",
   "help_legal_step_1_title": "How Does Zeffyr Music Work?",
   "help_legal_step_1_content": "Zeffyr Music does not store or distribute music files. The platform streams official videos directly from YouTube while complying with YouTube’s policies.",
@@ -233,6 +235,7 @@
   "help_legal_step_2_content4": "By using Zeffyr Music, you enjoy an optimized listening experience while respecting legal requirements.",
 
   "help_download_title": "Can I download music?",
+  "help_download_description": "Find out if you can download music on Zeffyr Music. Learn why downloading is not available and how to enjoy music streaming on the platform.",
   "help_download_content": "No, Zeffyr Music does not allow downloading music as MP3 files or any other format.",
   "help_download_step_1_title": "Why?",
   "help_download_step_1_content1": "Respect for copyright laws: The music comes from YouTube, which manages licenses with artists and rights holders.",
@@ -241,6 +244,7 @@
   "help_download_step_1_content4": "Zeffyr Music is designed for online listening only, without downloads.",
 
   "help_issues_title": "Troubleshooting common issues (login, playlists, favorites)",
+  "help_issues_description": "Having trouble with Zeffyr Music? Here's how to solve the most common issues. Find solutions for login, playlist, and favorites problems.",
   "help_issues_content": "Having trouble with Zeffyr Music? Here’s how to solve the most common issues.",
   "help_issues_step_1_title": "Can’t log in or lost account",
   "help_issues_step_1_content1": "Check your credentials: Make sure your email and password are correct.",
@@ -255,5 +259,16 @@
   "help_issues_step_3_content1": "Like not saved: Wait a few seconds, then refresh the page.",
   "help_issues_step_3_content2": "Missing favorites: Make sure you are logged into your account.",
   "help_issues_step_3_content3": "Persistent issues: Try logging out and back in.",
-  "help_issues_step_4_content": "If the issue continues, wait a moment and try again later."
+  "help_issues_step_4_content": "If the issue continues, wait a moment and try again later.",
+
+  "reset_password_title": "Password Reset",
+  "reset_password_new_pass": "New Password",
+  "reset_password_pass_required": "Password is required",
+  "reset_password_pass_size": "Password must be at least 6 characters long",
+  "reset_password_pass_confirm": "Confirm Password",
+  "reset_password_pass_confirm_required": "Password confirmation is required",
+  "reset_password_pass_matching": "Passwords do not match",
+  "reset_password_action": "Reset Password",
+  "reset_password_invalid": "Your password could not be reset. Please check the reset link in your email.",
+  "reset_password_success": "Your password has been successfully reset. You can now log in with your new password."
 }

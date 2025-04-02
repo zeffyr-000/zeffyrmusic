@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTitlePlaylist, ILogin, IPass, IRegister, LoginResponse, UserReponse } from '../models/user.model';
+import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTitlePlaylist, ILogin, IPass, IRegister, ISendPass, LoginResponse, SendPassResponse, UserReponse } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,10 @@ export class UserService {
 
   resetPass(data: IPass): Observable<UserReponse> {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'pass', data, environment.httpClientConfig);
+  }
+
+  sendResetPass(data: ISendPass): Observable<SendPassResponse> {
+    return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'send_reset_pass', data, environment.httpClientConfig);
   }
 
   editPass(data: IEditPass): Observable<UserReponse> {

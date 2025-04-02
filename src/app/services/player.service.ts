@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnDestroy } from "@angular/core";
+import { Inject, Injectable, OnDestroy, PLATFORM_ID } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { BehaviorSubject, Subject, Subscription } from "rxjs";
 import { PlayerRunning } from "src/app/models/player-running.model";
@@ -8,6 +8,7 @@ import { InitService } from "./init.service";
 import { UserVideo, Video, VideoItem } from "../models/video.model";
 import { UserPlaylist } from "../models/playlist.model";
 import { FollowItem } from "../models/follow.model";
+import { isPlatformBrowser } from "@angular/common";
 
 interface CurrentKey {
     currentKey: string;
@@ -71,16 +72,23 @@ export class PlayerService implements OnDestroy {
     private errorMessageSubject = new BehaviorSubject<string | null>(null);
     errorMessage$ = this.errorMessageSubject.asObservable();
 
+    private isBrowser: boolean;
+
     constructor(
         private readonly titleService: Title,
         private readonly httpClient: HttpClient,
-        private readonly initService: InitService
+        private readonly initService: InitService,
+        @Inject(PLATFORM_ID) private platformId: object
     ) {
-        if ('requestIdleCallback' in window) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window as any).requestIdleCallback(() => this.init());
-        } else {
-            setTimeout(() => this.init(), 0);
+        this.isBrowser = isPlatformBrowser(this.platformId);
+
+        if (this.isBrowser) {
+            if ('requestIdleCallback' in window) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (window as any).requestIdleCallback(() => this.init());
+            } else {
+                setTimeout(() => this.init(), 0);
+            }
         }
 
         this.subscriptionInitializePlaylist = this.initService.subjectInitializePlaylist.subscribe(
@@ -172,6 +180,9 @@ export class PlayerService implements OnDestroy {
     }
 
     launchYTApi() {
+        if (!this.isBrowser) {
+            return;
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).onYouTubeIframeAPIReady = () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -699,6 +710,9 @@ export class PlayerService implements OnDestroy {
     }
 
     private init() {
+        if (!this.isBrowser) {
+            return;
+        }
         const tag = document.createElement("script");
         tag.src = "//www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName("script")[0];

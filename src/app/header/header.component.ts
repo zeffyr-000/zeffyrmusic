@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgbActiveModal, NgbModal, NgbModalRef, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -10,7 +10,7 @@ import { PlayerService } from '../services/player.service';
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { LoginResponse, UserReponse } from '../models/user.model';
-import { DOCUMENT, NgClass } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, NgClass } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
 import { AngularDraggableModule } from 'angular2-draggable';
@@ -77,6 +77,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     @ViewChild('contentModalAddVideo', {})
     private readonly contentModalAddVideo: TemplateRef<unknown>;
+    public isBrowser: boolean;
 
     constructor(public activeModal: NgbActiveModal,
         private readonly modalService: NgbModal,
@@ -89,7 +90,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         private readonly googleAnalyticsService: GoogleAnalyticsService,
         private readonly translocoService: TranslocoService,
         private renderer: Renderer2,
-        @Inject(DOCUMENT) private document: Document) {
+        @Inject(DOCUMENT) private document: Document,
+        @Inject(PLATFORM_ID) platformId: object) {
+        this.isBrowser = isPlatformBrowser(platformId);
         this.isConnected = false;
         this.URL_ASSETS = environment.URL_ASSETS;
     }
@@ -123,7 +126,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
         this.subscriptionVolume = this.playerService.subjectVolumeChange.subscribe(volume => {
             this.valueSliderVolume = volume;
-            this.sliderVolumeRef.nativeElement.style.transform = 'none';
+            if (this.isBrowser) {
+                this.sliderVolumeRef.nativeElement.style.transform = 'none';
+            }
         }
         );
 

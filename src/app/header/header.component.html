@@ -210,9 +210,11 @@
             <div id="slider_1_main">
                 <div id="slider_1_content" class="ui-slider" (click)="onClickSliderPlayer($event)" #contentSlider1
                     role="presentation">
+                    @if(isBrowser){
                     <span class="ui-slider-handle" #sliderPlayer [style.left.%]="valueSliderPlayer" ngDraggable
                         [bounds]="contentSlider1" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
                         (movingOffset)="onDragMovingPlayer($event)" (endOffset)="onDragEndPlayer($event)"></span>
+                    }
                 </div>
                 <div id="load_video" [style.width.%]="loadVideo"></div>
                 <div id="load_video_current" [style.width.%]="valueSliderPlayer"></div>
@@ -227,9 +229,11 @@
             <div id="slider_2_main">
                 <div id="slider_2_content" class="ui-slider" (click)="onClickSliderVolume($event)" #contentSlider2
                     role="presentation">
+                    @if(isBrowser) {
                     <span class="ui-slider-handle" #sliderVolume [style.left.%]="valueSliderVolume" ngDraggable
                         [bounds]="contentSlider2" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
                         (movingOffset)="onDragMovingVolume($event)" (endOffset)="onDragEndVolume($event)"></span>
+                    }
                 </div>
                 <div id="load_volume_current" [style.width.%]="valueSliderVolume"></div>
             </div>

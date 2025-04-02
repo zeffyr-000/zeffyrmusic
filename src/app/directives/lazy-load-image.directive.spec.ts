@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Renderer2 } from '@angular/core';
 import { LazyLoadImageDirective } from './lazy-load-image.directive';
@@ -20,11 +20,12 @@ describe('LazyLoadImageDirective', () => {
     };
 
     TestBed.configureTestingModule({
-    imports: [TestComponent, LazyLoadImageDirective],
-    providers: [
-        { provide: Renderer2, useValue: renderer2Mock }
-    ]
-});
+      imports: [TestComponent, LazyLoadImageDirective],
+      providers: [
+        { provide: Renderer2, useValue: renderer2Mock },
+        { provide: PLATFORM_ID, useValue: 'browser' }
+      ]
+    });
 
     fixture = TestBed.createComponent(TestComponent);
     imgEl = fixture.debugElement.children[0];
@@ -32,12 +33,12 @@ describe('LazyLoadImageDirective', () => {
   });
 
   it('should create an instance', () => {
-    const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2));
+    const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
     expect(directive).toBeTruthy();
   });
 
   it('should set src attribute when image is in viewport', () => {
-    const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2));
+    const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
     directive.src = 'https://example.com/image.jpg';
 
     // Mock IntersectionObserver
