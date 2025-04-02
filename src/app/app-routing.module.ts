@@ -41,6 +41,10 @@ const routes: Routes = [
     loadComponent: () => import('./my-selection/my-selection.component').then(m => m.MySelectionComponent),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'reset_pass/:id_perso/:token',
+    loadComponent: () => import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+  },
   { path: '**', redirectTo: '' }
 ];
 

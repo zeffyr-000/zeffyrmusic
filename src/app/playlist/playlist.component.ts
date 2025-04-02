@@ -1,6 +1,6 @@
-import { Component, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, NgZone, ChangeDetectorRef, Inject, PLATFORM_ID, Optional } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
@@ -10,7 +10,7 @@ import { Video } from '../models/video.model';
 import { Playlist } from '../models/playlist.model';
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import { PlaylistService } from '../services/playlist.service';
-import { NgClass } from '@angular/common';
+import { APP_BASE_HREF, isPlatformBrowser, NgClass } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
@@ -52,8 +52,11 @@ export class PlaylistComponent implements OnDestroy {
     subscriptionIsPlaying: Subscription;
     subscriptionCurrentPlaylist: Subscription;
     subscriptionPlayerRunning: Subscription;
+    isBrowser: boolean;
 
     constructor(private readonly ref: ChangeDetectorRef,
+        @Inject(PLATFORM_ID) private platformId: object,
+        @Optional() @Inject(APP_BASE_HREF) private baseHref: string,
         private readonly playlistService: PlaylistService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly initService: InitService,
@@ -62,7 +65,9 @@ export class PlaylistComponent implements OnDestroy {
         private readonly metaService: Meta,
         private readonly translocoService: TranslocoService,
         private readonly googleAnalyticsService: GoogleAnalyticsService,
-        private readonly ngZone: NgZone) {
+        private readonly ngZone: NgZone,
+        private readonly router: Router) {
+        this.isBrowser = isPlatformBrowser(this.platformId);
 
         activatedRoute.params.subscribe(() => {
             this.isLoading = true;
@@ -220,7 +225,11 @@ export class PlaylistComponent implements OnDestroy {
                         this.metaService.updateTag({ name: 'og:image', content: data.img_big });
                     }
 
-                    this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+                    if (this.isBrowser) {
+                        this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+                    } else {
+                        this.metaService.updateTag({ name: 'og:url', content: `https://www.${this.baseHref}/${this.router.url}` });
+                    }
                 } else {
                     this.isPrivate = true;
                 }
@@ -263,7 +272,11 @@ export class PlaylistComponent implements OnDestroy {
         this.metaService.updateTag({ name: 'og:title', content: '' });
         this.metaService.updateTag({ name: 'og:description', content: '' });
         this.metaService.updateTag({ name: 'og:image', content: '' });
-        this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+        if (this.isBrowser) {
+            this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+        } else {
+            this.metaService.updateTag({ name: 'og:url', content: `https://www.${this.baseHref}/${this.router.url}` });
+        }
 
         this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
     }

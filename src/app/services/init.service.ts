@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
 import { UserVideo, Video } from '../models/video.model';
 import { FollowItem } from '../models/follow.model';
@@ -36,6 +36,7 @@ export class InitService {
     private darkModeEnabled = false;
     private language = 'fr';
     private changeIsConnectedCalled = false;
+    private isBrowser: boolean;
 
     subjectConnectedChange: BehaviorSubject<{
         isConnected: boolean,
@@ -76,13 +77,21 @@ export class InitService {
     }>();
 
     constructor(@Inject(DOCUMENT) private document: Document,
+        @Inject(PLATFORM_ID) private platformId: object,
         private readonly httpClient: HttpClient,
         private readonly translocoService: TranslocoService) {
-        this.document.querySelector('link[rel=icon]')?.setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);
+        this.isBrowser = isPlatformBrowser(this.platformId);
+        if (this.isBrowser) {
+            this.document.querySelector('link[rel=icon]')?.setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);
+        }
         this.translocoService.setActiveLang(environment.lang);
     }
 
     getPing() {
+        if (!this.isBrowser) {
+            return of(null);
+        }
+
         return this.httpClient.get(environment.URL_SERVER + 'ping', environment.httpClientConfig)
             .subscribe((data: PingResponse) => {
                 this.isConnected = data.est_connecte;
@@ -150,7 +159,9 @@ export class InitService {
         this.darkModeEnabled = false;
         this.language = 'fr';
 
-        document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
+        if (this.isBrowser) {
+            document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
+        }
 
         this.onChangeIsConnected();
     }
@@ -163,7 +174,11 @@ export class InitService {
     }
 
     getHomeInit(): Observable<{ top: HomeAlbum[], top_albums: HomeAlbum[] }> {
-        return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
+        if (this.isBrowser) {
+            return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
+        } else {
+            return of({ top: [], top_albums: [] });
+        }
     }
 
     getIsConnected(): boolean | Observable<boolean> {

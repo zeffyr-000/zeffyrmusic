@@ -212,6 +212,7 @@
   "help_category_3": "Aide et questions fréquentes",
 
   "help_listen_title": "Comment écouter de la musique sur Zeffyr Music",
+  "help_listen_description": "Découvrez comment écouter de la musique sur Zeffyr Music. Trouvez des chansons, des albums et des playlists, et apprenez à contrôler la lecture pour profiter pleinement de votre expérience musicale.",
   "help_listen_step_1_title": "Rechercher un morceau ou une playlist",
   "help_listen_step_1_content1": "Utilisez la barre de recherche pour trouver un artiste, un album ou une chanson.",
   "help_listen_step_1_content2": "Explorez les playlists mises en avant ou les recommandations.",
@@ -224,6 +225,7 @@
   "help_listen_step_3_content3": "Utilisez les options du lecteur pour activer la lecture en aléatoire, en répétition ou passer en plein écran.",
 
   "help_legal_title": "Zeffyr Music est-il légal ?",
+  "help_legal_description": "Découvrez si Zeffyr Music est un service légal et comment il respecte les droits d'auteur. Apprenez-en plus sur la légalité de la plateforme et sur la manière dont elle fonctionne.",
   "help_legal_content": "Oui, Zeffyr Music est un service légal.",
   "help_legal_step_1_title": "Comment fonctionne Zeffyr Music ?",
   "help_legal_step_1_content": "Zeffyr Music ne stocke ni ne distribue de fichiers musicaux. La plateforme diffuse des vidéos officielles directement depuis YouTube, en respectant les règles de la plateforme.",
@@ -234,6 +236,7 @@
   "help_legal_step_2_content4": "En utilisant Zeffyr Music, vous profitez d'une expérience optimisée pour l'écoute musicale tout en respectant les règles légales en place.",
 
   "help_download_title": "Peut-on télécharger la musique ?",
+  "help_download_description": "Découvrez si vous pouvez télécharger de la musique sur Zeffyr Music. Apprenez pourquoi le téléchargement n'est pas disponible et comment profiter de la musique en streaming sur la plateforme.",
   "help_download_content": "Non, Zeffyr Music ne permet pas de télécharger la musique sous forme de fichiers MP3 ou autres formats.",
   "help_download_step_1_title": "Pourquoi ?",
   "help_download_step_1_content1": "Respect des droits d’auteur : La musique diffusée provient de YouTube, qui gère les licences avec les artistes et ayants droit.",
@@ -242,6 +245,7 @@
   "help_download_step_1_content4": "Zeffyr Music est conçu pour une écoute en ligne, sans téléchargement.",
 
   "help_issues_title": "Résoudre les problèmes courants (connexion, playlists, favoris)",
+  "help_issues_description": "Vous rencontrez un souci avec Zeffyr Music ? Voici comment régler les problèmes les plus fréquents. Trouvez des solutions pour les problèmes de connexion, de playlists et de favoris.",
   "help_issues_content": "Vous rencontrez un souci avec Zeffyr Music ? Voici comment régler les problèmes les plus fréquents.",
   "help_issues_step_1_title": "Connexion impossible ou compte perdu",
   "help_issues_step_1_content1": "Vérifiez vos identifiants : Assurez-vous que votre email et votre mot de passe sont corrects.",
@@ -256,5 +260,16 @@
   "help_issues_step_3_content1": "Like non enregistré : Attendez quelques secondes, puis actualisez la page.",
   "help_issues_step_3_content2": "Favoris disparus : Vérifiez si vous êtes bien connecté à votre compte.",
   "help_issues_step_3_content3": "Problème persistant : Essayez de vous déconnecter puis de vous reconnecter.",
-  "help_issues_step_4_content": "Si le problème persiste, patientez quelques instants et réessayez plus tard."
+  "help_issues_step_4_content": "Si le problème persiste, patientez quelques instants et réessayez plus tard.",
+
+  "reset_password_title": "Réinitialisation du mot de passe",
+  "reset_password_new_pass": "Nouveau mot de passe",
+  "reset_password_pass_required": "Le mot de passe est requis",
+  "reset_password_pass_size": "Le mot de passe doit contenir au moins 6 caractères",
+  "reset_password_pass_confirm": "Confirmer le mot de passe",
+  "reset_password_pass_confirm_required": "La confirmation du mot de passe est requise",
+  "reset_password_pass_matching": "Les mots de passe ne correspondent pas",
+  "reset_password_action": "Réinitialiser le mot de passe",
+  "reset_password_invalid": "Votre mot de passe n'a pas pu être réinitialisé. Veuillez vérifier le lien de réinitialisation dans votre e-mail.",
+  "reset_password_success": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe."
 }
