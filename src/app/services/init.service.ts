@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, map, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
@@ -88,10 +88,6 @@ export class InitService {
     }
 
     getPing() {
-        if (!this.isBrowser) {
-            return of(null);
-        }
-
         return this.httpClient.get(environment.URL_SERVER + 'ping', environment.httpClientConfig)
             .subscribe((data: PingResponse) => {
                 this.isConnected = data.est_connecte;
@@ -174,11 +170,7 @@ export class InitService {
     }
 
     getHomeInit(): Observable<{ top: HomeAlbum[], top_albums: HomeAlbum[] }> {
-        if (this.isBrowser) {
-            return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
-        } else {
-            return of({ top: [], top_albums: [] });
-        }
+        return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
     }
 
     getIsConnected(): boolean | Observable<boolean> {

@@ -3,6 +3,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { environment } from '../../environments/environment';
 import { Album } from '../models/album.model';
 import { ArtistService } from '../services/artist.service';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
@@ -66,6 +67,8 @@ export class ArtistComponent implements OnInit {
                     this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
                     if (this.isBrowser) {
                         this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+                    } else {
+                        this.metaService.updateTag({ name: 'og:url', content: `${environment.URL_BASE}artist/${idArtist}` });
                     }
                     this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('description_artist', { artist: this.name, count: this.listAlbums.length }) });
                 }

@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  URL_BASE: 'https://www.zeffyrmusic.com/',
   URL_SERVER: 'https://www.zeffyrmusic.com/api/',
   httpClientConfig: {},
   lang: 'fr',
