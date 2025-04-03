@@ -228,7 +228,11 @@ export class PlaylistComponent implements OnDestroy {
                     if (this.isBrowser) {
                         this.metaService.updateTag({ name: 'og:url', content: document.location.href });
                     } else {
-                        this.metaService.updateTag({ name: 'og:url', content: `https://www.${this.baseHref}/${this.router.url}` });
+                        if (data.id_top !== undefined) {
+                            this.metaService.updateTag({ name: 'og:url', content: `${environment.URL_BASE}top/${data.id_top}` });
+                        } else {
+                            this.metaService.updateTag({ name: 'og:url', content: `${environment.URL_BASE}playlist/${this.idPlaylist}` });
+                        }
                     }
                 } else {
                     this.isPrivate = true;

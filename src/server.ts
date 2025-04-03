@@ -12,21 +12,15 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 const app = express();
 const commonEngine = new CommonEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+app.set('strict routing', true);
 
-/**
- * Serve static files from /browser
- */
+app.use((req, res, next) => {
+  if (req.url.length > 1 && req.url.endsWith('/')) {
+    req.url = req.url.slice(0, -1);
+  }
+  next();
+});
+
 app.get(
   '**',
   express.static(browserDistFolder, {
@@ -35,9 +29,6 @@ app.get(
   }),
 );
 
-/**
- * Handle all other requests by rendering the Angular application.
- */
 app.get('**', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;
   const baseUrlValue = baseUrl || '/';
@@ -54,10 +45,6 @@ app.get('**', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-/**
- * Start the server if this module is the main entry point.
- * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
- */
 if (isMainModule(import.meta.url) || process.env['PM2_USAGE']) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, () => {
