@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, makeStateKey, OnInit, PLATFORM_ID, TransferState } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -6,6 +6,9 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
 import { DefaultImageDirective } from '../directives/default-image.directive';
+import { isPlatformServer } from '@angular/common';
+
+const RANDOM_TOP_KEY = makeStateKey<HomeAlbum[]>('randomTop');
 
 @Component({
     selector: 'app-home',
@@ -24,11 +27,13 @@ export class HomeComponent implements OnInit {
     private lang: string;
     protected page: string;
 
-    constructor(private readonly initService: InitService,
+    constructor(@Inject(PLATFORM_ID) private platformId: object,
+        private readonly initService: InitService,
         private readonly titleService: Title,
         private readonly metaService: Meta,
         private readonly route: ActivatedRoute,
         private readonly translocoService: TranslocoService,
+        private transferState: TransferState,
         private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     ngOnInit() {
@@ -59,7 +64,16 @@ export class HomeComponent implements OnInit {
                 next: (data: { top: HomeAlbum[], top_albums: HomeAlbum[] }) => {
                     this.isLoading = false;
 
-                    this.listTopSliced = data.top.sort(() => Math.random() - 0.5).slice(0, 5);
+                    if (isPlatformServer(this.platformId)) {
+                        const randomizedTop = data.top.sort(() => Math.random() - 0.5).slice(0, 5);
+                        this.transferState.set(RANDOM_TOP_KEY, randomizedTop);
+                        this.listTopSliced = randomizedTop;
+                    } else {
+                        const storedTop = this.transferState.get(RANDOM_TOP_KEY, null);
+                        this.listTopSliced = storedTop || data.top.slice(0, 5);
+                        this.transferState.remove(RANDOM_TOP_KEY);
+                    }
+
                     this.listTop = data.top.filter((album: HomeAlbum) => !album.decade);
                     this.listTopDecade = data.top.filter((album: HomeAlbum) => album.decade).sort((a, b) => a.id.localeCompare(b.id));
 

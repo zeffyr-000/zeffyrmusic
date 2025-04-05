@@ -62,7 +62,7 @@ export interface IEditTitlePlaylist {
 
 export interface ISendPass {
     id_perso: string;
-    token: string;
+    key: string;
     password: string;
 }
 

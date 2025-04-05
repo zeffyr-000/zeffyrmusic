@@ -40,7 +40,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private cdr: ChangeDetectorRef) {
         this.isBrowser = isPlatformBrowser(this.platformId);
 
-        this.initService.getPing();
+        if (this.isBrowser) {
+            this.initService.getPing();
+        }
 
         this.renderer = this.rendererFactory.createRenderer(null, null);
 

@@ -7,9 +7,6 @@ export const environment = {
   production: false,
   URL_BASE: 'http://localhost:4200/',
   URL_SERVER: '/api/',
-  httpClientConfig: {
-    withCredentials: true
-  },
   lang: 'fr',
   availableLangs: ['fr', 'en'],
   URL_ASSETS: '',
