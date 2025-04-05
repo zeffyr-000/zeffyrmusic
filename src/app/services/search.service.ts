@@ -1,28 +1,55 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Inject, Injectable, PLATFORM_ID, makeStateKey, TransferState } from '@angular/core';
+import { Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SearchBarResponse, SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
+import { isPlatformServer } from '@angular/common';
+
+const SEARCH1_KEY = (query: string) => makeStateKey<SearchResults1>(`search1-${query}`);
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
-  constructor(private httpClient: HttpClient) { }
+  constructor(@Inject(PLATFORM_ID) private platformId: object,
+    private httpClient: HttpClient,
+    private transferState: TransferState) { }
 
   fullSearch1(query: string): Observable<SearchResults1> {
-    return this.httpClient.get<SearchResults1>(environment.URL_SERVER + 'fullsearch1/' + encodeURIComponent(query), environment.httpClientConfig);
+    const key = SEARCH1_KEY(query);
+    const storedValue = this.transferState.get(key, null);
+
+    if (storedValue) {
+      return of(storedValue);
+    }
+
+    return this.httpClient
+      .get<SearchResults1>(environment.URL_SERVER + 'fullsearch1/' + encodeURIComponent(query))
+      .pipe(
+        tap(data => {
+          if (isPlatformServer(this.platformId)) {
+            this.transferState.set(key, data);
+          }
+        })
+      );
   }
 
   fullSearch2(query: string): Observable<SearchResults2> {
-    return this.httpClient.get<SearchResults2>(environment.URL_SERVER + 'fullsearch2/' + encodeURIComponent(query), environment.httpClientConfig);
+    if (isPlatformServer(this.platformId)) {
+      return of({ tab_video: [] });
+    }
+
+    return this.httpClient.get<SearchResults2>(environment.URL_SERVER + 'fullsearch2/' + encodeURIComponent(query));
   }
 
   fullSearch3(query: string): Observable<SearchResults3> {
-    return this.httpClient.get<SearchResults3>(environment.URL_SERVER + 'fullsearch3/' + encodeURIComponent(query), environment.httpClientConfig);
+    if (isPlatformServer(this.platformId)) {
+      return of({ tab_extra: [] });
+    }
+    return this.httpClient.get<SearchResults3>(environment.URL_SERVER + 'fullsearch3/' + encodeURIComponent(query));
   }
 
   searchBar(query: string): Observable<SearchBarResponse> {
-    return this.httpClient.get<SearchBarResponse>(environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(query), environment.httpClientConfig);
+    return this.httpClient.get<SearchBarResponse>(environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(query));
   }
 }

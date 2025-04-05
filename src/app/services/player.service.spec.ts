@@ -418,8 +418,7 @@ describe('PlayerService', () => {
         service.removeVideo('2', callbackSuccess);
 
         expect(httpClientSpy).toHaveBeenCalledWith(
-            environment.URL_SERVER + 'supprimer/' + '2',
-            environment.httpClientConfig
+            environment.URL_SERVER + 'supprimer/' + '2'
         );
         expect(service.listVideo.length).toBe(2);
         expect(callbackSuccess).toHaveBeenCalled();

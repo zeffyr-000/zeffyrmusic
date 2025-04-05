@@ -208,7 +208,7 @@ describe('PlaylistComponent', () => {
 
     component.loadPlaylist(url);
 
-    expect(httpClientSpy).toHaveBeenCalledWith(url, environment.httpClientConfig);
+    expect(httpClientSpy).toHaveBeenCalledWith(url);
     expect(component.isPrivate).toBeFalse();
     expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
     // Vérifiez les autres propriétés de la même manière
@@ -230,7 +230,7 @@ describe('PlaylistComponent', () => {
 
     component.loadPlaylist(url);
 
-    expect(httpClientSpy).toHaveBeenCalledWith(url, environment.httpClientConfig);
+    expect(httpClientSpy).toHaveBeenCalledWith(url);
     expect(component.isPrivate).toBeTrue();
     // Vérifiez les autres propriétés de la même manière
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
@@ -250,7 +250,7 @@ describe('PlaylistComponent', () => {
 
     component.loadPlaylist(url);
 
-    expect(httpClientSpy).toHaveBeenCalledWith(url, environment.httpClientConfig);
+    expect(httpClientSpy).toHaveBeenCalledWith(url);
     expect(component.isPrivate).toBeFalse();
     expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
     // Vérifiez les autres propriétés de la même manière
@@ -268,7 +268,7 @@ describe('PlaylistComponent', () => {
 
     component.loadPlaylist(url);
 
-    expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1', environment.httpClientConfig);
+    expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1');
   });
 
   it('no description', () => {
@@ -279,7 +279,7 @@ describe('PlaylistComponent', () => {
 
     component.loadPlaylist(url);
 
-    expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1', environment.httpClientConfig);
+    expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1');
     expect(component.description).toEqual('');
   });
 

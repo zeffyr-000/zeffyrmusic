@@ -408,8 +408,7 @@ export class PlayerService implements OnDestroy {
     removeVideo(idVideo: string, callbackSuccess: () => void) {
         this.httpClient
             .get(
-                environment.URL_SERVER + "supprimer/" + idVideo,
-                environment.httpClientConfig
+                environment.URL_SERVER + "supprimer/" + idVideo
             )
             .subscribe({
                 next: (data: { success: boolean }) => {
@@ -490,8 +489,7 @@ export class PlayerService implements OnDestroy {
                 "switch_publique?id_playlist=" +
                 idPlaylist +
                 "&statut=" +
-                status,
-                environment.httpClientConfig
+                status
             )
             .subscribe({
                 next: (data: { success: boolean }) => {
@@ -513,8 +511,7 @@ export class PlayerService implements OnDestroy {
     deletePlaylist(idPlaylist: string) {
         this.httpClient
             .get(
-                environment.URL_SERVER + "playlist-supprimer/" + idPlaylist,
-                environment.httpClientConfig
+                environment.URL_SERVER + "playlist-supprimer/" + idPlaylist
             )
             .subscribe({
                 next: (data: { success: boolean }) => {
@@ -540,8 +537,7 @@ export class PlayerService implements OnDestroy {
     switchFollow(idPlaylist: string, title = "", artist = "", urlImage = "") {
         this.httpClient
             .get(
-                environment.URL_SERVER + "switch_suivi/" + idPlaylist,
-                environment.httpClientConfig
+                environment.URL_SERVER + "switch_suivi/" + idPlaylist
             )
             .subscribe({
                 next: (data: { success: boolean, est_suivi: boolean }) => {
@@ -584,8 +580,7 @@ export class PlayerService implements OnDestroy {
                     titre: addTitle,
                     artiste: addArtist,
                     duree: addDuration
-                },
-                environment.httpClientConfig
+                }
             )
             .subscribe({
                 next: (data: { success: boolean }) => {
@@ -665,8 +660,7 @@ export class PlayerService implements OnDestroy {
                 environment.URL_SERVER + "add_like",
                 {
                     key
-                },
-                environment.httpClientConfig
+                }
             )
             .subscribe(
                 (data: { success: boolean, like: UserVideo }) => {
@@ -686,8 +680,7 @@ export class PlayerService implements OnDestroy {
                 environment.URL_SERVER + "remove_like",
                 {
                     key
-                },
-                environment.httpClientConfig
+                }
             )
             .subscribe({
                 next: (data: { success: boolean }) => {

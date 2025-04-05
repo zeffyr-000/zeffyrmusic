@@ -17,7 +17,7 @@ export class ResetPasswordComponent implements OnInit {
   loading = false;
   submitted = false;
   idPerso: string;
-  token: string;
+  key: string;
   formInvalid = false;
   formSuccess = false;
 
@@ -32,7 +32,7 @@ export class ResetPasswordComponent implements OnInit {
 
   ngOnInit() {
     this.idPerso = this.route.snapshot.params['id_perso'];
-    this.token = this.route.snapshot.params['token'];
+    this.key = this.route.snapshot.params['key'];
 
     this.resetForm = this.formBuilder.group({
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -59,7 +59,7 @@ export class ResetPasswordComponent implements OnInit {
     this.loading = true;
     this.userService.sendResetPass({
       id_perso: this.idPerso,
-      token: this.token,
+      key: this.key,
       password: this.resetForm.value.password
     }).subscribe({
       next: data => {

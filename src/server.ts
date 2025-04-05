@@ -4,6 +4,8 @@ import express from 'express';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bootstrap from './main.server';
+import cookieParser from 'cookie-parser';
+import { REQUEST } from './app/tokens';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -12,20 +14,14 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 const app = express();
 const commonEngine = new CommonEngine();
 
-app.set('strict routing', true);
-
-app.use((req, res, next) => {
-  if (req.url.length > 1 && req.url.endsWith('/')) {
-    req.url = req.url.slice(0, -1);
-  }
-  next();
-});
+app.use(cookieParser());
 
 app.get(
   '**',
   express.static(browserDistFolder, {
     maxAge: '1y',
-    index: 'index.html'
+    index: 'index.html',
+    redirect: false,
   }),
 );
 
@@ -39,7 +35,7 @@ app.get('**', (req, res, next) => {
       documentFilePath: indexHtml,
       url: `${protocol}://${headers.host}${originalUrl}`,
       publicPath: browserDistFolder,
-      providers: [{ provide: APP_BASE_HREF, useValue: baseUrlValue }],
+      providers: [{ provide: APP_BASE_HREF, useValue: baseUrlValue }, { provide: REQUEST, useValue: req }],
     })
     .then((html) => res.send(html))
     .catch((err) => next(err));

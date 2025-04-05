@@ -42,7 +42,7 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'reset_pass/:id_perso/:token',
+    path: 'reset_pass/:id_perso/:key',
     loadComponent: () => import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
   },
   { path: '**', redirectTo: '' }

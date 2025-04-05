@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
@@ -23,6 +23,8 @@ export interface PingResponse {
     tab_index: number[];
     tab_video: string[];
 }
+
+const HOME_KEY = makeStateKey<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>('homeData');
 
 @Injectable({
     providedIn: 'root'
@@ -79,6 +81,7 @@ export class InitService {
     constructor(@Inject(DOCUMENT) private document: Document,
         @Inject(PLATFORM_ID) private platformId: object,
         private readonly httpClient: HttpClient,
+        private transferState: TransferState,
         private readonly translocoService: TranslocoService) {
         this.isBrowser = isPlatformBrowser(this.platformId);
         if (this.isBrowser) {
@@ -88,7 +91,11 @@ export class InitService {
     }
 
     getPing() {
-        return this.httpClient.get(environment.URL_SERVER + 'ping', environment.httpClientConfig)
+        if (!this.isBrowser) {
+            return;
+        }
+
+        return this.httpClient.get(environment.URL_SERVER + 'ping')
             .subscribe((data: PingResponse) => {
                 this.isConnected = data.est_connecte;
                 let listPlaylist: UserPlaylist[] = [];
@@ -170,7 +177,19 @@ export class InitService {
     }
 
     getHomeInit(): Observable<{ top: HomeAlbum[], top_albums: HomeAlbum[] }> {
-        return this.httpClient.get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(environment.URL_SERVER + 'home_init', environment.httpClientConfig);
+        const storedValue = this.transferState.get(HOME_KEY, null);
+        if (storedValue) {
+            return of(storedValue);
+        }
+
+        return this.httpClient
+            .get<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>(
+                environment.URL_SERVER + 'home_init'
+            ).pipe(
+                tap(response => {
+                    this.transferState.set(HOME_KEY, response);
+                })
+            );
     }
 
     getIsConnected(): boolean | Observable<boolean> {
