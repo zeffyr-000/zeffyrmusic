@@ -1,4 +1,4 @@
-import { Component, OnDestroy, NgZone, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, NgZone, ViewChild, AfterViewInit } from '@angular/core';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';

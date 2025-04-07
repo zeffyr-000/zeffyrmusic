@@ -19,7 +19,8 @@ export class SearchService {
     const key = SEARCH1_KEY(query);
     const storedValue = this.transferState.get(key, null);
 
-    if (storedValue) {
+    if (storedValue && !isPlatformServer(this.platformId)) {
+      this.transferState.remove(key);
       return of(storedValue);
     }
 

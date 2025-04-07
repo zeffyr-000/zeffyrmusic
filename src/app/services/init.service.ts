@@ -38,6 +38,7 @@ export class InitService {
     private darkModeEnabled = false;
     private language = 'fr';
     private changeIsConnectedCalled = false;
+    private pingInitialized = false;
     private isBrowser: boolean;
 
     subjectConnectedChange: BehaviorSubject<{
@@ -46,21 +47,24 @@ export class InitService {
         idPerso: string,
         mail: string,
         darkModeEnabled: boolean,
-        language: string
+        language: string,
+        pingInitialized: boolean
     }> = new BehaviorSubject<{
         isConnected: boolean,
         pseudo: string,
         idPerso: string,
         mail: string,
         darkModeEnabled: boolean,
-        language: string
+        language: string,
+        pingInitialized: boolean
     }>({
         isConnected: this.isConnected,
         pseudo: this.pseudo,
         idPerso: this.idPerso,
         mail: this.mail,
         darkModeEnabled: this.darkModeEnabled,
-        language: this.language
+        language: this.language,
+        pingInitialized: this.pingInitialized
     });
 
     subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
@@ -90,44 +94,49 @@ export class InitService {
         this.translocoService.setActiveLang(environment.lang);
     }
 
-    getPing() {
+    public getPing(): void {
         if (!this.isBrowser) {
             return;
         }
 
-        return this.httpClient.get(environment.URL_SERVER + 'ping')
-            .subscribe((data: PingResponse) => {
-                this.isConnected = data.est_connecte;
-                let listPlaylist: UserPlaylist[] = [];
-                let listFollow: FollowItem[] = [];
-                let listLikeVideo: UserVideo[] = [];
-
-                if (this.isConnected) {
-                    this.pseudo = data.pseudo;
-                    this.idPerso = data.id_perso;
-                    this.mail = data.mail;
-                    this.darkModeEnabled = data.dark_mode_enabled;
-                    this.language = data.language;
-
-                    listPlaylist = data.liste_playlist;
-                    listFollow = data.liste_suivi;
-                    listLikeVideo = data.like_video;
-                } else {
-                    this.pseudo = '';
-                    this.idPerso = '';
-                    this.mail = '';
-                }
-
-                this.onChangeIsConnected();
-
-                this.subjectInitializePlaylist.next({
-                    listPlaylist,
-                    listFollow,
-                    listVideo: data.liste_video,
-                    tabIndex: data.tab_index,
-                    listLikeVideo
-                });
+        this.httpClient.get<PingResponse>(environment.URL_SERVER + 'ping')
+            .subscribe(data => {
+                this.handlePingResponse(data);
             });
+    }
+
+    private handlePingResponse(data: PingResponse): void {
+        this.isConnected = data.est_connecte;
+        let listPlaylist: UserPlaylist[] = [];
+        let listFollow: FollowItem[] = [];
+        let listLikeVideo: UserVideo[] = [];
+
+        if (this.isConnected) {
+            this.pseudo = data.pseudo;
+            this.idPerso = data.id_perso;
+            this.mail = data.mail;
+            this.darkModeEnabled = data.dark_mode_enabled;
+            this.language = data.language;
+
+            listPlaylist = data.liste_playlist;
+            listFollow = data.liste_suivi;
+            listLikeVideo = data.like_video;
+        } else {
+            this.pseudo = '';
+            this.idPerso = '';
+            this.mail = '';
+        }
+        this.pingInitialized = true;
+
+        this.onChangeIsConnected();
+
+        this.subjectInitializePlaylist.next({
+            listPlaylist,
+            listFollow,
+            listVideo: data.liste_video,
+            tabIndex: data.tab_index,
+            listLikeVideo
+        });
     }
 
     onChangeIsConnected() {
@@ -139,7 +148,8 @@ export class InitService {
             idPerso: this.idPerso,
             mail: this.mail,
             darkModeEnabled: this.darkModeEnabled,
-            language: this.language
+            language: this.language,
+            pingInitialized: this.pingInitialized
         });
     }
 
@@ -178,7 +188,8 @@ export class InitService {
 
     getHomeInit(): Observable<{ top: HomeAlbum[], top_albums: HomeAlbum[] }> {
         const storedValue = this.transferState.get(HOME_KEY, null);
-        if (storedValue) {
+        if (storedValue && this.isBrowser) {
+            this.transferState.remove(HOME_KEY);
             return of(storedValue);
         }
 
@@ -187,7 +198,9 @@ export class InitService {
                 environment.URL_SERVER + 'home_init'
             ).pipe(
                 tap(response => {
-                    this.transferState.set(HOME_KEY, response);
+                    if (!this.isBrowser) {
+                        this.transferState.set(HOME_KEY, response);
+                    }
                 })
             );
     }

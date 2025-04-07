@@ -104,7 +104,7 @@ describe('HeaderComponent', () => {
     modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open', 'dismissAll']);
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
 
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false, language: 'en' });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false, language: 'en', pingInitialized: false });
     initServiceMock.logOut = jasmine.createSpy('logOut');
     playerServiceMock.subjectRepeatChange = new BehaviorSubject(false);
     playerServiceMock.subjectRandomChange = new BehaviorSubject(false);
@@ -720,7 +720,7 @@ describe('HeaderComponent', () => {
   });
 
   it('should react to darkModeEnabled being true', () => {
-    initServiceMock.subjectConnectedChange.next({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: true, language: 'en' });
+    initServiceMock.subjectConnectedChange.next({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: true, language: 'en', pingInitialized: true });
 
     fixture.detectChanges();
 

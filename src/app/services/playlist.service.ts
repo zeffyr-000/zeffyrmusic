@@ -28,7 +28,8 @@ export class PlaylistService {
     const key = PLAYLIST_KEY(url);
     const storedValue = this.transferState.get(key, null);
 
-    if (storedValue) {
+    if (storedValue && this.isBrowser) {
+      this.transferState.remove(key);
       return of(storedValue);
     }
 

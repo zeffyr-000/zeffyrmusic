@@ -43,26 +43,27 @@ describe('SettingsComponent', () => {
       idPerso: '',
       mail: '',
       darkModeEnabled: false,
-      language: 'fr'
+      language: 'fr',
+      pingInitialized: true
     });
     initServiceMock.logOut = jasmine.createSpy('logOut');
     cdrMock = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
 
     await TestBed.configureTestingModule({
-    imports: [
+      imports: [
         NgbModalModule,
         getTranslocoModule(),
         SettingsComponent
-    ],
-    providers: [
+      ],
+      providers: [
         { provide: InitService, useValue: initServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: AuthGuard, useValue: authGuardMock },
-    ],
-    schemas: [NO_ERRORS_SCHEMA]
-}).compileComponents();
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     initService = TestBed.inject(InitService);
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;

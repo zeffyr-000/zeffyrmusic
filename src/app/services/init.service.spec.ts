@@ -165,7 +165,7 @@ describe('InitService', () => {
       expect(service['mail']).toBe('');
 
       service.subjectConnectedChange.subscribe(value => {
-        expect(value).toEqual({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false, language: 'fr' });
+        expect(value).toEqual({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false, language: 'fr', pingInitialized: true });
       });
       service.subjectInitializePlaylist.subscribe(value => {
         expect(value).toEqual({
@@ -191,7 +191,8 @@ describe('InitService', () => {
         idPerso: '',
         mail: '',
         darkModeEnabled: false,
-        language: 'fr'
+        language: 'fr',
+        pingInitialized: false,
       });
     });
   });
@@ -208,6 +209,7 @@ describe('InitService', () => {
       expect(service['mail']).toBe('test_mail');
       expect(service['darkModeEnabled']).toBeFalse();
       expect(service['language']).toBe('fr');
+      expect(service['pingInitialized']).toBeFalse();
 
       expect(service.onChangeIsConnected).toHaveBeenCalled();
     });
