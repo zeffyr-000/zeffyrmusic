@@ -1,17 +1,23 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject, PLATFORM_ID } from '@angular/core';
-import { REQUEST } from '@angular/core';
-import { isPlatformServer } from '@angular/common';
+import { inject } from '@angular/core';
+import { REQUEST } from '../tokens';
 
 export const httpConfigInterceptor: HttpInterceptorFn = (req, next) => {
-    const platformId = inject(PLATFORM_ID);
-    const request = isPlatformServer(platformId) ? inject(REQUEST) : null;
+    const request = inject(REQUEST, { optional: true });
+
+    const headers: Record<string, string> = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    };
+
+    if (request?.headers?.cookie) {
+        headers['Cookie'] = request.headers.cookie;
+    }
 
     const modifiedRequest = req.clone({
         withCredentials: true,
-        setHeaders: {
-            ...(request?.headers?.get('cookie') ? { 'Cookie': request.headers.get('cookie') } : {})
-        }
+        setHeaders: headers
     });
 
     return next(modifiedRequest);

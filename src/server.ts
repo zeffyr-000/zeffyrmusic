@@ -14,14 +14,21 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 const app = express();
 const commonEngine = new CommonEngine();
 
+app.set('etag', false);
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 
 app.get(
   '**',
   express.static(browserDistFolder, {
-    maxAge: '1y',
+    maxAge: 0,
     index: 'index.html',
     redirect: false,
+    lastModified: false
   }),
 );
 
