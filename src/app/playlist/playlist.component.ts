@@ -10,7 +10,7 @@ import { Video } from '../models/video.model';
 import { Playlist } from '../models/playlist.model';
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import { PlaylistService } from '../services/playlist.service';
-import { APP_BASE_HREF, isPlatformBrowser, NgClass } from '@angular/common';
+import { APP_BASE_HREF, isPlatformBrowser } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
@@ -22,7 +22,7 @@ import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
     selector: 'app-playlist',
     templateUrl: './playlist.component.html',
     styleUrls: ['./playlist.component.scss'],
-    imports: [DefaultImageDirective, RouterLink, NgClass, ShareButtons, LazyLoadImageDirective, ArtistListComponent, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe, ToMMSSPipe]
+    imports: [DefaultImageDirective, RouterLink, ShareButtons, LazyLoadImageDirective, ArtistListComponent, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe, ToMMSSPipe]
 })
 export class PlaylistComponent implements OnDestroy {
 

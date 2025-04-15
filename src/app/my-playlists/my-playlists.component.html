@@ -42,13 +42,11 @@
 
             <td>
                 <div class="btn-group">
-                    <button type="button" [ngClass]="{'btn btn-light' : true,
-                                                    'active' : !playlist.prive}"
+                    <button type="button" class="btn btn-light" [class.active]="!playlist.prive"
                         (click)="onSwitchVisibility(playlist.id_playlist,'public')">
                         {{ 'public' | transloco }}
                     </button>
-                    <button type="button" [ngClass]="{'btn btn-light' : true,
-                                                    'active' : playlist.prive}"
+                    <button type="button" class="btn btn-light" [class.active]="playlist.prive"
                         (click)="onSwitchVisibility(playlist.id_playlist,'prive')">
                         {{ 'prive' | transloco }}
                     </button>

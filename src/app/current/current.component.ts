@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { Video } from '../models/video.model';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
-import { NgClass } from '@angular/common';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
 import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -12,7 +11,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
   selector: 'app-current',
   templateUrl: './current.component.html',
   styleUrl: './current.component.css',
-  imports: [NgClass, LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe]
+  imports: [LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe]
 })
 export class CurrentComponent implements OnInit, OnDestroy {
 

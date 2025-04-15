@@ -1,7 +1,7 @@
 <table class="table table-hover">
     <tbody>
         @for (video of list; track video.key; let index = $index) {
-        <tr (click)="play(index,true)" [ngClass]="{'active' : video.key===currentKey}">
+        <tr (click)="play(index,true)" [class.active]="video.key===currentKey">
             <td>
                 <img [appLazyLoadImage]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail-big"
                     alt="" />

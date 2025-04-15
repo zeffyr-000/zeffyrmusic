@@ -192,7 +192,9 @@ export class PlayerService implements OnDestroy {
                     controls: 0,
                     hd: 1,
                     showinfo: 0,
-                    origin: window.location.href
+                    origin: window.location.href,
+                    rel: 0,
+                    widget_referrer: window.location.href
                 },
                 events: {
                     onStateChange: this.onStateChangeYT.bind(this),
