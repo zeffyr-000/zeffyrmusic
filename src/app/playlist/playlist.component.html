@@ -46,7 +46,7 @@
                     }
 
                     @if(isConnected && idPersoOwner!==idPerso && idPlaylist !=='') {
-                    <button class="btn btn-secondary btn-lg" [ngClass]="{'active' : isFollower}"
+                    <button class="btn btn-secondary btn-lg" [class.active]="isFollower"
                         (click)="switchFollow()">{{'suivre' |
                         transloco}}</button>
                     }
@@ -93,9 +93,8 @@
 
             <tbody>
                 @for (video of playlist; track video.id_video; let i = $index) {
-                <tr [attr.data-id-video]="video.key" (click)="runPlaylist(i)"
-                    [ngClass]="{'active': video.key===currentKey}" itemprop="track" itemscope
-                    itemtype="http://schema.org/MusicRecording">
+                <tr [attr.data-id-video]="video.key" (click)="runPlaylist(i)" [class.active]="video.key===currentKey"
+                    itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
                     <td class="d-none d-md-table-cell" itemprop="position">{{ i+1 }}</td>
                     <td class="d-none d-md-table-cell">
                         <img [appLazyLoadImage]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'"

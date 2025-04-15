@@ -8,14 +8,13 @@ import { PlayerService } from '../services/player.service';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
 import { UserPlaylist } from '../models/playlist.model';
-import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-my-playlists',
   templateUrl: './my-playlists.component.html',
   styleUrl: './my-playlists.component.css',
-  imports: [FormsModule, RouterLink, NgClass, TranslocoPipe]
+  imports: [FormsModule, RouterLink, TranslocoPipe]
 })
 export class MyPlaylistsComponent implements OnInit, OnDestroy {
   error: string;

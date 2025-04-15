@@ -193,12 +193,12 @@
                     ngbTooltip="{{'video_plein_ecran' | transloco}}" role="presentation">
                     <span class="material-icons">fullscreen</span>
                 </a>
-                <a id="repeat" class="btn text-light" [ngClass]="{'active':isRepeat}" (click)="repeat()" placement="top"
+                <a id="repeat" class="btn text-light" [class.active]="isRepeat" (click)="repeat()" placement="top"
                     ngbTooltip="{{'repetition' | transloco}}" role="presentation">
                     <span class="material-icons">repeat</span>
                 </a>
-                <a id="random" class="btn text-light" [ngClass]="{'active': isRandom}" (click)="random()"
-                    placement="top" ngbTooltip="{{'lecture_aleatoire' | transloco}}" role="presentation">
+                <a id="random" class="btn text-light" [class.active]="isRandom" (click)="random()" placement="top"
+                    ngbTooltip="{{'lecture_aleatoire' | transloco}}" role="presentation">
                     <span class="material-icons">shuffle</span>
                 </a>
             </div>
