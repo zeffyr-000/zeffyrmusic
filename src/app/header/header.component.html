@@ -108,7 +108,6 @@
         </li>
         }
         @else{
-        @if(pingInitialized) {
         <li id="header_li_inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
             <a class="btn btn-warning btn-outline-warning text-light" (click)="openModalRegister()" role="presentation">
                 {{'inscription' | transloco }}
@@ -120,16 +119,12 @@
             </a>
         </li>
         }
-        }
 
-        @if(pingInitialized) {
         <li id="header_li_help" class="nav-item align-self-center d-flex">
             <a class="btn btn-light" routerLink="/help" role="presentation">
                 <span class="material-icons">help</span>
             </a>
         </li>
-        }
-
     </ul>
 
     <div id="header_recherche" class="navbar-form navbar-right col-4 my-auto">

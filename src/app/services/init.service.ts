@@ -25,6 +25,7 @@ export interface PingResponse {
 }
 
 const HOME_KEY = makeStateKey<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>('homeData');
+const PING_KEY = makeStateKey<PingResponse>('pingData');
 
 @Injectable({
     providedIn: 'root'
@@ -38,7 +39,6 @@ export class InitService {
     private darkModeEnabled = false;
     private language = 'fr';
     private changeIsConnectedCalled = false;
-    private pingInitialized = false;
     private isBrowser: boolean;
 
     subjectConnectedChange: BehaviorSubject<{
@@ -47,24 +47,21 @@ export class InitService {
         idPerso: string,
         mail: string,
         darkModeEnabled: boolean,
-        language: string,
-        pingInitialized: boolean
+        language: string
     }> = new BehaviorSubject<{
         isConnected: boolean,
         pseudo: string,
         idPerso: string,
         mail: string,
         darkModeEnabled: boolean,
-        language: string,
-        pingInitialized: boolean
+        language: string
     }>({
         isConnected: this.isConnected,
         pseudo: this.pseudo,
         idPerso: this.idPerso,
         mail: this.mail,
         darkModeEnabled: this.darkModeEnabled,
-        language: this.language,
-        pingInitialized: this.pingInitialized
+        language: this.language
     });
 
     subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
@@ -95,8 +92,10 @@ export class InitService {
     }
 
     public getPing(): void {
-        if (!this.isBrowser) {
-            return;
+        const storedValue = this.transferState.get<PingResponse>(PING_KEY, null);
+        if (storedValue && this.isBrowser) {
+            this.transferState.remove(PING_KEY);
+            this.handlePingResponse(storedValue);
         }
 
         this.httpClient.get<PingResponse>(environment.URL_SERVER + 'ping')
@@ -126,7 +125,6 @@ export class InitService {
             this.idPerso = '';
             this.mail = '';
         }
-        this.pingInitialized = true;
 
         this.onChangeIsConnected();
 
@@ -148,8 +146,7 @@ export class InitService {
             idPerso: this.idPerso,
             mail: this.mail,
             darkModeEnabled: this.darkModeEnabled,
-            language: this.language,
-            pingInitialized: this.pingInitialized
+            language: this.language
         });
     }
 
