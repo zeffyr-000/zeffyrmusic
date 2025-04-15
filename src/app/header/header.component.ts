@@ -30,7 +30,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     @ViewChild('contentModalLogin') contentModalLogin: TemplateRef<any>;
     @ViewChild('contentModalRegister') contentModalRegister: TemplateRef<unknown>;
 
-    pingInitialized: boolean;
     isConnected: boolean;
     pseudo: string;
     mail: string;
@@ -94,14 +93,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
         @Inject(DOCUMENT) private document: Document,
         @Inject(PLATFORM_ID) platformId: object) {
         this.isBrowser = isPlatformBrowser(platformId);
-        this.pingInitialized = false;
         this.isConnected = false;
         this.URL_ASSETS = environment.URL_ASSETS;
     }
 
     ngOnInit() {
         this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
-            this.pingInitialized = data.pingInitialized;
             this.isConnected = data.isConnected;
             this.pseudo = data.pseudo;
             this.mail = data.mail;

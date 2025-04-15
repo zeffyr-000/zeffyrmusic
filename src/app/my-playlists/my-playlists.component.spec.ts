@@ -42,8 +42,7 @@ describe('MyPlaylistsComponent', () => {
       idPerso: '',
       mail: '',
       darkModeEnabled: false,
-      language: 'fr',
-      pingInitialized: true
+      language: 'fr'
     });
     initServiceMock.logOut = jasmine.createSpy('logOut')
 

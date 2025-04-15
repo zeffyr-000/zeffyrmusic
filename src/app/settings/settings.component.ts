@@ -85,8 +85,7 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
                   idPerso: this.idPerso,
                   mail: this.mail,
                   darkModeEnabled: this.darkModeEnabled,
-                  language: this.language,
-                  pingInitialized: true
+                  language: this.language
                 });
                 setTimeout(() => {
                   this.successPass = false;
@@ -140,8 +139,7 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
               idPerso: this.idPerso,
               mail: this.mail,
               darkModeEnabled: this.darkModeEnabled,
-              language: this.language,
-              pingInitialized: true
+              language: this.language
             });
           } else {
             this.error = this.translocoService.translate(data.error);
@@ -167,8 +165,7 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
                 idPerso: this.idPerso,
                 mail: this.mail,
                 darkModeEnabled: this.darkModeEnabled,
-                language: this.language,
-                pingInitialized: true
+                language: this.language
               });
 
               setTimeout(() => {
@@ -251,8 +248,7 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
               idPerso: this.idPerso,
               mail: this.mail,
               darkModeEnabled: this.darkModeEnabled,
-              language: this.language,
-              pingInitialized: true
+              language: this.language
             });
 
             this.cdr.detectChanges();
