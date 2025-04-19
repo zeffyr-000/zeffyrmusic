@@ -8,7 +8,7 @@ import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { SearchComponent } from './search.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '../services/search.service';
 import { MockTestComponent } from '../mock-test.component';
@@ -72,46 +72,48 @@ describe('SearchComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-    imports: [
+      imports: [
         RouterTestingModule.withRoutes([
-            { path: 'test', component: MockTestComponent }
+          { path: 'test', component: MockTestComponent }
         ]),
         getTranslocoModule(),
         SearchComponent, ToMMSSPipe,
-    ],
-    declarations: [MockTestComponent],
-    providers: [
+      ],
+      declarations: [MockTestComponent],
+      providers: [
         {
-            provide: SearchService,
-            useValue: searchServiceMock,
+          provide: PLATFORM_ID,
+          useValue: 'browser'
         },
         {
-            provide: ActivatedRoute,
-            useValue: activatedRouteMock,
+          provide: SearchService,
+          useValue: searchServiceMock,
         },
         {
-            provide: Title,
-            useValue: {
-                setTitle: () => { },
-            },
+          provide: ActivatedRoute,
+          useValue: activatedRouteMock,
         },
         {
-            provide: InitService,
-            useValue: initServiceMock,
+          provide: Title,
+          useValue: {
+            setTitle: () => { },
+          },
         },
         {
-            provide: PlayerService,
-            useValue: playerServiceMock,
+          provide: InitService,
+          useValue: initServiceMock,
         },
         {
-            provide: GoogleAnalyticsService,
-            useValue: {
-                pageView: () => { },
-            },
+          provide: PlayerService,
+          useValue: playerServiceMock,
         },
-    ],
-    schemas: [NO_ERRORS_SCHEMA]
-}).compileComponents();
+        {
+          provide: GoogleAnalyticsService,
+          useValue: jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']),
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
@@ -134,14 +136,17 @@ describe('SearchComponent', () => {
 
   it('should set title and load data on init', () => {
     spyOn(titleService, 'setTitle');
-    spyOn(googleAnalyticsService, 'pageView');
+
     component.ngOnInit();
     expect(titleService.setTitle).toHaveBeenCalledWith('Search results "test" - Zeffyr Music');
     expect(component.listArtists).toEqual(searchResults1.artist);
     expect(component.listAlbums).toEqual(searchResults1.playlist);
     expect(component.listTracks).toEqual(searchResults2.tab_video);
     expect(component.listExtras).toEqual(searchResults3.tab_extra);
-    expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('search/test');
+
+    if (component['isBrowser']) {
+      expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('search/test');
+    }
   });
 
   it('should set limitArtist to listArtists length on moreArtists', () => {
@@ -260,6 +265,19 @@ describe('SearchComponent', () => {
     }];
     component.moreExtras();
     expect(component.limitExtra).toEqual(component.listExtras.length);
+  });
+
+  it('should handle undefined tab_extra in search results', () => {
+    const searchResults3WithoutTabExtra = {} as SearchResults3;
+
+    (searchServiceMock.fullSearch3 as jasmine.Spy).and.returnValue(of(searchResults3WithoutTabExtra));
+
+    component.listExtras = [{ key: 'OLD_VALUE', title: 'Should be cleared', duree: 100 }];
+
+    component.ngOnInit();
+
+    expect(component.listExtras).toEqual([]);
+    expect(searchServiceMock.fullSearch3).toHaveBeenCalled();
   });
 
   it('should unsubscribe from subscription on ngOnDestroy', () => {

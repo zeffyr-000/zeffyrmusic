@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -11,7 +11,7 @@ import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
 import { Video } from '../models/video.model';
 import { SearchService } from '../services/search.service';
-import { SlicePipe } from '@angular/common';
+import { isPlatformBrowser, SlicePipe } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 
@@ -29,6 +29,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     isLoading1: boolean;
     isLoading2: boolean;
     isLoading3: boolean;
+    private isBrowser: boolean;
 
     listArtists: ArtistResult[];
     limitArtist: number;
@@ -46,7 +47,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     subscriptionChangeKey: Subscription;
     private paramMapSubscription: Subscription;
 
-    constructor(private readonly searchService: SearchService,
+    constructor(@Inject(PLATFORM_ID) private platformId: object,
+        private readonly searchService: SearchService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly titleService: Title,
         private readonly metaService: Meta,
@@ -55,6 +57,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private readonly playerService: PlayerService,
         private readonly googleAnalyticsService: GoogleAnalyticsService,
         private readonly ngZone: NgZone) {
+        this.isBrowser = isPlatformBrowser(this.platformId);
     }
 
     ngOnInit() {
@@ -114,7 +117,10 @@ export class SearchComponent implements OnInit, OnDestroy {
                     });
             }
 
-            this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+            console.log('this.isBrowser', this.isBrowser, PLATFORM_ID);
+            if (this.isBrowser) {
+                this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+            }
         });
     }
 
@@ -159,3 +165,4 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.paramMapSubscription.unsubscribe();
     }
 }
+

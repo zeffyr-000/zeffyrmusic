@@ -80,7 +80,9 @@ export class HomeComponent implements OnInit {
                     this.listTopAlbumsSliced = data.top_albums.slice(0, 5);
                     this.listTopAlbums = data.top_albums
 
-                    this.googleAnalyticsService.pageView('/');
+                    if (!isPlatformServer(this.platformId)) {
+                        this.googleAnalyticsService.pageView('/');
+                    }
                 },
                 error: () => {
                     this.isLoading = false;

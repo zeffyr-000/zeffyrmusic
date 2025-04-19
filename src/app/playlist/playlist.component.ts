@@ -238,7 +238,9 @@ export class PlaylistComponent implements OnDestroy {
                     this.isPrivate = true;
                 }
 
-                this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+                if (this.isBrowser) {
+                    this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+                }
             });
     }
 
@@ -282,7 +284,9 @@ export class PlaylistComponent implements OnDestroy {
             this.metaService.updateTag({ name: 'og:url', content: `https://www.${this.baseHref}/${this.router.url}` });
         }
 
-        this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+        if (this.isBrowser) {
+            this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+        }
     }
 
     switchFollow() {
@@ -324,7 +328,9 @@ export class PlaylistComponent implements OnDestroy {
             let sumDuration = 0;
 
             for (const element of this.playlist) {
-                sumDuration += parseInt(element.duree, 10);
+                if (parseInt(element.duree, 10) > 0) {
+                    sumDuration += parseInt(element.duree, 10);
+                }
             }
 
             const hour = Math.floor(sumDuration / 3600);

@@ -614,4 +614,101 @@ describe('PlaylistComponent', () => {
 
     expect(title).toBe('Test Title');
   });
+
+  it('should adjust the duration of the current video in the playlist', () => {
+    const videoKey = 'test-video-key';
+    const initialDuration = '180';
+    const newDuration = 240;
+
+    component.playlist = [
+      {
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [],
+        duree: initialDuration,
+        id_playlist: '1',
+        key: 'another-key',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Album 1'
+      },
+      {
+        id_video: '2',
+        artiste: 'Artiste 2',
+        artists: [],
+        duree: initialDuration,
+        id_playlist: '1',
+        key: videoKey,
+        ordre: '2',
+        titre: 'Titre 2',
+        titre_album: 'Album 2'
+      },
+      {
+        id_video: '3',
+        artiste: 'Artiste 3',
+        artists: [],
+        duree: initialDuration,
+        id_playlist: '1',
+        key: 'yet-another-key',
+        ordre: '3',
+        titre: 'Titre 3',
+        titre_album: 'Album 3'
+      }
+    ] as Video[];
+
+    component.currentKey = videoKey;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const detectChangesSpy = spyOn((component as any).ref, 'detectChanges');
+
+    component.adjustPlaylistDuration(newDuration);
+
+    expect(component.playlist[0].duree).toBe(initialDuration);
+    expect(component.playlist[1].duree).toBe(newDuration.toString());
+    expect(component.playlist[2].duree).toBe(initialDuration);
+
+    expect(detectChangesSpy).toHaveBeenCalled();
+  });
+
+  it('should not modify playlist when current key does not match any video', () => {
+    const initialDuration = '180';
+    const newDuration = 240;
+
+    component.playlist = [
+      {
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [],
+        duree: initialDuration,
+        id_playlist: '1',
+        key: 'key1',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Album 1'
+      },
+      {
+        id_video: '2',
+        artiste: 'Artiste 2',
+        artists: [],
+        duree: initialDuration,
+        id_playlist: '1',
+        key: 'key2',
+        ordre: '2',
+        titre: 'Titre 2',
+        titre_album: 'Album 2'
+      }
+    ] as Video[];
+
+    component.currentKey = 'non-existent-key';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const detectChangesSpy = spyOn((component as any).ref, 'detectChanges');
+
+    component.adjustPlaylistDuration(newDuration);
+
+    expect(component.playlist[0].duree).toBe(initialDuration);
+    expect(component.playlist[1].duree).toBe(initialDuration);
+
+    expect(detectChangesSpy).not.toHaveBeenCalled();
+  });
 });

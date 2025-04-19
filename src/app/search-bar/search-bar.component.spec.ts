@@ -49,22 +49,22 @@ describe('SearchBarComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-    imports: [
+      imports: [
         RouterTestingModule.withRoutes([
-            { path: 'test', component: MockTestComponent },
+          { path: 'test', component: MockTestComponent },
         ]),
         getTranslocoModule(),
         SearchBarComponent
-    ],
-    declarations: [MockTestComponent],
-    providers: [
+      ],
+      declarations: [MockTestComponent],
+      providers: [
         { provide: SearchService, useValue: searchServiceMock },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpy },
         { provide: RouterTestingModule, useValue: routerSpy },
         { provide: ChangeDetectorRef, useValue: changeDetectorRefSpy },
-    ],
-    schemas: [NO_ERRORS_SCHEMA]
-}).compileComponents();
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
@@ -111,6 +111,46 @@ describe('SearchBarComponent', () => {
     component.search();
 
     expect(searchSubjectSpy).toHaveBeenCalledWith(query);
+  });
+
+  it('should clear results when query is empty', () => {
+    testScheduler.run(() => {
+      component.resultsAlbum = [
+        {
+          id_playlist: '1',
+          artiste: 'Test Artist',
+          ordre: '1',
+          titre: 'Test Album',
+          url_image: 'https://example.com/image.jpg',
+          year_release: 2020
+        }
+      ];
+
+      component.resultsArtist = [
+        {
+          artist: 'Test Artist',
+          artiste: 'Test Artist',
+          id_artiste: '1',
+          id_artiste_deezer: '123'
+        }
+      ];
+
+      const searchSubject = new Subject<string>();
+      component['searchSubject'] = searchSubject;
+
+      (searchServiceMock.searchBar as jasmine.Spy).calls.reset();
+
+      component.ngOnInit();
+
+      testScheduler.schedule(() => searchSubject.next(''), 0);
+
+      testScheduler.flush();
+
+      expect(component.resultsAlbum).toEqual([]);
+      expect(component.resultsArtist).toEqual([]);
+
+      expect(searchServiceMock.searchBar).not.toHaveBeenCalled();
+    });
   });
 
   describe('reset', () => {

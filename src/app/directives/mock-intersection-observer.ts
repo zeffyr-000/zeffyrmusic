@@ -4,7 +4,7 @@ export class MockIntersectionObserver implements IntersectionObserver {
     public rootMargin: string = '0px';
     public thresholds: ReadonlyArray<number> = [0];
 
-    constructor(callback: IntersectionObserverCallback) {
+    constructor(callback: (entries: IntersectionObserverEntry[]) => void) {
         this.callback = callback;
     }
 
@@ -13,7 +13,8 @@ export class MockIntersectionObserver implements IntersectionObserver {
         this.callback([{ isIntersecting: true, target } as IntersectionObserverEntry], this);
     }
 
-    unobserve() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    unobserve(target: Element) {
         // No-op
     }
 
@@ -23,5 +24,9 @@ export class MockIntersectionObserver implements IntersectionObserver {
 
     takeRecords(): IntersectionObserverEntry[] {
         return [];
+    }
+
+    triggerObserverCallback(entries: IntersectionObserverEntry[]): void {
+        this.callback(entries, this);
     }
 }

@@ -13,11 +13,11 @@ describe('HelpPageComponent', () => {
     beforeEach(async () => {
         getSpy = jasmine.createSpy().and.returnValue('test-page');
         await TestBed.configureTestingModule({
-    imports: [getTranslocoModule(), HelpPageComponent],
-    providers: [
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: getSpy } } } }
-    ]
-})
+            imports: [getTranslocoModule(), HelpPageComponent],
+            providers: [
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: getSpy } } } }
+            ]
+        })
             .compileComponents();
     });
 
@@ -54,5 +54,29 @@ describe('HelpPageComponent', () => {
         getSpy.and.returnValue('locked-screen');
         component.ngOnInit();
         expect(component.page).toEqual('locked-screen')
+    });
+
+    it('should set the correct title for listen', () => {
+        getSpy.and.returnValue('listen');
+        component.ngOnInit();
+        expect(component.page).toEqual('listen')
+    });
+
+    it('should set the correct title for legal', () => {
+        getSpy.and.returnValue('legal');
+        component.ngOnInit();
+        expect(component.page).toEqual('legal')
+    });
+
+    it('should set the correct title for download', () => {
+        getSpy.and.returnValue('download');
+        component.ngOnInit();
+        expect(component.page).toEqual('download')
+    });
+
+    it('should set the correct title for issues', () => {
+        getSpy.and.returnValue('issues');
+        component.ngOnInit();
+        expect(component.page).toEqual('issues')
     });
 });

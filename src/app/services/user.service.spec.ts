@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { UserService } from './user.service';
 import { environment } from '../../environments/environment';
-import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTitlePlaylist, ILogin, IPass, LoginResponse, UserReponse } from '../models/user.model';
+import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTitlePlaylist, ILogin, IPass, ISendPass, LoginResponse, SendPassResponse, UserReponse } from '../models/user.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('UserService', () => {
@@ -107,6 +107,30 @@ describe('UserService', () => {
     expect(req.request.method).toBe('POST');
 
     req.flush(mockResetPassResponse);
+  });
+
+  it('should perform a POST request for sending reset password link', () => {
+    const mockSendPassData: ISendPass = {
+      id_perso: '12345',
+      key: 'abcde',
+      password: 'test_password',
+    };
+
+    const mockSendPassResponse: SendPassResponse = {
+      success: true,
+      error: ''
+    };
+
+    service.sendResetPass(mockSendPassData).subscribe(data => {
+      expect(data).toEqual(mockSendPassResponse);
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'send_reset_pass');
+
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(mockSendPassData);
+
+    req.flush(mockSendPassResponse);
   });
 
   it('should perform a POST request for edit password', () => {
