@@ -76,7 +76,9 @@ export class ArtistComponent implements OnInit {
                     this.isAvailable = false;
                 }
 
-                this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+                if (this.isBrowser) {
+                    this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+                }
             });
     }
 

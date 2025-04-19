@@ -3,7 +3,10 @@ import { Component, DebugElement, ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-@Component({ template: `<div appSwipeDown (swipeDown)="onSwipeDown($event)"></div>` })
+@Component({
+  imports: [SwipeDownDirective],
+  template: `<div appSwipeDown (swipeDown)="onSwipeDown($event)"></div>`
+})
 class TestComponent {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSwipeDown(event: TouchEvent) { }
@@ -16,12 +19,13 @@ describe('SwipeDownDirective', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SwipeDownDirective, TestComponent]
+      imports: [TestComponent, SwipeDownDirective]
     });
 
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
     divEl = fixture.debugElement.query(By.css('div'));
+    fixture.detectChanges();
   });
 
   it('should create an instance', () => {
@@ -31,12 +35,53 @@ describe('SwipeDownDirective', () => {
   });
 
   it('should emit swipeDown event when swiped down', () => {
+    const directive = divEl.injector.get(SwipeDownDirective);
+
     spyOn(component, 'onSwipeDown');
 
-    divEl.triggerEventHandler('touchstart', { touches: [{ clientY: 50 }] });
-    divEl.triggerEventHandler('touchend', { changedTouches: [{ clientY: 200 }] });
+    const emitSpy = spyOn(directive.swipeDown, 'emit').and.callThrough();
 
-    //expect(component.onSwipeDown).toHaveBeenCalled();
-    expect(component.onSwipeDown).toBeDefined();
+    const touchStartEvent = new TouchEvent('touchstart', {
+      bubbles: true,
+      cancelable: true,
+      touches: [new Touch({
+        identifier: 0,
+        target: divEl.nativeElement,
+        clientX: 100,
+        clientY: 50
+      })]
+    });
+
+    const preventDefaultSpy = jasmine.createSpy('preventDefault');
+    Object.defineProperty(touchStartEvent, 'preventDefault', {
+      value: preventDefaultSpy,
+      writable: true
+    });
+
+    divEl.nativeElement.dispatchEvent(touchStartEvent);
+
+    const touchEndEvent = new TouchEvent('touchend', {
+      bubbles: true,
+      cancelable: true,
+      changedTouches: [new Touch({
+        identifier: 0,
+        target: divEl.nativeElement,
+        clientX: 100,
+        clientY: 250
+      })]
+    });
+
+    const endPreventDefaultSpy = jasmine.createSpy('preventDefault');
+    Object.defineProperty(touchEndEvent, 'preventDefault', {
+      value: endPreventDefaultSpy,
+      writable: true
+    });
+
+    divEl.nativeElement.dispatchEvent(touchEndEvent);
+
+    fixture.detectChanges();
+
+    expect(emitSpy).toHaveBeenCalled();
+    expect(component.onSwipeDown).toHaveBeenCalled();
   });
 });

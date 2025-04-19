@@ -422,23 +422,59 @@ describe('SettingsComponent', () => {
     document.body.removeChild(buttonElement);
   });
 
-  it('should open Google account modal and render Google Sign-In button', () => {
-    const modalRefMock = {
-      result: Promise.resolve()
+  it('should open Google account modal and render Google Sign-In button in both success and error cases', fakeAsync(() => {
+    const renderSpy = spyOn(component, 'renderGoogleSignInButton');
+
+    let resolveCallback: () => void;
+    const successPromise = new Promise<void>((resolve) => {
+      resolveCallback = resolve;
+    });
+
+    const modalRefSuccess = {
+      result: successPromise
     } as NgbModalRef;
 
-    modalServiceSpyObj.open.and.returnValue(modalRefMock);
-
-    spyOn(component, 'renderGoogleSignInButton');
+    modalServiceSpyObj.open.and.returnValue(modalRefSuccess);
 
     component.openGoogleAccountModal();
 
-    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(component.contentModalAssociateGoogleAccount, { size: 'lg' });
-    modalRefMock.result.then(() => {
-      expect(component.renderGoogleSignInButton).toHaveBeenCalled();
+    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(
+      component.contentModalAssociateGoogleAccount,
+      { size: 'lg' }
+    );
+
+    resolveCallback!();
+    tick();
+
+    expect(component.renderGoogleSignInButton).toHaveBeenCalledTimes(2);
+
+    renderSpy.calls.reset();
+    modalServiceSpyObj.open.calls.reset();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let rejectCallback: (reason?: any) => void;
+    const errorPromise = new Promise<void>((_, reject) => {
+      rejectCallback = reject;
     });
 
-  });
+    const modalRefError = {
+      result: errorPromise
+    } as NgbModalRef;
+
+    modalServiceSpyObj.open.and.returnValue(modalRefError);
+
+    component.openGoogleAccountModal();
+
+    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(
+      component.contentModalAssociateGoogleAccount,
+      { size: 'lg' }
+    );
+
+    rejectCallback!("Modal dismissed");
+    tick();
+
+    expect(renderSpy).toHaveBeenCalledTimes(2);
+  }));
 
   it('should handle successful Google account association', () => {
     jasmine.clock().install();
