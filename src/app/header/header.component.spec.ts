@@ -709,6 +709,155 @@ describe('HeaderComponent', () => {
     document.body.removeChild(mockElement);
   });
 
+  it('should initialize and render Google Register button', () => {
+    const google = {
+      accounts: {
+        id: {
+          initialize: jasmine.createSpy('initialize'),
+          renderButton: jasmine.createSpy('renderButton')
+        }
+      }
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).google = google;
+
+    const mockElement = document.createElement('div');
+    mockElement.id = 'google-register-button-header';
+    document.body.appendChild(mockElement);
+
+    component.renderGoogleRegisterButton();
+
+    expect(google.accounts.id.initialize).toHaveBeenCalledWith({
+      client_id: environment.GOOGLE_CLIENT_ID,
+      callback: jasmine.any(Function)
+    });
+    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(
+      mockElement,
+      {}
+    );
+
+    document.body.removeChild(mockElement);
+  });
+
+  it('should open modal and call renderGoogleRegisterButton', () => {
+    const modalRefSpyObj = jasmine.createSpyObj('NgbModalRef', ['result']);
+    modalRefSpyObj.result = Promise.resolve();
+    modalServiceSpyObj.open.and.returnValue(modalRefSpyObj);
+
+    spyOn(component, 'renderGoogleRegisterButton');
+    jasmine.clock().install();
+
+    component.openModalRegister();
+
+    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(component.contentModalRegister, { size: 'lg' });
+
+    jasmine.clock().tick(1);
+    expect(component.renderGoogleRegisterButton).toHaveBeenCalled();
+
+    Promise.resolve().then(() => {
+      expect(component.renderGoogleRegisterButton).toHaveBeenCalledTimes(2);
+    });
+
+    jasmine.clock().uninstall();
+  });
+
+  it('should handle case when google is undefined in renderGoogleRegisterButton', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const originalGoogle = (window as any).google;
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).google = undefined;
+
+      expect(() => {
+        component.renderGoogleRegisterButton();
+      }).not.toThrow();
+
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).google = originalGoogle;
+    }
+  });
+
+  it('should handle case when google.accounts is undefined in renderGoogleRegisterButton', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const originalGoogle = (window as any).google;
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).google = {};
+
+      expect(() => {
+        component.renderGoogleRegisterButton();
+      }).not.toThrow();
+
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).google = originalGoogle;
+    }
+  });
+
+  it('should handle case when google.accounts.id is undefined in renderGoogleRegisterButton', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const originalGoogle = (window as any).google;
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).google = {
+        accounts: {}
+      };
+
+      expect(() => {
+        component.renderGoogleRegisterButton();
+      }).not.toThrow();
+
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).google = originalGoogle;
+    }
+  });
+
+  it('should handle case when document.getElementById returns null in renderGoogleRegisterButton', () => {
+    const google = {
+      accounts: {
+        id: {
+          initialize: jasmine.createSpy('initialize'),
+          renderButton: jasmine.createSpy('renderButton')
+        }
+      }
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).google = google;
+
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    expect(() => {
+      component.renderGoogleRegisterButton();
+    }).not.toThrow();
+
+    expect(google.accounts.id.initialize).toHaveBeenCalled();
+
+    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(null, {});
+  });
+
+  it('should call renderGoogleRegisterButton when modal is dismissed', () => {
+    const modalRefSpyObj = jasmine.createSpyObj('NgbModalRef', ['result']);
+    modalRefSpyObj.result = Promise.reject();
+    modalServiceSpyObj.open.and.returnValue(modalRefSpyObj);
+
+    spyOn(component, 'renderGoogleRegisterButton');
+
+    component.openModalRegister();
+
+    expect(modalServiceSpyObj.open).toHaveBeenCalled();
+
+    Promise.reject().catch(() => {
+
+    }).then(() => {
+      expect(component.renderGoogleRegisterButton).toHaveBeenCalled();
+    });
+  });
+
   it('should call onLogIn with the correct arguments when handleCredentialResponse is called', () => {
     spyOn(component, 'onLogIn');
 
