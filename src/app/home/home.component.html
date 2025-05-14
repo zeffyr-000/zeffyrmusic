@@ -36,7 +36,7 @@
         <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
             <a class="card h-100" routerLink="/top/{{chart.id}}" itemprop="url">
                 <img src="{{chart.url_image}}" class="card-img-top" alt="{{chart.titre}}" itemprop="image"
-                    appDefaultImage />
+                    fetchpriority="high" appDefaultImage />
                 <div class="card-body">
                     <h5 class="card-title" itemprop="name">{{chart.titre}}</h5>
                 </div>
@@ -75,7 +75,7 @@
         <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
             <a class="card h-100" routerLink="/playlist/{{album.id_playlist}}" itemprop="url">
                 <img src="{{album.url_image}}" class="card-img-top" alt="{{album.titre}}" itemprop="image"
-                    appDefaultImage />
+                    fetchpriority="high" appDefaultImage />
                 <div class="card-body">
                     <h5 class="card-title" itemprop="name">
                         <span class="badge bg-primary text-light">{{i+1}}</span>

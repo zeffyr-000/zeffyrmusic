@@ -34,36 +34,44 @@ $table-cell-padding: 0.5rem;
 $tooltip-bg:  $mushroom;
 
 @font-face {
-    font-family: Nunito;
-    src: local(Nunito-Regular),
-        url('../assets/font/Nunito/Nunito-Regular.ttf') format('ttf');
+    font-family: 'Nunito';
+    src: local('Nunito-Regular'),
+         url('../assets/font/Nunito/Nunito-Regular.woff2') format('woff2'),
+         url('../assets/font/Nunito/Nunito-Regular.woff') format('woff'),
+         url('../assets/font/Nunito/Nunito-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-stretch: normal;
+    font-display: swap;
 }
 @font-face {
-    font-family: Nunito;
-    src: local(Nunito-SemiBold),
-            url('../assets/font/Nunito/Nunito-SemiBold.ttf') format('ttf');
+    font-family: 'Nunito';
+    src: local('Nunito-SemiBold'),
+         url('../assets/font/Nunito/Nunito-SemiBold.woff2') format('woff2'),
+         url('../assets/font/Nunito/Nunito-SemiBold.woff') format('woff'),
+         url('../assets/font/Nunito/Nunito-SemiBold.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
-    font-stretch: normal;
+    font-display: swap;
 }
 @font-face {
-    font-family: Nunito;
-    src: local(Nunito-Bold),
-            url('../assets/font/Nunito/Nunito-Bold.ttf') format('ttf');
+    font-family: 'Nunito';
+    src: local('Nunito-Bold'),
+         url('../assets/font/Nunito/Nunito-Bold.woff2') format('woff2'),
+         url('../assets/font/Nunito/Nunito-Bold.woff') format('woff'),
+         url('../assets/font/Nunito/Nunito-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
-    font-stretch: normal;
+    font-display: swap;
 }
 @font-face {
-    font-family: Nunito;
-    src: local(Nunito-ExtraBold),
-        url('../assets/font/Nunito/Nunito-ExtraBold.ttf') format('ttf');
+    font-family: 'Nunito';
+    src: local('Nunito-ExtraBold'),
+         url('../assets/font/Nunito/Nunito-ExtraBold.woff2') format('woff2'),
+         url('../assets/font/Nunito/Nunito-ExtraBold.woff') format('woff'),
+         url('../assets/font/Nunito/Nunito-ExtraBold.ttf') format('truetype');
     font-weight: 800;
     font-style: normal;
-    font-stretch: normal;
+    font-display: swap;
 }
 
 $font-family-base: 'Nunito', sans-serif;

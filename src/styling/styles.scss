@@ -4,10 +4,14 @@
 @import "node_modules/bootstrap/scss/bootstrap";
 @import 'node_modules/ngx-sharebuttons/themes/default';
 
+@import 'material-icons-optimized';
+
 html, body {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
+	font-size: 16px;
+	line-height: 1.5;
 }
 
 a {
