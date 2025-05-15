@@ -7,6 +7,8 @@ import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { isPlatformServer } from '@angular/common';
+import { SeoService } from '../services/seo.service';
+import { environment } from 'src/environments/environment';
 
 const RANDOM_TOP_KEY = makeStateKey<HomeAlbum[]>('randomTop');
 
@@ -31,6 +33,7 @@ export class HomeComponent implements OnInit {
         private readonly initService: InitService,
         private readonly titleService: Title,
         private readonly metaService: Meta,
+        private readonly seoService: SeoService,
         private readonly route: ActivatedRoute,
         private readonly translocoService: TranslocoService,
         private transferState: TransferState,
@@ -58,6 +61,7 @@ export class HomeComponent implements OnInit {
             name: 'description',
             content: this.translocoService.translate('meta_description_' + this.page)
         });
+        this.seoService.updateCanonicalUrl(`${environment.URL_BASE}${url}`);
 
         this.initService.getHomeInit()
             .subscribe({

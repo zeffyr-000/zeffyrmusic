@@ -17,6 +17,7 @@ import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive'
 import { ArtistListComponent } from './artist-list/artist-list.component';
 import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
+import { SeoService } from '../services/seo.service';
 
 @Component({
     selector: 'app-playlist',
@@ -63,6 +64,7 @@ export class PlaylistComponent implements OnDestroy {
         private readonly playerService: PlayerService,
         private readonly titleService: Title,
         private readonly metaService: Meta,
+        private readonly seoService: SeoService,
         private readonly translocoService: TranslocoService,
         private readonly googleAnalyticsService: GoogleAnalyticsService,
         private readonly ngZone: NgZone,
@@ -227,11 +229,14 @@ export class PlaylistComponent implements OnDestroy {
 
                     if (this.isBrowser) {
                         this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+                        this.seoService.updateCanonicalUrl(document.location.href);
                     } else {
                         if (data.id_top !== undefined) {
                             this.metaService.updateTag({ name: 'og:url', content: `${environment.URL_BASE}top/${data.id_top}` });
+                            this.seoService.updateCanonicalUrl(`${environment.URL_BASE}top/${data.id_top}`);
                         } else {
                             this.metaService.updateTag({ name: 'og:url', content: `${environment.URL_BASE}playlist/${this.idPlaylist}` });
+                            this.seoService.updateCanonicalUrl(`${environment.URL_BASE}playlist/${this.idPlaylist}`);
                         }
                     }
                 } else {
@@ -280,8 +285,10 @@ export class PlaylistComponent implements OnDestroy {
         this.metaService.updateTag({ name: 'og:image', content: '' });
         if (this.isBrowser) {
             this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+            this.seoService.updateCanonicalUrl(document.location.href);
         } else {
             this.metaService.updateTag({ name: 'og:url', content: `https://www.${this.baseHref}/${this.router.url}` });
+            this.seoService.updateCanonicalUrl(`https://www.${this.baseHref}/${this.router.url}`);
         }
 
         if (this.isBrowser) {
