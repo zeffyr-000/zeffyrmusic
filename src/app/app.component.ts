@@ -59,7 +59,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
                 if (event instanceof NavigationEnd) {
                     // Hide loading indicator
-                    document.querySelector('link[rel="canonical"]').setAttribute('href', location.origin + event.url);
                 }
             });
 

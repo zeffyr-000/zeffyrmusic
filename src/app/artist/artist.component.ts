@@ -9,6 +9,7 @@ import { ArtistService } from '../services/artist.service';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { isPlatformBrowser } from '@angular/common';
+import { SeoService } from '../services/seo.service';
 
 @Component({
     selector: 'app-artist',
@@ -31,6 +32,7 @@ export class ArtistComponent implements OnInit {
         private readonly activatedRoute: ActivatedRoute,
         private readonly titleService: Title,
         private readonly metaService: Meta,
+        private readonly seoService: SeoService,
         private readonly translocoService: TranslocoService,
         private readonly googleAnalyticsService: GoogleAnalyticsService,
         @Inject(PLATFORM_ID) platformId: object) {
@@ -65,11 +67,9 @@ export class ArtistComponent implements OnInit {
                         content: this.translocoService.translate('description_partage_artist', { artist: this.name })
                     });
                     this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
-                    if (this.isBrowser) {
-                        this.metaService.updateTag({ name: 'og:url', content: document.location.href });
-                    } else {
-                        this.metaService.updateTag({ name: 'og:url', content: `${environment.URL_BASE}artist/${idArtist}` });
-                    }
+                    this.metaService.updateTag({ name: 'og:url', content: `${environment.URL_BASE}artist/${idArtist}` });
+                    this.seoService.updateCanonicalUrl(`${environment.URL_BASE}artist/${idArtist}`);
+
                     this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('description_artist', { artist: this.name, count: this.listAlbums.length }) });
                 }
                 else {

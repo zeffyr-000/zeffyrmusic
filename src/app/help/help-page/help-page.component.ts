@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
+import { SeoService } from 'src/app/services/seo.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -17,6 +18,7 @@ export class HelpPageComponent implements OnInit {
   constructor(private route: ActivatedRoute,
     private readonly titleService: Title,
     private readonly metaService: Meta,
+    private readonly seoService: SeoService,
     private readonly translocoService: TranslocoService
   ) { }
 
@@ -59,5 +61,6 @@ export class HelpPageComponent implements OnInit {
 
     this.titleService.setTitle(this.translocoService.translate(pageTitle) + ' - Zeffyr Music');
     this.metaService.updateTag({ name: 'description', content: this.translocoService.translate(pageDescription) });
+    this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help/${this.page}`);
   }
 }
