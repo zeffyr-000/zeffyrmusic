@@ -1,15 +1,19 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Directive, ElementRef, Renderer2, Input, OnInit, OnChanges, SimpleChanges, Inject, PLATFORM_ID } from '@angular/core';
+import { Directive, ElementRef, Renderer2, Input, OnInit, OnChanges, SimpleChanges, PLATFORM_ID, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Directive({ selector: 'img[appDefaultImage]' })
 export class DefaultImageDirective implements OnInit, OnChanges {
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
+  private platformId = inject(PLATFORM_ID);
+
   @Input() src: string;
   private defaultImage: string;
   private loadingImage: string;
   private isBrowser: boolean;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, @Inject(PLATFORM_ID) private platformId: object) {
+  constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.defaultImage = `${environment.URL_ASSETS}assets/img/default.jpg`;
     this.loadingImage = `${environment.URL_ASSETS}assets/img/loading.jpg`;

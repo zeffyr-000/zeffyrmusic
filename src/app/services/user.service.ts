@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTitlePlaylist, ILogin, IPass, IRegister, ISendPass, LoginResponse, SendPassResponse, UserReponse } from '../models/user.model';
@@ -8,8 +8,8 @@ import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTit
   providedIn: 'root'
 })
 export class UserService {
+  private httpClient = inject(HttpClient);
 
-  constructor(private httpClient: HttpClient) { }
 
   register(data: IRegister): Observable<UserReponse> {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'inscription', data);

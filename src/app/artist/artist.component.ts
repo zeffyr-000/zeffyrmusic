@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -19,6 +19,14 @@ import { SeoService } from '../services/seo.service';
 })
 
 export class ArtistComponent implements OnInit {
+    private readonly artistService = inject(ArtistService);
+    private readonly activatedRoute = inject(ActivatedRoute);
+    private readonly titleService = inject(Title);
+    private readonly metaService = inject(Meta);
+    private readonly seoService = inject(SeoService);
+    private readonly translocoService = inject(TranslocoService);
+    private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+
 
     name: string;
     idArtistDeezer: string;
@@ -28,14 +36,9 @@ export class ArtistComponent implements OnInit {
     isAvailable: boolean | undefined;
     isBrowser: boolean;
 
-    constructor(private readonly artistService: ArtistService,
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly titleService: Title,
-        private readonly metaService: Meta,
-        private readonly seoService: SeoService,
-        private readonly translocoService: TranslocoService,
-        private readonly googleAnalyticsService: GoogleAnalyticsService,
-        @Inject(PLATFORM_ID) platformId: object) {
+    constructor() {
+        const platformId = inject(PLATFORM_ID);
+
         this.isBrowser = isPlatformBrowser(platformId);
     }
 

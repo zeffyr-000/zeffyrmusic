@@ -1,14 +1,12 @@
-import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Injectable, DOCUMENT, inject } from '@angular/core';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class SeoService {
+  private document = inject<Document>(DOCUMENT);
 
-  constructor(
-    @Inject(DOCUMENT) private document: Document
-  ) { }
 
   updateCanonicalUrl(url: string): void {
     let canonicalLink = this.document.querySelector('link[rel="canonical"]');

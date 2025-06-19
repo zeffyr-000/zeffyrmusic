@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -17,20 +17,18 @@ import { RouterLink } from '@angular/router';
   imports: [FormsModule, RouterLink, TranslocoPipe]
 })
 export class MyPlaylistsComponent implements OnInit, OnDestroy {
+  playerService = inject(PlayerService);
+  private titleService = inject(Title);
+  private readonly translocoService = inject(TranslocoService);
+  userService = inject(UserService);
+  modalService = inject(NgbModal);
+
   error: string;
   listPlaylist: UserPlaylist[];
   subscriptionListPlaylist: Subscription;
 
   currentIdPlaylistEdit: string;
   playlistTitle: string;
-
-  constructor(
-    public playerService: PlayerService,
-    private titleService: Title,
-    private readonly translocoService: TranslocoService,
-    public userService: UserService,
-    public modalService: NgbModal,
-  ) { }
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('mes_playlists') + ' - Zeffyr Music');

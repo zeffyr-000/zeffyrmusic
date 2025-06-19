@@ -1,4 +1,4 @@
-import { Component, Inject, makeStateKey, OnInit, PLATFORM_ID, TransferState } from '@angular/core';
+import { Component, makeStateKey, OnInit, PLATFORM_ID, TransferState, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -19,6 +19,16 @@ const RANDOM_TOP_KEY = makeStateKey<HomeAlbum[]>('randomTop');
     imports: [RouterLink, DefaultImageDirective, TranslocoPipe]
 })
 export class HomeComponent implements OnInit {
+    private platformId = inject(PLATFORM_ID);
+    private readonly initService = inject(InitService);
+    private readonly titleService = inject(Title);
+    private readonly metaService = inject(Meta);
+    private readonly seoService = inject(SeoService);
+    private readonly route = inject(ActivatedRoute);
+    private readonly translocoService = inject(TranslocoService);
+    private transferState = inject(TransferState);
+    private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+
     isLoading = false;
 
     private listTop: HomeAlbum[];
@@ -28,16 +38,6 @@ export class HomeComponent implements OnInit {
     private listTopAlbumsSliced: HomeAlbum[];
     private lang: string;
     protected page: string;
-
-    constructor(@Inject(PLATFORM_ID) private platformId: object,
-        private readonly initService: InitService,
-        private readonly titleService: Title,
-        private readonly metaService: Meta,
-        private readonly seoService: SeoService,
-        private readonly route: ActivatedRoute,
-        private readonly translocoService: TranslocoService,
-        private transferState: TransferState,
-        private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     ngOnInit() {
         this.isLoading = true;

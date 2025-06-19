@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { ArtistResult } from '../models/artist.model';
@@ -18,16 +18,16 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
     imports: [FormsModule, TranslocoPipe, DefaultImageDirective]
 })
 export class SearchBarComponent implements OnInit {
+    private readonly searchService = inject(SearchService);
+    private readonly ref = inject(ChangeDetectorRef);
+    private readonly router = inject(Router);
+    private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+
 
     query: string;
     resultsArtist: ArtistResult[];
     resultsAlbum: PlaylistResult[];
     private searchSubject = new Subject<string>();
-
-    constructor(private readonly searchService: SearchService,
-        private readonly ref: ChangeDetectorRef,
-        private readonly router: Router,
-        private readonly googleAnalyticsService: GoogleAnalyticsService) { }
 
     ngOnInit() {
         this.searchSubject.pipe(

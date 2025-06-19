@@ -3,12 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { InitService, PingResponse } from './init.service';
 import { HomeAlbum } from '../models/album.model';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { getTranslocoModule } from '../transloco-testing.module';
 import { makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DOCUMENT } from '@angular/common';
-import { TranslocoService } from '@jsverse/transloco';
 
 describe('InitService', () => {
   let service: InitService;
@@ -362,20 +360,14 @@ describe('InitService', () => {
       });
 
       it('should return an Observable that maps to isConnected value', () => {
-        // Créer une instance fraîche du service pour éviter les états partagés
-        const freshService = new InitService(
-          TestBed.inject(DOCUMENT),
-          'browser' as unknown as typeof PLATFORM_ID,
-          TestBed.inject(HttpClient),
-          TestBed.inject(TransferState),
-          TestBed.inject(TranslocoService)
-        );
+        // Utiliser le service injecté via TestBed au lieu d'une instance manuelle
+        const testService = TestBed.inject(InitService);
 
         // S'assurer explicitement que changeIsConnectedCalled est false
-        freshService['changeIsConnectedCalled'] = false;
+        testService['changeIsConnectedCalled'] = false;
 
         // Forcer une valeur spécifique dans le BehaviorSubject
-        freshService.subjectConnectedChange.next({
+        testService.subjectConnectedChange.next({
           isConnected: true,
           pseudo: 'test',
           idPerso: '123',
@@ -385,14 +377,12 @@ describe('InitService', () => {
         });
 
         // Obtenir le résultat de getIsConnected() et vérifier son type
-        const result = freshService.getIsConnected();
+        const result = testService.getIsConnected();
         expect(result instanceof Observable).toBe(true);
 
-        // Utiliser toPromise() ou firstValueFrom() pour attendre la première valeur
+        // Utiliser subscribe pour vérifier la valeur
         if (result instanceof Observable) {
-          // TypeScript nécessite cette vérification pour accéder aux méthodes d'Observable
           result.subscribe(value => {
-            // Vérifier que la valeur mappée correspond à isConnected
             expect(value).toBe(true);
           });
         } else {

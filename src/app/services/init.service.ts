@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Inject, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
+import { Injectable, PLATFORM_ID, TransferState, makeStateKey, DOCUMENT, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, map, Observable, of, Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
 import { UserVideo, Video } from '../models/video.model';
 import { FollowItem } from '../models/follow.model';
@@ -31,6 +31,12 @@ const PING_KEY = makeStateKey<PingResponse>('pingData');
     providedIn: 'root'
 })
 export class InitService {
+    private document = inject<Document>(DOCUMENT);
+    private platformId = inject(PLATFORM_ID);
+    private readonly httpClient = inject(HttpClient);
+    private transferState = inject(TransferState);
+    private readonly translocoService = inject(TranslocoService);
+
 
     private isConnected = false;
     private pseudo = '';
@@ -79,11 +85,7 @@ export class InitService {
         listLikeVideo: UserVideo[]
     }>();
 
-    constructor(@Inject(DOCUMENT) private document: Document,
-        @Inject(PLATFORM_ID) private platformId: object,
-        private readonly httpClient: HttpClient,
-        private transferState: TransferState,
-        private readonly translocoService: TranslocoService) {
+    constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
         if (this.isBrowser) {
             this.document.querySelector('link[rel=icon]')?.setAttribute('href', `${environment.URL_ASSETS}assets/img/favicon.png`);

@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Video } from '../models/video.model';
 import { InitService } from '../services/init.service';
@@ -14,6 +14,10 @@ import { TranslocoPipe } from '@jsverse/transloco';
   imports: [LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe]
 })
 export class CurrentComponent implements OnInit, OnDestroy {
+  private readonly playerService = inject(PlayerService);
+  private readonly initService = inject(InitService);
+  private readonly ngZone = inject(NgZone);
+
 
   isConnected = false;
   list: Video[];
@@ -22,10 +26,6 @@ export class CurrentComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   subscriptionChangeKey: Subscription;
   subscriptionConnected: Subscription;
-
-  constructor(private readonly playerService: PlayerService,
-    private readonly initService: InitService,
-    private readonly ngZone: NgZone) { }
 
   ngOnInit() {
     this.list = this.playerService.subjectCurrentPlaylistChange?.getValue();

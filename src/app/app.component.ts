@@ -1,5 +1,5 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2, RendererFactory2 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, PLATFORM_ID, Renderer2, RendererFactory2, DOCUMENT, inject } from '@angular/core';
 import { Event, NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
@@ -18,6 +18,16 @@ import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
     imports: [HeaderComponent, PlayerComponent, RouterLink, RouterOutlet, NgbAlert, TranslocoPipe]
 })
 export class AppComponent implements OnInit, OnDestroy {
+    private readonly document = inject<Document>(DOCUMENT);
+    private platformId = inject(PLATFORM_ID);
+    private rendererFactory = inject(RendererFactory2);
+    private readonly initService = inject(InitService);
+    protected readonly playerService = inject(PlayerService);
+    private readonly router = inject(Router);
+    private readonly metaService = inject(Meta);
+    private readonly translocoService = inject(TranslocoService);
+    private cdr = inject(ChangeDetectorRef);
+
     title = 'zeffyrmusic';
     isOnline = true;
     showMessageUnlog = false;
@@ -29,15 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private errorMessageSubscription: Subscription;
     private isBrowser: boolean;
 
-    constructor(@Inject(DOCUMENT) private readonly document: Document,
-        @Inject(PLATFORM_ID) private platformId: object,
-        private rendererFactory: RendererFactory2,
-        private readonly initService: InitService,
-        protected readonly playerService: PlayerService,
-        private readonly router: Router,
-        private readonly metaService: Meta,
-        private readonly translocoService: TranslocoService,
-        private cdr: ChangeDetectorRef) {
+    constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
 
         this.renderer = this.rendererFactory.createRenderer(null, null);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -12,15 +12,14 @@ import { environment } from 'src/environments/environment';
   imports: [TranslocoPipe]
 })
 export class HelpPageComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private readonly titleService = inject(Title);
+  private readonly metaService = inject(Meta);
+  private readonly seoService = inject(SeoService);
+  private readonly translocoService = inject(TranslocoService);
+
   page: string;
   URL_ASSETS = environment.URL_ASSETS;
-
-  constructor(private route: ActivatedRoute,
-    private readonly titleService: Title,
-    private readonly metaService: Meta,
-    private readonly seoService: SeoService,
-    private readonly translocoService: TranslocoService
-  ) { }
 
 
   ngOnInit() {

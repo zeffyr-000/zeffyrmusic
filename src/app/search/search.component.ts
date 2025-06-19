@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -22,6 +22,17 @@ import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
     imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe]
 })
 export class SearchComponent implements OnInit, OnDestroy {
+    private platformId = inject(PLATFORM_ID);
+    private readonly searchService = inject(SearchService);
+    private readonly activatedRoute = inject(ActivatedRoute);
+    private readonly titleService = inject(Title);
+    private readonly metaService = inject(Meta);
+    private readonly translocoService = inject(TranslocoService);
+    private readonly initService = inject(InitService);
+    private readonly playerService = inject(PlayerService);
+    private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+    private readonly ngZone = inject(NgZone);
+
 
     currentKey: string;
     isConnected: boolean;
@@ -47,16 +58,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     subscriptionChangeKey: Subscription;
     private paramMapSubscription: Subscription;
 
-    constructor(@Inject(PLATFORM_ID) private platformId: object,
-        private readonly searchService: SearchService,
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly titleService: Title,
-        private readonly metaService: Meta,
-        private readonly translocoService: TranslocoService,
-        private readonly initService: InitService,
-        private readonly playerService: PlayerService,
-        private readonly googleAnalyticsService: GoogleAnalyticsService,
-        private readonly ngZone: NgZone) {
+    constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
     }
 

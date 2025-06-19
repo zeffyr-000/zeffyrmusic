@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
+import { Injectable, PLATFORM_ID, TransferState, makeStateKey, inject } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Playlist } from '../models/playlist.model';
@@ -11,12 +11,13 @@ const PLAYLIST_KEY = (id: string) => makeStateKey<Playlist>(`playlist-${id}`);
   providedIn: 'root'
 })
 export class PlaylistService {
+  private platformId = inject(PLATFORM_ID);
+  private httpClient = inject(HttpClient);
+  private transferState = inject(TransferState);
+
   private isBrowser: boolean;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: object,
-    private httpClient: HttpClient,
-    private transferState: TransferState
-  ) {
+  constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 

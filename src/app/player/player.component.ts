@@ -1,4 +1,4 @@
-import { Component, OnDestroy, NgZone, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, NgZone, ViewChild, AfterViewInit, inject } from '@angular/core';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { Subscription } from 'rxjs';
@@ -15,6 +15,10 @@ import { TranslocoPipe } from '@jsverse/transloco';
     imports: [YouTubePlayer, LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe]
 })
 export class PlayerComponent implements OnDestroy, AfterViewInit {
+    private readonly initService = inject(InitService);
+    private readonly playerService = inject(PlayerService);
+    private readonly ngZone = inject(NgZone);
+
 
     @ViewChild('youtubePlayer') youtubePlayer: YouTubePlayer;
     isConnected = false;
@@ -25,9 +29,9 @@ export class PlayerComponent implements OnDestroy, AfterViewInit {
     subscriptionChangeKey: Subscription;
     subscriptionConnected: Subscription;
 
-    constructor(private readonly initService: InitService,
-        private readonly playerService: PlayerService,
-        private readonly ngZone: NgZone) {
+    constructor() {
+        const playerService = this.playerService;
+
         this.subscription = playerService.subjectCurrentPlaylistChange?.subscribe(list => {
             this.list = list;
         });
