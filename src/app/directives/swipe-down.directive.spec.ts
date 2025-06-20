@@ -1,5 +1,5 @@
 import { SwipeDownDirective } from './swipe-down.directive';
-import { Component, DebugElement, ElementRef } from '@angular/core';
+import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
@@ -16,6 +16,7 @@ describe('SwipeDownDirective', () => {
   let component: TestComponent;
   let fixture: ComponentFixture<TestComponent>;
   let divEl: DebugElement;
+  let directive: SwipeDownDirective;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,20 +26,16 @@ describe('SwipeDownDirective', () => {
     fixture = TestBed.createComponent(TestComponent);
     component = fixture.componentInstance;
     divEl = fixture.debugElement.query(By.css('div'));
+    directive = divEl.injector.get(SwipeDownDirective);
     fixture.detectChanges();
   });
 
   it('should create an instance', () => {
-    const el = { nativeElement: document.createElement('div') };
-    const directive = new SwipeDownDirective(el as ElementRef);
     expect(directive).toBeTruthy();
   });
 
   it('should emit swipeDown event when swiped down', () => {
-    const directive = divEl.injector.get(SwipeDownDirective);
-
     spyOn(component, 'onSwipeDown');
-
     const emitSpy = spyOn(directive.swipeDown, 'emit').and.callThrough();
 
     const touchStartEvent = new TouchEvent('touchstart', {

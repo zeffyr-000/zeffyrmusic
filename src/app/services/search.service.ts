@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, PLATFORM_ID, makeStateKey, TransferState } from '@angular/core';
+import { Injectable, PLATFORM_ID, makeStateKey, TransferState, inject } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SearchBarResponse, SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
@@ -11,9 +11,10 @@ const SEARCH1_KEY = (query: string) => makeStateKey<SearchResults1>(`search1-${q
   providedIn: 'root'
 })
 export class SearchService {
-  constructor(@Inject(PLATFORM_ID) private platformId: object,
-    private httpClient: HttpClient,
-    private transferState: TransferState) { }
+  private platformId = inject(PLATFORM_ID);
+  private httpClient = inject(HttpClient);
+  private transferState = inject(TransferState);
+
 
   fullSearch1(query: string): Observable<SearchResults1> {
     const key = SEARCH1_KEY(query);

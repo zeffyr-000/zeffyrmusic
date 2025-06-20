@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -8,11 +8,18 @@ import { UserService } from '../services/user.service';
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslocoPipe],
+  imports: [ReactiveFormsModule, TranslocoPipe],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css'],
 })
 export class ResetPasswordComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private userService = inject(UserService);
+  private translocoService = inject(TranslocoService);
+  private cdr = inject(ChangeDetectorRef);
+
   resetForm: FormGroup;
   loading = false;
   submitted = false;
@@ -20,15 +27,6 @@ export class ResetPasswordComponent implements OnInit {
   key: string;
   formInvalid = false;
   formSuccess = false;
-
-  constructor(
-    private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService,
-    private translocoService: TranslocoService,
-    private cdr: ChangeDetectorRef
-  ) { }
 
   ngOnInit() {
     this.idPerso = this.route.snapshot.params['id_perso'];

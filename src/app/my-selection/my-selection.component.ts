@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FollowItem } from '../models/follow.model';
 import { Subscription } from 'rxjs';
 import { PlayerService } from '../services/player.service';
@@ -14,14 +14,12 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
   imports: [RouterLink, DefaultImageDirective, TranslocoPipe]
 })
 export class MySelectionComponent implements OnInit, OnDestroy {
+  playerService = inject(PlayerService);
+  private titleService = inject(Title);
+  private readonly translocoService = inject(TranslocoService);
+
   listFollow: FollowItem[];
   subscriptionListFollow: Subscription;
-
-  constructor(
-    public playerService: PlayerService,
-    private titleService: Title,
-    private readonly translocoService: TranslocoService,
-  ) { }
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('ma_selection') + ' - Zeffyr Music');

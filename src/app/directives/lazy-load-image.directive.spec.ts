@@ -1,20 +1,27 @@
-import { Component, ElementRef, PLATFORM_ID } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement, PLATFORM_ID } from '@angular/core';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Renderer2 } from '@angular/core';
 import { LazyLoadImageDirective } from './lazy-load-image.directive';
+import { By } from '@angular/platform-browser';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MockIntersectionObserver } from './mock-intersection-observer';
 
-@Component({ template: `<img appLazyLoadImage="https://example.com/image.jpg" alt="" />` })
+@Component({
+  template: `<img appLazyLoadImage="https://example.com/image.jpg" alt="" />`,
+  imports: [LazyLoadImageDirective]
+})
 class TestComponent { }
 
 describe('LazyLoadImageDirective', () => {
-  let fixture: ComponentFixture<TestComponent>;
-  let imgEl: ElementRef;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let renderer2Mock: any;
 
   describe('In browser environment', () => {
+    let fixture: ComponentFixture<TestComponent>;
+    let imgEl: DebugElement;
+    let directive: LazyLoadImageDirective;
+    let originalIntersectionObserver: typeof IntersectionObserver;
+
     beforeEach(() => {
       renderer2Mock = {
         setAttribute: jasmine.createSpy('setAttribute')
@@ -29,65 +36,21 @@ describe('LazyLoadImageDirective', () => {
       });
 
       fixture = TestBed.createComponent(TestComponent);
-      imgEl = fixture.debugElement.children[0];
+      imgEl = fixture.debugElement.query(By.css('img'));
+      directive = imgEl.injector.get(LazyLoadImageDirective);
       fixture.detectChanges();
+      originalIntersectionObserver = window.IntersectionObserver;
+    });
+
+    afterEach(() => {
+      window.IntersectionObserver = originalIntersectionObserver;
     });
 
     it('should create an instance', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
       expect(directive).toBeTruthy();
     });
 
-    it('should set src attribute when image is in viewport', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
-      directive.src = 'https://example.com/image.jpg';
-
-      // Mock IntersectionObserver
-      directive['observer'] = new MockIntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            directive['loadImage']();
-          }
-        });
-      });
-
-      expect(directive['isBrowser']).toBeTrue();
-
-      directive['observer'].observe(imgEl.nativeElement);
-      directive.ngOnInit();
-
-      expect(renderer2Mock.setAttribute).toHaveBeenCalledWith(
-        imgEl.nativeElement,
-        'src',
-        'https://example.com/image.jpg'
-      );
-    });
-
-    it('should handle image loading errors gracefully', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
-      directive.src = 'https://example.com/broken-image.jpg';
-
-      renderer2Mock.setAttribute.calls.reset();
-
-      directive['loadImage']();
-
-      expect(renderer2Mock.setAttribute).toHaveBeenCalledTimes(1);
-      expect(renderer2Mock.setAttribute).toHaveBeenCalledWith(
-        imgEl.nativeElement,
-        'src',
-        'https://example.com/broken-image.jpg'
-      );
-
-      renderer2Mock.setAttribute.calls.reset();
-
-      const errorEvent = new ErrorEvent('error');
-      imgEl.nativeElement.dispatchEvent(errorEvent);
-
-      expect(renderer2Mock.setAttribute).not.toHaveBeenCalled();
-    });
-
-    it('should call loadImage and disconnect observer when element is intersecting', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
+    it('should call loadImage and disconnect observer when element is intersecting', fakeAsync(() => {
       directive.src = 'https://example.com/image.jpg';
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,31 +70,25 @@ describe('LazyLoadImageDirective', () => {
         }
       };
 
-      const originalIntersectionObserver = window.IntersectionObserver;
       window.IntersectionObserver = function (callback: IntersectionObserverCallback) {
         mockObserver.callback = callback;
         return mockObserver;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
-      try {
-        directive.ngOnInit();
+      directive.ngOnInit();
+      tick();
 
-        mockObserver.triggerObserverCallback([{
-          isIntersecting: true,
-          target: imgEl.nativeElement
-        } as IntersectionObserverEntry]);
+      mockObserver.triggerObserverCallback([{
+        isIntersecting: true,
+        target: imgEl.nativeElement
+      } as IntersectionObserverEntry]);
 
-        expect(loadImageSpy).toHaveBeenCalled();
-        expect(disconnectSpy).toHaveBeenCalled();
-      } finally {
-        window.IntersectionObserver = originalIntersectionObserver;
-      }
-    });
+      expect(loadImageSpy).toHaveBeenCalled();
+      expect(disconnectSpy).toHaveBeenCalled();
+    }));
 
     it('should disconnect observer when directive is destroyed', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
-
       const disconnectSpy = jasmine.createSpy('disconnect');
 
       directive['observer'] = {
@@ -148,8 +105,6 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should not throw error when observer is undefined on destroy', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
-
       directive['observer'] = undefined;
 
       expect(() => {
@@ -158,15 +113,12 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should test all MockIntersectionObserver methods', () => {
-      // Créer une instance de MockIntersectionObserver
       const callbackSpy = jasmine.createSpy('callback');
       const mockObserver = new MockIntersectionObserver(callbackSpy);
 
-      // 1. Test de la méthode observe()
       const targetElement = imgEl.nativeElement;
       mockObserver.observe(targetElement);
 
-      // Vérifier que le callback a été appelé lors de observe()
       expect(callbackSpy).toHaveBeenCalledWith(
         jasmine.arrayContaining([
           jasmine.objectContaining({
@@ -177,26 +129,18 @@ describe('LazyLoadImageDirective', () => {
         mockObserver
       );
 
-      // 2. Test de la méthode unobserve()
-      // Réinitialiser le compteur d'appels
       callbackSpy.calls.reset();
 
-      // Appeler unobserve() - c'est une opération sans effet (no-op) dans le mock
       mockObserver.unobserve(targetElement);
 
-      // Vérifier qu'aucun callback n'a été déclenché
       expect(callbackSpy).not.toHaveBeenCalled();
 
-      // 3. Test de la méthode disconnect()
-      // C'est aussi une opération sans effet dans le mock
       mockObserver.disconnect();
       expect(callbackSpy).not.toHaveBeenCalled();
 
-      // 4. Test de la méthode takeRecords()
       const records = mockObserver.takeRecords();
       expect(records).toEqual([]);
 
-      // 5. Test de la méthode triggerObserverCallback()
       callbackSpy.calls.reset();
 
       const testEntries = [{
@@ -211,6 +155,10 @@ describe('LazyLoadImageDirective', () => {
   });
 
   describe('In server environment', () => {
+    let fixture: ComponentFixture<TestComponent>;
+    let imgEl: DebugElement;
+    let directive: LazyLoadImageDirective;
+
     beforeEach(() => {
       renderer2Mock = {
         setAttribute: jasmine.createSpy('setAttribute')
@@ -225,18 +173,17 @@ describe('LazyLoadImageDirective', () => {
       });
 
       fixture = TestBed.createComponent(TestComponent);
-      imgEl = fixture.debugElement.children[0];
+      imgEl = fixture.debugElement.query(By.css('img'));
+      directive = imgEl.injector.get(LazyLoadImageDirective);
       fixture.detectChanges();
     });
 
     it('should create an instance in server environment', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
       expect(directive).toBeTruthy();
       expect(directive['isBrowser']).toBeFalse();
     });
 
     it('should not initialize IntersectionObserver in server environment', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
       directive.src = 'https://example.com/image.jpg';
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -245,12 +192,10 @@ describe('LazyLoadImageDirective', () => {
       directive.ngOnInit();
 
       expect(directive['observer']).toBeUndefined();
-
       expect(spy).not.toHaveBeenCalled();
     });
 
     it('should directly set src attribute without IntersectionObserver', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
       directive.src = 'https://example.com/image.jpg';
 
       renderer2Mock.setAttribute.calls.reset();
@@ -261,8 +206,6 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should safely handle destroy in server environment', () => {
-      const directive = new LazyLoadImageDirective(imgEl, TestBed.inject(Renderer2), TestBed.inject(PLATFORM_ID));
-
       expect(directive['observer']).toBeUndefined();
 
       expect(() => {

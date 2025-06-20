@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { InitService } from './init.service';
 
@@ -6,8 +6,9 @@ import { InitService } from './init.service';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
+  private initService = inject(InitService);
+  private router = inject(Router);
 
-  constructor(private initService: InitService, private router: Router) { }
 
   canActivate(): boolean {
     if (this.initService.getIsConnected()) {

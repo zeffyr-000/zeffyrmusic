@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
+import { Injectable, PLATFORM_ID, TransferState, makeStateKey, inject } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ArtistData } from '../models/artist.model';
@@ -11,10 +11,10 @@ const ARTIST_KEY = (id: string) => makeStateKey<ArtistData>(`artist-${id}`);
   providedIn: 'root'
 })
 export class ArtistService {
-  constructor(@Inject(PLATFORM_ID) private platformId: object,
-    private httpClient: HttpClient,
-    private transferState: TransferState
-  ) { }
+  private platformId = inject(PLATFORM_ID);
+  private httpClient = inject(HttpClient);
+  private transferState = inject(TransferState);
+
 
   getArtist(idArtist: string): Observable<ArtistData> {
     const key = ARTIST_KEY(idArtist);

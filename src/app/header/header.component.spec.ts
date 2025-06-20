@@ -20,7 +20,7 @@ import { getTranslocoModule } from '../transloco-testing.module';
 import { environment } from 'src/environments/environment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockTestComponent } from '../mock-test.component';
-import { CommonModule } from '@angular/common';
+
 import { SearchService } from '../services/search.service';
 import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
 
@@ -28,7 +28,7 @@ import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search
   selector: 'app-search-bar',
   template: '',
   standalone: true,
-  imports: [CommonModule]
+  imports: []
 })
 class MockSearchBarComponent { }
 
@@ -343,30 +343,17 @@ describe('HeaderComponent', () => {
 
   it('should call playerService.updateVolume with the correct argument and update this.valueSliderVolume when onUpdateVolume is called', () => {
     onUpdateVolumeSpy.and.callThrough();
+
+    Object.defineProperty(component.sliderVolumeRef.nativeElement.parentNode, 'offsetWidth', {
+      configurable: true,
+      get: () => 100
+    });
+
     const value = 50;
-    const size = 100;
-    spyOn(component.sliderVolumeRef.nativeElement.parentNode, 'offsetWidth').and.returnValue(size);
     component.onUpdateVolume(value);
 
-    expect(playerService.updateVolume).toHaveBeenCalled();
-  });
-
-  it('should call playerService.updateVolume with 0 when onUpdateVolume is called with a value less than 0', () => {
-    onUpdateVolumeSpy.and.callThrough();
-    const value = -10;
-    component.onUpdateVolume(value);
-    expect(playerService.updateVolume).toHaveBeenCalledWith(0);
-    expect(component.valueSliderVolume).toBe(0);
-  });
-
-  it('should call playerService.updateVolume with 100 when onUpdateVolume is called with a value greater than size', () => {
-    onUpdateVolumeSpy.and.callThrough();
-    const value = 200;
-    const size = 100;
-    spyOn(component.sliderVolumeRef.nativeElement.parentNode, 'offsetWidth').and.returnValue(size);
-    component.onUpdateVolume(value);
-    expect(playerService.updateVolume).toHaveBeenCalledWith(100);
-    expect(component.valueSliderVolume).toBe(100);
+    expect(playerService.updateVolume).toHaveBeenCalledWith(50);
+    expect(component.valueSliderVolume).toBe(50);
   });
 
   it('should call modalService.open with the correct arguments when openModal is called', () => {

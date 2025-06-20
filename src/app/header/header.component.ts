@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, Renderer2, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, Renderer2, TemplateRef, ViewChild, DOCUMENT, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgbActiveModal, NgbModal, NgbModalRef, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -10,7 +10,7 @@ import { PlayerService } from '../services/player.service';
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { LoginResponse, UserReponse } from '../models/user.model';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
 import { AngularDraggableModule } from 'angular2-draggable';
@@ -26,6 +26,19 @@ declare var google: any;
     imports: [NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, RouterLink, SearchBarComponent, SwipeDownDirective, NgbTooltip, AngularDraggableModule, FormsModule, TranslocoPipe]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+    activeModal = inject(NgbActiveModal);
+    private readonly modalService = inject(NgbModal);
+    private readonly initService = inject(InitService);
+    playerService = inject(PlayerService);
+    private readonly ref = inject(ChangeDetectorRef);
+    private readonly userService = inject(UserService);
+    private readonly router = inject(Router);
+    private readonly route = inject(ActivatedRoute);
+    private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+    private readonly translocoService = inject(TranslocoService);
+    private renderer = inject(Renderer2);
+    private document = inject<Document>(DOCUMENT);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChild('contentModalLogin') contentModalLogin: TemplateRef<any>;
     @ViewChild('contentModalRegister') contentModalRegister: TemplateRef<unknown>;
@@ -79,19 +92,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private readonly contentModalAddVideo: TemplateRef<unknown>;
     public isBrowser: boolean;
 
-    constructor(public activeModal: NgbActiveModal,
-        private readonly modalService: NgbModal,
-        private readonly initService: InitService,
-        public playerService: PlayerService,
-        private readonly ref: ChangeDetectorRef,
-        private readonly userService: UserService,
-        private readonly router: Router,
-        private readonly route: ActivatedRoute,
-        private readonly googleAnalyticsService: GoogleAnalyticsService,
-        private readonly translocoService: TranslocoService,
-        private renderer: Renderer2,
-        @Inject(DOCUMENT) private document: Document,
-        @Inject(PLATFORM_ID) platformId: object) {
+    constructor() {
+        const platformId = inject(PLATFORM_ID);
+
         this.isBrowser = isPlatformBrowser(platformId);
         this.isConnected = false;
         this.URL_ASSETS = environment.URL_ASSETS;

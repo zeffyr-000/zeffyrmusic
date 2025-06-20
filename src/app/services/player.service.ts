@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Inject, Injectable, OnDestroy, PLATFORM_ID } from "@angular/core";
+import { Injectable, OnDestroy, PLATFORM_ID, inject } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { BehaviorSubject, Subject, Subscription } from "rxjs";
 import { PlayerRunning } from "src/app/models/player-running.model";
@@ -20,6 +20,11 @@ interface CurrentKey {
     providedIn: "root"
 })
 export class PlayerService implements OnDestroy {
+    private readonly titleService = inject(Title);
+    private readonly httpClient = inject(HttpClient);
+    private readonly initService = inject(InitService);
+    private platformId = inject(PLATFORM_ID);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     YT: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,12 +79,7 @@ export class PlayerService implements OnDestroy {
 
     private isBrowser: boolean;
 
-    constructor(
-        private readonly titleService: Title,
-        private readonly httpClient: HttpClient,
-        private readonly initService: InitService,
-        @Inject(PLATFORM_ID) private platformId: object
-    ) {
+    constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
 
         if (this.isBrowser) {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, NgZone, ChangeDetectorRef, Inject, PLATFORM_ID, Optional } from '@angular/core';
+import { Component, OnDestroy, NgZone, ChangeDetectorRef, PLATFORM_ID, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -26,6 +26,21 @@ import { SeoService } from '../services/seo.service';
     imports: [DefaultImageDirective, RouterLink, ShareButtons, LazyLoadImageDirective, ArtistListComponent, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe, ToMMSSPipe]
 })
 export class PlaylistComponent implements OnDestroy {
+    private readonly ref = inject(ChangeDetectorRef);
+    private platformId = inject(PLATFORM_ID);
+    private baseHref = inject(APP_BASE_HREF, { optional: true });
+    private readonly playlistService = inject(PlaylistService);
+    private readonly activatedRoute = inject(ActivatedRoute);
+    private readonly initService = inject(InitService);
+    private readonly playerService = inject(PlayerService);
+    private readonly titleService = inject(Title);
+    private readonly metaService = inject(Meta);
+    private readonly seoService = inject(SeoService);
+    private readonly translocoService = inject(TranslocoService);
+    private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+    private readonly ngZone = inject(NgZone);
+    private readonly router = inject(Router);
+
 
     isLoading = true;
     isPrivate = false;
@@ -55,20 +70,9 @@ export class PlaylistComponent implements OnDestroy {
     subscriptionPlayerRunning: Subscription;
     isBrowser: boolean;
 
-    constructor(private readonly ref: ChangeDetectorRef,
-        @Inject(PLATFORM_ID) private platformId: object,
-        @Optional() @Inject(APP_BASE_HREF) private baseHref: string,
-        private readonly playlistService: PlaylistService,
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly initService: InitService,
-        private readonly playerService: PlayerService,
-        private readonly titleService: Title,
-        private readonly metaService: Meta,
-        private readonly seoService: SeoService,
-        private readonly translocoService: TranslocoService,
-        private readonly googleAnalyticsService: GoogleAnalyticsService,
-        private readonly ngZone: NgZone,
-        private readonly router: Router) {
+    constructor() {
+        const activatedRoute = this.activatedRoute;
+
         this.isBrowser = isPlatformBrowser(this.platformId);
 
         activatedRoute.params.subscribe(() => {

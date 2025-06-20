@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UserReponse } from '../models/user.model';
@@ -19,6 +19,14 @@ declare var google: any;
   imports: [FormsModule, TranslocoPipe]
 })
 export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
+  activeModal = inject(NgbActiveModal);
+  private readonly modalService = inject(NgbModal);
+  private readonly userService = inject(UserService);
+  private readonly translocoService = inject(TranslocoService);
+  private readonly titleService = inject(Title);
+  private readonly initService = inject(InitService);
+  private cdr = inject(ChangeDetectorRef);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @ViewChild('contentModalAssociateGoogleAccount') contentModalAssociateGoogleAccount: TemplateRef<any>;
 
@@ -36,14 +44,6 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   language = 'fr';
   availableLanguages: string[] = [];
   subscriptionConnected: Subscription;
-
-  constructor(public activeModal: NgbActiveModal,
-    private readonly modalService: NgbModal,
-    private readonly userService: UserService,
-    private readonly translocoService: TranslocoService,
-    private readonly titleService: Title,
-    private readonly initService: InitService,
-    private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('settings') + ' - Zeffyr Music');
