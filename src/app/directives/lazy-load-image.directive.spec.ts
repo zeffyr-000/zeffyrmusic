@@ -51,7 +51,9 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should call loadImage and disconnect observer when element is intersecting', fakeAsync(() => {
-      directive.src = 'https://example.com/image.jpg';
+      Object.defineProperty(directive, 'src', {
+        value: () => 'https://example.com/image.jpg'
+      });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const loadImageSpy = spyOn<any>(directive, 'loadImage').and.callThrough();
@@ -184,7 +186,9 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should not initialize IntersectionObserver in server environment', () => {
-      directive.src = 'https://example.com/image.jpg';
+      Object.defineProperty(directive, 'src', {
+        value: () => 'https://example.com/image.jpg'
+      });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const spy = spyOn<any>(directive, 'loadImage');
@@ -196,7 +200,10 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should directly set src attribute without IntersectionObserver', () => {
-      directive.src = 'https://example.com/image.jpg';
+      Object.defineProperty(directive, 'src', {
+        value: 'https://example.com/image.jpg',
+        writable: true
+      });
 
       renderer2Mock.setAttribute.calls.reset();
 
