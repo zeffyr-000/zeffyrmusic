@@ -1,12 +1,12 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Directive, ElementRef, Input, OnDestroy, OnInit, PLATFORM_ID, Renderer2, inject } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, PLATFORM_ID, Renderer2, inject, input } from '@angular/core';
 
 @Directive({ selector: '[appLazyLoadImage]' })
 export class LazyLoadImageDirective implements OnInit, OnDestroy {
   private el = inject(ElementRef);
   private renderer = inject(Renderer2);
 
-  @Input('appLazyLoadImage') src: string;
+  readonly src = input<string>(undefined, { alias: "appLazyLoadImage" });
   private observer: IntersectionObserver;
   private isBrowser: boolean;
 
@@ -34,7 +34,7 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
   }
 
   private loadImage() {
-    this.renderer.setAttribute(this.el.nativeElement, 'src', this.src);
+    this.renderer.setAttribute(this.el.nativeElement, 'src', this.src());
   }
 
   ngOnDestroy() {

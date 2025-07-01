@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Artist } from 'src/app/models/artist.model';
 import { RouterLink } from '@angular/router';
 
@@ -9,5 +9,5 @@ import { RouterLink } from '@angular/router';
     imports: [RouterLink]
 })
 export class ArtistListComponent {
-  @Input() artists: Artist[];
+  readonly artists = input<Artist[]>(undefined);
 }

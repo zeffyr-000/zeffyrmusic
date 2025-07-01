@@ -48,9 +48,7 @@ describe('DefaultImageDirective', () => {
       const testSrc = 'assets/img/test-image.jpg';
 
       setAttributeSpy.calls.reset();
-      directive.src = '';
 
-      directive.src = testSrc;
       directive.ngOnChanges({
         src: {
           currentValue: testSrc,
@@ -132,7 +130,6 @@ describe('DefaultImageDirective', () => {
 
       setAttributeSpy.calls.reset();
 
-      directive.src = testSrc;
       directive.ngOnChanges({
         src: {
           currentValue: testSrc,

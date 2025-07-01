@@ -33,10 +33,16 @@ describe('ArtistListComponent', () => {
     });
 
     it('should display artists with anchor', () => {
-        component.artists = [
+        const artistsData = [
             { id_artist: '1', label: 'Artist 1' },
             { id_artist: '2', label: 'Artist 2' }
         ];
+
+        Object.defineProperty(component, 'artists', {
+            value: () => artistsData,
+            writable: true
+        });
+
         fixture.detectChanges();
 
         const compiled = fixture.nativeElement as HTMLElement;
@@ -46,10 +52,16 @@ describe('ArtistListComponent', () => {
     });
 
     it('should display artists without anchor', () => {
-        component.artists = [
+        const artistsData = [
             { label: 'Artist 1' },
             { label: 'Artist 2' }
         ];
+
+        Object.defineProperty(component, 'artists', {
+            value: () => artistsData,
+            writable: true
+        });
+
         fixture.detectChanges();
 
         const compiled = fixture.nativeElement as HTMLElement;

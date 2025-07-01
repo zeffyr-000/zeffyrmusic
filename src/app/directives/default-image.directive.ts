@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Directive, ElementRef, Renderer2, Input, OnInit, OnChanges, SimpleChanges, PLATFORM_ID, inject } from '@angular/core';
+import { Directive, ElementRef, Renderer2, OnInit, OnChanges, SimpleChanges, PLATFORM_ID, inject, input } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Directive({ selector: 'img[appDefaultImage]' })
@@ -8,7 +8,7 @@ export class DefaultImageDirective implements OnInit, OnChanges {
   private renderer = inject(Renderer2);
   private platformId = inject(PLATFORM_ID);
 
-  @Input() src: string;
+  readonly src = input<string>(undefined);
   private defaultImage: string;
   private loadingImage: string;
   private isBrowser: boolean;
@@ -23,14 +23,14 @@ export class DefaultImageDirective implements OnInit, OnChanges {
     if (this.isBrowser) {
       this.setLoadingImage();
     } else {
-      this.renderer.setAttribute(this.el.nativeElement, 'src', this.src);
+      this.renderer.setAttribute(this.el.nativeElement, 'src', this.src());
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.isBrowser && changes['src']) {
       this.setLoadingImage();
-      this.loadImage(this.src);
+      this.loadImage(this.src());
     }
   }
 
