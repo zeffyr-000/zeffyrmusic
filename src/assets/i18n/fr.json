@@ -160,6 +160,9 @@
   "error_request_access_denied": "Le propriétaire de la vidéo demandée n'autorise pas sa lecture dans des lecteurs intégrés",
   "error_unkown": "Une erreur s'est produite",
 
+  "reload_label": "Une erreur s'est produite lors de la connexion au serveur. Veuillez réessayer.",
+  "reload_button": "Relancer l'application",
+
   "help_title": "Aide",
   "help_title_directory": "Annuaire des Astuces et Tutoriels",
   "help_description_directory": "Découvrez des conseils pratiques et des réponses aux questions courantes pour utiliser Zeffyr Music au mieux. Trouvez facilement des informations sur la gestion de votre compte, des playlists et d'autres fonctionnalités.",

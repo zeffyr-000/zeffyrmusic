@@ -159,6 +159,9 @@
   "error_request_access_denied": "The owner of the requested video does not allow it to be played in embedded players",
   "error_unkown": "An error occurred",
 
+  "reload_label": "An error occurred while connecting to the server. Please try again.",
+  "reload_button": "Restart the application",
+
   "help_title": "Help",
   "help_title_directory": "Directory of Tips and Tutorials",
   "help_description_directory": "Find practical tips and answers to common questions to make the most of Zeffyr Music. Easily access information on managing your account, playlists, and other features.",

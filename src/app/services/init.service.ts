@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, TransferState, makeStateKey, DOCUMENT, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, map, Observable, of, Subject, tap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
@@ -93,17 +93,24 @@ export class InitService {
         this.translocoService.setActiveLang(environment.lang);
     }
 
-    public getPing(): void {
+    public getPing(): Observable<boolean> {
         const storedValue = this.transferState.get<PingResponse>(PING_KEY, null);
         if (storedValue && this.isBrowser) {
             this.transferState.remove(PING_KEY);
             this.handlePingResponse(storedValue);
+            return of(true);
         }
 
-        this.httpClient.get<PingResponse>(environment.URL_SERVER + 'ping')
-            .subscribe(data => {
-                this.handlePingResponse(data);
-            });
+        return this.httpClient.get<PingResponse>(environment.URL_SERVER + 'ping')
+            .pipe(
+                tap(data => {
+                    this.handlePingResponse(data);
+                }),
+                map(() => true),
+                catchError(() => {
+                    return of(false);
+                })
+            );
     }
 
     private handlePingResponse(data: PingResponse): void {

@@ -81,7 +81,9 @@ describe('InitService', () => {
         const initPlaylistSpy = spyOn(service.subjectInitializePlaylist, 'next');
         const connectedChangeSpy = spyOn(service.subjectConnectedChange, 'next');
 
-        service.getPing();
+        service.getPing().subscribe(success => {
+          expect(success).toBeTrue();
+        });
 
         expect(transferState.get).toHaveBeenCalledWith(PING_KEY, null);
         expect(transferState.remove).toHaveBeenCalledWith(PING_KEY);
@@ -90,11 +92,10 @@ describe('InitService', () => {
         expect(connectedChangeSpy).toHaveBeenCalled();
         expect(initPlaylistSpy).toHaveBeenCalled();
 
-        const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
-        expect(req.request.method).toBe('GET');
-        req.flush(mockPingResponse);
+        httpMock.expectNone(environment.URL_SERVER + 'ping');
+        httpMock.expectNone('/api/ping');
 
-        expect(handlePingResponseSpy).toHaveBeenCalledTimes(2);
+        expect(handlePingResponseSpy).toHaveBeenCalledTimes(1);
       });
 
       it('should reset user data when not connected', () => {
@@ -118,7 +119,10 @@ describe('InitService', () => {
         const subjectNextSpy = spyOn(service.subjectInitializePlaylist, 'next').and.callThrough();
         const connectedChangeSpy = spyOn(service.subjectConnectedChange, 'next').and.callThrough();
 
-        service.getPing();
+        service.getPing().subscribe(success => {
+          expect(success).toBeTrue();
+        });
+
         const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
         req.flush(mockDisconnectedResponse);
 
@@ -168,7 +172,10 @@ describe('InitService', () => {
         const onChangeIsConnectedSpy = spyOn<any>(service, 'onChangeIsConnected').and.callThrough();
         const subjectNextSpy = spyOn(service.subjectInitializePlaylist, 'next').and.callThrough();
 
-        service.getPing();
+        service.getPing().subscribe(success => {
+          expect(success).toBeTrue();
+        });
+
         const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
         req.flush(mockConnectedResponse);
 
