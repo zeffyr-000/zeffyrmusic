@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, PLATFORM_ID, Renderer2, RendererFactory2, DOCUMENT, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, PLATFORM_ID, Renderer2, RendererFactory2, DOCUMENT, inject, ViewChild, TemplateRef } from '@angular/core';
 import { Event, NavigationEnd, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
@@ -9,7 +9,7 @@ import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 import { HeaderComponent } from './header/header.component';
 import { PlayerComponent } from './player/player.component';
-import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-root',
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly metaService = inject(Meta);
     private readonly translocoService = inject(TranslocoService);
     private cdr = inject(ChangeDetectorRef);
+    private readonly modalService = inject(NgbModal);
 
     title = 'zeffyrmusic';
     isOnline = true;
@@ -38,6 +39,8 @@ export class AppComponent implements OnInit, OnDestroy {
     errorMessage: string | null = null;
     private errorMessageSubscription: Subscription;
     private isBrowser: boolean;
+
+    @ViewChild('contentModalReload') contentModalReload: TemplateRef<unknown>;
 
     constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
@@ -77,7 +80,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.initService.getPing();
+        this.initService.getPing().subscribe((success: boolean) => {
+            if (this.isBrowser && !success) {
+                this.modalService.open(this.contentModalReload, { centered: true, size: 'lg' });
+            }
+        });
 
         if (!this.isBrowser) {
             return;
@@ -125,6 +132,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     clearErrorMessage() {
         this.playerService.clearErrorMessage();
+    }
+
+    reload() {
+        window.location.reload();
     }
 
     ngOnDestroy() {
