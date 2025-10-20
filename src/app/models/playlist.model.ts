@@ -9,6 +9,7 @@ export interface Playlist {
     id_top?: string;
     decade?: boolean;
     img_big: string;
+    og_image?: string;
     liste_video: string[];
     str_index: number[];
     tab_video: Video[];
