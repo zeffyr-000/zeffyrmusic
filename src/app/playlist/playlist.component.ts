@@ -227,8 +227,8 @@ export class PlaylistComponent implements OnDestroy {
                         });
                     }
 
-                    if (data.img_big !== undefined) {
-                        this.metaService.updateTag({ name: 'og:image', content: data.img_big });
+                    if (data.og_image !== undefined || data.img_big !== undefined) {
+                        this.metaService.updateTag({ name: 'og:image', content: data.og_image || data.img_big });
                     }
 
                     if (this.isBrowser) {

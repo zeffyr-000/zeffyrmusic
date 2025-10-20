@@ -2,6 +2,7 @@ export interface Album {
     artist: string;
     id_playlist: string;
     img_big: string;
+    og_image?: string;
     title: string;
     titre: string;
     year_release: number;
