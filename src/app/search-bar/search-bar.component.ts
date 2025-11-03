@@ -39,7 +39,7 @@ export class SearchBarComponent implements OnInit {
                     this.resultsArtist = [];
                 }
             }),
-            filter(query => query.length >= 3),
+            filter(query => query.length >= 2),
             switchMap(query => this.searchService.searchBar(query))
         ).subscribe((data: SearchBarResponse) => {
             this.resultsAlbum = data.playlist;
