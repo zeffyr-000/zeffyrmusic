@@ -119,7 +119,6 @@ export class SearchComponent implements OnInit, OnDestroy {
                     });
             }
 
-            console.log('this.isBrowser', this.isBrowser, PLATFORM_ID);
             if (this.isBrowser) {
                 this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
             }

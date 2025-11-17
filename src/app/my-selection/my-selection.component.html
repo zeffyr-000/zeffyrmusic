@@ -8,25 +8,24 @@
     <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
         @for (playlist of listFollow; track playlist.id_playlist) {
         <div class="col m-0 mt-1 mb-1">
-            <a class="card h-100"
-                [routerLink]="playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]">
-                <img src="{{playlist.url_image}}" class="card-img-top" alt="{{playlist.titre}}" itemprop="image"
-                    appDefaultImage />
-                <div class="card-body">
-                    <h5 class="card-title">{{playlist.titre}}</h5>
-                    @if(playlist.artiste!==''){
-                    <p class="card-text">{{playlist.artiste}}</p>
-                    }
-                </div>
+            <div class="card h-100">
+                <a [routerLink]="playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]">
+                    <img src="{{playlist.url_image}}" class="card-img-top" alt="{{playlist.titre}}" itemprop="image"
+                        appDefaultImage />
+                    <div class="card-body">
+                        <h5 class="card-title">{{playlist.titre}}</h5>
+                        @if(playlist.artiste!==''){
+                        <p class="card-text">{{playlist.artiste}}</p>
+                        }
+                    </div>
+                </a>
                 <div class="card-footer">
-                    <a class="btn btn-danger"
-                        (click)="$event.stopPropagation(); $event.preventDefault(); onDeleteFollow(playlist.id_playlist)"
-                        role="presentation">
+                    <button class="btn btn-danger" (click)="onDeleteFollow(playlist.id_playlist)">
                         <span class="material-icons">clear</span>
                         {{'remove_from_selection' | transloco}}
-                    </a>
+                    </button>
                 </div>
-            </a>
+            </div>
         </div>
         }
     </div>

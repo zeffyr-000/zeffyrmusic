@@ -272,6 +272,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.modalService.open(content, { size: 'lg' });
     }
 
+    dismissAndOpenModal(modal: NgbModalRef, content: TemplateRef<unknown>) {
+        modal.dismiss('');
+        this.openModal(content);
+    }
+
+    dismissAndOpenLogin(modal: NgbModalRef) {
+        modal.dismiss('');
+        this.openModalLogin();
+    }
+
     onSubmitRegister(form: NgForm) {
         if (form.valid) {
             this.userService.register(form.form.value)

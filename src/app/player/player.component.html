@@ -6,9 +6,8 @@
         <thead></thead>
         <tbody>
             @for (video of list; track video.id_video; let index = $index) {
-            <tr (click)="play(index,true)" (keydown.enter)="play(index,true)"
-                (keydown.space)="play(index,true); $event.preventDefault()" [class.active]="video.key===currentKey"
-                tabindex="0">
+            <tr role="button" tabindex="0" (click)="play(index,true)" (keydown.enter)="play(index,true)"
+                (keydown.space)="play(index,true); $event.preventDefault()" [class.active]="video.key===currentKey">
                 <td>
                     <img [appLazyLoadImage]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail"
                         alt="" />
@@ -18,9 +17,10 @@
                     <p>{{video.artiste}}</p>
                 </td>
                 <td>
-                    <span class="btn btn-link btn-sm text-decoration-none text-body" (click)="$event.stopPropagation()"
-                        ngbDropdown placement="left-top" role="presentation">
-                        <span class="material-icons" role="button" ngbDropdownToggle>more_vert</span>
+                    <span class="btn btn-link btn-sm text-decoration-none text-body" tabindex="-1"
+                        (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()"
+                        (keydown.space)="$event.stopPropagation()" ngbDropdown placement="left-top">
+                        <span class="material-icons" tabindex="0" ngbDropdownToggle>more_vert</span>
                         <ul ngbDropdownMenu>
                             <li ngbDropdownItem>
                                 <button (click)="removeToPlaylist(index)"
