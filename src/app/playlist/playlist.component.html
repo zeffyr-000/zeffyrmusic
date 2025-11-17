@@ -113,21 +113,21 @@
                     <td>
                         <div class="d-flex">
                             @if(isConnected && playerService.isLiked(video.key)) {
-                            <span class="btn btn-sm btn-link text-decoration-none"
-                                (click)="$event.stopPropagation();playerService.removeLike(video.key)"
-                                role="presentation">
+                            <button type="button" class="btn btn-sm btn-link text-decoration-none"
+                                (click)="$event.stopPropagation();playerService.removeLike(video.key)">
                                 <span class="material-icons">favorite</span>
-                            </span>
+                            </button>
                             }
                             @if(isConnected && !playerService.isLiked(video.key)) {
-                            <span class="btn btn-sm btn-link text-decoration-none text-body"
-                                (click)="$event.stopPropagation();playerService.addLike(video.key)" role="presentation">
+                            <button type="button" class="btn btn-sm btn-link text-decoration-none text-body"
+                                (click)="$event.stopPropagation();playerService.addLike(video.key)">
                                 <span class="material-icons">favorite_border</span>
-                            </span>
+                            </button>
                             }
-                            <span class="btn btn-link btn-sm text-decoration-none text-body"
-                                (click)="$event.stopPropagation()" role="presentation" ngbDropdown>
-                                <span class="material-icons" role="button" ngbDropdownToggle>more_vert</span>
+                            <span class="btn btn-link btn-sm text-decoration-none text-body" tabindex="-1"
+                                (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()"
+                                (keydown.space)="$event.stopPropagation()" ngbDropdown>
+                                <span class="material-icons" tabindex="0" ngbDropdownToggle>more_vert</span>
                                 <ul ngbDropdownMenu>
                                     <li ngbDropdownItem>
                                         <button (click)="addVideoAfterCurrentInList(video)"

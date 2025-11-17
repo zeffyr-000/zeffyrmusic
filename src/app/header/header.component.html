@@ -5,8 +5,7 @@
         </button>
         <ul ngbDropdownMenu>
             <li ngbDropdownItem>
-                <a routerLink="/current" class="btn p-0" (keydown.enter)="$event.currentTarget?.click()"
-                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                <a routerLink="/current" class="btn p-0">
                     <span class="material-icons">playlist_play</span>{{ 'play_list' | transloco }}
                 </a>
             </li>
@@ -26,8 +25,7 @@
             </li>
             }
             <li ngbDropdownItem>
-                <a routerLink="/help" class="btn p-0" (keydown.enter)="$event.currentTarget?.click()"
-                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                <a routerLink="/help" class="btn p-0">
                     <span class="material-icons">help</span>{{ 'help_title' | transloco }}
                 </a>
             </li>
@@ -37,30 +35,22 @@
                 {{pseudo}}
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/like" role="button"
-                    (keydown.enter)="$event.currentTarget?.click()"
-                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                <a class="text-decoration-none text-body" routerLink="/like">
                     <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button"
-                    (keydown.enter)="$event.currentTarget?.click()"
-                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                <a class="text-decoration-none text-body" routerLink="/my-playlists">
                     <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/my-selection" role="button"
-                    (keydown.enter)="$event.currentTarget?.click()"
-                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                <a class="text-decoration-none text-body" routerLink="/my-selection">
                     <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/settings" role="button"
-                    (keydown.enter)="$event.currentTarget?.click()"
-                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                <a class="text-decoration-none text-body" routerLink="/settings">
                     <span class="material-icons">settings</span>{{ 'settings' | transloco }}
                 </a>
             </li>
@@ -75,9 +65,7 @@
     </div>
 
     <div id="header_logo" class="nav col-3">
-        <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="" routerLink=""
-            (keydown.enter)="$event.currentTarget?.click()"
-            (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+        <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="" routerLink="">
             <img [src]="this.darkModeEnabled ? URL_ASSETS + 'assets/img/logo_dark.png' : URL_ASSETS + 'assets/img/logo.png'"
                 [alt]=" 'home' | transloco " height="50" width="199" class="d-none d-lg-block mx-auto" />
             <img [src]="this.darkModeEnabled ?  URL_ASSETS + 'assets/img/logo_mobile_dark.png' : URL_ASSETS + 'assets/img/logo_mobile.png'"
@@ -88,37 +76,27 @@
     <ul class="nav col-5 d-none d-lg-flex" id="header_nav">
         @if(isConnected) {
         <li class="nav-item align-self-center d-flex" ngbDropdown>
-            <a id="header_toggle_big" class="btn btn-light" role="button" tabindex="0" ngbDropdownToggle
-                (keydown.enter)="$event.currentTarget?.click()"
-                (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+            <a id="header_toggle_big" class="btn btn-light" ngbDropdownToggle>
                 {{pseudo}} <span class="caret"></span>
             </a>
             <ul ngbDropdownMenu>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/like" role="button" tabindex="0"
-                        (keydown.enter)="$event.currentTarget?.click()"
-                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                    <a class="text-decoration-none text-body" routerLink="/like">
                         <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button" tabindex="0"
-                        (keydown.enter)="$event.currentTarget?.click()"
-                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                    <a class="text-decoration-none text-body" routerLink="/my-playlists">
                         <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/my-selection" role="button" tabindex="0"
-                        (keydown.enter)="$event.currentTarget?.click()"
-                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                    <a class="text-decoration-none text-body" routerLink="/my-selection">
                         <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/settings" role="button" tabindex="0"
-                        (keydown.enter)="$event.currentTarget?.click()"
-                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+                    <a class="text-decoration-none text-body" routerLink="/settings">
                         <span class="material-icons">settings</span>{{ 'settings' | transloco }}
                     </a>
                 </li>
@@ -148,9 +126,7 @@
         }
 
         <li id="header_li_help" class="nav-item align-self-center d-flex">
-            <a class="btn btn-light" routerLink="/help" class="btn btn-light"
-                (keydown.enter)="$event.currentTarget?.click()"
-                (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
+            <a class="btn btn-light" routerLink="/help">
                 <span class="material-icons">help</span>
             </a>
         </li>
@@ -319,10 +295,9 @@
         } @else {
         <div>
             <p class="alert alert-success">{{ 'inscription_succes' | transloco }}</p>
-            <p><a (click)="modal.dismiss(''); openModalLogin()" class="text-decoration-underline" role="button"
-                    tabindex="0" (keydown.enter)="modal.dismiss(''); openModalLogin()"
-                    (keydown.space)="modal.dismiss(''); openModalLogin(); $event.preventDefault()">{{
-                    'connexion' | transloco}}</a></p>
+            <p><button type="button" (click)="dismissAndOpenLogin(modal)"
+                    class="btn btn-link text-decoration-underline p-0">
+                    {{ 'connexion' | transloco}}</button></p>
         </div>
         }
     </div>
@@ -359,10 +334,9 @@
             <p class="alert alert-danger">{{error}}</p>
             }
 
-            <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)" class="text-decoration-underline"
-                    role="button" tabindex="0" (keydown.enter)="modal.dismiss(''); openModal(contentModalNewPass)"
-                    (keydown.space)="modal.dismiss(''); openModal(contentModalNewPass); $event.preventDefault()">{{
-                    'mot_de_passe_oublie' | transloco}}</a>
+            <p><button type="button" (click)="dismissAndOpenModal(modal, contentModalNewPass)"
+                    class="btn btn-link text-decoration-underline p-0">
+                    {{ 'mot_de_passe_oublie' | transloco}}</button>
             </p>
         </form>
     </div>

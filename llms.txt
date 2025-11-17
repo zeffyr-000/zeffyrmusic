@@ -32,6 +32,11 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use the async pipe to handle observables
 
+## ng-bootstrap Accessibility
+- DO NOT add `tabindex`, `(keydown.enter)`, or `(keydown.space)` to elements with `ngbDropdownToggle`
+- ng-bootstrap directives (`ngbDropdownToggle`, `ngbTooltip`, `ngbModal`) already handle keyboard accessibility
+- Avoid redundant `role="presentation"` on interactive elements
+
 ## Services
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
