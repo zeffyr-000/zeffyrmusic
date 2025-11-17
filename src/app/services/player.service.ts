@@ -143,8 +143,8 @@ export class PlayerService implements OnDestroy {
         if (
             localStorage.volume === "undefined" ||
             localStorage.volume === undefined ||
-            parseInt(localStorage.volume, 10) > 100 ||
-            parseInt(localStorage.volume, 10) < 0
+            Number.parseInt(localStorage.volume, 10) > 100 ||
+            Number.parseInt(localStorage.volume, 10) < 0
         ) {
             if (typeof this.player.getVolume() === "number") {
                 localStorage.volume = this.player.getVolume();
@@ -153,7 +153,7 @@ export class PlayerService implements OnDestroy {
             }
         }
 
-        this.updateVolume(parseInt(localStorage.volume, 10));
+        this.updateVolume(Number.parseInt(localStorage.volume, 10));
     }
 
     onErrorYT(event: { data: number }) {
@@ -316,7 +316,7 @@ export class PlayerService implements OnDestroy {
 
     updatePositionSlider(position: number) {
         this.player.seekTo(
-            parseInt((position * this.player.getDuration()).toString(), 10)
+            Number.parseInt((position * this.player.getDuration()).toString(), 10)
         );
     }
 
@@ -344,7 +344,7 @@ export class PlayerService implements OnDestroy {
         for (
             let j: number, x: number, i = v.length;
             i;
-            j = parseInt((Math.random() * i).toString(), 10),
+            j = Number.parseInt((Math.random() * i).toString(), 10),
             x = v[--i],
             v[i] = v[j],
             v[j] = x
@@ -469,7 +469,7 @@ export class PlayerService implements OnDestroy {
     editPlaylistTitle(idPlaylist: string, title: string) {
         this.listPlaylist
             .filter(a => a.id_playlist === idPlaylist)
-            .map(a => {
+            .forEach(a => {
                 a.titre = title;
             });
 
@@ -498,7 +498,7 @@ export class PlayerService implements OnDestroy {
                     if (data.success !== undefined && data.success) {
                         this.listPlaylist
                             .filter(a => a.id_playlist === idPlaylist)
-                            .map(a => {
+                            .forEach(a => {
                                 a.prive = isPrivate;
                             });
                         this.onChangeListPlaylist();

@@ -14,6 +14,7 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 const app = express();
 const commonEngine = new CommonEngine();
 
+app.disable('x-powered-by');
 app.set('etag', false);
 app.use(cookieParser());
 

@@ -3,9 +3,12 @@
 </div>
 <div id="liste_en_cours_content" class="card panel-content border-0">
     <table id="liste_en_cours" class="table table-hover table-sm">
+        <thead></thead>
         <tbody>
             @for (video of list; track video.id_video; let index = $index) {
-            <tr (click)="play(index,true)" [class.active]="video.key===currentKey">
+            <tr (click)="play(index,true)" (keydown.enter)="play(index,true)"
+                (keydown.space)="play(index,true); $event.preventDefault()" [class.active]="video.key===currentKey"
+                tabindex="0">
                 <td>
                     <img [appLazyLoadImage]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail"
                         alt="" />

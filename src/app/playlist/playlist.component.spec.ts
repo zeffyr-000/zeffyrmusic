@@ -669,7 +669,7 @@ describe('PlaylistComponent', () => {
       titre: 'Now That\'s What I Call Music! 10',
       artiste: undefined,
       year: 1987,
-      tab_video: Array(30).fill({ id_video: '1', titre: 'Track' })
+      tab_video: new Array(30).fill({ id_video: '1', titre: 'Track' })
     } as Playlist;
 
     const result = component.getMetaDescription(data);
