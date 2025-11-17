@@ -107,7 +107,8 @@
 		<tbody>
 			@for (video of listTracks | slice:0:limitTrack ; track video.id_video; let index = $index) {
 			<tr [attr.data-id-video]="video.key" [class.active]="video.key === currentKey"
-				(click)="runPlaylistTrack(index)">
+				(click)="runPlaylistTrack(index)" (keydown.enter)="runPlaylistTrack(index)"
+				(keydown.space)="runPlaylistTrack(index); $event.preventDefault()" tabindex="0">
 				<td>{{ index+1 }}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
 					<img [src]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
@@ -135,7 +136,10 @@
 					@if(isConnected){
 					<span class="btn btn-default"
 						(click)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre,video.duree)"
-						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
+						(keydown.enter)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre,video.duree)"
+						(keydown.space)="$event.stopPropagation();addVideo(video.key,video.artiste,video.titre,video.duree); $event.preventDefault()"
+						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="button"
+						tabindex="0">
 						<span class="material-icons">add</span>
 					</span>
 					}
@@ -167,7 +171,7 @@
 	<div class="d-flex justify-content-between align-items-center">
 		<h2 class="h4">{{ 'extras' | transloco }}</h2>
 		@if(listExtras && listExtras.length>limitExtra) {
-		<button class="btn btn-link" (click)="moreExtras()" role="presentation">{{ 'more' |transloco }}</button>
+		<button class="btn btn-link" (click)="moreExtras()">{{ 'more' |transloco }}</button>
 		}
 	</div>
 	@if (!isConnected) {
@@ -189,12 +193,16 @@
 
 		<tbody>
 			@for (extra of listExtras | slice:0:limitExtra ; track extra.id_video; let index = $index) {
-			<tr [attr.data-id-video]="extra.key" [class.active]="extra.key === currentKey">
+			<tr [attr.data-id-video]="extra.key" [class.active]="extra.key === currentKey"
+				(keydown.enter)="runPlaylistExtra(index)"
+				(keydown.space)="runPlaylistExtra(index); $event.preventDefault()" tabindex="0">
 				<td>{{ index+1 }}</td>
 				<td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
 					<img [src]="'https://img.youtube.com/vi/'+extra.key+'/mqdefault.jpg'" class="thumbnail" alt="" />
 				</td>
-				<td (click)="runPlaylistExtra(index)">{{extra.title}}</td>
+				<td (click)="runPlaylistExtra(index)" (keydown.enter)="runPlaylistExtra(index)"
+					(keydown.space)="runPlaylistExtra(index); $event.preventDefault()" tabindex="0" role="button">
+					{{extra.title}}</td>
 				<td>
 					@if(extra.duree>0){
 					<span>{{extra.duree | toMMSS }}</span>
@@ -203,7 +211,10 @@
 				<td>
 					@if(isConnected) {
 					<span class="btn btn-default" (click)="addVideo(extra.key,'',extra.title,extra.duree);"
-						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="presentation">
+						(keydown.enter)="addVideo(extra.key,'',extra.title,extra.duree)"
+						(keydown.space)="addVideo(extra.key,'',extra.title,extra.duree); $event.preventDefault()"
+						placement="left" ngbTooltip="{{'ajouter_a_une_playlist' | transloco}}" role="button"
+						tabindex="0">
 						<span class="material-icons">add</span>
 					</span>
 					}

@@ -5,25 +5,29 @@
         </button>
         <ul ngbDropdownMenu>
             <li ngbDropdownItem>
-                <a routerLink="/current" role="presentation" class="btn p-0">
+                <a routerLink="/current" class="btn p-0" (keydown.enter)="$event.currentTarget?.click()"
+                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                     <span class="material-icons">playlist_play</span>{{ 'play_list' | transloco }}
                 </a>
             </li>
             <li class="dropdown-divider"></li>
             @if(!isConnected) {
             <li ngbDropdownItem>
-                <a (click)="openModalRegister()" role="presentation">
+                <a (click)="openModalRegister()" role="button" tabindex="0" (keydown.enter)="openModalRegister()"
+                    (keydown.space)="openModalRegister(); $event.preventDefault()">
                     <span class="material-icons">create_new_folder</span>{{'inscription' | transloco }}
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a (click)="openModalLogin()" role="presentation">
+                <a (click)="openModalLogin()" role="button" tabindex="0" (keydown.enter)="openModalLogin()"
+                    (keydown.space)="openModalLogin(); $event.preventDefault()">
                     <span class="material-icons">login</span>{{'connexion' |transloco }}
                 </a>
             </li>
             }
             <li ngbDropdownItem>
-                <a routerLink="/help" role="presentation" class="btn p-0">
+                <a routerLink="/help" class="btn p-0" (keydown.enter)="$event.currentTarget?.click()"
+                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                     <span class="material-icons">help</span>{{ 'help_title' | transloco }}
                 </a>
             </li>
@@ -33,22 +37,30 @@
                 {{pseudo}}
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/like" role="button">
+                <a class="text-decoration-none text-body" routerLink="/like" role="button"
+                    (keydown.enter)="$event.currentTarget?.click()"
+                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                     <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button">
+                <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button"
+                    (keydown.enter)="$event.currentTarget?.click()"
+                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                     <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/my-selection" role="button">
+                <a class="text-decoration-none text-body" routerLink="/my-selection" role="button"
+                    (keydown.enter)="$event.currentTarget?.click()"
+                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                     <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
                 </a>
             </li>
             <li ngbDropdownItem>
-                <a class="text-decoration-none text-body" routerLink="/settings" role="button">
+                <a class="text-decoration-none text-body" routerLink="/settings" role="button"
+                    (keydown.enter)="$event.currentTarget?.click()"
+                    (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                     <span class="material-icons">settings</span>{{ 'settings' | transloco }}
                 </a>
             </li>
@@ -63,7 +75,9 @@
     </div>
 
     <div id="header_logo" class="nav col-3">
-        <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="" routerLink="">
+        <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="" routerLink=""
+            (keydown.enter)="$event.currentTarget?.click()"
+            (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
             <img [src]="this.darkModeEnabled ? URL_ASSETS + 'assets/img/logo_dark.png' : URL_ASSETS + 'assets/img/logo.png'"
                 [alt]=" 'home' | transloco " height="50" width="199" class="d-none d-lg-block mx-auto" />
             <img [src]="this.darkModeEnabled ?  URL_ASSETS + 'assets/img/logo_mobile_dark.png' : URL_ASSETS + 'assets/img/logo_mobile.png'"
@@ -74,27 +88,37 @@
     <ul class="nav col-5 d-none d-lg-flex" id="header_nav">
         @if(isConnected) {
         <li class="nav-item align-self-center d-flex" ngbDropdown>
-            <a id="header_toggle_big" class="btn btn-light" role="button" ngbDropdownToggle>
+            <a id="header_toggle_big" class="btn btn-light" role="button" tabindex="0" ngbDropdownToggle
+                (keydown.enter)="$event.currentTarget?.click()"
+                (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                 {{pseudo}} <span class="caret"></span>
             </a>
             <ul ngbDropdownMenu>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/like" role="button">
+                    <a class="text-decoration-none text-body" routerLink="/like" role="button" tabindex="0"
+                        (keydown.enter)="$event.currentTarget?.click()"
+                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                         <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button">
+                    <a class="text-decoration-none text-body" routerLink="/my-playlists" role="button" tabindex="0"
+                        (keydown.enter)="$event.currentTarget?.click()"
+                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                         <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/my-selection" role="button">
+                    <a class="text-decoration-none text-body" routerLink="/my-selection" role="button" tabindex="0"
+                        (keydown.enter)="$event.currentTarget?.click()"
+                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                         <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
                     </a>
                 </li>
                 <li ngbDropdownItem>
-                    <a class="text-decoration-none text-body" routerLink="/settings" role="button">
+                    <a class="text-decoration-none text-body" routerLink="/settings" role="button" tabindex="0"
+                        (keydown.enter)="$event.currentTarget?.click()"
+                        (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                         <span class="material-icons">settings</span>{{ 'settings' | transloco }}
                     </a>
                 </li>
@@ -109,19 +133,24 @@
         }
         @else{
         <li id="header_li_inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
-            <a class="btn btn-warning btn-outline-warning text-light" (click)="openModalRegister()" role="presentation">
+            <a class="btn btn-warning btn-outline-warning text-light" (click)="openModalRegister()" role="button"
+                tabindex="0" (keydown.enter)="openModalRegister()"
+                (keydown.space)="openModalRegister(); $event.preventDefault()">
                 {{'inscription' | transloco }}
             </a>
         </li>
         <li id="header_li_connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
-            <a class="btn btn-primary text-light" (click)="openModalLogin()" role="presentation">
+            <a class="btn btn-primary text-light" (click)="openModalLogin()" role="button" tabindex="0"
+                (keydown.enter)="openModalLogin()" (keydown.space)="openModalLogin(); $event.preventDefault()">
                 {{'connexion' |transloco }}
             </a>
         </li>
         }
 
         <li id="header_li_help" class="nav-item align-self-center d-flex">
-            <a class="btn btn-light" routerLink="/help" role="presentation">
+            <a class="btn btn-light" routerLink="/help" class="btn btn-light"
+                (keydown.enter)="$event.currentTarget?.click()"
+                (keydown.space)="$event.currentTarget?.click(); $event.preventDefault()">
                 <span class="material-icons">help</span>
             </a>
         </li>
@@ -134,20 +163,20 @@
 
 <div id="header_player" class="row g-0" [class.expanded]="isPlayerExpanded" appSwipeDown (swipeDown)="collapsePlayer()">
 
-    <button id="header_player_collapse" class="btn btn-link" (click)="collapsePlayer()" role="presentation">
+    <button id="header_player_collapse" class="btn btn-link" (click)="collapsePlayer()">
         <span class="material-icons">keyboard_arrow_down</span>
     </button>
 
     <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
         @if(isConnected && playerService.isLiked(currentKey)){
         <button id="header_player_gauche_liked" class="btn btn-sm btn-link text-decoration-none float-end"
-            (click)="$event.stopPropagation();playerService.removeLike(currentKey)" role="presentation">
+            (click)="$event.stopPropagation();playerService.removeLike(currentKey)">
             <span class="material-icons">favorite</span>
         </button>
         }
         @if(isConnected && !playerService.isLiked(currentKey)){
         <button id="header_player_gauche_like" class="btn btn-sm btn-link text-decoration-none text-body float-end"
-            (click)="$event.stopPropagation();playerService.addLike(currentKey)" role="presentation">
+            (click)="$event.stopPropagation();playerService.addLike(currentKey)">
             <span class="material-icons">favorite_border</span>
         </button>
         }
@@ -160,45 +189,52 @@
 
     <div id="header_player_centre" class="col-md-6">
         <div class="pl-lg-5 pr-lg-5 ml-lg-5 mr-lg-5">
-            <a id="header_player_centre_title" class="btn btn-light d-inline-block d-md-none" (click)="expandPlayer()"
-                role="presentation">
+            <a id="header_player_centre_title" class="btn btn-light d-inline-block d-md-none" tabindex="0"
+                (click)="expandPlayer()" (keydown.enter)="expandPlayer()"
+                (keydown.space)="expandPlayer(); $event.preventDefault()">
                 <div><b>{{currentTitle}}</b></div>
                 <div>{{currentArtist}}</div>
             </a>
 
             <div class="btn-group btn-group-sm">
-                <a class="btn text-light w-100  d-none d-md-block"
+                <a class="btn text-light w-100  d-none d-md-block" tabindex="0"
                     [class.disabled]="playerService.currentIndex === 0 && currentTimeStr === '0:00'"
                     [class.border-0]="playerService.currentIndex === 0 && currentTimeStr === '0:00'"
-                    (click)="onBefore()" role="presentation">
+                    (click)="onBefore()" (keydown.enter)="onBefore()"
+                    (keydown.space)="onBefore(); $event.preventDefault()">
                     <span class="material-icons">skip_previous</span>
                 </a>
-                <a id="play_button" class="btn text-light" (click)="onPlayPause()" role="presentation">
+                <a id="play_button" class="btn text-light" tabindex="0" (click)="onPlayPause()"
+                    (keydown.enter)="onPlayPause()" (keydown.space)="onPlayPause(); $event.preventDefault()">
                     @if(isPlaying){
                     <span class="material-icons">pause</span>
                     }@else{
                     <span class="material-icons">play_arrow</span>
                     }
                 </a>
-                <a class="btn text-light w-100  d-none d-md-block"
+                <a class="btn text-light w-100  d-none d-md-block" tabindex="0"
                     [class.disabled]="playerService.currentIndex === playerService?.tabIndex?.length - 1"
                     [class.border-0]="playerService.currentIndex === playerService?.tabIndex?.length - 1"
-                    (click)="onAfter()" role="presentation">
+                    (click)="onAfter()" (keydown.enter)="onAfter()"
+                    (keydown.space)="onAfter(); $event.preventDefault()">
                     <span class="material-icons">skip_next</span>
                 </a>
             </div>
 
             <div id="header_player_centre_more_actions" class="btn-group btn-group-sm float-end d-none d-md-block">
-                <a (click)="goFullscreen('player')" class="btn text-light" placement="top"
-                    ngbTooltip="{{'video_plein_ecran' | transloco}}" role="presentation">
+                <a (click)="goFullscreen('player')" class="btn text-light" tabindex="0" placement="top"
+                    ngbTooltip="{{'video_plein_ecran' | transloco}}" (keydown.enter)="goFullscreen('player')"
+                    (keydown.space)="goFullscreen('player'); $event.preventDefault()">
                     <span class="material-icons">fullscreen</span>
                 </a>
-                <a id="repeat" class="btn text-light" [class.active]="isRepeat" (click)="repeat()" placement="top"
-                    ngbTooltip="{{'repetition' | transloco}}" role="presentation">
+                <a id="repeat" class="btn text-light" [class.active]="isRepeat" tabindex="0" (click)="repeat()"
+                    placement="top" ngbTooltip="{{'repetition' | transloco}}" (keydown.enter)="repeat()"
+                    (keydown.space)="repeat(); $event.preventDefault()">
                     <span class="material-icons">repeat</span>
                 </a>
-                <a id="random" class="btn text-light" [class.active]="isRandom" (click)="random()" placement="top"
-                    ngbTooltip="{{'lecture_aleatoire' | transloco}}" role="presentation">
+                <a id="random" class="btn text-light" [class.active]="isRandom" tabindex="0" (click)="random()"
+                    placement="top" ngbTooltip="{{'lecture_aleatoire' | transloco}}" (keydown.enter)="random()"
+                    (keydown.space)="random(); $event.preventDefault()">
                     <span class="material-icons">shuffle</span>
                 </a>
             </div>
@@ -207,8 +243,9 @@
         <div id="header_player_center_load">
             <div id="chrono_en_cours">{{ currentTimeStr }}</div>
             <div id="slider_1_main">
-                <div id="slider_1_content" class="ui-slider" (click)="onClickSliderPlayer($event)" #contentSlider1
-                    role="presentation">
+                <div id="slider_1_content" class="ui-slider" tabindex="0" (click)="onClickSliderPlayer($event)"
+                    (keydown.enter)="onClickSliderPlayer($event)"
+                    (keydown.space)="onClickSliderPlayer($event); $event.preventDefault()" #contentSlider1>
                     @if(isBrowser){
                     <span class="ui-slider-handle" #sliderPlayer [style.left.%]="valueSliderPlayer" ngDraggable
                         [bounds]="contentSlider1" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
@@ -226,8 +263,9 @@
         <div id="header_player_volume_content" class="mx-auto">
             <span class="material-icons text-light">volume_up</span>
             <div id="slider_2_main">
-                <div id="slider_2_content" class="ui-slider" (click)="onClickSliderVolume($event)" #contentSlider2
-                    role="presentation">
+                <div id="slider_2_content" class="ui-slider" tabindex="0" (click)="onClickSliderVolume($event)"
+                    (keydown.enter)="onClickSliderVolume($event)"
+                    (keydown.space)="onClickSliderVolume($event); $event.preventDefault()" #contentSlider2>
                     @if(isBrowser) {
                     <span class="ui-slider-handle" #sliderVolume [style.left.%]="valueSliderVolume" ngDraggable
                         [bounds]="contentSlider2" [inBounds]="true" lockAxis="y" preventDefaultEvent="true"
@@ -264,8 +302,8 @@
                     required />
             </p>
             <p class="form-group">
-                <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
-                <input type="text" name="mail" id="mail" class="form-control" ngModel required email />
+                <label class="control-label" for="mailLogin">{{ 'mail' | transloco}}</label>
+                <input type="text" name="mail" id="mailLogin" class="form-control" ngModel required email />
             </p>
             <p class="form-group">
                 <label class="control-label" for="password">{{ 'mot_de_passe' | transloco}}</label>
@@ -281,7 +319,9 @@
         } @else {
         <div>
             <p class="alert alert-success">{{ 'inscription_succes' | transloco }}</p>
-            <p><a (click)="modal.dismiss(''); openModalLogin()" class="text-decoration-underline" role="presentation">{{
+            <p><a (click)="modal.dismiss(''); openModalLogin()" class="text-decoration-underline" role="button"
+                    tabindex="0" (keydown.enter)="modal.dismiss(''); openModalLogin()"
+                    (keydown.space)="modal.dismiss(''); openModalLogin(); $event.preventDefault()">{{
                     'connexion' | transloco}}</a></p>
         </div>
         }
@@ -320,7 +360,9 @@
             }
 
             <p><a (click)="modal.dismiss(''); openModal(contentModalNewPass)" class="text-decoration-underline"
-                    role="presentation">{{ 'mot_de_passe_oublie' | transloco}}</a>
+                    role="button" tabindex="0" (keydown.enter)="modal.dismiss(''); openModal(contentModalNewPass)"
+                    (keydown.space)="modal.dismiss(''); openModal(contentModalNewPass); $event.preventDefault()">{{
+                    'mot_de_passe_oublie' | transloco}}</a>
             </p>
         </form>
     </div>
@@ -335,8 +377,9 @@
         @if(!isSuccess){
         <form (ngSubmit)="onSubmitResetPass(formResetPass)" #formResetPass="ngForm">
             <p class="form-group">
-                <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
-                <input type="text" name="mail" id="mail" class="form-control" ngbAutofocus ngModel required email />
+                <label class="control-label" for="mailReset">{{ 'mail' | transloco}}</label>
+                <input type="text" name="mail" id="mailReset" class="form-control" ngbAutofocus ngModel required
+                    email />
             </p>
             <p><input type="submit" class="btn btn-primary" [disabled]="formResetPass.invalid"
                     value="{{ 'envoyer' | transloco}}" /></p>

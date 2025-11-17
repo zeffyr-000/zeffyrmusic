@@ -339,8 +339,8 @@ export class PlaylistComponent implements OnDestroy {
             let sumDuration = 0;
 
             for (const element of this.playlist) {
-                if (parseInt(element.duree, 10) > 0) {
-                    sumDuration += parseInt(element.duree, 10);
+                if (Number.parseInt(element.duree, 10) > 0) {
+                    sumDuration += Number.parseInt(element.duree, 10);
                 }
             }
 
@@ -362,7 +362,7 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     adjustPlaylistDuration(totalTime: number) {
-        this.playlist.map(video => {
+        this.playlist.forEach(video => {
             if (video.key === this.currentKey) {
                 video.duree = totalTime.toString();
                 this.ref.detectChanges();

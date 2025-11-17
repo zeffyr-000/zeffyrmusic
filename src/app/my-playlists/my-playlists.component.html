@@ -56,7 +56,9 @@
             <td>
                 <a class="btn btn-secondary"
                     (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
-                    role="presentation">
+                    role="button" tabindex="0"
+                    (keydown.enter)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
+                    (keydown.space)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist); $event.preventDefault()">
                     <span class="material-icons">clear</span>
                     {{'supprimer' | transloco}}
                 </a>
