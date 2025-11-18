@@ -25,16 +25,7 @@ jobs:
         run: npm ci
 
       - name: Run Tests
-        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI --code-coverage
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
 
       - name: Lint
         run: npm run lint
