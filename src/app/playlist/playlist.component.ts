@@ -305,6 +305,8 @@ export class PlaylistComponent implements OnDestroy {
     }
 
     runPlaylist(index = 0) {
+        this.currentIdPlaylistPlaying = this.idPlaylist || '';
+        this.isPlaying = true;
         this.playerService.runPlaylist(this.playlist, index, this.idTopCharts);
     }
 
