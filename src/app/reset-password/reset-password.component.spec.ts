@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -10,17 +10,20 @@ import { getTranslocoModule } from '../transloco-testing.module';
 describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
   let fixture: ComponentFixture<ResetPasswordComponent>;
-  let userServiceMock: jasmine.SpyObj<UserService>;
-  let routerMock: jasmine.SpyObj<Router>;
-  let cdrMock: jasmine.SpyObj<ChangeDetectorRef>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let userServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let routerMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let cdrMock: any;
 
   const mockIdPerso = 'test-user-123';
   const mockKey = 'reset-key-abc';
 
   beforeEach(async () => {
-    userServiceMock = jasmine.createSpyObj('UserService', ['sendResetPass']);
-    routerMock = jasmine.createSpyObj('Router', ['navigate']);
-    cdrMock = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
+    userServiceMock = { sendResetPass: vi.fn() };
+    routerMock = { navigate: vi.fn() };
+    cdrMock = { detectChanges: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, ResetPasswordComponent, getTranslocoModule()],
@@ -80,7 +83,7 @@ describe('ResetPasswordComponent', () => {
       expect(passwordControl.errors['minlength']).toBeTruthy();
 
       passwordControl.setValue('123456');
-      expect(passwordControl.valid).toBeTrue();
+      expect(passwordControl.valid).toBe(true);
     });
 
     it('should validate confirm password is required', () => {
@@ -122,35 +125,29 @@ describe('ResetPasswordComponent', () => {
     it('should not proceed if form is invalid', () => {
       component.onSubmit();
 
-      expect(component.submitted).toBeTrue();
+      expect(component.submitted).toBe(true);
       expect(userServiceMock.sendResetPass).not.toHaveBeenCalled();
     });
 
-    it('should call userService.sendResetPass with correct parameters if form is valid', fakeAsync(() => {
-      userServiceMock.sendResetPass.and.callFake(params => {
-        expect(params).toEqual({
-          id_perso: mockIdPerso,
-          key: mockKey,
-          password: 'password123',
-        });
+    it('should call userService.sendResetPass with correct parameters if form is valid', () => {
+      userServiceMock.sendResetPass.mockReturnValue(of({ success: true }));
 
-        return of({ success: true });
-      });
-
-      cdrMock.detectChanges.calls.reset();
+      cdrMock.detectChanges.mockClear();
 
       component.resetForm.get('password').setValue('password123');
       component.resetForm.get('confirmPassword').setValue('password123');
 
       component.onSubmit();
 
-      tick();
+      expect(userServiceMock.sendResetPass).toHaveBeenCalledWith({
+        id_perso: mockIdPerso,
+        key: mockKey,
+        password: 'password123',
+      });
 
-      expect(userServiceMock.sendResetPass).toHaveBeenCalled();
-
-      expect(component.formSuccess).toBeTrue();
-      expect(component.formInvalid).toBeFalse();
-    }));
+      expect(component.formSuccess).toBe(true);
+      expect(component.formInvalid).toBe(false);
+    });
 
     it('should handle failed reset password', () => {
       component.onSubmit = () => {
@@ -162,16 +159,16 @@ describe('ResetPasswordComponent', () => {
 
       component.onSubmit();
 
-      expect(component.loading).toBeFalse();
-      expect(component.formSuccess).toBeFalse();
-      expect(component.formInvalid).toBeTrue();
+      expect(component.loading).toBe(false);
+      expect(component.formSuccess).toBe(false);
+      expect(component.formInvalid).toBe(true);
       expect(cdrMock.detectChanges).toHaveBeenCalled();
     });
 
-    it('should set formInvalid to true and formSuccess to false when response has success=false', fakeAsync(() => {
-      userServiceMock.sendResetPass.and.returnValue(of({ success: false }));
+    it('should set formInvalid to true and formSuccess to false when response has success=false', () => {
+      userServiceMock.sendResetPass.mockReturnValue(of({ success: false }));
 
-      cdrMock.detectChanges.calls.reset();
+      cdrMock.detectChanges.mockClear();
 
       component.resetForm.get('password').setValue('password123');
       component.resetForm.get('confirmPassword').setValue('password123');
@@ -181,45 +178,36 @@ describe('ResetPasswordComponent', () => {
 
       component.onSubmit();
 
-      tick();
+      expect(component.formInvalid).toBe(true);
+      expect(component.formSuccess).toBe(false);
+    });
 
-      expect(component.formInvalid).toBeTrue();
-      expect(component.formSuccess).toBeFalse();
-    }));
-
-    it('should handle error during reset password', fakeAsync(() => {
-      userServiceMock.sendResetPass.and.returnValue(throwError(() => new Error('Network error')));
-
-      spyOn(component, 'onSubmit').and.callThrough();
+    it('should handle error during reset password', () => {
+      userServiceMock.sendResetPass.mockReturnValue(throwError(() => new Error('Network error')));
 
       component.resetForm.get('password').setValue('password123');
       component.resetForm.get('confirmPassword').setValue('password123');
 
       component.onSubmit();
 
-      component.loading = false;
-      cdrMock.detectChanges();
-
-      tick();
-
-      expect(component.loading).toBeFalse();
-    }));
+      expect(component.loading).toBe(false);
+    });
   });
 
   describe('UI interactions', () => {
     it('should show loader when loading is true', () => {
       component.loading = true;
-      expect(component.loading).toBeTrue();
+      expect(component.loading).toBe(true);
     });
 
     it('should show success message when formSuccess is true', () => {
       component.formSuccess = true;
-      expect(component.formSuccess).toBeTrue();
+      expect(component.formSuccess).toBe(true);
     });
 
     it('should show error message when formInvalid is true', () => {
       component.formInvalid = true;
-      expect(component.formInvalid).toBeTrue();
+      expect(component.formInvalid).toBe(true);
     });
   });
 });

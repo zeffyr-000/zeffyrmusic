@@ -8,10 +8,11 @@ describe('HelpPageComponent', () => {
   let fixture: ComponentFixture<HelpPageComponent>;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let route: ActivatedRoute;
-  let getSpy: jasmine.Spy;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let getSpy: any;
 
   beforeEach(async () => {
-    getSpy = jasmine.createSpy().and.returnValue('test-page');
+    getSpy = vi.fn().mockReturnValue('test-page');
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule(), HelpPageComponent],
       providers: [
@@ -32,49 +33,49 @@ describe('HelpPageComponent', () => {
   });
 
   it('should set page on ngOnInit', () => {
-    getSpy.and.returnValue('test-page');
+    getSpy.mockReturnValue('test-page');
     component.ngOnInit();
     expect(component.page).toEqual('test-page');
   });
 
   it('should set the correct title for install-android', () => {
-    getSpy.and.returnValue('install-android');
+    getSpy.mockReturnValue('install-android');
     component.ngOnInit();
     expect(component.page).toEqual('install-android');
   });
 
   it('should set the correct title for install-ios', () => {
-    getSpy.and.returnValue('install-ios');
+    getSpy.mockReturnValue('install-ios');
     component.ngOnInit();
     expect(component.page).toEqual('install-ios');
   });
 
   it('should set the correct title for locked-screen', () => {
-    getSpy.and.returnValue('locked-screen');
+    getSpy.mockReturnValue('locked-screen');
     component.ngOnInit();
     expect(component.page).toEqual('locked-screen');
   });
 
   it('should set the correct title for listen', () => {
-    getSpy.and.returnValue('listen');
+    getSpy.mockReturnValue('listen');
     component.ngOnInit();
     expect(component.page).toEqual('listen');
   });
 
   it('should set the correct title for legal', () => {
-    getSpy.and.returnValue('legal');
+    getSpy.mockReturnValue('legal');
     component.ngOnInit();
     expect(component.page).toEqual('legal');
   });
 
   it('should set the correct title for download', () => {
-    getSpy.and.returnValue('download');
+    getSpy.mockReturnValue('download');
     component.ngOnInit();
     expect(component.page).toEqual('download');
   });
 
   it('should set the correct title for issues', () => {
-    getSpy.and.returnValue('issues');
+    getSpy.mockReturnValue('issues');
     component.ngOnInit();
     expect(component.page).toEqual('issues');
   });

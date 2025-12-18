@@ -181,9 +181,9 @@ describe('SearchService', () => {
         ],
       };
 
-      const transferStateMock = jasmine.createSpyObj('TransferState', ['get', 'set', 'remove']);
+      const transferStateMock = { get: vi.fn(), set: vi.fn(), remove: vi.fn() };
 
-      transferStateMock.get.and.returnValue(storedSearchResults);
+      transferStateMock.get.mockReturnValue(storedSearchResults);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (service as any).transferState = transferStateMock;
@@ -192,7 +192,7 @@ describe('SearchService', () => {
       (service as any).isBrowser = true;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const httpSpy = spyOn((service as any).httpClient, 'get');
+      const httpSpy = vi.spyOn((service as any).httpClient, 'get');
 
       let result: SearchResults1 | null = null;
       const testQuery = 'cached_query';
@@ -202,15 +202,19 @@ describe('SearchService', () => {
       });
 
       expect(transferStateMock.get).toHaveBeenCalled();
-      expect(transferStateMock.get.calls.mostRecent().args[0]).toContain('search1-');
-      expect(transferStateMock.get.calls.mostRecent().args[0]).toContain(testQuery);
+      expect(
+        transferStateMock.get.mock.calls[transferStateMock.get.mock.calls.length - 1][0]
+      ).toContain('search1-');
+      expect(
+        transferStateMock.get.mock.calls[transferStateMock.get.mock.calls.length - 1][0]
+      ).toContain(testQuery);
 
       expect(result).toEqual(storedSearchResults);
 
       expect(transferStateMock.remove).toHaveBeenCalled();
-      expect(transferStateMock.remove.calls.mostRecent().args[0]).toEqual(
-        transferStateMock.get.calls.mostRecent().args[0]
-      );
+      expect(
+        transferStateMock.remove.mock.calls[transferStateMock.remove.mock.calls.length - 1][0]
+      ).toEqual(transferStateMock.get.mock.calls[transferStateMock.get.mock.calls.length - 1][0]);
 
       expect(httpSpy).not.toHaveBeenCalled();
 
@@ -286,7 +290,7 @@ describe('SearchService', () => {
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const httpSpy = spyOn((service as any).httpClient, 'get');
+      const httpSpy = vi.spyOn((service as any).httpClient, 'get');
 
       let result: SearchResults2 | null = null;
 
@@ -311,7 +315,7 @@ describe('SearchService', () => {
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const httpSpy = spyOn((service as any).httpClient, 'get');
+      const httpSpy = vi.spyOn((service as any).httpClient, 'get');
 
       let result: SearchResults3 | null = null;
 

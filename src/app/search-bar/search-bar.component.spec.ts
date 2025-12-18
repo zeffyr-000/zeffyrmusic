@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA, NgZone } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -16,9 +17,12 @@ import { getTranslocoModule } from '../transloco-testing.module';
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
   let fixture: ComponentFixture<SearchBarComponent>;
-  let googleAnalyticsServiceSpy: { pageView: jasmine.Spy };
-  let routerSpy: { navigate: jasmine.Spy };
-  let changeDetectorRefSpy: { detectChanges: jasmine.Spy };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let googleAnalyticsServiceSpy: { pageView: any };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let routerSpy: { navigate: any };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let changeDetectorRefSpy: { detectChanges: any };
   let translocoService: TranslocoService;
   let ngZone: NgZone;
   let testScheduler: TestScheduler;
@@ -45,11 +49,11 @@ describe('SearchBarComponent', () => {
   };
 
   beforeEach(async () => {
-    googleAnalyticsServiceSpy = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    changeDetectorRefSpy = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
+    googleAnalyticsServiceSpy = { pageView: vi.fn() };
+    routerSpy = { navigate: vi.fn() };
+    changeDetectorRefSpy = { detectChanges: vi.fn() };
     searchServiceMock = {
-      searchBar: jasmine.createSpy('searchBar').and.returnValue(of(mockSearchBarResponse)),
+      searchBar: vi.fn().mockReturnValue(of(mockSearchBarResponse)),
     };
 
     await TestBed.configureTestingModule({
@@ -107,7 +111,7 @@ describe('SearchBarComponent', () => {
   it('should emit query value when search is called', () => {
     const query = 'test';
     component['query'] = query;
-    const searchSubjectSpy = spyOn(component['searchSubject'], 'next');
+    const searchSubjectSpy = vi.spyOn(component['searchSubject'], 'next');
 
     component.search();
 
@@ -139,7 +143,8 @@ describe('SearchBarComponent', () => {
       const searchSubject = new Subject<string>();
       component['searchSubject'] = searchSubject;
 
-      (searchServiceMock.searchBar as jasmine.Spy).calls.reset();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (searchServiceMock.searchBar as Mock<any>).mockClear();
 
       component.ngOnInit();
 

@@ -49,7 +49,8 @@ describe('ArtistService', () => {
 
     it('should handle errors in browser', () => {
       service.getArtist('invalid').subscribe({
-        next: () => fail('should have failed with a 404'),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        next: () => (globalThis as any).fail('should have failed with a 404'),
         error: error => {
           expect(error.status).toBe(404);
         },
@@ -63,11 +64,13 @@ describe('ArtistService', () => {
       const mockTransferState = TestBed.inject(TransferState);
       const key = makeStateKey<ArtistData>(`artist-123`);
 
-      spyOn(mockTransferState, 'get').and.callFake(<T>(useKey: StateKey<T>, defaultValue: T) => {
-        expect(useKey).toBe(key);
-        expect(defaultValue).toBeDefined();
-        return mockArtistData as unknown as T;
-      });
+      vi.spyOn(mockTransferState, 'get').mockImplementation(
+        <T>(useKey: StateKey<T>, defaultValue: T) => {
+          expect(useKey).toBe(key);
+          expect(defaultValue).toBeDefined();
+          return mockArtistData as unknown as T;
+        }
+      );
 
       let result: ArtistData | undefined;
       service.getArtist('123').subscribe(data => {
@@ -82,7 +85,7 @@ describe('ArtistService', () => {
     it('should make HTTP request when no cached data exists', () => {
       const mockTransferState = TestBed.inject(TransferState);
 
-      spyOn(mockTransferState, 'get').and.returnValue(null);
+      vi.spyOn(mockTransferState, 'get').mockReturnValue(null);
 
       service.getArtist('123').subscribe();
 
@@ -136,7 +139,7 @@ describe('ArtistService', () => {
       const mockTransferState = TestBed.inject(TransferState);
       const key = makeStateKey<ArtistData>(`artist-123`);
 
-      spyOn(mockTransferState, 'set').and.callThrough();
+      vi.spyOn(mockTransferState, 'set');
 
       service.getArtist('123').subscribe();
 
@@ -144,21 +147,6 @@ describe('ArtistService', () => {
       req.flush(mockArtistData);
 
       expect(mockTransferState.set).toHaveBeenCalledWith(key, mockArtistData);
-    });
-  });
-
-  describe('Platform-independent tests', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        imports: [],
-        providers: [
-          ArtistService,
-          provideHttpClient(withInterceptorsFromDi()),
-          provideHttpClientTesting(),
-        ],
-      });
-
-      service = TestBed.inject(ArtistService);
     });
   });
 });

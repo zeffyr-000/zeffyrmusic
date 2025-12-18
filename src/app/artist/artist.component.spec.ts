@@ -35,7 +35,7 @@ describe('ArtistComponent', () => {
   describe('In browser environment', () => {
     beforeEach(async () => {
       artistServiceMock = {
-        getArtist: jasmine.createSpy('getArtist').and.returnValue(of(data)),
+        getArtist: vi.fn().mockReturnValue(of(data)),
       };
 
       await TestBed.configureTestingModule({
@@ -58,19 +58,19 @@ describe('ArtistComponent', () => {
           {
             provide: Title,
             useValue: {
-              setTitle: jasmine.createSpy('setTitle'),
+              setTitle: vi.fn(),
             },
           },
           {
             provide: Meta,
             useValue: {
-              updateTag: jasmine.createSpy('updateTag'),
+              updateTag: vi.fn(),
             },
           },
           {
             provide: GoogleAnalyticsService,
             useValue: {
-              pageView: jasmine.createSpy('pageView'),
+              pageView: vi.fn(),
             },
           },
         ],
@@ -103,23 +103,23 @@ describe('ArtistComponent', () => {
     it('should set isAvailable to false when artist name is not provided', () => {
       const emptyData = {};
 
-      artistServiceMock.getArtist = jasmine.createSpy('getArtist').and.returnValue(of(emptyData));
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(emptyData));
 
       component.initLoad();
-      expect(component.isAvailable).toBeFalse();
+      expect(component.isAvailable).toBe(false);
     });
 
     it('should set isAvailable to true when artist name is provided', () => {
       component.initLoad();
 
-      expect(component.isAvailable).toBeTrue();
+      expect(component.isAvailable).toBe(true);
     });
   });
 
   describe('In server environment', () => {
     beforeEach(async () => {
       artistServiceMock = {
-        getArtist: jasmine.createSpy('getArtist').and.returnValue(of(data)),
+        getArtist: vi.fn().mockReturnValue(of(data)),
       };
 
       await TestBed.configureTestingModule({
@@ -142,19 +142,19 @@ describe('ArtistComponent', () => {
           {
             provide: Title,
             useValue: {
-              setTitle: jasmine.createSpy('setTitle'),
+              setTitle: vi.fn(),
             },
           },
           {
             provide: Meta,
             useValue: {
-              updateTag: jasmine.createSpy('updateTag'),
+              updateTag: vi.fn(),
             },
           },
           {
             provide: GoogleAnalyticsService,
             useValue: {
-              pageView: jasmine.createSpy('pageView'),
+              pageView: vi.fn(),
             },
           },
         ],
@@ -176,7 +176,7 @@ describe('ArtistComponent', () => {
     it('should set og:url meta tag with environment.URL_BASE in server mode', () => {
       component.initLoad();
       expect(metaService.updateTag).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           name: 'og:url',
           content: `${environment.URL_BASE}artist/1`,
         })

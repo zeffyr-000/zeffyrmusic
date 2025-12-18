@@ -12,23 +12,21 @@ import { FollowItem } from '../models/follow.model';
 describe('MySelectionComponent', () => {
   let component: MySelectionComponent;
   let fixture: ComponentFixture<MySelectionComponent>;
-  let playerServiceMock: PlayerService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let playerServiceMock: any;
   let translocoService: TranslocoService;
-  let initServiceMock: jasmine.SpyObj<InitService>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let initServiceMock: any;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let initService: InitService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let playerService: PlayerService;
 
   beforeEach(async () => {
-    playerServiceMock = jasmine.createSpyObj('PlayerService', ['deleteFollow']);
-    initServiceMock = jasmine.createSpyObj('InitService', [
-      'loginSuccess',
-      'logOut',
-      'onMessageUnlog',
-    ]);
+    playerServiceMock = { deleteFollow: vi.fn() };
+    initServiceMock = { loginSuccess: vi.fn(), logOut: vi.fn(), onMessageUnlog: vi.fn() };
 
-    const authGuardMock = jasmine.createSpyObj('AuthGuard', ['canActivate']);
+    const authGuardMock = { canActivate: vi.fn() };
     playerServiceMock.subjectListFollow = new BehaviorSubject([]);
 
     initServiceMock.subjectConnectedChange = new BehaviorSubject({
@@ -39,7 +37,7 @@ describe('MySelectionComponent', () => {
       darkModeEnabled: false,
       language: 'fr',
     });
-    initServiceMock.logOut = jasmine.createSpy('logOut');
+    initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule(), MySelectionComponent],
@@ -87,13 +85,13 @@ describe('MySelectionComponent', () => {
 
   it('should unsubscribe from playerService.subjectListFollow on destroy', () => {
     component.subscriptionListFollow = new Subscription();
-    spyOn(component.subscriptionListFollow, 'unsubscribe');
+    vi.spyOn(component.subscriptionListFollow, 'unsubscribe');
     component.ngOnDestroy();
     expect(component.subscriptionListFollow.unsubscribe).toHaveBeenCalled();
   });
 
   it('should translate title correctly on init', () => {
-    spyOn(translocoService, 'translate').and.returnValue('Ma sélection');
+    vi.spyOn(translocoService, 'translate').mockReturnValue('Ma sélection');
     component.ngOnInit();
     expect(component['titleService'].getTitle()).toBe('Ma sélection - Zeffyr Music');
   });

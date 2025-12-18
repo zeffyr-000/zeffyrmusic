@@ -1,3 +1,4 @@
+import type { MockedObject, Mock } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
@@ -26,7 +27,13 @@ describe('PlaylistComponent', () => {
   let initService: InitService;
   let playerService: PlayerService;
   let metaService: Meta;
-  let activatedRouteMock: jasmine.SpyObj<ActivatedRoute>;
+  let activatedRouteMock: MockedObject<ActivatedRoute>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let metaServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let initServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let playerServiceMock: any;
   const mockPlaylistData = {
     id_playlist: '1',
     title: 'title',
@@ -53,21 +60,20 @@ describe('PlaylistComponent', () => {
   };
 
   beforeEach(async () => {
-    const metaServiceMock = jasmine.createSpyObj('Meta', ['updateTag']);
-    const initServiceMock = jasmine.createSpyObj('InitService', ['init']);
-    const playerServiceMock = jasmine.createSpyObj('PlayerService', [
-      'launchYTApi',
-      'lecture',
-      'removeToPlaylist',
-      'switchFollow',
-      'runPlaylist',
-      'addInCurrentList',
-      'addVideoInPlaylist',
-      'removeVideo',
-      'addInCurrentList',
-      'addVideoAfterCurrentInList',
-      'onPlayPause',
-    ]);
+    metaServiceMock = { updateTag: vi.fn() };
+    initServiceMock = { init: vi.fn() };
+    playerServiceMock = {
+      launchYTApi: vi.fn(),
+      lecture: vi.fn(),
+      removeToPlaylist: vi.fn(),
+      switchFollow: vi.fn(),
+      runPlaylist: vi.fn(),
+      addInCurrentList: vi.fn(),
+      addVideoInPlaylist: vi.fn(),
+      removeVideo: vi.fn(),
+      addVideoAfterCurrentInList: vi.fn(),
+      onPlayPause: vi.fn(),
+    };
     initServiceMock.subjectConnectedChange = new BehaviorSubject({
       isConnected: true,
       pseudo: 'test-pseudo',
@@ -84,13 +90,14 @@ describe('PlaylistComponent', () => {
     playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
     playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
     playerServiceMock.subjectPlayerRunningChange = new BehaviorSubject([]);
-    activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
+    activatedRouteMock = {
       snapshot: {
         paramMap: { get: () => '1' },
         url: [{ path: 'top' }],
       },
       params: new BehaviorSubject({ id: '1' }),
-    });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
 
     await TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
@@ -159,18 +166,18 @@ describe('PlaylistComponent', () => {
 
     playerService.subjectListFollow.next(listFollow);
 
-    expect(component.isFollower).toBeTrue();
+    expect(component.isFollower).toBe(true);
   });
 
   it('should call loadLike when url path is "like"', () => {
-    const loadLikeSpy = spyOn(component, 'loadLike');
+    const loadLikeSpy = vi.spyOn(component, 'loadLike');
     activatedRouteMock.snapshot.url[0].path = 'like';
     component.initLoad();
     expect(loadLikeSpy).toHaveBeenCalled();
   });
 
   it('should call loadPlaylist with correct url when url path is not "like"', () => {
-    const loadPlaylistSpy = spyOn(component, 'loadPlaylist');
+    const loadPlaylistSpy = vi.spyOn(component, 'loadPlaylist');
     component.idPlaylist = null;
 
     // Mock ActivatedRoute
@@ -186,7 +193,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should call loadPlaylist with correct url when url path is playlist', () => {
-    const loadPlaylistSpy = spyOn(component, 'loadPlaylist');
+    const loadPlaylistSpy = vi.spyOn(component, 'loadPlaylist');
     component.idPlaylist = null;
 
     // Mock ActivatedRoute
@@ -212,15 +219,13 @@ describe('PlaylistComponent', () => {
 
     playerService.subjectListFollow.next(listFollow);
 
-    expect(component.isFollower).toBeFalse();
+    expect(component.isFollower).toBe(false);
   });
 
   it('should call httpClient.get with the correct url and update properties when loadPlaylist is called', () => {
     const httpClient = TestBed.inject(HttpClient);
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistData));
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const titleServiceSpy = spyOn(titleService, 'setTitle');
-    const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
+    const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
+    const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
     const url = environment.URL_SERVER + 'json/playlist/1';
 
     // Mock ActivatedRoute
@@ -229,9 +234,9 @@ describe('PlaylistComponent', () => {
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(url);
-    expect(component.isPrivate).toBeFalse();
+    expect(component.isPrivate).toBe(false);
     expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
-    // Vérifiez les autres propriétés de la même manière
+    // Check other properties in the same way
     //expect(titleServiceSpy).toHaveBeenCalledWith(mockPlaylistData.title + ' - Zeffyr Music');
     expect(metaService.updateTag).toHaveBeenCalled();
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
@@ -241,8 +246,8 @@ describe('PlaylistComponent', () => {
     const mockPlaylistDataPrivate = { ...mockPlaylistData, est_prive: true };
 
     const httpClient = TestBed.inject(HttpClient);
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistDataPrivate));
-    const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
+    const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistDataPrivate));
+    const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
     const url = environment.URL_SERVER + 'json/playlist/1';
 
     // Mock ActivatedRoute
@@ -251,8 +256,8 @@ describe('PlaylistComponent', () => {
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(url);
-    expect(component.isPrivate).toBeTrue();
-    // Vérifiez les autres propriétés de la même manière
+    expect(component.isPrivate).toBe(true);
+    // Check other properties in the same way
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
   });
 
@@ -260,9 +265,9 @@ describe('PlaylistComponent', () => {
     const mockPlaylistDataTitle = { ...mockPlaylistData, titre: undefined as string };
 
     const httpClient = TestBed.inject(HttpClient);
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistDataTitle));
-    const titleServiceSpy = spyOn(titleService, 'setTitle');
-    const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
+    const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistDataTitle));
+    const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
+    const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
     const url = environment.URL_SERVER + 'json/playlist/1';
 
     // Mock ActivatedRoute
@@ -271,9 +276,9 @@ describe('PlaylistComponent', () => {
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(url);
-    expect(component.isPrivate).toBeFalse();
+    expect(component.isPrivate).toBe(false);
     expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
-    // Vérifiez les autres propriétés de la même manière
+    // Check other properties in the same way
     expect(titleServiceSpy).toHaveBeenCalledWith(
       'title - The Must-Haves of the Moment | Zeffyr Music'
     );
@@ -283,7 +288,7 @@ describe('PlaylistComponent', () => {
 
   it('url empty', () => {
     const httpClient = TestBed.inject(HttpClient);
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistData));
+    const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
     const url = '';
     component.idPlaylist = '1';
 
@@ -294,9 +299,9 @@ describe('PlaylistComponent', () => {
 
   it('no description', () => {
     const httpClient = TestBed.inject(HttpClient);
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(
-      of({ ...mockPlaylistData, description: undefined })
-    );
+    const httpClientSpy = vi
+      .spyOn(httpClient, 'get')
+      .mockReturnValue(of({ ...mockPlaylistData, description: undefined }));
     const url = environment.URL_SERVER + 'json/playlist/1';
     component.idPlaylist = '1';
 
@@ -307,18 +312,21 @@ describe('PlaylistComponent', () => {
   });
 
   it('should initialize properties and call services with correct arguments when loadLike is called', () => {
-    const titleServiceSpy = spyOn(titleService, 'setTitle');
-    const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
-    const subjectListLikeVideoSubscribeSpy = spyOn(playerService.subjectListLikeVideo, 'subscribe');
+    const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
+    const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
+    const subjectListLikeVideoSubscribeSpy = vi.spyOn(
+      playerService.subjectListLikeVideo,
+      'subscribe'
+    );
 
     // Mock ActivatedRoute
     const activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
 
     component.loadLike();
 
-    expect(component.isPrivate).toBeFalse();
+    expect(component.isPrivate).toBe(false);
     expect(component.idPlaylist).toEqual('');
-    // Vérifiez les autres propriétés de la même manière
+    // Check other properties in the same way
     expect(subjectListLikeVideoSubscribeSpy).toHaveBeenCalled();
     expect(titleServiceSpy).toHaveBeenCalledWith(
       translocoService.translate('mes_likes') + ' - Zeffyr Music'
@@ -445,7 +453,7 @@ describe('PlaylistComponent', () => {
   it('should call playerService.removeVideo with correct arguments when removeVideo is called', () => {
     component.removeVideo('testIdVideo');
 
-    expect(playerService.removeVideo).toHaveBeenCalledWith('testIdVideo', jasmine.any(Function));
+    expect(playerService.removeVideo).toHaveBeenCalledWith('testIdVideo', expect.any(Function));
   });
 
   it('should call playerService.addVideoAfterCurrentInList with correct arguments when addVideoAfterCurrentInList is called', () => {
@@ -580,9 +588,9 @@ describe('PlaylistComponent', () => {
     const mockPlaylistDataImageDefault = { ...mockPlaylistData, img_big: undefined as string };
 
     const httpClient = TestBed.inject(HttpClient);
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(
-      of(mockPlaylistDataImageDefault)
-    );
+    const httpClientSpy = vi
+      .spyOn(httpClient, 'get')
+      .mockReturnValue(of(mockPlaylistDataImageDefault));
     const url = environment.URL_SERVER + 'json/playlist/1';
 
     // Mock ActivatedRoute
@@ -636,7 +644,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should generate album metadata description with artist', () => {
-    spyOn(translocoService, 'translate').and.returnValue(
+    vi.spyOn(translocoService, 'translate').mockReturnValue(
       'Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks'
     );
 
@@ -671,7 +679,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should generate album metadata description with artist', () => {
-    spyOn(translocoService, 'translate').and.returnValue(
+    vi.spyOn(translocoService, 'translate').mockReturnValue(
       'Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks'
     );
 
@@ -706,7 +714,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should generate album metadata description without artist', () => {
-    spyOn(translocoService, 'translate').and.returnValue(
+    vi.spyOn(translocoService, 'translate').mockReturnValue(
       'Discover the playlist "Now That\'s What I Call Music! 10". Enjoy 30 carefully selected tracks.'
     );
 
@@ -774,7 +782,7 @@ describe('PlaylistComponent', () => {
     component.currentKey = videoKey;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const detectChangesSpy = spyOn((component as any).ref, 'detectChanges');
+    const detectChangesSpy = vi.spyOn((component as any).ref, 'detectChanges');
 
     component.adjustPlaylistDuration(newDuration);
 
@@ -817,7 +825,7 @@ describe('PlaylistComponent', () => {
     component.currentKey = 'non-existent-key';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const detectChangesSpy = spyOn((component as any).ref, 'detectChanges');
+    const detectChangesSpy = vi.spyOn((component as any).ref, 'detectChanges');
 
     component.adjustPlaylistDuration(newDuration);
 
@@ -837,24 +845,29 @@ describe('PlaylistComponent (Server context)', () => {
   let googleAnalyticsService: GoogleAnalyticsService;
   let playerService: PlayerService;
   let metaService: Meta;
-  let activatedRouteMock: jasmine.SpyObj<ActivatedRoute>;
+  let activatedRouteMock: MockedObject<ActivatedRoute>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let metaServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let initServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let playerServiceMock: any;
 
   beforeEach(async () => {
-    const metaServiceMock = jasmine.createSpyObj('Meta', ['updateTag']);
-    const initServiceMock = jasmine.createSpyObj('InitService', ['init']);
-    const playerServiceMock = jasmine.createSpyObj('PlayerService', [
-      'launchYTApi',
-      'lecture',
-      'removeToPlaylist',
-      'switchFollow',
-      'runPlaylist',
-      'addInCurrentList',
-      'addVideoInPlaylist',
-      'removeVideo',
-      'addInCurrentList',
-      'addVideoAfterCurrentInList',
-      'onPlayPause',
-    ]);
+    metaServiceMock = { updateTag: vi.fn() };
+    initServiceMock = { init: vi.fn() };
+    playerServiceMock = {
+      launchYTApi: vi.fn(),
+      lecture: vi.fn(),
+      removeToPlaylist: vi.fn(),
+      switchFollow: vi.fn(),
+      runPlaylist: vi.fn(),
+      addInCurrentList: vi.fn(),
+      addVideoInPlaylist: vi.fn(),
+      removeVideo: vi.fn(),
+      addVideoAfterCurrentInList: vi.fn(),
+      onPlayPause: vi.fn(),
+    };
     initServiceMock.subjectConnectedChange = new BehaviorSubject({
       isConnected: true,
       pseudo: 'test-pseudo',
@@ -871,13 +884,14 @@ describe('PlaylistComponent (Server context)', () => {
     playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
     playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
     playerServiceMock.subjectPlayerRunningChange = new BehaviorSubject([]);
-    activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
+    activatedRouteMock = {
       snapshot: {
         paramMap: { get: () => '1' },
         url: [{ path: 'like' }],
       },
       params: new BehaviorSubject({ id: '1' }),
-    });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
 
     await TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
@@ -926,9 +940,10 @@ describe('PlaylistComponent (Server context)', () => {
   });
 
   it('should set meta tags and title correctly when loadLike is called in server context', () => {
-    const titleServiceSpy = spyOn(titleService, 'setTitle');
-    const metaServiceSpy = metaService.updateTag as jasmine.Spy;
-    const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
+    const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const metaServiceSpy = metaService.updateTag as Mock<any>;
+    const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
 
     expect(TestBed.inject(PLATFORM_ID)).toBe('server');
 
@@ -939,41 +954,42 @@ describe('PlaylistComponent (Server context)', () => {
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:title',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:description',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:image',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:url',
       })
     );
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
-    expect(component.isPrivate).toBeFalse();
+    expect(component.isPrivate).toBe(false);
     expect(component.idPlaylist).toEqual('');
 
     expect(playerService.subjectListLikeVideo.value).toEqual([]);
   });
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context', () => {
-    const titleServiceSpy = spyOn(titleService, 'setTitle');
-    const metaServiceSpy = metaService.updateTag as jasmine.Spy;
-    const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
+    const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const metaServiceSpy = metaService.updateTag as Mock<any>;
+    const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
 
     expect(TestBed.inject(PLATFORM_ID)).toBe('server');
 
@@ -1000,7 +1016,7 @@ describe('PlaylistComponent (Server context)', () => {
       artiste: 'artiste',
       id_artiste: '1',
     };
-    spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistData));
+    vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
 
     component.loadPlaylist(environment.URL_SERVER + 'json/playlist/1');
 
@@ -1009,32 +1025,32 @@ describe('PlaylistComponent (Server context)', () => {
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:title',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:description',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:image',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:url',
       })
     );
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
-    expect(component.isPrivate).toBeFalse();
+    expect(component.isPrivate).toBe(false);
     expect(component.idPlaylist).toEqual('1');
     expect(component.title).toEqual('title');
     expect(component.description).toEqual('description');
@@ -1042,9 +1058,10 @@ describe('PlaylistComponent (Server context)', () => {
   });
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context not id top', () => {
-    const titleServiceSpy = spyOn(titleService, 'setTitle');
-    const metaServiceSpy = metaService.updateTag as jasmine.Spy;
-    const googleAnalyticsServiceSpy = spyOn(googleAnalyticsService, 'pageView');
+    const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const metaServiceSpy = metaService.updateTag as Mock<any>;
+    const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
 
     expect(TestBed.inject(PLATFORM_ID)).toBe('server');
 
@@ -1070,32 +1087,32 @@ describe('PlaylistComponent (Server context)', () => {
       artiste: 'artiste',
       id_artiste: '1',
     };
-    spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistData));
+    vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
 
     component.loadPlaylist(environment.URL_SERVER + 'json/playlist/1');
 
     expect(titleServiceSpy).toHaveBeenCalledWith('title');
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:title',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:description',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:image',
       })
     );
 
     expect(metaServiceSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
+      expect.objectContaining({
         name: 'og:url',
       })
     );

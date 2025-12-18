@@ -21,11 +21,11 @@ describe('HomeComponent', () => {
     });
 
     it('should set isLoading to false after http request', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(
         of({ top: [], top_albums: [] })
       );
       component.ngOnInit();
-      expect(component.isLoading).toBeFalse();
+      expect(component.isLoading).toBe(false);
     });
 
     it('should set listTopAlbums and listTop after http request', () => {
@@ -48,18 +48,18 @@ describe('HomeComponent', () => {
           { id: '2', titre: 'Titre Album 2', description: 'Description Album 2', url_image: '' },
         ],
       };
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(of(data));
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(of(data));
       component.ngOnInit();
       expect(component['listTopAlbums']).toEqual(data.top_albums);
       expect(component['listTop']).toEqual(data.top);
     });
 
     it('should set isLoading to false after http request error', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(
         throwError(() => new Error('Test error'))
       );
       component.ngOnInit();
-      expect(component.isLoading).toBeFalse();
+      expect(component.isLoading).toBe(false);
     });
 
     it('should set page to "top" when url is "top"', () => {
@@ -114,7 +114,7 @@ describe('HomeComponent', () => {
         top_albums: [],
       };
 
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(of(data));
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(of(data));
 
       component.ngOnInit();
 
@@ -138,15 +138,18 @@ describe('HomeComponent', () => {
   let route: ActivatedRoute;
 
   describe('Browser rendering', () => {
-    let titleService: jasmine.SpyObj<Title>;
-    let metaService: jasmine.SpyObj<Meta>;
-    let googleAnalyticsService: jasmine.SpyObj<GoogleAnalyticsService>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let titleService: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let metaService: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let googleAnalyticsService: any;
     let translocoService: TranslocoService;
 
     beforeEach(async () => {
-      titleService = jasmine.createSpyObj('Title', ['setTitle']);
-      metaService = jasmine.createSpyObj('Meta', ['updateTag']);
-      googleAnalyticsService = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
+      titleService = { setTitle: vi.fn() };
+      metaService = { updateTag: vi.fn() };
+      googleAnalyticsService = { pageView: vi.fn() };
 
       await TestBed.configureTestingModule({
         schemas: [NO_ERRORS_SCHEMA],
@@ -176,7 +179,7 @@ describe('HomeComponent', () => {
     runCommonTests();
 
     it('should set title and meta tags on init in browser', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(
         of({ top: [], top_albums: [] })
       );
       component.ngOnInit();
@@ -184,7 +187,7 @@ describe('HomeComponent', () => {
         'Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic'
       );
       expect(metaService.updateTag).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           name: 'description',
         })
       );
@@ -204,7 +207,7 @@ describe('HomeComponent', () => {
         top_albums: [] as HomeAlbum[],
       };
 
-      spyOn(component['transferState'], 'get').and.callFake(
+      vi.spyOn(component['transferState'], 'get').mockImplementation(
         <T>(key: StateKey<T>, defaultValue: T) => {
           if (key === HOME_DATA_KEY) {
             return mockHomeData as unknown as T;
@@ -213,11 +216,11 @@ describe('HomeComponent', () => {
         }
       );
 
-      spyOn(component['transferState'], 'remove');
+      vi.spyOn(component['transferState'], 'remove');
 
-      const initServiceSpy = spyOn(component['initService'], 'getHomeInit').and.returnValue(
-        of(mockHomeData)
-      );
+      const initServiceSpy = vi
+        .spyOn(component['initService'], 'getHomeInit')
+        .mockReturnValue(of(mockHomeData));
 
       component.ngOnInit();
 
@@ -232,15 +235,18 @@ describe('HomeComponent', () => {
   });
 
   describe('Server rendering', () => {
-    let titleService: jasmine.SpyObj<Title>;
-    let metaService: jasmine.SpyObj<Meta>;
-    let googleAnalyticsService: jasmine.SpyObj<GoogleAnalyticsService>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let titleService: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let metaService: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let googleAnalyticsService: any;
     let translocoService: TranslocoService;
 
     beforeEach(async () => {
-      titleService = jasmine.createSpyObj('Title', ['setTitle']);
-      metaService = jasmine.createSpyObj('Meta', ['updateTag']);
-      googleAnalyticsService = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
+      titleService = { setTitle: vi.fn() };
+      metaService = { updateTag: vi.fn() };
+      googleAnalyticsService = { pageView: vi.fn() };
 
       await TestBed.configureTestingModule({
         schemas: [NO_ERRORS_SCHEMA],
@@ -270,7 +276,7 @@ describe('HomeComponent', () => {
     runCommonTests();
 
     it('should set title and meta tags on init in server but not call GA', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(
         of({ top: [], top_albums: [] })
       );
       component.ngOnInit();
@@ -278,7 +284,7 @@ describe('HomeComponent', () => {
         'Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic'
       );
       expect(metaService.updateTag).toHaveBeenCalledWith(
-        jasmine.objectContaining({
+        expect.objectContaining({
           name: 'description',
         })
       );
@@ -292,9 +298,9 @@ describe('HomeComponent', () => {
         top_albums: [] as HomeAlbum[],
       };
 
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(of(mockHomeData));
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(of(mockHomeData));
 
-      const transferStateSpy = spyOn(component['transferState'], 'set');
+      const transferStateSpy = vi.spyOn(component['transferState'], 'set');
 
       component.ngOnInit();
 
@@ -303,9 +309,13 @@ describe('HomeComponent', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const REAL_KEY = makeStateKey<any>('randomTop');
 
-      expect(transferStateSpy.calls.mostRecent().args[0]).toEqual(REAL_KEY);
+      expect(transferStateSpy.mock.calls[transferStateSpy.mock.calls.length - 1][0]).toEqual(
+        REAL_KEY
+      );
 
-      expect(transferStateSpy.calls.mostRecent().args[1]).toEqual(mockHomeData.top);
+      expect(transferStateSpy.mock.calls[transferStateSpy.mock.calls.length - 1][1]).toEqual(
+        mockHomeData.top
+      );
     });
   });
 });

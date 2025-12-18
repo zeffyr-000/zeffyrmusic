@@ -63,7 +63,7 @@ describe('PlaylistService', () => {
     });
 
     it('should use stored value from transferState and remove key when in browser context', () => {
-      const transferStateMock = jasmine.createSpyObj('TransferState', ['get', 'set', 'remove']);
+      const transferStateMock = { get: vi.fn(), set: vi.fn(), remove: vi.fn() };
 
       const storedPlaylistData: Playlist = {
         id_playlist: '123',
@@ -82,13 +82,13 @@ describe('PlaylistService', () => {
         id_artiste: '101112',
       };
 
-      transferStateMock.get.and.returnValue(storedPlaylistData);
+      transferStateMock.get.mockReturnValue(storedPlaylistData);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (service as any).transferState = transferStateMock;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).isBrowser).toBeTrue();
+      expect((service as any).isBrowser).toBe(true);
 
       const testUrl = 'test_url';
 
@@ -138,8 +138,8 @@ describe('PlaylistService', () => {
     });
 
     it('should store playlist data in transferState when in server context', () => {
-      const transferStateMock = jasmine.createSpyObj('TransferState', ['get', 'set', 'remove']);
-      transferStateMock.get.and.returnValue(null); // Simuler qu'aucune donnée n'est stockée initialement
+      const transferStateMock = { get: vi.fn(), set: vi.fn(), remove: vi.fn() };
+      transferStateMock.get.mockReturnValue(null); // Simulate that no data is stored initially
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (service as any).transferState = transferStateMock;
@@ -171,12 +171,12 @@ describe('PlaylistService', () => {
       expect(transferStateMock.set).toHaveBeenCalledWith('playlist-' + testUrl, mockPlaylistData);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).isBrowser).toBeFalse();
+      expect((service as any).isBrowser).toBe(false);
       expect(transferStateMock.remove).not.toHaveBeenCalled();
     });
 
     it('should not remove data from transferState when in server context', () => {
-      const transferStateMock = jasmine.createSpyObj('TransferState', ['get', 'set', 'remove']);
+      const transferStateMock = { get: vi.fn(), set: vi.fn(), remove: vi.fn() };
 
       const storedPlaylistData: Playlist = {
         id_playlist: '123',
@@ -193,7 +193,7 @@ describe('PlaylistService', () => {
         titre: 'Stored Playlist',
         artiste: 'Stored Artist',
       };
-      transferStateMock.get.and.returnValue(storedPlaylistData);
+      transferStateMock.get.mockReturnValue(storedPlaylistData);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (service as any).transferState = transferStateMock;

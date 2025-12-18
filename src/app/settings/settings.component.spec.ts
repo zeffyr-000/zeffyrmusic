@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import type { MockedObject } from 'vitest';
+import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgForm } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgbActiveModal, NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -17,40 +18,36 @@ describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
   let initService: InitService;
   let translocoService: TranslocoService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
 
   let modalService: NgbModal;
-  let userServiceMock: jasmine.SpyObj<UserService>;
-  let initServiceMock: jasmine.SpyObj<InitService>;
-  let modalServiceSpyObj: jasmine.SpyObj<NgbModal>;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let cdrMock: jasmine.SpyObj<ChangeDetectorRef>;
+  let userServiceMock: MockedObject<UserService>;
+  let initServiceMock: MockedObject<InitService>;
+  let modalServiceSpyObj: MockedObject<NgbModal>;
 
   beforeEach(async () => {
-    initServiceMock = jasmine.createSpyObj('InitService', [
-      'loginSuccess',
-      'logOut',
-      'onMessageUnlog',
-    ]);
+    initServiceMock = {
+      loginSuccess: vi.fn(),
+      logOut: vi.fn(),
+      onMessageUnlog: vi.fn(),
+    } as MockedObject<InitService>;
 
-    userServiceMock = jasmine.createSpyObj('UserService', [
-      'register',
-      'login',
-      'resetPass',
-      'editPass',
-      'editMail',
-      'createPlaylist',
-      'logout',
-      'editTitlePlaylist',
-      'editDarkMode',
-      'editLanguage',
-      'deleteAccount',
-      'associateGoogleAccount',
-    ]);
-    modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open']);
-    const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
-    const authGuardMock = jasmine.createSpyObj('AuthGuard', ['canActivate']);
+    userServiceMock = {
+      register: vi.fn(),
+      login: vi.fn(),
+      resetPass: vi.fn(),
+      editPass: vi.fn(),
+      editMail: vi.fn(),
+      createPlaylist: vi.fn(),
+      logout: vi.fn(),
+      editTitlePlaylist: vi.fn(),
+      editDarkMode: vi.fn(),
+      editLanguage: vi.fn(),
+      deleteAccount: vi.fn(),
+      associateGoogleAccount: vi.fn(),
+    } as MockedObject<UserService>;
+    modalServiceSpyObj = { open: vi.fn() } as MockedObject<NgbModal>;
+    const activeModalSpyObj = { dismiss: vi.fn() } as MockedObject<NgbActiveModal>;
+    const authGuardMock = { canActivate: vi.fn() } as MockedObject<AuthGuard>;
 
     initServiceMock.subjectConnectedChange = new BehaviorSubject({
       isConnected: true,
@@ -60,8 +57,7 @@ describe('SettingsComponent', () => {
       darkModeEnabled: false,
       language: 'fr',
     });
-    initServiceMock.logOut = jasmine.createSpy('logOut');
-    cdrMock = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
+    initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [NgbModalModule, getTranslocoModule(), SettingsComponent],
@@ -76,7 +72,6 @@ describe('SettingsComponent', () => {
     }).compileComponents();
 
     initService = TestBed.inject(InitService);
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     modalService = TestBed.inject(NgbModal);
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
@@ -90,7 +85,7 @@ describe('SettingsComponent', () => {
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (window as any).google;
   });
@@ -100,7 +95,9 @@ describe('SettingsComponent', () => {
   });
 
   describe('onSubmitEditPass', () => {
-    it('should call httpClient.post with the correct arguments and update this.successPass or this.error based on the server response', fakeAsync(() => {
+    it('should call httpClient.post with the correct arguments and update this.successPass or this.error based on the server response', async () => {
+      vi.useFakeTimers();
+
       // Arrange
       const form = {
         valid: true,
@@ -119,24 +116,28 @@ describe('SettingsComponent', () => {
         passwordnew: 'testPassword',
       };
 
-      userServiceMock.editPass.and.returnValue(of(successResponse));
+      userServiceMock.editPass.mockReturnValue(of(successResponse));
 
       // Act
       component.onSubmitEditPass(form);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
-      tick(10000);
+
+      await vi.advanceTimersByTimeAsync(10000);
+
       expect(component.successPass).toBe(false);
 
-      userServiceMock.editPass.and.returnValue(of(errorResponse));
+      userServiceMock.editPass.mockReturnValue(of(errorResponse));
       // Act
       component.onSubmitEditPass(form);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
       expect(component.error).toBe('Invalid credentials');
-    }));
+
+      vi.useRealTimers();
+    });
 
     it('should set this.error to "mot_de_passe_confirmer_invalide" when the passwords are not identical', () => {
       // Arrange
@@ -170,7 +171,7 @@ describe('SettingsComponent', () => {
           },
         },
       } as NgForm;
-      userServiceMock.editPass.and.returnValue(throwError('error'));
+      userServiceMock.editPass.mockReturnValue(throwError('error'));
 
       // Act
       component.onSubmitEditPass(form);
@@ -183,7 +184,9 @@ describe('SettingsComponent', () => {
   });
 
   describe('onSubmitEditMail', () => {
-    it('should call httpClient.post with the correct arguments and update this.successMail or this.error based on the server response', fakeAsync(() => {
+    it('should call httpClient.post with the correct arguments and update this.successMail or this.error based on the server response', async () => {
+      vi.useFakeTimers();
+
       // Arrange
       const form = {
         valid: true,
@@ -195,24 +198,28 @@ describe('SettingsComponent', () => {
       } as NgForm;
       const successResponse = { success: true, error: '' };
       const errorResponse = { success: false, error: 'Invalid email' };
-      userServiceMock.editMail.and.returnValue(of(successResponse));
+      userServiceMock.editMail.mockReturnValue(of(successResponse));
 
       // Act
       component.onSubmitEditMail(form);
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
-      tick(10000);
+
+      await vi.advanceTimersByTimeAsync(10000);
+
       expect(component.successMail).toBe(false);
 
-      userServiceMock.editMail.and.returnValue(of(errorResponse));
+      userServiceMock.editMail.mockReturnValue(of(errorResponse));
       // Act
       component.onSubmitEditMail(form);
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
       expect(component.error).toBe('Invalid email');
-    }));
+
+      vi.useRealTimers();
+    });
 
     it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
       // Arrange
@@ -225,7 +232,7 @@ describe('SettingsComponent', () => {
         },
       } as NgForm;
       const errorResponse = { success: false, error: 'Invalid email' };
-      userServiceMock.editMail.and.returnValue(throwError(errorResponse));
+      userServiceMock.editMail.mockReturnValue(throwError(errorResponse));
 
       // Act
       component.onSubmitEditMail(form);
@@ -245,7 +252,7 @@ describe('SettingsComponent', () => {
 
   it('should update dark mode and emit connected change on success', () => {
     const mockResponse = { success: true } as UserReponse;
-    userServiceMock.editDarkMode.and.returnValue(of(mockResponse));
+    userServiceMock.editDarkMode.mockReturnValue(of(mockResponse));
 
     component.onSwitchDarkMode();
 
@@ -256,7 +263,7 @@ describe('SettingsComponent', () => {
 
   it('should set error message on failure', () => {
     const mockResponse = { success: false, error: 'some_error' } as UserReponse;
-    userServiceMock.editDarkMode.and.returnValue(of(mockResponse));
+    userServiceMock.editDarkMode.mockReturnValue(of(mockResponse));
 
     component.onSwitchDarkMode();
 
@@ -267,14 +274,14 @@ describe('SettingsComponent', () => {
   });
 
   it('should handle error response', () => {
-    userServiceMock.editDarkMode.and.returnValue(throwError(() => new Error('error')));
+    userServiceMock.editDarkMode.mockReturnValue(throwError(() => new Error('error')));
 
     component.onSwitchDarkMode();
 
     expect(userServiceMock.editDarkMode).toHaveBeenCalledWith({
       dark_mode_enabled: component.darkModeEnabled,
     });
-    expect(component.isConnected).toBeFalse();
+    expect(component.isConnected).toBe(false);
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
@@ -287,17 +294,17 @@ describe('SettingsComponent', () => {
     } as NgForm;
 
     const mockResponse = { success: true } as UserReponse;
-    userServiceMock.editLanguage.and.returnValue(of(mockResponse));
-    jasmine.clock().install();
+    userServiceMock.editLanguage.mockReturnValue(of(mockResponse));
+    vi.useFakeTimers();
 
     component.onSubmitEditLanguage(mockForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
-    expect(component.successLanguage).toBeTrue();
+    expect(component.successLanguage).toBe(true);
 
-    jasmine.clock().tick(10000);
+    vi.advanceTimersByTime(10000);
 
-    expect(component.successLanguage).toBeFalse();
+    expect(component.successLanguage).toBe(false);
   });
 
   it('should handle error response correctly', () => {
@@ -309,7 +316,7 @@ describe('SettingsComponent', () => {
     } as NgForm;
 
     const mockResponse = { success: false, error: 'Some error' } as UserReponse;
-    userServiceMock.editLanguage.and.returnValue(of(mockResponse));
+    userServiceMock.editLanguage.mockReturnValue(of(mockResponse));
 
     component.onSubmitEditLanguage(mockForm);
 
@@ -325,17 +332,17 @@ describe('SettingsComponent', () => {
       },
     } as NgForm;
 
-    userServiceMock.editLanguage.and.returnValue(throwError(() => new Error('HTTP error')));
+    userServiceMock.editLanguage.mockReturnValue(throwError(() => new Error('HTTP error')));
 
     component.onSubmitEditLanguage(mockForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
-    expect(component.isConnected).toBeFalse();
+    expect(component.isConnected).toBe(false);
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
   it('should handle successful account deletion', () => {
-    jasmine.clock().install();
+    vi.useFakeTimers();
 
     const form = {
       valid: true,
@@ -347,16 +354,16 @@ describe('SettingsComponent', () => {
     } as NgForm;
 
     const response = { success: true } as UserReponse;
-    userServiceMock.deleteAccount.and.returnValue(of(response));
+    userServiceMock.deleteAccount.mockReturnValue(of(response));
 
     component.onSubmitDeleteAccount(form);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
-    expect(component.successDelete).toBeTrue();
+    expect(component.successDelete).toBe(true);
 
-    jasmine.clock().tick(10000);
+    vi.advanceTimersByTime(10000);
 
-    expect(component.successDelete).toBeFalse();
+    expect(component.successDelete).toBe(false);
     expect(initServiceMock.logOut).toHaveBeenCalled();
   });
 
@@ -371,12 +378,12 @@ describe('SettingsComponent', () => {
     } as NgForm;
 
     const response = { success: false, error: 'error_message' } as UserReponse;
-    userServiceMock.deleteAccount.and.returnValue(of(response));
+    userServiceMock.deleteAccount.mockReturnValue(of(response));
 
     component.onSubmitDeleteAccount(form);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
-    expect(component.successDelete).toBeFalse();
+    expect(component.successDelete).toBe(false);
     expect(component.error).toBe('error_message');
   });
 
@@ -390,12 +397,12 @@ describe('SettingsComponent', () => {
       },
     } as NgForm;
 
-    userServiceMock.deleteAccount.and.returnValue(throwError(() => new Error('Network error')));
+    userServiceMock.deleteAccount.mockReturnValue(throwError(() => new Error('Network error')));
 
     component.onSubmitDeleteAccount(form);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
-    expect(component.isConnected).toBeFalse();
+    expect(component.isConnected).toBe(false);
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
@@ -403,7 +410,7 @@ describe('SettingsComponent', () => {
     const googleMock = {
       accounts: {
         id: {
-          initialize: jasmine.createSpy('initialize'),
+          initialize: vi.fn(),
         },
       },
     };
@@ -415,7 +422,7 @@ describe('SettingsComponent', () => {
 
     expect(googleMock.accounts.id.initialize).toHaveBeenCalledWith({
       client_id: environment.GOOGLE_CLIENT_ID,
-      callback: jasmine.any(Function),
+      callback: expect.any(Function),
     });
   });
 
@@ -423,7 +430,7 @@ describe('SettingsComponent', () => {
     const googleMock = {
       accounts: {
         id: {
-          renderButton: jasmine.createSpy('renderButton'),
+          renderButton: vi.fn(),
         },
       },
     };
@@ -441,8 +448,8 @@ describe('SettingsComponent', () => {
     document.body.removeChild(buttonElement);
   });
 
-  it('should open Google account modal and render Google Sign-In button in both success and error cases', fakeAsync(() => {
-    const renderSpy = spyOn(component, 'renderGoogleSignInButton');
+  it('should open Google account modal and render Google Sign-In button in both success and error cases', async () => {
+    const renderSpy = vi.spyOn(component, 'renderGoogleSignInButton');
 
     let resolveCallback: () => void;
     const successPromise = new Promise<void>(resolve => {
@@ -453,7 +460,7 @@ describe('SettingsComponent', () => {
       result: successPromise,
     } as NgbModalRef;
 
-    modalServiceSpyObj.open.and.returnValue(modalRefSuccess);
+    modalServiceSpyObj.open.mockReturnValue(modalRefSuccess);
 
     component.openGoogleAccountModal();
 
@@ -462,13 +469,18 @@ describe('SettingsComponent', () => {
       { size: 'lg' }
     );
 
+    // Wait for setTimeout(0)
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+
     resolveCallback!();
-    tick();
+    await successPromise;
 
     expect(component.renderGoogleSignInButton).toHaveBeenCalledTimes(2);
 
-    renderSpy.calls.reset();
-    modalServiceSpyObj.open.calls.reset();
+    renderSpy.mockClear();
+    modalServiceSpyObj.open.mockClear();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let rejectCallback: (reason?: any) => void;
@@ -480,7 +492,7 @@ describe('SettingsComponent', () => {
       result: errorPromise,
     } as NgbModalRef;
 
-    modalServiceSpyObj.open.and.returnValue(modalRefError);
+    modalServiceSpyObj.open.mockReturnValue(modalRefError);
 
     component.openGoogleAccountModal();
 
@@ -489,39 +501,46 @@ describe('SettingsComponent', () => {
       { size: 'lg' }
     );
 
+    // Wait for setTimeout(0)
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+
     rejectCallback!('Modal dismissed');
-    tick();
+    await errorPromise.catch(() => {
+      // Ignore expected error
+    });
 
     expect(renderSpy).toHaveBeenCalledTimes(2);
-  }));
+  });
 
   it('should handle successful Google account association', () => {
-    jasmine.clock().install();
+    vi.useFakeTimers();
 
     const response = { credential: 'test_credential' };
     const userResponse = { success: true } as UserReponse;
 
-    userServiceMock.associateGoogleAccount.and.returnValue(of(userResponse));
-    spyOn(component, 'renderGoogleSignInButton');
+    userServiceMock.associateGoogleAccount.mockReturnValue(of(userResponse));
+    vi.spyOn(component, 'renderGoogleSignInButton');
 
     component.handleCredentialResponse(response);
 
     expect(userServiceMock.associateGoogleAccount).toHaveBeenCalledWith({
       id_token: response.credential,
     });
-    expect(component.successGoogleAccount).toBeTrue();
+    expect(component.successGoogleAccount).toBe(true);
 
-    jasmine.clock().tick(10000);
-    expect(component.successGoogleAccount).toBeFalse();
+    vi.advanceTimersByTime(10000);
+    expect(component.successGoogleAccount).toBe(false);
   });
 
   it('should handle network error during Google account association', () => {
     const response = { success: false, error: 'error_message' } as UserReponse;
 
-    userServiceMock.associateGoogleAccount.and.returnValue(of(response));
+    userServiceMock.associateGoogleAccount.mockReturnValue(of(response));
 
     component.handleCredentialResponse({ credential: 'test_credential' });
 
-    expect(component.successGoogleAccount).toBeFalse();
+    expect(component.successGoogleAccount).toBe(false);
   });
 });

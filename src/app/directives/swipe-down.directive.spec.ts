@@ -37,8 +37,8 @@ describe('SwipeDownDirective', () => {
   });
 
   it('should emit swipeDown event when swiped down', () => {
-    spyOn(component, 'onSwipeDown');
-    const emitSpy = spyOn(directive.swipeDown, 'emit').and.callThrough();
+    vi.spyOn(component, 'onSwipeDown');
+    const emitSpy = vi.spyOn(directive.swipeDown, 'emit');
 
     const touchStartEvent = new TouchEvent('touchstart', {
       bubbles: true,
@@ -53,7 +53,7 @@ describe('SwipeDownDirective', () => {
       ],
     });
 
-    const preventDefaultSpy = jasmine.createSpy('preventDefault');
+    const preventDefaultSpy = vi.fn();
     Object.defineProperty(touchStartEvent, 'preventDefault', {
       value: preventDefaultSpy,
       writable: true,
@@ -74,7 +74,7 @@ describe('SwipeDownDirective', () => {
       ],
     });
 
-    const endPreventDefaultSpy = jasmine.createSpy('preventDefault');
+    const endPreventDefaultSpy = vi.fn();
     Object.defineProperty(touchEndEvent, 'preventDefault', {
       value: endPreventDefaultSpy,
       writable: true,
