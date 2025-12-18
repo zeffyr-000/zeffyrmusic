@@ -1,5 +1,5 @@
 import { Component, DebugElement, PLATFORM_ID } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Renderer2 } from '@angular/core';
 import { LazyLoadImageDirective } from './lazy-load-image.directive';
 import { By } from '@angular/platform-browser';
@@ -24,7 +24,7 @@ describe('LazyLoadImageDirective', () => {
 
     beforeEach(() => {
       renderer2Mock = {
-        setAttribute: jasmine.createSpy('setAttribute'),
+        setAttribute: vi.fn(),
       };
 
       TestBed.configureTestingModule({
@@ -50,18 +50,18 @@ describe('LazyLoadImageDirective', () => {
       expect(directive).toBeTruthy();
     });
 
-    it('should call loadImage and disconnect observer when element is intersecting', fakeAsync(() => {
+    it('should call loadImage and disconnect observer when element is intersecting', async () => {
       Object.defineProperty(directive, 'src', {
         value: () => 'https://example.com/image.jpg',
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const loadImageSpy = spyOn<any>(directive, 'loadImage').and.callThrough();
-      const disconnectSpy = jasmine.createSpy('disconnect');
+      const loadImageSpy = vi.spyOn(directive as any, 'loadImage');
+      const disconnectSpy = vi.fn();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockObserver: any = {
-        observe: jasmine.createSpy('observe'),
+        observe: vi.fn(),
         disconnect: disconnectSpy,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback: null as any,
@@ -79,7 +79,9 @@ describe('LazyLoadImageDirective', () => {
       } as any;
 
       directive.ngOnInit();
-      tick();
+
+      // Attendre que l'observer soit initialisé
+      await new Promise(resolve => setTimeout(resolve, 0));
 
       mockObserver.triggerObserverCallback([
         {
@@ -90,16 +92,16 @@ describe('LazyLoadImageDirective', () => {
 
       expect(loadImageSpy).toHaveBeenCalled();
       expect(disconnectSpy).toHaveBeenCalled();
-    }));
+    });
 
     it('should disconnect observer when directive is destroyed', () => {
-      const disconnectSpy = jasmine.createSpy('disconnect');
+      const disconnectSpy = vi.fn();
 
       directive['observer'] = {
-        observe: jasmine.createSpy('observe'),
+        observe: vi.fn(),
         disconnect: disconnectSpy,
-        unobserve: jasmine.createSpy('unobserve'),
-        takeRecords: jasmine.createSpy('takeRecords'),
+        unobserve: vi.fn(),
+        takeRecords: vi.fn(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
@@ -117,15 +119,15 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should test all MockIntersectionObserver methods', () => {
-      const callbackSpy = jasmine.createSpy('callback');
+      const callbackSpy = vi.fn();
       const mockObserver = new MockIntersectionObserver(callbackSpy);
 
       const targetElement = imgEl.nativeElement;
       mockObserver.observe(targetElement);
 
       expect(callbackSpy).toHaveBeenCalledWith(
-        jasmine.arrayContaining([
-          jasmine.objectContaining({
+        expect.arrayContaining([
+          expect.objectContaining({
             isIntersecting: true,
             target: targetElement,
           }),
@@ -133,7 +135,7 @@ describe('LazyLoadImageDirective', () => {
         mockObserver
       );
 
-      callbackSpy.calls.reset();
+      callbackSpy.mockClear();
 
       mockObserver.unobserve(targetElement);
 
@@ -145,7 +147,7 @@ describe('LazyLoadImageDirective', () => {
       const records = mockObserver.takeRecords();
       expect(records).toEqual([]);
 
-      callbackSpy.calls.reset();
+      callbackSpy.mockClear();
 
       const testEntries = [
         {
@@ -167,7 +169,7 @@ describe('LazyLoadImageDirective', () => {
 
     beforeEach(() => {
       renderer2Mock = {
-        setAttribute: jasmine.createSpy('setAttribute'),
+        setAttribute: vi.fn(),
       };
 
       TestBed.configureTestingModule({
@@ -186,7 +188,7 @@ describe('LazyLoadImageDirective', () => {
 
     it('should create an instance in server environment', () => {
       expect(directive).toBeTruthy();
-      expect(directive['isBrowser']).toBeFalse();
+      expect(directive['isBrowser']).toBe(false);
     });
 
     it('should not initialize IntersectionObserver in server environment', () => {
@@ -195,7 +197,7 @@ describe('LazyLoadImageDirective', () => {
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const spy = spyOn<any>(directive, 'loadImage');
+      const spy = vi.spyOn(directive as any, 'loadImage');
 
       directive.ngOnInit();
 
@@ -209,7 +211,7 @@ describe('LazyLoadImageDirective', () => {
         writable: true,
       });
 
-      renderer2Mock.setAttribute.calls.reset();
+      renderer2Mock.setAttribute.mockClear();
 
       directive.ngOnInit();
 

@@ -1,3 +1,4 @@
+import type { MockedObject } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { AuthGuard } from './auth-guard.service';
@@ -11,18 +12,19 @@ describe('AuthGuardService', () => {
   let authGuard: AuthGuard;
 
   let initService: InitService;
-  let router: jasmine.SpyObj<Router>;
+  let router: MockedObject<Router>;
 
   beforeEach(() => {
-    const initServiceMock = jasmine.createSpyObj('InitService', ['init']);
-    initServiceMock.getIsConnected = jasmine.createSpy().and.returnValue(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const initServiceMock: any = { init: vi.fn() };
+    initServiceMock.getIsConnected = vi.fn().mockReturnValue(true);
     initServiceMock.subjectConnectedChange = new BehaviorSubject({
       isConnected: true,
       pseudo: 'test-pseudo',
       idPerso: 'test-idPerso',
       mail: 'test-mail',
     });
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const routerSpy = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [
@@ -40,7 +42,7 @@ describe('AuthGuardService', () => {
 
     authGuard = TestBed.inject(AuthGuard);
     initService = TestBed.inject(InitService);
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    router = TestBed.inject(Router) as MockedObject<Router>;
   });
 
   it('should be created', () => {
@@ -48,17 +50,17 @@ describe('AuthGuardService', () => {
   });
 
   it('should allow the authenticated user to access app', () => {
-    initService.getIsConnected = jasmine.createSpy().and.returnValue(true);
+    initService.getIsConnected = vi.fn().mockReturnValue(true);
 
-    expect(authGuard.canActivate()).toBeTrue();
+    expect(authGuard.canActivate()).toBe(true);
   });
 
   it('should redirect the unauthenticated user to home page', () => {
-    initService.getIsConnected = jasmine.createSpy().and.returnValue(false);
+    initService.getIsConnected = vi.fn().mockReturnValue(false);
 
     const result = authGuard.canActivate();
 
-    expect(result).toBeFalse();
+    expect(result).toBe(false);
     expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 });

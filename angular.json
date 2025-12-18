@@ -42,6 +42,12 @@
             }
           },
           "configurations": {
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -127,26 +133,11 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": ["src/polyfills.ts"],
             "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
-            "styles": ["src/styling/styles.scss"],
-            "scripts": [],
-            "assets": ["src/favicon.ico", "src/assets"],
-            "stylePreprocessorOptions": {
-              "includePaths": ["src", "src/styling", "node_modules"],
-              "sass": {
-                "silenceDeprecations": [
-                  "mixed-decls",
-                  "color-functions",
-                  "global-builtin",
-                  "import"
-                ]
-              }
-            }
+            "buildTarget": "zeffyrmusic:build:development",
+            "runnerConfig": "vitest.config.ts"
           }
         },
         "lint": {

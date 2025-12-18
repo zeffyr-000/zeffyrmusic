@@ -35,6 +35,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
 import { UserPlaylist } from '../models/playlist.model';
+import { AngularDraggableModule } from 'angular2-draggable';
 
 // eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
 declare var google: any;
@@ -54,6 +55,7 @@ declare var google: any;
     NgbTooltip,
     FormsModule,
     TranslocoPipe,
+    AngularDraggableModule,
   ],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
@@ -162,7 +164,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.subscriptionVolume = this.playerService.subjectVolumeChange.subscribe(volume => {
       this.valueSliderVolume = volume;
-      if (this.isBrowser) {
+      if (this.isBrowser && this.sliderVolumeRef?.nativeElement) {
         this.sliderVolumeRef.nativeElement.style.transform = 'none';
       }
     });
@@ -236,21 +238,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onDragMovingPlayer(e: { x: number }) {
     this.onDragingPlayer = true;
     this.onUpdateSliderPlayer(e.x);
-    this.sliderPlayerRef.nativeElement.style.left = 'auto';
+    if (this.sliderPlayerRef?.nativeElement) {
+      this.sliderPlayerRef.nativeElement.style.left = 'auto';
+    }
   }
 
   onDragEndPlayer(e: { x: number }) {
     this.onDragingPlayer = false;
     this.onUpdateSliderPlayer(e.x);
-    this.sliderPlayerRef.nativeElement.style.transform = 'none';
+    if (this.sliderPlayerRef?.nativeElement) {
+      this.sliderPlayerRef.nativeElement.style.transform = 'none';
+    }
   }
 
   onClickSliderPlayer(e: { offsetX: number }) {
     this.onUpdateSliderPlayer(e.offsetX);
-    this.sliderPlayerRef.nativeElement.style.transform = 'none';
+    if (this.sliderPlayerRef?.nativeElement) {
+      this.sliderPlayerRef.nativeElement.style.transform = 'none';
+    }
   }
 
   onUpdateSliderPlayer(value: number) {
+    // Guard: sliderPlayerRef can be null during SSR or before AfterViewInit
+    if (!this.sliderPlayerRef?.nativeElement) {
+      return;
+    }
     const size = this.sliderPlayerRef.nativeElement.parentNode.offsetWidth;
     if (value < 0) {
       value = 0;
@@ -266,20 +278,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onDragMovingVolume(e: { x: number }) {
     this.playerService.player.setVolume(e.x);
-    this.sliderVolumeRef.nativeElement.style.left = 'auto';
+    if (this.sliderVolumeRef?.nativeElement) {
+      this.sliderVolumeRef.nativeElement.style.left = 'auto';
+    }
   }
 
   onDragEndVolume(e: { x: number }) {
     this.onUpdateVolume(e.x);
-    this.sliderVolumeRef.nativeElement.style.transform = 'none';
+    if (this.sliderVolumeRef?.nativeElement) {
+      this.sliderVolumeRef.nativeElement.style.transform = 'none';
+    }
   }
 
   onClickSliderVolume(e: { offsetX: number }) {
     this.onUpdateVolume(e.offsetX);
-    this.sliderVolumeRef.nativeElement.style.transform = 'none';
+    if (this.sliderVolumeRef?.nativeElement) {
+      this.sliderVolumeRef.nativeElement.style.transform = 'none';
+    }
   }
 
   onUpdateVolume(value: number) {
+    // Guard: sliderVolumeRef can be null during SSR or before AfterViewInit
+    if (!this.sliderVolumeRef?.nativeElement) {
+      return;
+    }
     const size = this.sliderVolumeRef.nativeElement.parentNode.offsetWidth;
     if (value < 0) {
       value = 0;

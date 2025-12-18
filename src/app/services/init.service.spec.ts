@@ -69,16 +69,17 @@ describe('InitService', () => {
       it('should load ping data from TransferState when available in browser', () => {
         const PING_KEY = makeStateKey<PingResponse>('pingData');
 
-        spyOn(transferState, 'get').and.returnValue(mockPingResponse);
-        spyOn(transferState, 'remove').and.callThrough();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const handlePingResponseSpy = spyOn<any>(service, 'handlePingResponse').and.callThrough();
+        vi.spyOn(transferState, 'get').mockReturnValue(mockPingResponse);
+        vi.spyOn(transferState, 'remove');
 
-        const initPlaylistSpy = spyOn(service.subjectInitializePlaylist, 'next');
-        const connectedChangeSpy = spyOn(service.subjectConnectedChange, 'next');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const handlePingResponseSpy = vi.spyOn(service as any, 'handlePingResponse');
+
+        const initPlaylistSpy = vi.spyOn(service.subjectInitializePlaylist, 'next');
+        const connectedChangeSpy = vi.spyOn(service.subjectConnectedChange, 'next');
 
         service.getPing().subscribe(success => {
-          expect(success).toBeTrue();
+          expect(success).toBe(true);
         });
 
         expect(transferState.get).toHaveBeenCalledWith(PING_KEY, null);
@@ -110,13 +111,12 @@ describe('InitService', () => {
           tab_video: [],
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const onChangeIsConnectedSpy = spyOn<any>(service, 'onChangeIsConnected').and.callThrough();
-        const subjectNextSpy = spyOn(service.subjectInitializePlaylist, 'next').and.callThrough();
-        const connectedChangeSpy = spyOn(service.subjectConnectedChange, 'next').and.callThrough();
+        const onChangeIsConnectedSpy = vi.spyOn(service, 'onChangeIsConnected');
+        const subjectNextSpy = vi.spyOn(service.subjectInitializePlaylist, 'next');
+        const connectedChangeSpy = vi.spyOn(service.subjectConnectedChange, 'next');
 
         service.getPing().subscribe(success => {
-          expect(success).toBeTrue();
+          expect(success).toBe(true);
         });
 
         const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
@@ -134,7 +134,7 @@ describe('InitService', () => {
         });
 
         expect(subjectNextSpy).toHaveBeenCalledWith(
-          jasmine.objectContaining({
+          expect.objectContaining({
             listPlaylist: [],
             listFollow: [],
             listLikeVideo: [],
@@ -168,12 +168,11 @@ describe('InitService', () => {
           tab_video: ['vid1', 'vid2'],
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const onChangeIsConnectedSpy = spyOn<any>(service, 'onChangeIsConnected').and.callThrough();
-        const subjectNextSpy = spyOn(service.subjectInitializePlaylist, 'next').and.callThrough();
+        const onChangeIsConnectedSpy = vi.spyOn(service, 'onChangeIsConnected');
+        const subjectNextSpy = vi.spyOn(service.subjectInitializePlaylist, 'next');
 
         service.getPing().subscribe(success => {
-          expect(success).toBeTrue();
+          expect(success).toBe(true);
         });
 
         const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
@@ -205,8 +204,8 @@ describe('InitService', () => {
         const HOME_KEY = makeStateKey<{ top: HomeAlbum[]; top_albums: HomeAlbum[] }>('homeData');
 
         it('should use cached data from TransferState and remove it', () => {
-          spyOn(transferState, 'get').and.returnValue(mockHomeData);
-          const removeSpy = spyOn(transferState, 'remove').and.callThrough();
+          vi.spyOn(transferState, 'get').mockReturnValue(mockHomeData);
+          const removeSpy = vi.spyOn(transferState, 'remove');
 
           let result: { top: HomeAlbum[]; top_albums: HomeAlbum[] } | undefined;
           service.getHomeInit().subscribe(data => {
@@ -221,8 +220,8 @@ describe('InitService', () => {
         });
 
         it('should make HTTP request when no cached data exists', () => {
-          spyOn(transferState, 'get').and.returnValue(null);
-          const setSpy = spyOn(transferState, 'set').and.callThrough();
+          vi.spyOn(transferState, 'get').mockReturnValue(null);
+          const setSpy = vi.spyOn(transferState, 'set');
 
           let result: { top: HomeAlbum[]; top_albums: HomeAlbum[] } | undefined;
           service.getHomeInit().subscribe(data => {
@@ -242,7 +241,7 @@ describe('InitService', () => {
 
     describe('onChangeIsConnected', () => {
       it('should emit a new value on subjectConnectedChange', () => {
-        spyOn(service.subjectConnectedChange, 'next');
+        vi.spyOn(service.subjectConnectedChange, 'next');
 
         service.onChangeIsConnected();
 
@@ -259,15 +258,15 @@ describe('InitService', () => {
 
     describe('loginSuccess', () => {
       it('should set isConnected to true and update pseudo and idPerso', () => {
-        spyOn(service, 'onChangeIsConnected');
+        vi.spyOn(service, 'onChangeIsConnected');
 
         service.loginSuccess('test_pseudo', 'test_id_perso', 'test_mail', false, 'fr');
 
-        expect(service['isConnected']).toBeTrue();
+        expect(service['isConnected']).toBe(true);
         expect(service['pseudo']).toBe('test_pseudo');
         expect(service['idPerso']).toBe('test_id_perso');
         expect(service['mail']).toBe('test_mail');
-        expect(service['darkModeEnabled']).toBeFalse();
+        expect(service['darkModeEnabled']).toBe(false);
         expect(service['language']).toBe('fr');
 
         expect(service.onChangeIsConnected).toHaveBeenCalled();
@@ -276,11 +275,11 @@ describe('InitService', () => {
 
     describe('logOut', () => {
       it('should set isConnected to false and clear pseudo and idPerso', () => {
-        spyOn(service, 'onChangeIsConnected');
+        vi.spyOn(service, 'onChangeIsConnected');
 
         service.logOut();
 
-        expect(service['isConnected']).toBeFalse();
+        expect(service['isConnected']).toBe(false);
         expect(service['pseudo']).toBe('');
         expect(service['idPerso']).toBe('');
 
@@ -290,13 +289,13 @@ describe('InitService', () => {
 
     describe('onMessageUnlog', () => {
       it('should emit a new value on subjectMessageUnlog and set isConnected to false', () => {
-        spyOn(service.subjectMessageUnlog, 'next');
-        spyOn(service, 'onChangeIsConnected');
+        vi.spyOn(service.subjectMessageUnlog, 'next');
+        vi.spyOn(service, 'onChangeIsConnected');
 
         service.onMessageUnlog();
 
         expect(service.subjectMessageUnlog.next).toHaveBeenCalledWith(true);
-        expect(service['isConnected']).toBeFalse();
+        expect(service['isConnected']).toBe(false);
 
         expect(service.onChangeIsConnected).toHaveBeenCalled();
       });
@@ -342,9 +341,9 @@ describe('InitService', () => {
 
         const result = service.getIsConnected();
 
-        expect(result).toEqual(jasmine.any(Observable));
+        expect(result).toEqual(expect.any(Observable));
 
-        spyOn(service.subjectConnectedChange, 'asObservable').and.callThrough();
+        vi.spyOn(service.subjectConnectedChange, 'asObservable');
         service.getIsConnected();
         expect(service.subjectConnectedChange.asObservable).toHaveBeenCalled();
 
@@ -360,7 +359,7 @@ describe('InitService', () => {
         service['changeIsConnectedCalled'] = false;
 
         const initialResult = service.getIsConnected();
-        expect(initialResult).toEqual(jasmine.any(Observable));
+        expect(initialResult).toEqual(expect.any(Observable));
 
         service.onChangeIsConnected();
 
@@ -395,7 +394,8 @@ describe('InitService', () => {
             expect(value).toBe(true);
           });
         } else {
-          fail('Expected Observable but got boolean');
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (globalThis as any).fail('Expected Observable but got boolean');
         }
       });
     });
@@ -444,8 +444,8 @@ describe('InitService', () => {
       const HOME_KEY = makeStateKey<{ top: HomeAlbum[]; top_albums: HomeAlbum[] }>('homeData');
 
       it('should store data in TransferState when on server', () => {
-        spyOn(transferState, 'get').and.returnValue(null);
-        const setSpy = spyOn(transferState, 'set').and.callThrough();
+        vi.spyOn(transferState, 'get').mockReturnValue(null);
+        const setSpy = vi.spyOn(transferState, 'set');
 
         let result: { top: HomeAlbum[]; top_albums: HomeAlbum[] } | undefined;
         service.getHomeInit().subscribe(data => {

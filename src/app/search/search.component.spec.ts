@@ -1,3 +1,4 @@
+import type { Mock, MockedObject } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -25,7 +26,7 @@ describe('SearchComponent', () => {
   let playerService: PlayerService;
   let googleAnalyticsService: GoogleAnalyticsService;
   let searchServiceMock: Partial<SearchService>;
-  let activatedRouteMock: jasmine.SpyObj<ActivatedRoute>;
+  let activatedRouteMock: MockedObject<ActivatedRoute>;
 
   const searchResults1: SearchResults1 = {
     artist: [
@@ -62,19 +63,20 @@ describe('SearchComponent', () => {
   };
 
   beforeEach(async () => {
-    const initServiceMock = jasmine.createSpyObj('InitService', ['init']);
-    const playerServiceMock = jasmine.createSpyObj('PlayerService', [
-      'launchYTApi',
-      'lecture',
-      'removeToPlaylist',
-      'switchFollow',
-      'runPlaylist',
-      'addInCurrentList',
-      'addVideoInPlaylist',
-      'removeVideo',
-      'addInCurrentList',
-      'addVideoAfterCurrentInList',
-    ]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const initServiceMock: any = { init: vi.fn() };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const playerServiceMock: any = {
+      launchYTApi: vi.fn(),
+      lecture: vi.fn(),
+      removeToPlaylist: vi.fn(),
+      switchFollow: vi.fn(),
+      runPlaylist: vi.fn(),
+      addInCurrentList: vi.fn(),
+      addVideoInPlaylist: vi.fn(),
+      removeVideo: vi.fn(),
+      addVideoAfterCurrentInList: vi.fn(),
+    };
     playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
       currentKey: 'test-key',
       currentTitle: 'test-title',
@@ -87,11 +89,11 @@ describe('SearchComponent', () => {
       mail: 'test-mail',
     });
     searchServiceMock = {
-      fullSearch1: jasmine.createSpy('fullSearch1').and.returnValue(of(searchResults1)),
-      fullSearch2: jasmine.createSpy('fullSearch2').and.returnValue(of(searchResults2)),
-      fullSearch3: jasmine.createSpy('fullSearch3').and.returnValue(of(searchResults3)),
+      fullSearch1: vi.fn().mockReturnValue(of(searchResults1)),
+      fullSearch2: vi.fn().mockReturnValue(of(searchResults2)),
+      fullSearch3: vi.fn().mockReturnValue(of(searchResults3)),
     };
-    activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
+    activatedRouteMock = {
       snapshot: {
         url: {
           join: () => 'search/test',
@@ -99,7 +101,8 @@ describe('SearchComponent', () => {
       },
       params: new BehaviorSubject({ query: 'test' }),
       paramMap: of(convertToParamMap({ query: 'test' })),
-    });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
 
     await TestBed.configureTestingModule({
       imports: [
@@ -140,7 +143,7 @@ describe('SearchComponent', () => {
         },
         {
           provide: GoogleAnalyticsService,
-          useValue: jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']),
+          useValue: { pageView: vi.fn() },
         },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -166,7 +169,7 @@ describe('SearchComponent', () => {
   });
 
   it('should set title and load data on init', () => {
-    spyOn(titleService, 'setTitle');
+    vi.spyOn(titleService, 'setTitle');
 
     component.ngOnInit();
     expect(titleService.setTitle).toHaveBeenCalledWith('Search results "test" - Zeffyr Music');
@@ -312,9 +315,8 @@ describe('SearchComponent', () => {
   it('should handle undefined tab_extra in search results', () => {
     const searchResults3WithoutTabExtra = {} as SearchResults3;
 
-    (searchServiceMock.fullSearch3 as jasmine.Spy).and.returnValue(
-      of(searchResults3WithoutTabExtra)
-    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (searchServiceMock.fullSearch3 as Mock<any>).mockReturnValue(of(searchResults3WithoutTabExtra));
 
     component.listExtras = [{ key: 'OLD_VALUE', title: 'Should be cleared', duree: 100 }];
 
@@ -325,8 +327,8 @@ describe('SearchComponent', () => {
   });
 
   it('should unsubscribe from subscription on ngOnDestroy', () => {
-    const unsubscribeSpy = spyOn(component['subscriptionConnected'], 'unsubscribe');
-    const unsubscribeSpy2 = spyOn(component['paramMapSubscription'], 'unsubscribe');
+    const unsubscribeSpy = vi.spyOn(component['subscriptionConnected'], 'unsubscribe');
+    const unsubscribeSpy2 = vi.spyOn(component['paramMapSubscription'], 'unsubscribe');
 
     component.ngOnDestroy();
 

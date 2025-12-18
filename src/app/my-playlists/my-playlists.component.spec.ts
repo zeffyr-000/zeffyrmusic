@@ -15,34 +15,35 @@ import { CreatePlaylistResponse } from '../models/user.model';
 describe('MyPlaylistsComponent', () => {
   let component: MyPlaylistsComponent;
   let fixture: ComponentFixture<MyPlaylistsComponent>;
-  let playerServiceMock: PlayerService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let playerServiceMock: any;
   let translocoService: TranslocoService;
-  let initServiceMock: jasmine.SpyObj<InitService>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let initServiceMock: any;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let initService: InitService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let playerService: PlayerService;
-  let userServiceMock: jasmine.SpyObj<UserService>;
-  let modalServiceMock: jasmine.SpyObj<NgbActiveModal>;
-  let activeModalSpyObj: jasmine.SpyObj<NgbActiveModal>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let userServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let modalServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let activeModalSpyObj: any;
 
   beforeEach(async () => {
-    playerServiceMock = jasmine.createSpyObj('PlayerService', [
-      'addNewPlaylist',
-      'switchVisibilityPlaylist',
-      'deletePlaylist',
-      'editPlaylistTitle',
-    ]);
-    initServiceMock = jasmine.createSpyObj('InitService', [
-      'loginSuccess',
-      'logOut',
-      'onMessageUnlog',
-    ]);
-    userServiceMock = jasmine.createSpyObj('UserService', ['createPlaylist', 'editTitlePlaylist']);
-    modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
+    playerServiceMock = {
+      addNewPlaylist: vi.fn(),
+      switchVisibilityPlaylist: vi.fn(),
+      deletePlaylist: vi.fn(),
+      editPlaylistTitle: vi.fn(),
+    };
+    initServiceMock = { loginSuccess: vi.fn(), logOut: vi.fn(), onMessageUnlog: vi.fn() };
+    userServiceMock = { createPlaylist: vi.fn(), editTitlePlaylist: vi.fn() };
+    modalServiceMock = { open: vi.fn() };
 
-    const authGuardMock = jasmine.createSpyObj('AuthGuard', ['canActivate']);
-    activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
+    const authGuardMock = { canActivate: vi.fn() };
+    activeModalSpyObj = { dismiss: vi.fn() };
     playerServiceMock.subjectListPlaylist = new BehaviorSubject([]);
 
     initServiceMock.subjectConnectedChange = new BehaviorSubject({
@@ -53,7 +54,7 @@ describe('MyPlaylistsComponent', () => {
       darkModeEnabled: false,
       language: 'fr',
     });
-    initServiceMock.logOut = jasmine.createSpy('logOut');
+    initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule(), FormsModule, MyPlaylistsComponent],
@@ -96,7 +97,7 @@ describe('MyPlaylistsComponent', () => {
     } as NgForm;
 
     const response = { success: true, id_playlist: '1', titre: 'New Playlist', error: '' };
-    userServiceMock.createPlaylist.and.returnValue(of(response));
+    userServiceMock.createPlaylist.mockReturnValue(of(response));
 
     component.onCreatePlaylist(form);
 
@@ -111,7 +112,7 @@ describe('MyPlaylistsComponent', () => {
     } as NgForm;
 
     const response = { success: false, error: 'error_message' } as CreatePlaylistResponse;
-    userServiceMock.createPlaylist.and.returnValue(of(response));
+    userServiceMock.createPlaylist.mockReturnValue(of(response));
 
     component.onCreatePlaylist(form);
 
@@ -126,7 +127,7 @@ describe('MyPlaylistsComponent', () => {
     } as NgForm;
 
     const response = { success: false } as CreatePlaylistResponse;
-    userServiceMock.createPlaylist.and.returnValue(of(response));
+    userServiceMock.createPlaylist.mockReturnValue(of(response));
 
     component.onCreatePlaylist(form);
 
@@ -189,7 +190,7 @@ describe('MyPlaylistsComponent', () => {
     } as NgForm;
     const response = { success: true, error: undefined } as CreatePlaylistResponse;
 
-    userServiceMock.editTitlePlaylist.and.returnValue(of(response));
+    userServiceMock.editTitlePlaylist.mockReturnValue(of(response));
     component.currentIdPlaylistEdit = '1';
 
     component.onEditTitlePlaylist(form, activeModalSpyObj);
@@ -209,7 +210,7 @@ describe('MyPlaylistsComponent', () => {
     } as NgForm;
     const response = { success: false, error: 'error_message' } as CreatePlaylistResponse;
 
-    userServiceMock.editTitlePlaylist.and.returnValue(of(response));
+    userServiceMock.editTitlePlaylist.mockReturnValue(of(response));
     component.currentIdPlaylistEdit = '1';
 
     component.onEditTitlePlaylist(form, activeModalSpyObj);
@@ -228,7 +229,7 @@ describe('MyPlaylistsComponent', () => {
     } as NgForm;
     const response = { success: false } as CreatePlaylistResponse;
 
-    userServiceMock.editTitlePlaylist.and.returnValue(of(response));
+    userServiceMock.editTitlePlaylist.mockReturnValue(of(response));
     component.currentIdPlaylistEdit = '1';
 
     component.onEditTitlePlaylist(form, activeModalSpyObj);

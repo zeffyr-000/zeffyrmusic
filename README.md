@@ -18,7 +18,7 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `ng test` to execute the unit tests via [Vitest](https://vitest.dev/).
 
 ## Running end-to-end tests
 
@@ -48,7 +48,7 @@ Zeffyrmusic is a music web application developed with Angular. This project demo
 - **Transloco**: Internationalization and localization.
 - **Angular CLI**: Command-line tools for Angular.
 - **Cypress**: End-to-end testing.
-- **Karma**: Unit testing.
+- **Vitest**: Unit testing framework.
 - **YouTube Player API**: Integration with YouTube for video playback.
 
 ## Screenshots

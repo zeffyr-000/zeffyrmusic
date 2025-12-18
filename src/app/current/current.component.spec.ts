@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, flush } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgZone, NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { CurrentComponent } from './current.component';
@@ -10,8 +10,10 @@ import { getTranslocoModule } from '../transloco-testing.module';
 describe('CurrentComponent', () => {
   let component: CurrentComponent;
   let fixture: ComponentFixture<CurrentComponent>;
-  let playerServiceMock: jasmine.SpyObj<PlayerService>;
-  let initServiceMock: jasmine.SpyObj<InitService>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let playerServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let initServiceMock: any;
   let ngZoneMock: NgZone;
 
   const mockPlaylist: Video[] = [
@@ -53,33 +55,21 @@ describe('CurrentComponent', () => {
       mail: string;
     }>(mockConnectedState);
 
-    playerServiceMock = jasmine.createSpyObj('PlayerService', ['lecture', 'removeToPlaylist'], {
-      subjectCurrentPlaylistChange: {
-        subscribe: jasmine.createSpy('subscribe').and.callFake(callback => {
-          const sub = currentPlaylistSubject.subscribe(callback);
-          return sub;
-        }),
-        getValue: jasmine.createSpy('getValue').and.returnValue(mockPlaylist),
-      },
-      subjectCurrentKeyChange: {
-        subscribe: jasmine.createSpy('subscribe').and.callFake(callback => {
-          const sub = currentKeySubject.subscribe(callback);
-          return sub;
-        }),
-      },
-    });
+    playerServiceMock = {
+      lecture: vi.fn(),
+      removeToPlaylist: vi.fn(),
+      subjectCurrentPlaylistChange: currentPlaylistSubject,
+      subjectCurrentKeyChange: currentKeySubject,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
 
-    initServiceMock = jasmine.createSpyObj('InitService', [], {
-      subjectConnectedChange: {
-        subscribe: jasmine.createSpy('subscribe').and.callFake(callback => {
-          const sub = connectedSubject.subscribe(callback);
-          return sub;
-        }),
-      },
-    });
+    initServiceMock = {
+      subjectConnectedChange: connectedSubject,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
 
     ngZoneMock = new NgZone({ enableLongStackTrace: false });
-    spyOn(ngZoneMock, 'run').and.callFake(<T>(fn: (...args: unknown[]) => T) => fn());
+    vi.spyOn(ngZoneMock, 'run').mockImplementation(<T>(fn: (...args: unknown[]) => T) => fn());
 
     await TestBed.configureTestingModule({
       imports: [CurrentComponent, getTranslocoModule()],
@@ -104,9 +94,9 @@ describe('CurrentComponent', () => {
     component.subscriptionChangeKey = new Subscription();
     component.subscriptionConnected = new Subscription();
 
-    spyOn(component.subscription, 'unsubscribe');
-    spyOn(component.subscriptionChangeKey, 'unsubscribe');
-    spyOn(component.subscriptionConnected, 'unsubscribe');
+    vi.spyOn(component.subscription, 'unsubscribe');
+    vi.spyOn(component.subscriptionChangeKey, 'unsubscribe');
+    vi.spyOn(component.subscriptionConnected, 'unsubscribe');
   });
 
   it('should create', () => {
@@ -116,31 +106,31 @@ describe('CurrentComponent', () => {
   describe('ngOnInit', () => {
     it('should initialize list with current playlist from PlayerService', () => {
       component.ngOnInit();
-      expect(playerServiceMock.subjectCurrentPlaylistChange.getValue).toHaveBeenCalled();
       expect(component.list).toEqual(mockPlaylist);
     });
 
     it('should subscribe to PlayerService.subjectCurrentPlaylistChange', () => {
+      const subscribeSpy = vi.spyOn(playerServiceMock.subjectCurrentPlaylistChange, 'subscribe');
       component.ngOnInit();
-      expect(playerServiceMock.subjectCurrentPlaylistChange.subscribe).toHaveBeenCalled();
+      expect(subscribeSpy).toHaveBeenCalled();
     });
 
-    it('should update list when PlayerService.subjectCurrentPlaylistChange emits new value', fakeAsync(() => {
+    it('should update list when PlayerService.subjectCurrentPlaylistChange emits new value', () => {
       component.ngOnInit();
 
       const newPlaylist = [{ key: 'key3', titre: 'Video 3', artiste: 'Artist 3' } as Video];
       currentPlaylistSubject.next(newPlaylist);
-      flush();
 
       expect(component.list).toEqual(newPlaylist);
-    }));
-
-    it('should subscribe to PlayerService.subjectCurrentKeyChange', () => {
-      component.ngOnInit();
-      expect(playerServiceMock.subjectCurrentKeyChange.subscribe).toHaveBeenCalled();
     });
 
-    it('should update currentKey and use NgZone.run when PlayerService.subjectCurrentKeyChange emits', fakeAsync(() => {
+    it('should subscribe to PlayerService.subjectCurrentKeyChange', () => {
+      const subscribeSpy = vi.spyOn(playerServiceMock.subjectCurrentKeyChange, 'subscribe');
+      component.ngOnInit();
+      expect(subscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should update currentKey and use NgZone.run when PlayerService.subjectCurrentKeyChange emits', () => {
       component.ngOnInit();
 
       const newCurrentKey = {
@@ -149,26 +139,25 @@ describe('CurrentComponent', () => {
         currentArtist: 'Artist 3',
       };
       currentKeySubject.next(newCurrentKey);
-      flush();
 
       expect(component.currentKey).toEqual(newCurrentKey.currentKey);
       expect(ngZoneMock.run).toHaveBeenCalled();
-    }));
-
-    it('should subscribe to InitService.subjectConnectedChange', () => {
-      component.ngOnInit();
-      expect(initServiceMock.subjectConnectedChange.subscribe).toHaveBeenCalled();
     });
 
-    it('should update isConnected when InitService.subjectConnectedChange emits new value', fakeAsync(() => {
+    it('should subscribe to InitService.subjectConnectedChange', () => {
+      const subscribeSpy = vi.spyOn(initServiceMock.subjectConnectedChange, 'subscribe');
+      component.ngOnInit();
+      expect(subscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should update isConnected when InitService.subjectConnectedChange emits new value', () => {
       component.ngOnInit();
 
       const newConnectedState = { isConnected: false, pseudo: '', idPerso: '', mail: '' };
       connectedSubject.next(newConnectedState);
-      flush();
 
       expect(component.isConnected).toEqual(newConnectedState.isConnected);
-    }));
+    });
   });
 
   describe('play', () => {
@@ -213,7 +202,7 @@ describe('CurrentComponent', () => {
     it('should be able to manage playlist state', () => {
       expect(component.list).toEqual(mockPlaylist);
       expect(component.currentKey).toBe('key1');
-      expect(component.isConnected).toBeTrue();
+      expect(component.isConnected).toBe(true);
     });
 
     it('should handle playlist changes', () => {
@@ -227,10 +216,10 @@ describe('CurrentComponent', () => {
 
     it('should handle connection state changes', () => {
       component.isConnected = false;
-      expect(component.isConnected).toBeFalse();
+      expect(component.isConnected).toBe(false);
 
       component.isConnected = true;
-      expect(component.isConnected).toBeTrue();
+      expect(component.isConnected).toBe(true);
     });
   });
 });

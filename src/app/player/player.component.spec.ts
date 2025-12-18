@@ -13,12 +13,14 @@ describe('PlayerComponent', () => {
   let playerService: PlayerService;
 
   beforeEach(async () => {
-    const initServiceMock = jasmine.createSpyObj('InitService', ['init']);
-    const playerServiceMock = jasmine.createSpyObj('PlayerService', [
-      'launchYTApi',
-      'lecture',
-      'removeToPlaylist',
-    ]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const initServiceMock: any = { init: vi.fn() };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const playerServiceMock: any = {
+      launchYTApi: vi.fn(),
+      lecture: vi.fn(),
+      removeToPlaylist: vi.fn(),
+    };
     playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
     playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
       currentKey: 'test-key',
@@ -121,9 +123,9 @@ describe('PlayerComponent', () => {
   });
 
   it('should unsubscribe on destroy', () => {
-    spyOn(component.subscription, 'unsubscribe');
-    spyOn(component.subscriptionChangeKey, 'unsubscribe');
-    spyOn(component.subscriptionConnected, 'unsubscribe');
+    vi.spyOn(component.subscription, 'unsubscribe');
+    vi.spyOn(component.subscriptionChangeKey, 'unsubscribe');
+    vi.spyOn(component.subscriptionConnected, 'unsubscribe');
     component.ngOnDestroy();
     expect(component.subscription.unsubscribe).toHaveBeenCalled();
     expect(component.subscriptionChangeKey.unsubscribe).toHaveBeenCalled();

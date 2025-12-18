@@ -20,7 +20,8 @@ describe('DefaultImageDirective', () => {
   let fixture: ComponentFixture<TestComponent>;
   let imgEl: DebugElement;
   let directive: DefaultImageDirective;
-  let setAttributeSpy: jasmine.Spy;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let setAttributeSpy: any;
 
   describe('In browser environment', () => {
     beforeEach(() => {
@@ -33,7 +34,7 @@ describe('DefaultImageDirective', () => {
       imgEl = fixture.debugElement.query(By.css('img'));
       directive = imgEl.injector.get(DefaultImageDirective);
 
-      setAttributeSpy = spyOn(directive['renderer'], 'setAttribute').and.callThrough();
+      setAttributeSpy = vi.spyOn(directive['renderer'], 'setAttribute');
 
       fixture.detectChanges();
     });
@@ -50,7 +51,7 @@ describe('DefaultImageDirective', () => {
     it('should set the src attribute with the provided value', () => {
       const testSrc = 'assets/img/test-image.jpg';
 
-      setAttributeSpy.calls.reset();
+      setAttributeSpy.mockClear();
 
       directive.ngOnChanges({
         src: {
@@ -71,7 +72,7 @@ describe('DefaultImageDirective', () => {
     it('should set the original src when image loads successfully', () => {
       const testSrc = 'assets/img/test-image.jpg';
 
-      setAttributeSpy.calls.reset();
+      setAttributeSpy.mockClear();
 
       const imgMock = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,10 +93,10 @@ describe('DefaultImageDirective', () => {
 
         expect(imgMock.src).toBe(testSrc);
 
-        expect(imgMock.onload).toEqual(jasmine.any(Function));
-        expect(imgMock.onerror).toEqual(jasmine.any(Function));
+        expect(imgMock.onload).toEqual(expect.any(Function));
+        expect(imgMock.onerror).toEqual(expect.any(Function));
 
-        setAttributeSpy.calls.reset();
+        setAttributeSpy.mockClear();
 
         imgMock.onload();
 
@@ -117,7 +118,7 @@ describe('DefaultImageDirective', () => {
       imgEl = fixture.debugElement.query(By.css('img'));
       directive = imgEl.injector.get(DefaultImageDirective);
 
-      setAttributeSpy = spyOn(directive['renderer'], 'setAttribute').and.callThrough();
+      setAttributeSpy = vi.spyOn(directive['renderer'], 'setAttribute');
 
       fixture.detectChanges();
     });
@@ -125,7 +126,7 @@ describe('DefaultImageDirective', () => {
     it('should handle server-side rendering safely', () => {
       const testSrc = 'assets/img/test-image.jpg';
 
-      setAttributeSpy.calls.reset();
+      setAttributeSpy.mockClear();
 
       directive.ngOnChanges({
         src: {
@@ -138,7 +139,7 @@ describe('DefaultImageDirective', () => {
 
       expect(setAttributeSpy).not.toHaveBeenCalled();
 
-      setAttributeSpy.calls.reset();
+      setAttributeSpy.mockClear();
       imgEl.triggerEventHandler('error', null);
       expect(setAttributeSpy).not.toHaveBeenCalled();
     });
@@ -146,9 +147,9 @@ describe('DefaultImageDirective', () => {
     it('should exit loadImage() method early when not in browser', () => {
       expect(directive['isBrowser']).toBeFalsy();
 
-      setAttributeSpy.calls.reset();
+      setAttributeSpy.mockClear();
 
-      const imageSpy = jasmine.createSpy('Image');
+      const imageSpy = vi.fn();
       const originalImage = window.Image;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       window.Image = imageSpy as any;

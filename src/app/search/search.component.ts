@@ -14,12 +14,13 @@ import { SearchService } from '../services/search.service';
 import { isPlatformBrowser, SlicePipe } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css'],
-  imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe],
+  imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe, NgbTooltip],
 })
 export class SearchComponent implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
