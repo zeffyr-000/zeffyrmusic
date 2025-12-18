@@ -9,25 +9,33 @@ import { BehaviorSubject } from 'rxjs';
 
 describe('AuthGuardService', () => {
   let authGuard: AuthGuard;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   let initService: InitService;
   let router: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
     const initServiceMock = jasmine.createSpyObj('InitService', ['init']);
     initServiceMock.getIsConnected = jasmine.createSpy().and.returnValue(true);
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({
+      isConnected: true,
+      pseudo: 'test-pseudo',
+      idPerso: 'test-idPerso',
+      mail: 'test-mail',
+    });
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), withInterceptorsFromDi(),
+      providers: [
+        provideHttpClient(),
+        withInterceptorsFromDi(),
         AuthGuard,
-      {
-        provide: InitService,
-        useValue: initServiceMock,
-      },
-      { provide: Router, useValue: routerSpy }],
-      schemas: [NO_ERRORS_SCHEMA]
+        {
+          provide: InitService,
+          useValue: initServiceMock,
+        },
+        { provide: Router, useValue: routerSpy },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     authGuard = TestBed.inject(AuthGuard);

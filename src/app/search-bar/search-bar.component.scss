@@ -1,39 +1,39 @@
-#header_recherche>input {
-    width: 80%;
+#header_recherche > input {
+  width: 80%;
 }
 
 #liste_resultat_recherche {
-    width: 74%;
-    position: absolute;
-    z-index: 10;
+  width: 74%;
+  position: absolute;
+  z-index: 10;
 }
 
 #liste_resultat_recherche .list-group-item {
-    padding: 4px;
+  padding: 4px;
 }
 
 #liste_resultat_recherche .list-group-item.all_results {
-    min-height: 60px;
+  min-height: 60px;
 }
 
 #liste_resultat_recherche h4 {
-    margin: 0px;
-    line-height: 60px;
+  margin: 0px;
+  line-height: 60px;
 }
 
 .img_artiste_recherche {
-    height: 60px;
-    width: 60px;
-    font-size: 60px;
+  height: 60px;
+  width: 60px;
+  font-size: 60px;
 }
 
-@media screen and (max-device-width:799px), screen and (max-width:799px) {
-    #header_recherche>input {
-        width: 99%;
-    }
-    #liste_resultat_recherche {
-        position: absolute;
-        right: 0;
-        width: 100%;
-    }
+@media screen and (max-device-width: 799px), screen and (max-width: 799px) {
+  #header_recherche > input {
+    width: 99%;
+  }
+  #liste_resultat_recherche {
+    position: absolute;
+    right: 0;
+    width: 100%;
+  }
 }

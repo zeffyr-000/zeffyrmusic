@@ -5,14 +5,13 @@ import { shareIcons } from 'ngx-sharebuttons/icons';
 import { httpConfigInterceptor } from './interceptor/httpConfigInterceptor';
 
 export const appConfig: ApplicationConfig = {
-    providers: [
-        provideHttpClient(
-            withInterceptors([httpConfigInterceptor])
-        ),
-        provideShareButtonsOptions(
-            shareIcons(),
-            withConfig({
-                include: ['facebook', 'x', 'whatsapp', 'copy'],
-            })
-        )]
+  providers: [
+    provideHttpClient(withInterceptors([httpConfigInterceptor])),
+    provideShareButtonsOptions(
+      shareIcons(),
+      withConfig({
+        include: ['facebook', 'x', 'whatsapp', 'copy'],
+      })
+    ),
+  ],
 };

@@ -20,15 +20,7 @@
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styling/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": ["src", "src/styling", "node_modules"],
-              "sass": {
-                "silenceDeprecations": [
-                  "mixed-decls",
-                  "color-functions",
-                  "global-builtin",
-                  "import"
-                ]
-              }
+              "includePaths": ["src", "src/styling", "node_modules"]
             },
             "scripts": [],
             "extractLicenses": false,

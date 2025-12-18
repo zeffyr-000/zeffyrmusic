@@ -2,21 +2,36 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTitlePlaylist, ILogin, IPass, IRegister, ISendPass, LoginResponse, SendPassResponse, UserReponse } from '../models/user.model';
+import {
+  CreatePlaylistResponse,
+  ICreatePlaylist,
+  IEditMail,
+  IEditPass,
+  IEditTitlePlaylist,
+  ILogin,
+  IPass,
+  IRegister,
+  ISendPass,
+  LoginResponse,
+  SendPassResponse,
+  UserReponse,
+} from '../models/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private httpClient = inject(HttpClient);
-
 
   register(data: IRegister): Observable<UserReponse> {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'inscription', data);
   }
 
   login(data: ILogin, token: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(environment.URL_SERVER + 'login', { ...data, token });
+    return this.httpClient.post<LoginResponse>(environment.URL_SERVER + 'login', {
+      ...data,
+      token,
+    });
   }
 
   logout(): Observable<UserReponse> {
@@ -52,7 +67,10 @@ export class UserService {
   }
 
   createPlaylist(data: ICreatePlaylist): Observable<CreatePlaylistResponse> {
-    return this.httpClient.post<CreatePlaylistResponse>(environment.URL_SERVER + 'playlist-creer', data);
+    return this.httpClient.post<CreatePlaylistResponse>(
+      environment.URL_SERVER + 'playlist-creer',
+      data
+    );
   }
 
   editTitlePlaylist(data: IEditTitlePlaylist): Observable<UserReponse> {
@@ -60,6 +78,9 @@ export class UserService {
   }
 
   associateGoogleAccount(data: { id_token: string }): Observable<UserReponse> {
-    return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'options/associate_google_account', data);
+    return this.httpClient.post<UserReponse>(
+      environment.URL_SERVER + 'options/associate_google_account',
+      data
+    );
   }
 }

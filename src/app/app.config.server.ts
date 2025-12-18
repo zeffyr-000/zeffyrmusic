@@ -13,15 +13,27 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 import { AppRoutingModule } from './app-routing.module';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    importProvidersFrom(BrowserModule, AppRoutingModule, FormsModule, NgbModule, AngularDraggableModule, NgxGoogleAnalyticsModule.forRoot(environment.production ? 'UA-1664521-8' : 'UA-FAKE-ID'), NgbTooltipModule, TranslocoModule, YouTubePlayerModule),
+    importProvidersFrom(
+      BrowserModule,
+      AppRoutingModule,
+      FormsModule,
+      NgbModule,
+      AngularDraggableModule,
+      NgxGoogleAnalyticsModule.forRoot(environment.production ? 'UA-1664521-8' : 'UA-FAKE-ID'),
+      NgbTooltipModule,
+      TranslocoModule,
+      YouTubePlayerModule
+    ),
     Title,
     Meta,
     TranslocoService,
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
     provideServerRendering(),
+    provideClientHydration(withEventReplay()),
     provideTransloco({
       config: {
         availableLangs: environment.availableLangs,
@@ -34,7 +46,7 @@ const serverConfig: ApplicationConfig = {
     }),
     provideTranslocoMessageformat(),
     NgbActiveModal,
-  ]
+  ],
 };
 
 export const config = mergeApplicationConfig(appConfig, serverConfig);

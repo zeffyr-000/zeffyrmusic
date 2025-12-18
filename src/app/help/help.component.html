@@ -1,37 +1,41 @@
 <div class="p-3">
-    <h1 class="h3">{{ 'help_title_directory' | transloco }}</h1>
+  <h1 class="h3">{{ 'help_title_directory' | transloco }}</h1>
 
-    <p class="bg-info p-2 rounded">{{ 'help_description_directory' | transloco }}</p>
+  <p class="bg-info p-2 rounded">{{ 'help_description_directory' | transloco }}</p>
 
-    <h2 class="h4">{{ 'help_category_1' | transloco }}</h2>
-    <ul>
-        <li>
-            <a [routerLink]="['/help', 'listen']">{{ 'help_listen_title' | transloco }}</a>
-        <li>
-            <a [routerLink]="['/help', 'locked-screen']">{{ 'help_screen_locked_title' | transloco }}</a>
-        </li>
-    </ul>
+  <h2 class="h4">{{ 'help_category_1' | transloco }}</h2>
+  <ul>
+    <li>
+      <a [routerLink]="['/help', 'listen']">{{ 'help_listen_title' | transloco }}</a>
+    </li>
 
-    <h2 class="h4">{{ 'help_category_2' | transloco }}</h2>
-    <ul>
-        <li>
-            <a [routerLink]="['/help', 'install-android']">{{ 'help_install_android_title' | transloco }}</a>
-        </li>
-        <li>
-            <a [routerLink]="['/help', 'install-ios']">{{ 'help_install_ios_title' | transloco }}</a>
-        </li>
-    </ul>
+    <li>
+      <a [routerLink]="['/help', 'locked-screen']">{{ 'help_screen_locked_title' | transloco }}</a>
+    </li>
+  </ul>
 
-    <h2 class="h4">{{ 'help_category_3' | transloco }}</h2>
-    <ul>
-        <li>
-            <a [routerLink]="['/help', 'legal']">{{ 'help_legal_title' | transloco }}</a>
-        </li>
-        <li>
-            <a [routerLink]="['/help', 'download']">{{ 'help_download_title' | transloco }}</a>
-        </li>
-        <li>
-            <a [routerLink]="['/help', 'issues']">{{ 'help_issues_title' | transloco }}</a>
-        </li>
-    </ul>
+  <h2 class="h4">{{ 'help_category_2' | transloco }}</h2>
+  <ul>
+    <li>
+      <a [routerLink]="['/help', 'install-android']">{{
+        'help_install_android_title' | transloco
+      }}</a>
+    </li>
+    <li>
+      <a [routerLink]="['/help', 'install-ios']">{{ 'help_install_ios_title' | transloco }}</a>
+    </li>
+  </ul>
+
+  <h2 class="h4">{{ 'help_category_3' | transloco }}</h2>
+  <ul>
+    <li>
+      <a [routerLink]="['/help', 'legal']">{{ 'help_legal_title' | transloco }}</a>
+    </li>
+    <li>
+      <a [routerLink]="['/help', 'download']">{{ 'help_download_title' | transloco }}</a>
+    </li>
+    <li>
+      <a [routerLink]="['/help', 'issues']">{{ 'help_issues_title' | transloco }}</a>
+    </li>
+  </ul>
 </div>

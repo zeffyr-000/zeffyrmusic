@@ -7,7 +7,6 @@ import { PLATFORM_ID } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 describe('PlaylistService', () => {
-
   describe('Browser context', () => {
     let service: PlaylistService;
     let httpMock: HttpTestingController;
@@ -18,9 +17,12 @@ describe('PlaylistService', () => {
         providers: [
           {
             provide: PLATFORM_ID,
-            useValue: 'browser'
+            useValue: 'browser',
           },
-          PlaylistService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+          PlaylistService,
+          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClientTesting(),
+        ],
       });
 
       service = TestBed.inject(PlaylistService);
@@ -46,7 +48,7 @@ describe('PlaylistService', () => {
         est_prive: false,
         titre: 'Test Titre',
         artiste: 'Test Artiste',
-        id_artiste: '101112'
+        id_artiste: '101112',
       };
 
       service.getPlaylist('test_url').subscribe(data => {
@@ -77,7 +79,7 @@ describe('PlaylistService', () => {
         est_prive: false,
         titre: 'Stored Playlist',
         artiste: 'Stored Artist',
-        id_artiste: '101112'
+        id_artiste: '101112',
       };
 
       transferStateMock.get.and.returnValue(storedPlaylistData);
@@ -115,9 +117,12 @@ describe('PlaylistService', () => {
         providers: [
           {
             provide: PLATFORM_ID,
-            useValue: 'server'
+            useValue: 'server',
           },
-          PlaylistService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+          PlaylistService,
+          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClientTesting(),
+        ],
       });
 
       service = TestBed.inject(PlaylistService);
@@ -154,7 +159,7 @@ describe('PlaylistService', () => {
         est_prive: false,
         titre: 'Test Titre',
         artiste: 'Test Artiste',
-        id_artiste: '101112'
+        id_artiste: '101112',
       };
 
       service.getPlaylist(testUrl).subscribe();
@@ -162,7 +167,6 @@ describe('PlaylistService', () => {
       const req = httpMock.expectOne(testUrl);
       expect(req.request.method).toBe('GET');
       req.flush(mockPlaylistData);
-
 
       expect(transferStateMock.set).toHaveBeenCalledWith('playlist-' + testUrl, mockPlaylistData);
 
@@ -187,7 +191,7 @@ describe('PlaylistService', () => {
         tab_video: [],
         est_prive: false,
         titre: 'Stored Playlist',
-        artiste: 'Stored Artist'
+        artiste: 'Stored Artist',
       };
       transferStateMock.get.and.returnValue(storedPlaylistData);
 
@@ -216,7 +220,7 @@ describe('PlaylistService', () => {
         tab_video: [],
         est_prive: false,
         titre: 'HTTP Response Playlist',
-        artiste: 'HTTP Response Artist'
+        artiste: 'HTTP Response Artist',
       };
       req.flush(httpResponseData);
 

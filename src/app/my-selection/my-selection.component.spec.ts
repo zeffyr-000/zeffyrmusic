@@ -22,7 +22,11 @@ describe('MySelectionComponent', () => {
 
   beforeEach(async () => {
     playerServiceMock = jasmine.createSpyObj('PlayerService', ['deleteFollow']);
-    initServiceMock = jasmine.createSpyObj('InitService', ['loginSuccess', 'logOut', 'onMessageUnlog']);
+    initServiceMock = jasmine.createSpyObj('InitService', [
+      'loginSuccess',
+      'logOut',
+      'onMessageUnlog',
+    ]);
 
     const authGuardMock = jasmine.createSpyObj('AuthGuard', ['canActivate']);
     playerServiceMock.subjectListFollow = new BehaviorSubject([]);
@@ -33,9 +37,9 @@ describe('MySelectionComponent', () => {
       idPerso: '',
       mail: '',
       darkModeEnabled: false,
-      language: 'fr'
+      language: 'fr',
     });
-    initServiceMock.logOut = jasmine.createSpy('logOut')
+    initServiceMock.logOut = jasmine.createSpy('logOut');
 
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule(), MySelectionComponent],
@@ -44,7 +48,7 @@ describe('MySelectionComponent', () => {
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: AuthGuard, useValue: authGuardMock },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     initService = TestBed.inject(InitService);
@@ -104,11 +108,10 @@ describe('MySelectionComponent', () => {
   it('should handle multiple follow items on init', () => {
     const followItems = [
       { id_playlist: '1', titre: 'Test Follow Item 1' },
-      { id_playlist: '2', titre: 'Test Follow Item 2' }
+      { id_playlist: '2', titre: 'Test Follow Item 2' },
     ];
     playerServiceMock.subjectListFollow.next(followItems);
     component.ngOnInit();
     expect(component.listFollow).toEqual(followItems);
   });
-
 });

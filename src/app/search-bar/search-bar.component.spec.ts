@@ -24,20 +24,24 @@ describe('SearchBarComponent', () => {
   let testScheduler: TestScheduler;
   let searchServiceMock: Partial<SearchService>;
   const mockSearchBarResponse: SearchBarResponse = {
-    playlist: [{
-      id_playlist: 'test_id_playlist',
-      artiste: 'test_artiste',
-      ordre: '1',
-      titre: 'test_titre',
-      url_image: 'test_url_image',
-      year_release: 2021,
-    }],
-    artist: [{
-      artist: 'test_artist',
-      artiste: 'test_artiste',
-      id_artiste: 'test_id_artiste',
-      id_artiste_deezer: 'test_id_artiste_deezer',
-    }],
+    playlist: [
+      {
+        id_playlist: 'test_id_playlist',
+        artiste: 'test_artiste',
+        ordre: '1',
+        titre: 'test_titre',
+        url_image: 'test_url_image',
+        year_release: 2021,
+      },
+    ],
+    artist: [
+      {
+        artist: 'test_artist',
+        artiste: 'test_artiste',
+        id_artiste: 'test_id_artiste',
+        id_artiste_deezer: 'test_id_artiste_deezer',
+      },
+    ],
   };
 
   beforeEach(async () => {
@@ -45,16 +49,14 @@ describe('SearchBarComponent', () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     changeDetectorRefSpy = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
     searchServiceMock = {
-      searchBar: jasmine.createSpy('searchBar').and.returnValue(of(mockSearchBarResponse))
+      searchBar: jasmine.createSpy('searchBar').and.returnValue(of(mockSearchBarResponse)),
     };
 
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule.withRoutes([
-          { path: 'test', component: MockTestComponent },
-        ]),
+        RouterTestingModule.withRoutes([{ path: 'test', component: MockTestComponent }]),
         getTranslocoModule(),
-        SearchBarComponent
+        SearchBarComponent,
       ],
       declarations: [MockTestComponent],
       providers: [
@@ -63,7 +65,7 @@ describe('SearchBarComponent', () => {
         { provide: RouterTestingModule, useValue: routerSpy },
         { provide: ChangeDetectorRef, useValue: changeDetectorRefSpy },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
@@ -86,7 +88,6 @@ describe('SearchBarComponent', () => {
 
   it('should debounce, filter, and search for query in ngOnInit', () => {
     testScheduler.run(() => {
-
       const searchSubject = new Subject<string>();
       component['searchSubject'] = searchSubject;
 
@@ -122,8 +123,8 @@ describe('SearchBarComponent', () => {
           ordre: '1',
           titre: 'Test Album',
           url_image: 'https://example.com/image.jpg',
-          year_release: 2020
-        }
+          year_release: 2020,
+        },
       ];
 
       component.resultsArtist = [
@@ -131,8 +132,8 @@ describe('SearchBarComponent', () => {
           artist: 'Test Artist',
           artiste: 'Test Artist',
           id_artiste: '1',
-          id_artiste_deezer: '123'
-        }
+          id_artiste_deezer: '123',
+        },
       ];
 
       const searchSubject = new Subject<string>();
@@ -159,7 +160,7 @@ describe('SearchBarComponent', () => {
         artist: 'Artist 1',
         artiste: 'Artist 1',
         id_artiste: '1',
-        id_artiste_deezer: '123'
+        id_artiste_deezer: '123',
       };
       const playlistResult: PlaylistResult = {
         id_playlist: '1',
@@ -167,7 +168,7 @@ describe('SearchBarComponent', () => {
         ordre: '1',
         titre: 'Playlist 1',
         url_image: 'https://url.com/image.jpg',
-        year_release: 2000
+        year_release: 2000,
       };
       const url = '/test';
       component.query = 'test';

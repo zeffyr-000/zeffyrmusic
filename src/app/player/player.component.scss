@@ -1,46 +1,46 @@
 #container_player {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
 }
 
 #liste_en_cours_content {
-    padding-bottom: 56.25%;
+  padding-bottom: 56.25%;
 }
 
 #liste_en_cours {
-    table-layout: fixed;
+  table-layout: fixed;
 }
 
-#liste_en_cours tr:hover{
-    cursor: pointer;
+#liste_en_cours tr:hover {
+  cursor: pointer;
 }
 
-#liste_en_cours td>a:hover {
-    text-decoration: none;
+#liste_en_cours td > a:hover {
+  text-decoration: none;
 }
 
 #liste_en_cours td:first-child {
-    width: 70px;
+  width: 70px;
 }
 
 #liste_en_cours td:last-child {
-    width: 50px;
+  width: 50px;
 }
 
-#liste_en_cours td>p {
-    margin: 0;
-    padding: 0;
-    text-overflow: ellipsis;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
+#liste_en_cours td > p {
+  margin: 0;
+  padding: 0;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-#liste_en_cours td>p:hover {
-    cursor: pointer;
+#liste_en_cours td > p:hover {
+  cursor: pointer;
 }
 
 .dropdown-toggle::after {
-    display:none;
+  display: none;
 }

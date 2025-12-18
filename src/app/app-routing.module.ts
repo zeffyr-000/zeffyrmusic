@@ -16,12 +16,11 @@ const routes: Routes = [
   { path: 'like', component: PlaylistComponent, canActivate: [AuthGuard] },
   {
     path: 'artist/:id_artist',
-    loadComponent: () => import('./artist/artist.component').then(m => m.ArtistComponent)
+    loadComponent: () => import('./artist/artist.component').then(m => m.ArtistComponent),
   },
   {
     path: 'search/:query',
-    loadComponent: () => import('./search/search.component').then(m => m.SearchComponent)
-
+    loadComponent: () => import('./search/search.component').then(m => m.SearchComponent),
   },
   { path: 'help/:page', component: HelpPageComponent },
   { path: 'help', component: HelpComponent },
@@ -29,27 +28,30 @@ const routes: Routes = [
   {
     path: 'settings',
     loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'my-playlists',
-    loadComponent: () => import('./my-playlists/my-playlists.component').then(m => m.MyPlaylistsComponent),
-    canActivate: [AuthGuard]
+    loadComponent: () =>
+      import('./my-playlists/my-playlists.component').then(m => m.MyPlaylistsComponent),
+    canActivate: [AuthGuard],
   },
   {
     path: 'my-selection',
-    loadComponent: () => import('./my-selection/my-selection.component').then(m => m.MySelectionComponent),
-    canActivate: [AuthGuard]
+    loadComponent: () =>
+      import('./my-selection/my-selection.component').then(m => m.MySelectionComponent),
+    canActivate: [AuthGuard],
   },
   {
     path: 'reset_pass/:id_perso/:key',
-    loadComponent: () => import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+    loadComponent: () =>
+      import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

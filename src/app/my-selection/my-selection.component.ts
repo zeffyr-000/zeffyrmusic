@@ -11,7 +11,7 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
   selector: 'app-my-selection',
   templateUrl: './my-selection.component.html',
   styleUrl: './my-selection.component.css',
-  imports: [RouterLink, DefaultImageDirective, TranslocoPipe]
+  imports: [RouterLink, DefaultImageDirective, TranslocoPipe],
 })
 export class MySelectionComponent implements OnInit, OnDestroy {
   playerService = inject(PlayerService);

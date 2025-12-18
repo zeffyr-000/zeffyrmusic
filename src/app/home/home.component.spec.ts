@@ -21,26 +21,32 @@ describe('HomeComponent', () => {
     });
 
     it('should set isLoading to false after http request', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(of({ top: [], top_albums: [] }));
+      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+        of({ top: [], top_albums: [] })
+      );
       component.ngOnInit();
       expect(component.isLoading).toBeFalse();
     });
 
     it('should set listTopAlbums and listTop after http request', () => {
-      const data: { top: HomeAlbum[], top_albums: HomeAlbum[] } = {
-        top: [{
-          id: '1',
-          titre: 'Titre Album',
-          description: 'Description Album',
-          url_image: ''
-        },
-        {
-          id: '2',
-          titre: 'Titre Album 2',
-          description: 'Description Album 2',
-          url_image: ''
-        }],
-        top_albums: [{ id: '2', titre: 'Titre Album 2', description: 'Description Album 2', url_image: '' }],
+      const data: { top: HomeAlbum[]; top_albums: HomeAlbum[] } = {
+        top: [
+          {
+            id: '1',
+            titre: 'Titre Album',
+            description: 'Description Album',
+            url_image: '',
+          },
+          {
+            id: '2',
+            titre: 'Titre Album 2',
+            description: 'Description Album 2',
+            url_image: '',
+          },
+        ],
+        top_albums: [
+          { id: '2', titre: 'Titre Album 2', description: 'Description Album 2', url_image: '' },
+        ],
       };
       spyOn(component['initService'], 'getHomeInit').and.returnValue(of(data));
       component.ngOnInit();
@@ -49,7 +55,9 @@ describe('HomeComponent', () => {
     });
 
     it('should set isLoading to false after http request error', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(throwError(() => new Error('Test error')));
+      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+        throwError(() => new Error('Test error'))
+      );
       component.ngOnInit();
       expect(component.isLoading).toBeFalse();
     });
@@ -73,7 +81,7 @@ describe('HomeComponent', () => {
     });
 
     it('should correctly filter and sort albums by decade', () => {
-      const data: { top: HomeAlbum[], top_albums: HomeAlbum[] } = {
+      const data: { top: HomeAlbum[]; top_albums: HomeAlbum[] } = {
         top: [
           {
             id: '3',
@@ -86,24 +94,24 @@ describe('HomeComponent', () => {
             titre: 'Album 90s',
             description: 'Album années 90',
             url_image: '',
-            decade: true
+            decade: true,
           },
           {
             id: '1',
             titre: 'Album 80s',
             description: 'Album années 80',
             url_image: '',
-            decade: true
+            decade: true,
           },
           {
             id: '4',
             titre: 'Album 2000s',
             description: 'Album années 2000',
             url_image: '',
-            decade: true
-          }
+            decade: true,
+          },
         ],
-        top_albums: []
+        top_albums: [],
       };
 
       spyOn(component['initService'], 'getHomeInit').and.returnValue(of(data));
@@ -151,7 +159,7 @@ describe('HomeComponent', () => {
           { provide: PLATFORM_ID, useValue: 'browser' },
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
-        ]
+        ],
       }).compileComponents();
 
       translocoService = TestBed.inject(TranslocoService);
@@ -168,32 +176,48 @@ describe('HomeComponent', () => {
     runCommonTests();
 
     it('should set title and meta tags on init in browser', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(of({ top: [], top_albums: [] }));
+      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+        of({ top: [], top_albums: [] })
+      );
       component.ngOnInit();
-      expect(titleService.setTitle).toHaveBeenCalledWith('Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic');
-      expect(metaService.updateTag).toHaveBeenCalledWith(jasmine.objectContaining({
-        name: 'description'
-      }));
+      expect(titleService.setTitle).toHaveBeenCalledWith(
+        'Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic'
+      );
+      expect(metaService.updateTag).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          name: 'description',
+        })
+      );
       expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/');
     });
 
     it('should use data from TransferState if available in browser', () => {
       const mockHomeData = {
-        top: [{ id: '3', titre: 'TransferState Album', description: 'From TransferState', url_image: '' }],
-        top_albums: [] as HomeAlbum[]
+        top: [
+          {
+            id: '3',
+            titre: 'TransferState Album',
+            description: 'From TransferState',
+            url_image: '',
+          },
+        ],
+        top_albums: [] as HomeAlbum[],
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      spyOn(component['transferState'], 'get').and.callFake(<T>(key: StateKey<T>, defaultValue: T) => {
-        if (key === HOME_DATA_KEY) {
-          return mockHomeData as unknown as T;
+      spyOn(component['transferState'], 'get').and.callFake(
+        <T>(key: StateKey<T>, defaultValue: T) => {
+          if (key === HOME_DATA_KEY) {
+            return mockHomeData as unknown as T;
+          }
+          return defaultValue;
         }
-        return defaultValue;
-      });
+      );
 
       spyOn(component['transferState'], 'remove');
 
-      const initServiceSpy = spyOn(component['initService'], 'getHomeInit').and.returnValue(of(mockHomeData));
+      const initServiceSpy = spyOn(component['initService'], 'getHomeInit').and.returnValue(
+        of(mockHomeData)
+      );
 
       component.ngOnInit();
 
@@ -229,7 +253,7 @@ describe('HomeComponent', () => {
           { provide: PLATFORM_ID, useValue: 'server' },
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
-        ]
+        ],
       }).compileComponents();
 
       translocoService = TestBed.inject(TranslocoService);
@@ -246,12 +270,18 @@ describe('HomeComponent', () => {
     runCommonTests();
 
     it('should set title and meta tags on init in server but not call GA', () => {
-      spyOn(component['initService'], 'getHomeInit').and.returnValue(of({ top: [], top_albums: [] }));
+      spyOn(component['initService'], 'getHomeInit').and.returnValue(
+        of({ top: [], top_albums: [] })
+      );
       component.ngOnInit();
-      expect(titleService.setTitle).toHaveBeenCalledWith('Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic');
-      expect(metaService.updateTag).toHaveBeenCalledWith(jasmine.objectContaining({
-        name: 'description'
-      }));
+      expect(titleService.setTitle).toHaveBeenCalledWith(
+        'Écoutez de la Musique Gratuite et Sans Pub - ZeffyrMusic'
+      );
+      expect(metaService.updateTag).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          name: 'description',
+        })
+      );
 
       expect(googleAnalyticsService.pageView).not.toHaveBeenCalled();
     });
@@ -259,7 +289,7 @@ describe('HomeComponent', () => {
     it('should store data in TransferState when on server', () => {
       const mockHomeData = {
         top: [{ id: '1', titre: 'Server Data', description: 'For TransferState', url_image: '' }],
-        top_albums: [] as HomeAlbum[]
+        top_albums: [] as HomeAlbum[],
       };
 
       spyOn(component['initService'], 'getHomeInit').and.returnValue(of(mockHomeData));

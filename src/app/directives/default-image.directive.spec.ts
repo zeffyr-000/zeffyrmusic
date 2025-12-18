@@ -5,9 +5,14 @@ import { By } from '@angular/platform-browser';
 
 @Component({
   imports: [DefaultImageDirective],
-  template: `<img src="url/image/invalide.jpg" alt="" appDefaultImage defaultSrc="assets/img/default.jpg">`
+  template: `<img
+    src="url/image/invalide.jpg"
+    alt=""
+    appDefaultImage
+    defaultSrc="assets/img/default.jpg"
+  />`,
 })
-class TestComponent { }
+class TestComponent {}
 
 describe('DefaultImageDirective', () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,9 +26,7 @@ describe('DefaultImageDirective', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [TestComponent],
-        providers: [
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+        providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
       });
       fixture = TestBed.createComponent(TestComponent);
       component = fixture.componentInstance;
@@ -54,8 +57,8 @@ describe('DefaultImageDirective', () => {
           currentValue: testSrc,
           previousValue: null,
           firstChange: true,
-          isFirstChange: () => true
-        }
+          isFirstChange: () => true,
+        },
       });
 
       expect(directive['renderer'].setAttribute).toHaveBeenCalledWith(
@@ -75,7 +78,7 @@ describe('DefaultImageDirective', () => {
         onload: null as any,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onerror: null as any,
-        src: ''
+        src: '',
       };
 
       const originalImage = window.Image;
@@ -96,11 +99,7 @@ describe('DefaultImageDirective', () => {
 
         imgMock.onload();
 
-        expect(setAttributeSpy).toHaveBeenCalledWith(
-          directive['el'].nativeElement,
-          'src',
-          testSrc
-        );
+        expect(setAttributeSpy).toHaveBeenCalledWith(directive['el'].nativeElement, 'src', testSrc);
       } finally {
         window.Image = originalImage;
       }
@@ -111,9 +110,7 @@ describe('DefaultImageDirective', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [TestComponent],
-        providers: [
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+        providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
       });
       fixture = TestBed.createComponent(TestComponent);
       component = fixture.componentInstance;
@@ -135,8 +132,8 @@ describe('DefaultImageDirective', () => {
           currentValue: testSrc,
           previousValue: null,
           firstChange: true,
-          isFirstChange: () => true
-        }
+          isFirstChange: () => true,
+        },
       });
 
       expect(setAttributeSpy).not.toHaveBeenCalled();
@@ -164,5 +161,4 @@ describe('DefaultImageDirective', () => {
       }
     });
   });
-
 });

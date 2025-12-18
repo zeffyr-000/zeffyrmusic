@@ -28,10 +28,9 @@ import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search
   selector: 'app-search-bar',
   template: '',
   standalone: true,
-  imports: []
+  imports: [],
 })
-class MockSearchBarComponent { }
-
+class MockSearchBarComponent {}
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -54,20 +53,45 @@ describe('HeaderComponent', () => {
   let searchServiceMock: Partial<SearchService>;
 
   const searchResults1: SearchResults1 = {
-    artist: [{ id_artiste: '1', artiste: 'Test Artist', artist: 'Test Artist', id_artiste_deezer: '123' }],
-    playlist: [{ id_playlist: '1', artiste: 'Test Artist', ordre: '1', titre: 'Test Album', url_image: '', year_release: 2021 }],
+    artist: [
+      { id_artiste: '1', artiste: 'Test Artist', artist: 'Test Artist', id_artiste_deezer: '123' },
+    ],
+    playlist: [
+      {
+        id_playlist: '1',
+        artiste: 'Test Artist',
+        ordre: '1',
+        titre: 'Test Album',
+        url_image: '',
+        year_release: 2021,
+      },
+    ],
   };
   const searchResults2: SearchResults2 = {
-    tab_video: [{
-      id_video: '1', artiste: 'Test Artist', artists: [{ id_artist: '1', label: 'Test Artist' }], duree: '100', id_playlist: '1', key: 'XXX-XXX', ordre: '1', titre: 'Test Track', titre_album: 'Test Album'
-    }],
+    tab_video: [
+      {
+        id_video: '1',
+        artiste: 'Test Artist',
+        artists: [{ id_artist: '1', label: 'Test Artist' }],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Test Track',
+        titre_album: 'Test Album',
+      },
+    ],
   };
   const searchResults3: SearchResults3 = {
     tab_extra: [{ key: 'TEST', title: 'TITLE', duree: 100 }],
   };
 
   beforeEach(async () => {
-    initServiceMock = jasmine.createSpyObj('InitService', ['loginSuccess', 'logOut', 'onMessageUnlog']);
+    initServiceMock = jasmine.createSpyObj('InitService', [
+      'loginSuccess',
+      'logOut',
+      'onMessageUnlog',
+    ]);
     const playerServiceMock = jasmine.createSpyObj('PlayerService', [
       'switchRepeat',
       'switchRandom',
@@ -83,9 +107,18 @@ describe('HeaderComponent', () => {
       'editPlaylistTitle',
       'deleteFollow',
       'deletePlaylist',
-      'addVideoInPlaylistRequest'
+      'addVideoInPlaylistRequest',
     ]);
-    userServiceMock = jasmine.createSpyObj('UserService', ['register', 'login', 'resetPass', 'editPass', 'editMail', 'createPlaylist', 'logout', 'editTitlePlaylist']);
+    userServiceMock = jasmine.createSpyObj('UserService', [
+      'register',
+      'login',
+      'resetPass',
+      'editPass',
+      'editMail',
+      'createPlaylist',
+      'logout',
+      'editTitlePlaylist',
+    ]);
     routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
     routeSpyObj = jasmine.createSpyObj('ActivatedRoute', [], {
       snapshot: {
@@ -96,15 +129,24 @@ describe('HeaderComponent', () => {
           has: (key: string) => true,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           getAll: (key: string) => ['123'],
-          keys: ['id']
-        }
-      }
+          keys: ['id'],
+        },
+      },
     });
-    const googleAnalyticsServiceSpyObj = jasmine.createSpyObj('GoogleAnalyticsService', ['pageView']);
+    const googleAnalyticsServiceSpyObj = jasmine.createSpyObj('GoogleAnalyticsService', [
+      'pageView',
+    ]);
     modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open', 'dismissAll']);
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
 
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: false, language: 'en' });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({
+      isConnected: false,
+      pseudo: '',
+      idPerso: '',
+      mail: '',
+      darkModeEnabled: false,
+      language: 'en',
+    });
     initServiceMock.logOut = jasmine.createSpy('logOut');
     playerServiceMock.subjectRepeatChange = new BehaviorSubject(false);
     playerServiceMock.subjectRandomChange = new BehaviorSubject(false);
@@ -128,10 +170,8 @@ describe('HeaderComponent', () => {
         getTranslocoModule(),
         HeaderComponent,
         FontAwesomeTestingModule,
-        RouterTestingModule.withRoutes([
-          { path: 'test', component: MockTestComponent },
-        ]),
-        MockSearchBarComponent
+        RouterTestingModule.withRoutes([{ path: 'test', component: MockTestComponent }]),
+        MockSearchBarComponent,
       ],
       providers: [
         { provide: InitService, useValue: initServiceMock },
@@ -145,15 +185,17 @@ describe('HeaderComponent', () => {
         {
           provide: SearchService,
           useValue: searchServiceMock,
-        }
+        },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     initService = TestBed.inject(InitService);
     playerService = TestBed.inject(PlayerService);
     userService = TestBed.inject(UserService);
-    googleAnalyticsServiceSpy = TestBed.inject(GoogleAnalyticsService) as jasmine.SpyObj<GoogleAnalyticsService>;
+    googleAnalyticsServiceSpy = TestBed.inject(
+      GoogleAnalyticsService
+    ) as jasmine.SpyObj<GoogleAnalyticsService>;
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     modalService = TestBed.inject(NgbModal);
     translocoService = TestBed.inject(TranslocoService);
@@ -291,7 +333,6 @@ describe('HeaderComponent', () => {
     expect(playerService.updatePositionSlider).toHaveBeenCalledWith(1);
   });
 
-
   it('should call player.setVolume when onDragMovingVolume is called', () => {
     const event = { x: 100 };
 
@@ -346,7 +387,7 @@ describe('HeaderComponent', () => {
 
     Object.defineProperty(component.sliderVolumeRef.nativeElement.parentNode, 'offsetWidth', {
       configurable: true,
-      get: () => 100
+      get: () => 100,
     });
 
     const value = 50;
@@ -363,21 +404,20 @@ describe('HeaderComponent', () => {
   });
 
   describe('onSubmitRegister', () => {
-
     afterEach(() => {
       userServiceMock.register.calls.reset();
     });
 
     it('should call httpClient.post with the correct arguments', () => {
-      const form = <NgForm>{
+      const form = {
         valid: true,
         form: {
           value: {
             email: 'test@example.com',
             password: 'password',
-          }
-        }
-      };
+          },
+        },
+      } as NgForm;
       const registerResponse = { success: true, error: '' };
       userServiceMock.register.and.returnValue(of(registerResponse));
 
@@ -387,15 +427,15 @@ describe('HeaderComponent', () => {
     });
 
     it('should set isRegistered to true and call googleAnalyticsService.pageView if the response is successful', () => {
-      const form = <NgForm>{
+      const form = {
         valid: true,
         form: {
           value: {
             email: 'test@example.com',
             password: 'password',
-          }
-        }
-      };
+          },
+        },
+      } as NgForm;
       const registerResponse = { success: true, error: '' };
       userServiceMock.register.and.returnValue(of(registerResponse));
 
@@ -408,15 +448,15 @@ describe('HeaderComponent', () => {
     });
 
     it('should set error to the translated error message if the response is unsuccessful', () => {
-      const form = <NgForm>{
+      const form = {
         valid: true,
         form: {
           value: {
             email: 'test@example.com',
             password: 'password',
-          }
-        }
-      };
+          },
+        },
+      } as NgForm;
       const error = 'invalid_email';
       spyOn(translocoService, 'translate').and.returnValue('Invalid email');
       const registerResponse = { success: false, error };
@@ -430,15 +470,15 @@ describe('HeaderComponent', () => {
     });
 
     it('should set error to the genric message if the response is unsuccessful', () => {
-      const form = <NgForm>{
+      const form = {
         valid: true,
         form: {
           value: {
             email: 'test@example.com',
             password: 'password',
-          }
-        }
-      };
+          },
+        },
+      } as NgForm;
       spyOn(translocoService, 'translate').and.returnValue('generic_error');
       const registerResponse = { success: false, error: '' };
       userServiceMock.register.and.returnValue(of(registerResponse));
@@ -456,17 +496,25 @@ describe('HeaderComponent', () => {
       });
 
       it('should call httpClient.post with the correct arguments', () => {
-        const form = <NgForm>{
+        const form = {
           valid: true,
           form: {
             value: {
               email: 'test@example.com',
               password: 'password',
-            }
-          }
-        };
+            },
+          },
+        } as NgForm;
 
-        const loginResponse = { success: true, pseudo: '', id_perso: '', mail: '', dark_mode_enabled: false, liste_playlist: [], liste_suivi: [] } as LoginResponse;
+        const loginResponse = {
+          success: true,
+          pseudo: '',
+          id_perso: '',
+          mail: '',
+          dark_mode_enabled: false,
+          liste_playlist: [],
+          liste_suivi: [],
+        } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
         component.onLogIn(form, activeModalSpy, null);
@@ -479,15 +527,15 @@ describe('HeaderComponent', () => {
       });
 
       it('should set isConnected to true, call initService.loginSuccess, set mail, call playerService.onLoadListLogin, and dismiss the modal if the response is successful', () => {
-        const form = <NgForm>{
+        const form = {
           valid: true,
           form: {
             value: {
               email: 'test@example.com',
               password: 'password',
-            }
-          }
-        };
+            },
+          },
+        } as NgForm;
         const pseudo = 'testuser';
         const id_perso = '123';
         const mail = 'testuser@example.com';
@@ -497,7 +545,17 @@ describe('HeaderComponent', () => {
         const darkModeEnabled = false;
         const language = 'en';
 
-        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, language, liste_playlist, liste_suivi, like_video } as LoginResponse;
+        const loginResponse = {
+          success: true,
+          pseudo,
+          id_perso,
+          mail,
+          dark_mode_enabled: darkModeEnabled,
+          language,
+          liste_playlist,
+          liste_suivi,
+          like_video,
+        } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
         component.onLogIn(form, activeModalSpy, null);
@@ -505,22 +563,32 @@ describe('HeaderComponent', () => {
         expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value, null);
 
         expect(component.isConnected).toBeTrue();
-        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled, language);
+        expect(initService.loginSuccess).toHaveBeenCalledWith(
+          pseudo,
+          id_perso,
+          mail,
+          darkModeEnabled,
+          language
+        );
         expect(component.mail).toBe(mail);
-        expect(playerService.onLoadListLogin).toHaveBeenCalledWith(liste_playlist, liste_suivi, like_video);
+        expect(playerService.onLoadListLogin).toHaveBeenCalledWith(
+          liste_playlist,
+          liste_suivi,
+          like_video
+        );
         expect(activeModalSpy.dismiss).toHaveBeenCalledWith('');
       });
 
       it('should set error to the translated error message if the response is unsuccessful', () => {
-        const form = <NgForm>{
+        const form = {
           valid: true,
           form: {
             value: {
               email: 'test@example.com',
               password: 'password',
-            }
+            },
           },
-        };
+        } as NgForm;
         const error = 'invalid_credentials';
         spyOn(translocoService, 'translate').and.returnValue('Invalid credentials');
 
@@ -535,15 +603,15 @@ describe('HeaderComponent', () => {
       });
 
       it('should set error to the generic error message if the response is unsuccessful', () => {
-        const form = <NgForm>{
+        const form = {
           valid: true,
           form: {
             value: {
               email: 'test@example.com',
               password: 'password',
-            }
+            },
           },
-        };
+        } as NgForm;
         spyOn(translocoService, 'translate').and.returnValue('generic_error');
 
         const loginResponse = { success: false, error: '' } as LoginResponse;
@@ -557,15 +625,15 @@ describe('HeaderComponent', () => {
       });
 
       it('should set isConnected to true, call initService.loginSuccess, set mail, call playerService.onLoadListLogin, and dismiss all modals if the response is successful', () => {
-        const form = <NgForm>{
+        const form = {
           valid: true,
           form: {
             value: {
               email: 'test@example.com',
               password: 'password',
-            }
-          }
-        };
+            },
+          },
+        } as NgForm;
         const pseudo = 'testuser';
         const id_perso = '123';
         const mail = 'testuser@example.com';
@@ -574,7 +642,16 @@ describe('HeaderComponent', () => {
         const darkModeEnabled = false;
         const language = 'en';
 
-        const loginResponse = { success: true, pseudo, id_perso, mail, dark_mode_enabled: darkModeEnabled, language, liste_playlist, liste_suivi } as LoginResponse;
+        const loginResponse = {
+          success: true,
+          pseudo,
+          id_perso,
+          mail,
+          dark_mode_enabled: darkModeEnabled,
+          language,
+          liste_playlist,
+          liste_suivi,
+        } as LoginResponse;
         userServiceMock.login.and.returnValue(of(loginResponse));
 
         component.onLogIn(form, null, null);
@@ -582,7 +659,13 @@ describe('HeaderComponent', () => {
         expect(userServiceMock.login).toHaveBeenCalledWith(form.form.value, null);
 
         expect(component.isConnected).toBeTrue();
-        expect(initService.loginSuccess).toHaveBeenCalledWith(pseudo, id_perso, mail, darkModeEnabled, language);
+        expect(initService.loginSuccess).toHaveBeenCalledWith(
+          pseudo,
+          id_perso,
+          mail,
+          darkModeEnabled,
+          language
+        );
         expect(modalServiceSpyObj.dismissAll).toHaveBeenCalled();
       });
     });
@@ -650,7 +733,13 @@ describe('HeaderComponent', () => {
     component.onAddVideo(idPlaylist, modal);
 
     // Assert
-    expect(playerService.addVideoInPlaylistRequest).toHaveBeenCalledWith(idPlaylist, 'key', 'title', 'artist', 100);
+    expect(playerService.addVideoInPlaylistRequest).toHaveBeenCalledWith(
+      idPlaylist,
+      'key',
+      'title',
+      'artist',
+      100
+    );
     expect(modal.dismiss).toHaveBeenCalled();
   });
 
@@ -663,7 +752,9 @@ describe('HeaderComponent', () => {
 
     component.openModalLogin();
 
-    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(component.contentModalLogin, { size: 'lg' });
+    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(component.contentModalLogin, {
+      size: 'lg',
+    });
   });
 
   it('should initialize and render Google Sign-In button', () => {
@@ -671,9 +762,9 @@ describe('HeaderComponent', () => {
       accounts: {
         id: {
           initialize: jasmine.createSpy('initialize'),
-          renderButton: jasmine.createSpy('renderButton')
-        }
-      }
+          renderButton: jasmine.createSpy('renderButton'),
+        },
+      },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).google = google;
@@ -686,12 +777,9 @@ describe('HeaderComponent', () => {
 
     expect(google.accounts.id.initialize).toHaveBeenCalledWith({
       client_id: environment.GOOGLE_CLIENT_ID,
-      callback: jasmine.any(Function)
+      callback: jasmine.any(Function),
     });
-    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(
-      mockElement,
-      {}
-    );
+    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(mockElement, {});
 
     document.body.removeChild(mockElement);
   });
@@ -701,9 +789,9 @@ describe('HeaderComponent', () => {
       accounts: {
         id: {
           initialize: jasmine.createSpy('initialize'),
-          renderButton: jasmine.createSpy('renderButton')
-        }
-      }
+          renderButton: jasmine.createSpy('renderButton'),
+        },
+      },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).google = google;
@@ -716,12 +804,9 @@ describe('HeaderComponent', () => {
 
     expect(google.accounts.id.initialize).toHaveBeenCalledWith({
       client_id: environment.GOOGLE_CLIENT_ID,
-      callback: jasmine.any(Function)
+      callback: jasmine.any(Function),
     });
-    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(
-      mockElement,
-      {}
-    );
+    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(mockElement, {});
 
     document.body.removeChild(mockElement);
   });
@@ -736,7 +821,9 @@ describe('HeaderComponent', () => {
 
     component.openModalRegister();
 
-    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(component.contentModalRegister, { size: 'lg' });
+    expect(modalServiceSpyObj.open).toHaveBeenCalledWith(component.contentModalRegister, {
+      size: 'lg',
+    });
 
     jasmine.clock().tick(1);
     expect(component.renderGoogleRegisterButton).toHaveBeenCalled();
@@ -759,7 +846,6 @@ describe('HeaderComponent', () => {
       expect(() => {
         component.renderGoogleRegisterButton();
       }).not.toThrow();
-
     } finally {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).google = originalGoogle;
@@ -777,7 +863,6 @@ describe('HeaderComponent', () => {
       expect(() => {
         component.renderGoogleRegisterButton();
       }).not.toThrow();
-
     } finally {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).google = originalGoogle;
@@ -791,13 +876,12 @@ describe('HeaderComponent', () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).google = {
-        accounts: {}
+        accounts: {},
       };
 
       expect(() => {
         component.renderGoogleRegisterButton();
       }).not.toThrow();
-
     } finally {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).google = originalGoogle;
@@ -809,9 +893,9 @@ describe('HeaderComponent', () => {
       accounts: {
         id: {
           initialize: jasmine.createSpy('initialize'),
-          renderButton: jasmine.createSpy('renderButton')
-        }
-      }
+          renderButton: jasmine.createSpy('renderButton'),
+        },
+      },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).google = google;
@@ -838,11 +922,13 @@ describe('HeaderComponent', () => {
 
     expect(modalServiceSpyObj.open).toHaveBeenCalled();
 
-    Promise.reject().catch(() => {
-
-    }).then(() => {
-      expect(component.renderGoogleRegisterButton).toHaveBeenCalled();
-    });
+    Promise.reject()
+      .catch(() => {
+        // Expected rejection handling
+      })
+      .then(() => {
+        expect(component.renderGoogleRegisterButton).toHaveBeenCalled();
+      });
   });
 
   it('should call onLogIn with the correct arguments when handleCredentialResponse is called', () => {
@@ -855,11 +941,22 @@ describe('HeaderComponent', () => {
     expect(component.onLogIn).toHaveBeenCalledWith(null, null, 'mockCredential');
   });
 
-  it('should react to darkModeEnabled being true', () => {
-    initServiceMock.subjectConnectedChange.next({ isConnected: false, pseudo: '', idPerso: '', mail: '', darkModeEnabled: true, language: 'en' });
+  it('should react to darkModeEnabled being true', done => {
+    initServiceMock.subjectConnectedChange.next({
+      isConnected: false,
+      pseudo: '',
+      idPerso: '',
+      mail: '',
+      darkModeEnabled: true,
+      language: 'en',
+    });
 
-    fixture.detectChanges();
-
-    expect(document.body.getAttribute('data-bs-theme')).toBe('dark');
+    // Wait for subscription to process
+    setTimeout(() => {
+      fixture.detectChanges();
+      expect(component.darkModeEnabled).toBeTrue();
+      expect(document.body.getAttribute('data-bs-theme')).toBe('dark');
+      done();
+    }, 10);
   });
 });

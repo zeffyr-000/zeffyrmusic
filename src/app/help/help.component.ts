@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrl: './help.component.css',
-  imports: [RouterLink, TranslocoPipe]
+  imports: [RouterLink, TranslocoPipe],
 })
 export class HelpComponent implements OnInit {
   private readonly titleService = inject(Title);
@@ -17,11 +17,12 @@ export class HelpComponent implements OnInit {
   private readonly seoService = inject(SeoService);
   private readonly translocoService = inject(TranslocoService);
 
-
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('help_meta_title'));
-    this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('help_meta_description') });
+    this.metaService.updateTag({
+      name: 'description',
+      content: this.translocoService.translate('help_meta_description'),
+    });
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help`);
   }
-
 }

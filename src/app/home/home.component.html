@@ -1,103 +1,148 @@
 @if( page !== 'albums') {
-<div class="card card-body mt-3 border-0" [id]="'content-top-' + page" itemscope
-    itemtype="http://schema.org/MusicPlaylist">
-    @if(isLoading) {
-    <div class="content_loading">
-        <div class="spinner-border text-primary"></div>
-    </div>
-    } @else {
+<div
+  class="card card-body mt-3 border-0"
+  [id]="'content-top-' + page"
+  itemscope
+  itemtype="http://schema.org/MusicPlaylist"
+>
+  @if(isLoading) {
+  <div class="content_loading">
+    <div class="spinner-border text-primary"></div>
+  </div>
+  } @else { @if(page === 'top') {
+  <h1 class="h3" itemprop="name">{{ 'hits_by_decade' | transloco }}</h1>
 
-    @if(page === 'top') {
-    <h1 class="h3" itemprop="name">{{'hits_by_decade'| transloco}}</h1>
-
-    <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
-        @for(chart of listTopDecade; track chart.id) {
-        <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
-            <a class="card h-100" routerLink="/top/{{chart.id}}" itemprop="url">
-                <img src="{{chart.url_image}}" class="card-img-top" alt="{{chart.titre}}" itemprop="image"
-                    appDefaultImage />
-                <div class="card-body">
-                    <h5 class="card-title" itemprop="name">{{chart.titre}}</h5>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted" itemprop="description">{{chart.description}}</small>
-                </div>
-            </a>
+  <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
+    @for(chart of listTopDecade; track chart.id) {
+    <div
+      class="col m-0 mt-1 mb-1"
+      itemprop="track"
+      itemscope
+      itemtype="http://schema.org/MusicRecording"
+    >
+      <a class="card h-100" routerLink="/top/{{ chart.id }}" itemprop="url">
+        <img
+          src="{{ chart.url_image }}"
+          class="card-img-top"
+          alt="{{ chart.titre }}"
+          itemprop="image"
+          appDefaultImage
+        />
+        <div class="card-body">
+          <h5 class="card-title" itemprop="name">{{ chart.titre }}</h5>
         </div>
-        }
-    </div>
-
-    <h1 class="mt-3 h3" itemprop="name">{{'top_charts'| transloco}}</h1>
-    }
-
-    <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
-        [class.row-cols-xl-5]="page !== 'home'">
-        @for (chart of page === 'home' ? listTopSliced : listTop; track chart.id) {
-        <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
-            <a class="card h-100" routerLink="/top/{{chart.id}}" itemprop="url">
-                <img src="{{chart.url_image}}" class="card-img-top" alt="{{chart.titre}}" itemprop="image"
-                    fetchpriority="high" appDefaultImage />
-                <div class="card-body">
-                    <h5 class="card-title" itemprop="name">{{chart.titre}}</h5>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted" itemprop="description">{{chart.description}}</small>
-                </div>
-            </a>
+        <div class="card-footer">
+          <small class="text-muted" itemprop="description">{{ chart.description }}</small>
         </div>
-        }
-        @if( page === 'home') {
-        <div class="col m-0 mt-1 mb-1">
-            <a class="card h-100" routerLink="/top">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <h5 class="card-text text-decoration-underline">{{ 'more' | transloco }}</h5>
-                </div>
-            </a>
-        </div>
-        }
+      </a>
     </div>
     }
+  </div>
+
+  <h1 class="mt-3 h3" itemprop="name">{{ 'top_charts' | transloco }}</h1>
+  }
+
+  <div
+    class="row row-cols-md-3 row-cols-sm-2 row-cols-2"
+    [class.row-cols-xl-6]="page === 'home'"
+    [class.row-cols-xl-5]="page !== 'home'"
+  >
+    @for (chart of page === 'home' ? listTopSliced : listTop; track chart.id) {
+    <div
+      class="col m-0 mt-1 mb-1"
+      itemprop="track"
+      itemscope
+      itemtype="http://schema.org/MusicRecording"
+    >
+      <a class="card h-100" routerLink="/top/{{ chart.id }}" itemprop="url">
+        <img
+          src="{{ chart.url_image }}"
+          class="card-img-top"
+          alt="{{ chart.titre }}"
+          itemprop="image"
+          fetchpriority="high"
+          appDefaultImage
+        />
+        <div class="card-body">
+          <h5 class="card-title" itemprop="name">{{ chart.titre }}</h5>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted" itemprop="description">{{ chart.description }}</small>
+        </div>
+      </a>
+    </div>
+    } @if( page === 'home') {
+    <div class="col m-0 mt-1 mb-1">
+      <a class="card h-100" routerLink="/top">
+        <div class="card-body d-flex align-items-center justify-content-center">
+          <h5 class="card-text text-decoration-underline">{{ 'more' | transloco }}</h5>
+        </div>
+      </a>
+    </div>
+    }
+  </div>
+  }
 </div>
-}
-
-@if( page !== 'top') {
-<div class="card card-body mt-3 border-0" [id]="'content-album-' + page" itemscope
-    itemtype="http://schema.org/MusicPlaylist">
-    <h1 class="border-0 h3" [class.text-center]="page==='home'" itemprop="name">{{'top_albums'| transloco}}</h1>
-    @if(isLoading) {
-    <div class="content_loading">
-        <div class="spinner-border text-primary"></div>
+} @if( page !== 'top') {
+<div
+  class="card card-body mt-3 border-0"
+  [id]="'content-album-' + page"
+  itemscope
+  itemtype="http://schema.org/MusicPlaylist"
+>
+  <h1 class="border-0 h3" [class.text-center]="page === 'home'" itemprop="name">
+    {{ 'top_albums' | transloco }}
+  </h1>
+  @if(isLoading) {
+  <div class="content_loading">
+    <div class="spinner-border text-primary"></div>
+  </div>
+  } @else {
+  <div
+    class="row row-cols-md-3 row-cols-sm-2 row-cols-2"
+    [class.row-cols-xl-6]="page === 'home'"
+    [class.row-cols-xl-5]="page !== 'home'"
+    itemscope
+    itemtype="http://schema.org/MusicAlbum"
+  >
+    @for (album of page === 'home' ? listTopAlbumsSliced : listTopAlbums; track album.id_playlist;
+    let i = $index) {
+    <div
+      class="col m-0 mt-1 mb-1"
+      itemprop="track"
+      itemscope
+      itemtype="http://schema.org/MusicRecording"
+    >
+      <a class="card h-100" routerLink="/playlist/{{ album.id_playlist }}" itemprop="url">
+        <img
+          src="{{ album.url_image }}"
+          class="card-img-top"
+          alt="{{ album.titre }}"
+          itemprop="image"
+          fetchpriority="high"
+          appDefaultImage
+        />
+        <div class="card-body">
+          <h5 class="card-title" itemprop="name">
+            <span class="badge bg-primary text-light">{{ i + 1 }}</span>
+            {{ album.titre }}
+          </h5>
+          @if(album.artiste!=='') {
+          <p class="card-text" itemprop="byArtist">{{ album.artiste }}</p>
+          }
+        </div>
+      </a>
     </div>
-    } @else {
-    <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2" [class.row-cols-xl-6]="page === 'home'"
-        [class.row-cols-xl-5]="page !== 'home'" itemscope itemtype="http://schema.org/MusicAlbum">
-        @for (album of page === 'home' ? listTopAlbumsSliced : listTopAlbums; track album.id_playlist; let i = $index) {
-        <div class="col m-0 mt-1 mb-1" itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
-            <a class="card h-100" routerLink="/playlist/{{album.id_playlist}}" itemprop="url">
-                <img src="{{album.url_image}}" class="card-img-top" alt="{{album.titre}}" itemprop="image"
-                    fetchpriority="high" appDefaultImage />
-                <div class="card-body">
-                    <h5 class="card-title" itemprop="name">
-                        <span class="badge bg-primary text-light">{{i+1}}</span>
-                        {{album.titre}}
-                    </h5>
-                    @if(album.artiste!=='') {
-                    <p class="card-text" itemprop="byArtist">{{album.artiste}}</p>
-                    }
-                </div>
-            </a>
+    } @if( page === 'home') {
+    <div class="col m-0 mt-1 mb-1">
+      <a class="card h-100 text-center" routerLink="/albums">
+        <div class="card-body d-flex align-items-center justify-content-center">
+          <h5 class="card-text text-decoration-underline">{{ 'more' | transloco }}</h5>
         </div>
-        }
-        @if( page === 'home') {
-        <div class="col m-0 mt-1 mb-1">
-            <a class="card h-100 text-center" routerLink="/albums">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <h5 class="card-text text-decoration-underline">{{ 'more' | transloco }}</h5>
-                </div>
-            </a>
-        </div>
-        }
+      </a>
     </div>
     }
+  </div>
+  }
 </div>
 }
