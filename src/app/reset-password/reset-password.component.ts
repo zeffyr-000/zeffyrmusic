@@ -32,19 +32,23 @@ export class ResetPasswordComponent implements OnInit {
     this.idPerso = this.route.snapshot.params['id_perso'];
     this.key = this.route.snapshot.params['key'];
 
-    this.resetForm = this.formBuilder.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
-    }, {
-      validator: this.passwordMatchValidator
-    });
+    this.resetForm = this.formBuilder.group(
+      {
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', Validators.required],
+      },
+      {
+        validator: this.passwordMatchValidator,
+      }
+    );
   }
 
-  get f() { return this.resetForm.controls; }
+  get f() {
+    return this.resetForm.controls;
+  }
 
   passwordMatchValidator(g: FormGroup) {
-    return g.get('password').value === g.get('confirmPassword').value
-      ? null : { matching: true };
+    return g.get('password').value === g.get('confirmPassword').value ? null : { matching: true };
   }
 
   onSubmit() {
@@ -55,28 +59,29 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     this.loading = true;
-    this.userService.sendResetPass({
-      id_perso: this.idPerso,
-      key: this.key,
-      password: this.resetForm.value.password
-    }).subscribe({
-      next: data => {
-        this.loading = false;
+    this.userService
+      .sendResetPass({
+        id_perso: this.idPerso,
+        key: this.key,
+        password: this.resetForm.value.password,
+      })
+      .subscribe({
+        next: data => {
+          this.loading = false;
 
-        if (data.success) {
-          this.formSuccess = true;
-          this.formInvalid = false;
-        }
-        else {
-          this.formInvalid = true;
-          this.formSuccess = false;
-        }
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+          if (data.success) {
+            this.formSuccess = true;
+            this.formInvalid = false;
+          } else {
+            this.formInvalid = true;
+            this.formSuccess = false;
+          }
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+      });
   }
 }

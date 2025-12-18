@@ -3,29 +3,32 @@ jobs:
   build:
     working_directory: ~/zeffyrmusic
     docker:
-        - image: circleci/node:10-browsers
+      - image: cimg/node:20.18-browsers
     steps:
-        - checkout
-        - run:
-            name: Show current branch
-            command: echo ${CIRCLE_BRANCH}
-        - restore_cache:
-            keys:
+      - checkout
+      - run:
+          name: Show current branch
+          command: echo ${CIRCLE_BRANCH}
+      - restore_cache:
+          keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
             - v1-dependencies-
-        - run:
-            name: Install local dependencies
-            command: npm install
-        - save_cache:
-            key: v1-dependencies-{{ checksum "package-lock.json" }}
-            paths:
-                - node_modules
-        - run:
-            name: Linting
-            command: npm run lint
-        - run:
-            name: Testing
-            command: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-        - run:
-            name: End to End Test
-            command: npm run e2e --prod --protractor-config=e2e/protractor-ci.conf.js
+      - run:
+          name: Install local dependencies
+          command: npm install
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Format Check
+          command: npm run format:check
+      - run:
+          name: Linting
+          command: npm run lint
+      - run:
+          name: Testing
+          command: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+      - run:
+          name: End to End Test
+          command: npm run e2e --prod --protractor-config=e2e/protractor-ci.conf.js

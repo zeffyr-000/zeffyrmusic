@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   selector: 'app-help-page',
   templateUrl: './help-page.component.html',
   styleUrl: './help-page.component.css',
-  imports: [TranslocoPipe]
+  imports: [TranslocoPipe],
 })
 export class HelpPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -20,7 +20,6 @@ export class HelpPageComponent implements OnInit {
 
   page: string;
   URL_ASSETS = environment.URL_ASSETS;
-
 
   ngOnInit() {
     this.page = this.route.snapshot.paramMap.get('page');
@@ -59,7 +58,10 @@ export class HelpPageComponent implements OnInit {
     }
 
     this.titleService.setTitle(this.translocoService.translate(pageTitle) + ' - Zeffyr Music');
-    this.metaService.updateTag({ name: 'description', content: this.translocoService.translate(pageDescription) });
+    this.metaService.updateTag({
+      name: 'description',
+      content: this.translocoService.translate(pageDescription),
+    });
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help/${this.page}`);
   }
 }

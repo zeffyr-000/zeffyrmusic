@@ -16,154 +16,153 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 
 @Component({
-    selector: 'app-search',
-    templateUrl: './search.component.html',
-    styleUrls: ['./search.component.css'],
-    imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe]
+  selector: 'app-search',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.css'],
+  imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe],
 })
 export class SearchComponent implements OnInit, OnDestroy {
-    private platformId = inject(PLATFORM_ID);
-    private readonly searchService = inject(SearchService);
-    private readonly activatedRoute = inject(ActivatedRoute);
-    private readonly titleService = inject(Title);
-    private readonly metaService = inject(Meta);
-    private readonly translocoService = inject(TranslocoService);
-    private readonly initService = inject(InitService);
-    private readonly playerService = inject(PlayerService);
-    private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
-    private readonly ngZone = inject(NgZone);
+  private platformId = inject(PLATFORM_ID);
+  private readonly searchService = inject(SearchService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly titleService = inject(Title);
+  private readonly metaService = inject(Meta);
+  private readonly translocoService = inject(TranslocoService);
+  private readonly initService = inject(InitService);
+  private readonly playerService = inject(PlayerService);
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly ngZone = inject(NgZone);
 
+  currentKey: string;
+  isConnected: boolean;
+  query: string;
+  isLoading1: boolean;
+  isLoading2: boolean;
+  isLoading3: boolean;
+  private isBrowser: boolean;
 
-    currentKey: string;
-    isConnected: boolean;
-    query: string;
-    isLoading1: boolean;
-    isLoading2: boolean;
-    isLoading3: boolean;
-    private isBrowser: boolean;
+  listArtists: ArtistResult[];
+  limitArtist: number;
 
-    listArtists: ArtistResult[];
-    limitArtist: number;
+  listAlbums: Album[];
+  limitAlbum: number;
 
-    listAlbums: Album[];
-    limitAlbum: number;
+  listTracks: Video[];
+  limitTrack: number;
 
-    listTracks: Video[];
-    limitTrack: number;
+  listExtras: Extra[];
+  limitExtra: number;
 
-    listExtras: Extra[];
-    limitExtra: number;
+  private subscriptionConnected: Subscription;
+  subscriptionChangeKey: Subscription;
+  private paramMapSubscription: Subscription;
 
-    private subscriptionConnected: Subscription;
-    subscriptionChangeKey: Subscription;
-    private paramMapSubscription: Subscription;
+  constructor() {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
-    constructor() {
-        this.isBrowser = isPlatformBrowser(this.platformId);
-    }
+  ngOnInit() {
+    this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
+      this.isConnected = data.isConnected;
+    });
 
-    ngOnInit() {
-        this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
-            this.isConnected = data.isConnected;
+    this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
+      this.ngZone.run(() => {
+        this.currentKey = data.currentKey;
+      });
+    });
+
+    this.paramMapSubscription = this.activatedRoute.paramMap.subscribe(params => {
+      this.query = params.get('query');
+      this.isLoading1 = true;
+      this.isLoading2 = true;
+      if (this.isConnected) {
+        this.isLoading3 = true;
+      }
+      this.listArtists = undefined;
+      this.listAlbums = undefined;
+      this.listTracks = undefined;
+      this.listExtras = undefined;
+
+      this.searchService
+        .fullSearch1(this.query)
+        .subscribe((data: { artist: ArtistResult[]; playlist: PlaylistResult[] }) => {
+          this.isLoading1 = false;
+
+          this.titleService.setTitle(
+            this.translocoService.translate('resultats_recherche', { query: this.query }) +
+              ' - Zeffyr Music'
+          );
+          this.metaService.updateTag({
+            name: 'description',
+            content: this.translocoService.translate('description_search', { query: this.query }),
+          });
+
+          this.listArtists = data.artist;
+          this.limitArtist = 5;
+
+          this.listAlbums = data.playlist;
+          this.limitAlbum = 5;
         });
 
-        this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-            this.ngZone.run(() => {
-                this.currentKey = data.currentKey;
-            });
+      this.searchService.fullSearch2(this.query).subscribe((data: { tab_video: Video[] }) => {
+        this.isLoading2 = false;
+
+        this.listTracks = data.tab_video;
+        this.limitTrack = 5;
+      });
+
+      if (this.isConnected) {
+        this.searchService.fullSearch3(this.query).subscribe((data: { tab_extra: Extra[] }) => {
+          this.isLoading3 = false;
+
+          this.listExtras = data.tab_extra || [];
+          this.limitExtra = 5;
         });
+      }
 
-        this.paramMapSubscription = this.activatedRoute.paramMap.subscribe(params => {
-            this.query = params.get('query');
-            this.isLoading1 = true;
-            this.isLoading2 = true;
-            if (this.isConnected) {
-                this.isLoading3 = true;
-            }
-            this.listArtists = undefined;
-            this.listAlbums = undefined;
-            this.listTracks = undefined;
-            this.listExtras = undefined;
+      if (this.isBrowser) {
+        this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+      }
+    });
+  }
 
-            this.searchService.fullSearch1(this.query)
-                .subscribe((data: { artist: ArtistResult[], playlist: PlaylistResult[] }) => {
-                    this.isLoading1 = false;
+  moreArtists() {
+    this.limitArtist = this.listArtists.length;
+  }
 
-                    this.titleService.setTitle(this.translocoService.translate('resultats_recherche', { query: this.query }) +
-                        ' - Zeffyr Music');
-                    this.metaService.updateTag({ name: 'description', content: this.translocoService.translate('description_search', { query: this.query }) });
+  moreAlbums() {
+    this.limitAlbum = this.listAlbums.length;
+  }
 
-                    this.listArtists = data.artist;
-                    this.limitArtist = 5;
+  runPlaylistTrack(index: number) {
+    this.playerService.runPlaylist(this.listTracks, index);
+  }
 
-                    this.listAlbums = data.playlist;
-                    this.limitAlbum = 5;
+  addVideo(key: string, artist: string, title: string, duration: number) {
+    this.playerService.addVideoInPlaylist(key, artist, title, duration);
+  }
 
-                });
+  moreTracks() {
+    this.limitTrack = this.listTracks.length;
+  }
 
-            this.searchService.fullSearch2(this.query)
-                .subscribe((data: { tab_video: Video[] }) => {
-                    this.isLoading2 = false;
+  runPlaylistExtra(index: number) {
+    const listTransformed = this.listExtras.map(e => ({
+      ...e,
+      titre: e.title,
+    })) as unknown as Video[];
 
-                    this.listTracks = data.tab_video;
-                    this.limitTrack = 5;
-                });
+    this.playerService.runPlaylist(listTransformed, index);
+  }
 
-            if (this.isConnected) {
-                this.searchService.fullSearch3(this.query)
-                    .subscribe((data: { tab_extra: Extra[] }) => {
-                        this.isLoading3 = false;
+  moreExtras() {
+    this.limitExtra = this.listExtras.length;
+  }
 
-                        this.listExtras = data.tab_extra || [];
-                        this.limitExtra = 5;
-                    });
-            }
-
-            if (this.isBrowser) {
-                this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
-            }
-        });
-    }
-
-    moreArtists() {
-        this.limitArtist = this.listArtists.length;
-    }
-
-    moreAlbums() {
-        this.limitAlbum = this.listAlbums.length;
-    }
-
-    runPlaylistTrack(index: number) {
-        this.playerService.runPlaylist(this.listTracks, index);
-    }
-
-    addVideo(key: string, artist: string, title: string, duration: number) {
-        this.playerService.addVideoInPlaylist(key, artist, title, duration);
-    }
-
-    moreTracks() {
-        this.limitTrack = this.listTracks.length;
-    }
-
-    runPlaylistExtra(index: number) {
-
-        const listTransformed = this.listExtras.map(e =>
-        ({
-            ...e,
-            titre: e.title,
-        })) as unknown as Video[];
-
-        this.playerService.runPlaylist(listTransformed, index);
-    }
-
-    moreExtras() {
-        this.limitExtra = this.listExtras.length;
-    }
-
-    ngOnDestroy() {
-        this.subscriptionConnected.unsubscribe();
-        this.subscriptionChangeKey.unsubscribe();
-        this.paramMapSubscription.unsubscribe();
-    }
+  ngOnDestroy() {
+    this.subscriptionConnected.unsubscribe();
+    this.subscriptionChangeKey.unsubscribe();
+    this.paramMapSubscription.unsubscribe();
+  }
 }
-

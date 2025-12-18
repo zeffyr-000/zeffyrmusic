@@ -1,5 +1,15 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Directive, ElementRef, Renderer2, OnInit, OnChanges, SimpleChanges, PLATFORM_ID, inject, input } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  Renderer2,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  PLATFORM_ID,
+  inject,
+  input,
+} from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Directive({ selector: 'img[appDefaultImage]' })

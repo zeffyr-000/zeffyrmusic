@@ -25,7 +25,7 @@ describe('InitService', () => {
     like_video: [],
     liste_video: [],
     tab_index: [],
-    tab_video: []
+    tab_video: [],
   };
 
   const mockHomeData = {
@@ -34,26 +34,22 @@ describe('InitService', () => {
         id: '1',
         titre: 'Album 1',
         description: 'Description 1',
-        url_image: 'image1.jpg'
-      }
+        url_image: 'image1.jpg',
+      },
     ],
-    top_albums: [
-      { id: '2', titre: 'Album 2', description: 'Artiste 2', url_image: 'image2.jpg' }
-    ]
+    top_albums: [{ id: '2', titre: 'Album 2', description: 'Artiste 2', url_image: 'image2.jpg' }],
   };
 
   describe('In browser environment', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [
-          getTranslocoModule(),
-        ],
+        imports: [getTranslocoModule()],
         providers: [
           InitService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'browser' },
+        ],
       });
 
       service = TestBed.inject(InitService);
@@ -111,7 +107,7 @@ describe('InitService', () => {
           like_video: [],
           liste_video: [],
           tab_index: [],
-          tab_video: []
+          tab_video: [],
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,14 +130,16 @@ describe('InitService', () => {
           idPerso: '',
           mail: '',
           darkModeEnabled: false,
-          language: 'fr'
+          language: 'fr',
         });
 
-        expect(subjectNextSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-          listPlaylist: [],
-          listFollow: [],
-          listLikeVideo: []
-        }));
+        expect(subjectNextSpy).toHaveBeenCalledWith(
+          jasmine.objectContaining({
+            listPlaylist: [],
+            listFollow: [],
+            listLikeVideo: [],
+          })
+        );
 
         expect(service.getIsConnected()).toBe(false);
       });
@@ -156,16 +154,18 @@ describe('InitService', () => {
           language: 'en',
           liste_playlist: [{ id_playlist: '1', titre: 'Playlist 1', prive: false }],
           liste_suivi: [{ id_playlist: '2', titre: 'Artist 2' }],
-          like_video: [{
-            id: '1',
-            key: 'XXX1',
-            titre: 'titre1',
-            duree: '100',
-            artiste: 'Artist 1'
-          }],
+          like_video: [
+            {
+              id: '1',
+              key: 'XXX1',
+              titre: 'titre1',
+              duree: '100',
+              artiste: 'Artist 1',
+            },
+          ],
           liste_video: [],
           tab_index: [1, 2, 3],
-          tab_video: ['vid1', 'vid2']
+          tab_video: ['vid1', 'vid2'],
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -187,7 +187,7 @@ describe('InitService', () => {
           idPerso: '123',
           mail: 'test@example.com',
           darkModeEnabled: true,
-          language: 'en'
+          language: 'en',
         });
 
         expect(subjectNextSpy).toHaveBeenCalledWith({
@@ -195,20 +195,20 @@ describe('InitService', () => {
           listFollow: mockConnectedResponse.liste_suivi,
           listVideo: mockConnectedResponse.liste_video,
           tabIndex: mockConnectedResponse.tab_index,
-          listLikeVideo: mockConnectedResponse.like_video
+          listLikeVideo: mockConnectedResponse.like_video,
         });
 
         expect(service.getIsConnected()).toBe(true);
       });
 
       describe('getHomeInit', () => {
-        const HOME_KEY = makeStateKey<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>('homeData');
+        const HOME_KEY = makeStateKey<{ top: HomeAlbum[]; top_albums: HomeAlbum[] }>('homeData');
 
         it('should use cached data from TransferState and remove it', () => {
           spyOn(transferState, 'get').and.returnValue(mockHomeData);
           const removeSpy = spyOn(transferState, 'remove').and.callThrough();
 
-          let result: { top: HomeAlbum[], top_albums: HomeAlbum[] } | undefined;
+          let result: { top: HomeAlbum[]; top_albums: HomeAlbum[] } | undefined;
           service.getHomeInit().subscribe(data => {
             result = data;
           });
@@ -224,7 +224,7 @@ describe('InitService', () => {
           spyOn(transferState, 'get').and.returnValue(null);
           const setSpy = spyOn(transferState, 'set').and.callThrough();
 
-          let result: { top: HomeAlbum[], top_albums: HomeAlbum[] } | undefined;
+          let result: { top: HomeAlbum[]; top_albums: HomeAlbum[] } | undefined;
           service.getHomeInit().subscribe(data => {
             result = data;
           });
@@ -252,7 +252,7 @@ describe('InitService', () => {
           idPerso: '',
           mail: '',
           darkModeEnabled: false,
-          language: 'fr'
+          language: 'fr',
         });
       });
     });
@@ -304,9 +304,11 @@ describe('InitService', () => {
 
     describe('getHomeInit', () => {
       it('should fetch home init data', () => {
-        const mockHomeInitData: { top: HomeAlbum[], top_albums: HomeAlbum[] } = {
+        const mockHomeInitData: { top: HomeAlbum[]; top_albums: HomeAlbum[] } = {
           top: [{ id: '1', titre: 'Test Album', description: 'Test Description', url_image: '' }],
-          top_albums: [{ id: '2', titre: 'Test Album 2', description: 'Test Description 2', url_image: '' }]
+          top_albums: [
+            { id: '2', titre: 'Test Album 2', description: 'Test Description 2', url_image: '' },
+          ],
         };
 
         service.getHomeInit().subscribe(data => {
@@ -380,7 +382,7 @@ describe('InitService', () => {
           idPerso: '123',
           mail: 'test@example.com',
           darkModeEnabled: false,
-          language: 'fr'
+          language: 'fr',
         });
 
         // Obtenir le résultat de getIsConnected() et vérifier son type
@@ -416,15 +418,13 @@ describe('InitService', () => {
   describe('In server environment', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [
-          getTranslocoModule(),
-        ],
+        imports: [getTranslocoModule()],
         providers: [
           InitService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       });
 
       service = TestBed.inject(InitService);
@@ -441,13 +441,13 @@ describe('InitService', () => {
     });
 
     describe('getHomeInit', () => {
-      const HOME_KEY = makeStateKey<{ top: HomeAlbum[], top_albums: HomeAlbum[] }>('homeData');
+      const HOME_KEY = makeStateKey<{ top: HomeAlbum[]; top_albums: HomeAlbum[] }>('homeData');
 
       it('should store data in TransferState when on server', () => {
         spyOn(transferState, 'get').and.returnValue(null);
         const setSpy = spyOn(transferState, 'set').and.callThrough();
 
-        let result: { top: HomeAlbum[], top_albums: HomeAlbum[] } | undefined;
+        let result: { top: HomeAlbum[]; top_albums: HomeAlbum[] } | undefined;
         service.getHomeInit().subscribe(data => {
           result = data;
         });

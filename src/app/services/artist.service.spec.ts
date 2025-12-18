@@ -14,7 +14,7 @@ describe('ArtistService', () => {
     nom: 'Test Artist',
     id_artiste_deezer: '123',
     id_artist: '456',
-    list_albums: []
+    list_albums: [],
   };
 
   describe('In browser environment', () => {
@@ -25,8 +25,8 @@ describe('ArtistService', () => {
           ArtistService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'browser' },
+        ],
       });
 
       service = TestBed.inject(ArtistService);
@@ -50,9 +50,9 @@ describe('ArtistService', () => {
     it('should handle errors in browser', () => {
       service.getArtist('invalid').subscribe({
         next: () => fail('should have failed with a 404'),
-        error: (error) => {
+        error: error => {
           expect(error.status).toBe(404);
-        }
+        },
       });
 
       const req = httpMock.expectOne(environment.URL_SERVER + 'json/artist/invalid');
@@ -100,8 +100,8 @@ describe('ArtistService', () => {
           ArtistService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       });
 
       service = TestBed.inject(ArtistService);
@@ -154,12 +154,11 @@ describe('ArtistService', () => {
         providers: [
           ArtistService,
           provideHttpClient(withInterceptorsFromDi()),
-          provideHttpClientTesting()
-        ]
+          provideHttpClientTesting(),
+        ],
       });
 
       service = TestBed.inject(ArtistService);
     });
-
   });
 });

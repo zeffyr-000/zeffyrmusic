@@ -1,45 +1,46 @@
 <app-header id="header" class="navbar navbar-inverse fixed-top"></app-header>
 
 <div id="main" class="container-fluid">
-    <div id="container" class="row">
+  <div id="container" class="row">
+    <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
 
-        <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
-
-        <div class="col-xs-9 col-md-9" id="content">
-            @if((playerService.currentIdTopCharts || playerService.currentIdPlaylist) &&
-            !isRedirectingToCurrentUrl()){
-            <a
-                [routerLink]="playerService.currentIdTopCharts?['top', playerService.currentIdTopCharts]: ['playlist', playerService.currentIdPlaylist]">
-                <span class="material-icons">chevron_left</span>
-                {{ 'back_current_playlist' | transloco }}
-            </a>
-            }
-            <router-outlet></router-outlet>
-        </div>
-
+    <div class="col-xs-9 col-md-9" id="content">
+      @if((playerService.currentIdTopCharts || playerService.currentIdPlaylist) &&
+      !isRedirectingToCurrentUrl()){
+      <a
+        [routerLink]="
+          playerService.currentIdTopCharts
+            ? ['top', playerService.currentIdTopCharts]
+            : ['playlist', playerService.currentIdPlaylist]
+        "
+      >
+        <span class="material-icons">chevron_left</span>
+        {{ 'back_current_playlist' | transloco }}
+      </a>
+      }
+      <router-outlet></router-outlet>
     </div>
+  </div>
 </div>
 
 @if(!isOnline){
 <ngb-alert id="alert_perte_connexion" (close)="isOnline = true" type="danger">
-    {{ 'perte_connexion' | transloco }}
+  {{ 'perte_connexion' | transloco }}
 </ngb-alert>
-}
-@if(showMessageUnlog){
+} @if(showMessageUnlog){
 <ngb-alert id="alert_deconnexion" (close)="showMessageUnlog = false" type="danger">
-    {{ 'veuillez_vous_reconnecter' | transloco }}
+  {{ 'veuillez_vous_reconnecter' | transloco }}
 </ngb-alert>
-}
-@if(errorMessage){
+} @if(errorMessage){
 <ngb-alert id="alert_erreur" class="d-lg-none" (close)="clearErrorMessage()" type="danger">
-    {{ errorMessage | transloco }}
+  {{ errorMessage | transloco }}
 </ngb-alert>
 }
 <ng-template #contentModalReload let-modal>
-    <div class="modal-body">
-        <p class="alert alert-danger">{{ 'reload_label' | transloco }}</p>
-        <p>
-            <button class="btn btn-primary" (click)="reload()">{{ 'reload_button' | transloco }}</button>
-        </p>
-    </div>
+  <div class="modal-body">
+    <p class="alert alert-danger">{{ 'reload_label' | transloco }}</p>
+    <p>
+      <button class="btn btn-primary" (click)="reload()">{{ 'reload_button' | transloco }}</button>
+    </p>
+  </div>
 </ng-template>

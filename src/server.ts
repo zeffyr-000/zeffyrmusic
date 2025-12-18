@@ -29,8 +29,8 @@ app.get(
     maxAge: 0,
     index: 'index.html',
     redirect: false,
-    lastModified: false
-  }),
+    lastModified: false,
+  })
 );
 
 app.get('**', (req, res, next) => {
@@ -43,10 +43,13 @@ app.get('**', (req, res, next) => {
       documentFilePath: indexHtml,
       url: `${protocol}://${headers.host}${originalUrl}`,
       publicPath: browserDistFolder,
-      providers: [{ provide: APP_BASE_HREF, useValue: baseUrlValue }, { provide: REQUEST, useValue: req }],
+      providers: [
+        { provide: APP_BASE_HREF, useValue: baseUrlValue },
+        { provide: REQUEST, useValue: req },
+      ],
     })
-    .then((html) => res.send(html))
-    .catch((err) => next(err));
+    .then(html => res.send(html))
+    .catch(err => next(err));
 });
 
 if (isMainModule(import.meta.url) || process.env['PM2_USAGE']) {

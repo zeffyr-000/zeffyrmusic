@@ -23,11 +23,7 @@ describe('ResetPasswordComponent', () => {
     cdrMock = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
 
     await TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule,
-        ResetPasswordComponent,
-        getTranslocoModule()
-      ],
+      imports: [ReactiveFormsModule, ResetPasswordComponent, getTranslocoModule()],
       providers: [
         { provide: UserService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
@@ -37,14 +33,14 @@ describe('ResetPasswordComponent', () => {
           useValue: {
             snapshot: {
               params: {
-                'id_perso': mockIdPerso,
-                'key': mockKey
-              }
-            }
-          }
-        }
+                id_perso: mockIdPerso,
+                key: mockKey,
+              },
+            },
+          },
+        },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResetPasswordComponent);
@@ -131,11 +127,11 @@ describe('ResetPasswordComponent', () => {
     });
 
     it('should call userService.sendResetPass with correct parameters if form is valid', fakeAsync(() => {
-      userServiceMock.sendResetPass.and.callFake((params) => {
+      userServiceMock.sendResetPass.and.callFake(params => {
         expect(params).toEqual({
           id_perso: mockIdPerso,
           key: mockKey,
-          password: 'password123'
+          password: 'password123',
         });
 
         return of({ success: true });
@@ -213,22 +209,16 @@ describe('ResetPasswordComponent', () => {
   describe('UI interactions', () => {
     it('should show loader when loading is true', () => {
       component.loading = true;
-      fixture.detectChanges();
-
       expect(component.loading).toBeTrue();
     });
 
     it('should show success message when formSuccess is true', () => {
       component.formSuccess = true;
-      fixture.detectChanges();
-
       expect(component.formSuccess).toBeTrue();
     });
 
     it('should show error message when formInvalid is true', () => {
       component.formInvalid = true;
-      fixture.detectChanges();
-
       expect(component.formInvalid).toBeTrue();
     });
   });

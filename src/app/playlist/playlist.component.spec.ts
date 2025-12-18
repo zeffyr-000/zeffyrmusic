@@ -36,13 +36,21 @@ describe('PlaylistComponent', () => {
     img_big: 'img_big',
     liste_video: ['1', '2', '3'],
     str_index: [1, 2, 3],
-    tab_video: [{ id_video: '1', title: 'title', artist: 'artist', id_artist: '1', img: 'img', duration: 'duration' }],
+    tab_video: [
+      {
+        id_video: '1',
+        title: 'title',
+        artist: 'artist',
+        id_artist: '1',
+        img: 'img',
+        duration: 'duration',
+      },
+    ],
     est_prive: undefined as boolean,
     titre: 'titre',
     artiste: 'artiste',
-    id_artiste: '1'
+    id_artiste: '1',
   };
-
 
   beforeEach(async () => {
     const metaServiceMock = jasmine.createSpyObj('Meta', ['updateTag']);
@@ -58,11 +66,20 @@ describe('PlaylistComponent', () => {
       'removeVideo',
       'addInCurrentList',
       'addVideoAfterCurrentInList',
-      'onPlayPause'
+      'onPlayPause',
     ]);
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({
+      isConnected: true,
+      pseudo: 'test-pseudo',
+      idPerso: 'test-idPerso',
+      mail: 'test-mail',
+    });
     playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({ currentKey: 'test-key', currentTitle: 'test-title', currentArtist: 'test-artist' });
+    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
+      currentKey: 'test-key',
+      currentTitle: 'test-title',
+      currentArtist: 'test-artist',
+    });
     playerServiceMock.subjectListFollow = new BehaviorSubject([]);
     playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
     playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
@@ -70,7 +87,7 @@ describe('PlaylistComponent', () => {
     activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
       snapshot: {
         paramMap: { get: () => '1' },
-        url: [{ path: 'top' }]
+        url: [{ path: 'top' }],
       },
       params: new BehaviorSubject({ id: '1' }),
     });
@@ -84,7 +101,9 @@ describe('PlaylistComponent', () => {
         {
           provide: GoogleAnalyticsService,
           useValue: {
-            pageView: () => { },
+            pageView: () => {
+              // Mock pageView
+            },
           },
         },
         {
@@ -101,7 +120,7 @@ describe('PlaylistComponent', () => {
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-      ]
+      ],
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
@@ -158,7 +177,7 @@ describe('PlaylistComponent', () => {
     const activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activatedRoute.snapshot.url = [{ path: 'top' }] as any;
-    activatedRoute.snapshot.paramMap.get = (value) => value === 'id_playlist' ? null : '1';
+    activatedRoute.snapshot.paramMap.get = value => (value === 'id_playlist' ? null : '1');
 
     fixture.detectChanges(); // Initialise le composant
 
@@ -255,7 +274,9 @@ describe('PlaylistComponent', () => {
     expect(component.isPrivate).toBeFalse();
     expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
     // Vérifiez les autres propriétés de la même manière
-    expect(titleServiceSpy).toHaveBeenCalledWith('title - The Must-Haves of the Moment | Zeffyr Music');
+    expect(titleServiceSpy).toHaveBeenCalledWith(
+      'title - The Must-Haves of the Moment | Zeffyr Music'
+    );
     //expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:description', content: 'description_partage_playlist' });
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
   });
@@ -266,7 +287,6 @@ describe('PlaylistComponent', () => {
     const url = '';
     component.idPlaylist = '1';
 
-
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1');
@@ -274,7 +294,9 @@ describe('PlaylistComponent', () => {
 
   it('no description', () => {
     const httpClient = TestBed.inject(HttpClient);
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of({ ...mockPlaylistData, description: undefined }));
+    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(
+      of({ ...mockPlaylistData, description: undefined })
+    );
     const url = environment.URL_SERVER + 'json/playlist/1';
     component.idPlaylist = '1';
 
@@ -283,7 +305,6 @@ describe('PlaylistComponent', () => {
     expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1');
     expect(component.description).toEqual('');
   });
-
 
   it('should initialize properties and call services with correct arguments when loadLike is called', () => {
     const titleServiceSpy = spyOn(titleService, 'setTitle');
@@ -299,7 +320,9 @@ describe('PlaylistComponent', () => {
     expect(component.idPlaylist).toEqual('');
     // Vérifiez les autres propriétés de la même manière
     expect(subjectListLikeVideoSubscribeSpy).toHaveBeenCalled();
-    expect(titleServiceSpy).toHaveBeenCalledWith(translocoService.translate('mes_likes') + ' - Zeffyr Music');
+    expect(titleServiceSpy).toHaveBeenCalledWith(
+      translocoService.translate('mes_likes') + ' - Zeffyr Music'
+    );
     expect(metaService.updateTag).toHaveBeenCalled();
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
   });
@@ -311,15 +334,15 @@ describe('PlaylistComponent', () => {
         key: 'XXX1',
         titre: 'Titre 1',
         duree: '100',
-        artiste: 'Artist 1'
+        artiste: 'Artist 1',
       },
       {
         id: '2',
         key: 'XXX2',
         titre: 'Titre 2',
         duree: '200',
-        artiste: 'Artist 2'
-      }
+        artiste: 'Artist 2',
+      },
     ] as UserVideo[];
 
     component.loadLike();
@@ -338,21 +361,28 @@ describe('PlaylistComponent', () => {
 
     component.switchFollow();
 
-    expect(playerService.switchFollow).toHaveBeenCalledWith('testId', 'testTitle', 'testArtist', 'testImgBig');
+    expect(playerService.switchFollow).toHaveBeenCalledWith(
+      'testId',
+      'testTitle',
+      'testArtist',
+      'testImgBig'
+    );
   });
 
   it('should call playerService.runPlaylist with correct arguments when runPlaylist is called', () => {
-    const playlistData = [{
-      id_video: '1',
-      artiste: 'Artiste 1',
-      artists: [{ id_artist: '1', label: 'Artiste 1' }],
-      duree: '100',
-      id_playlist: '1',
-      key: 'XXX-XXX',
-      ordre: '1',
-      titre: 'Titre 1',
-      titre_album: 'Titre album 1'
-    }] as Video[];
+    const playlistData = [
+      {
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [{ id_artist: '1', label: 'Artiste 1' }],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1',
+      },
+    ] as Video[];
     component.playlist = playlistData;
 
     component.runPlaylist(0);
@@ -361,17 +391,19 @@ describe('PlaylistComponent', () => {
   });
 
   it('should call playerService.runPlaylist without arguments', () => {
-    const playlistData = [{
-      id_video: '1',
-      artiste: 'Artiste 1',
-      artists: [{ id_artist: '1', label: 'Artiste 1' }],
-      duree: '100',
-      id_playlist: '1',
-      key: 'XXX-XXX',
-      ordre: '1',
-      titre: 'Titre 1',
-      titre_album: 'Titre album 1'
-    }] as Video[];
+    const playlistData = [
+      {
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [{ id_artist: '1', label: 'Artiste 1' }],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1',
+      },
+    ] as Video[];
     component.playlist = playlistData;
     component.runPlaylist();
 
@@ -379,17 +411,19 @@ describe('PlaylistComponent', () => {
   });
 
   it('should call playerService.addInCurrentList with correct arguments when addInCurrentList is called', () => {
-    const playlistData = [{
-      id_video: '1',
-      artiste: 'Artiste 1',
-      artists: [{ id_artist: '1', label: 'Artiste 1' }],
-      duree: '100',
-      id_playlist: '1',
-      key: 'XXX-XXX',
-      ordre: '1',
-      titre: 'Titre 1',
-      titre_album: 'Titre album 1'
-    }] as Video[];
+    const playlistData = [
+      {
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [{ id_artist: '1', label: 'Artiste 1' }],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1',
+      },
+    ] as Video[];
     component.playlist = playlistData;
 
     component.addInCurrentList();
@@ -400,7 +434,12 @@ describe('PlaylistComponent', () => {
   it('should call playerService.addVideoInPlaylist with correct arguments when addVideo is called', () => {
     component.addVideo('testKey', 'testArtist', 'testTitle', 100);
 
-    expect(playerService.addVideoInPlaylist).toHaveBeenCalledWith('testKey', 'testArtist', 'testTitle', 100);
+    expect(playerService.addVideoInPlaylist).toHaveBeenCalledWith(
+      'testKey',
+      'testArtist',
+      'testTitle',
+      100
+    );
   });
 
   it('should call playerService.removeVideo with correct arguments when removeVideo is called', () => {
@@ -419,7 +458,7 @@ describe('PlaylistComponent', () => {
       key: 'XXX-XXX',
       ordre: '1',
       titre: 'Titre 1',
-      titre_album: 'Titre album 1'
+      titre_album: 'Titre album 1',
     } as Video;
 
     component.addVideoAfterCurrentInList(videoData);
@@ -437,7 +476,7 @@ describe('PlaylistComponent', () => {
       key: 'XXX-XXX',
       ordre: '1',
       titre: 'Titre 1',
-      titre_album: 'Titre album 1'
+      titre_album: 'Titre album 1',
     } as Video;
 
     component.addVideoInEndCurrentList(videoData);
@@ -449,7 +488,7 @@ describe('PlaylistComponent', () => {
     component.playlist = [
       { duree: '120' } as Video,
       { duree: '240' } as Video,
-      { duree: '3600' } as Video
+      { duree: '3600' } as Video,
     ];
 
     const result = component.sumDurationPlaylist();
@@ -466,10 +505,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should return correct duration when sumDurationPlaylist is called with playlist without hours', () => {
-    component.playlist = [
-      { duree: '120' } as Video,
-      { duree: '240' } as Video
-    ];
+    component.playlist = [{ duree: '120' } as Video, { duree: '240' } as Video];
 
     const result = component.sumDurationPlaylist();
 
@@ -492,19 +528,23 @@ describe('PlaylistComponent', () => {
       img_big: 'img_big',
       liste_video: ['1', '2', '3'],
       str_index: [1, 2, 3],
-      tab_video: [{
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [],
-        duree: '100',
-        id_playlist: '1',
-        key: 'XXX-XXX',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Titre album 1'
-      }],
+      tab_video: [
+        {
+          id_video: '1',
+          artiste: 'Artiste 1',
+          artists: [],
+          duree: '100',
+          id_playlist: '1',
+          key: 'XXX-XXX',
+          ordre: '1',
+          titre: 'Titre 1',
+          titre_album: 'Titre album 1',
+        },
+      ],
     };
-    expect(component.getMetaDescription(data)).toBe('Discover "{title}", {description}. Enjoy {count, plural, =1 {one must-hear track} other {# must-hear tracks}}. Listen now!');
+    expect(component.getMetaDescription(data)).toBe(
+      'Discover "{title}", {description}. Enjoy {count, plural, =1 {one must-hear track} other {# must-hear tracks}}. Listen now!'
+    );
   });
 
   it('should generate playlist description when neither id_top nor artiste and titre are defined', () => {
@@ -517,27 +557,32 @@ describe('PlaylistComponent', () => {
       img_big: 'img_big',
       liste_video: ['1', '2', '3'],
       str_index: [1, 2, 3],
-      tab_video: [{
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [],
-        duree: '100',
-        id_playlist: '1',
-        key: 'XXX-XXX',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Titre album 1'
-      }],
+      tab_video: [
+        {
+          id_video: '1',
+          artiste: 'Artiste 1',
+          artists: [],
+          duree: '100',
+          id_playlist: '1',
+          key: 'XXX-XXX',
+          ordre: '1',
+          titre: 'Titre 1',
+          titre_album: 'Titre album 1',
+        },
+      ],
     };
-    expect(component.getMetaDescription(data)).toBe('Discover the playlist "{title}". Enjoy {count, plural, =1 {one carefully selected track} other {# carefully selected tracks}}. Listen now!');
+    expect(component.getMetaDescription(data)).toBe(
+      'Discover the playlist "{title}". Enjoy {count, plural, =1 {one carefully selected track} other {# carefully selected tracks}}. Listen now!'
+    );
   });
 
   it('should display the default image when img_big is not defined', () => {
     const mockPlaylistDataImageDefault = { ...mockPlaylistData, img_big: undefined as string };
 
     const httpClient = TestBed.inject(HttpClient);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistDataImageDefault));
+    const httpClientSpy = spyOn(httpClient, 'get').and.returnValue(
+      of(mockPlaylistDataImageDefault)
+    );
     const url = environment.URL_SERVER + 'json/playlist/1';
 
     // Mock ActivatedRoute
@@ -546,6 +591,7 @@ describe('PlaylistComponent', () => {
 
     component.loadPlaylist(url);
 
+    expect(httpClientSpy).toHaveBeenCalledWith(url);
     expect(component.imgBig).toBe('assets/img/default.jpg');
   });
 
@@ -563,7 +609,7 @@ describe('PlaylistComponent', () => {
       id_playlist: '1',
       id_top: '80s',
       title: '80s',
-      decade: true
+      decade: true,
     } as Playlist;
 
     const result = component.getMetaTitle(data);
@@ -579,8 +625,8 @@ describe('PlaylistComponent', () => {
       year: 1982,
       tab_video: [
         { id_video: '1', titre: 'Billie Jean' },
-        { id_video: '2', titre: 'Beat It' }
-      ]
+        { id_video: '2', titre: 'Beat It' },
+      ],
     } as Playlist;
 
     const result = component.getMetaTitle(data);
@@ -590,7 +636,9 @@ describe('PlaylistComponent', () => {
   });
 
   it('should generate album metadata description with artist', () => {
-    spyOn(translocoService, 'translate').and.returnValue('Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks');
+    spyOn(translocoService, 'translate').and.returnValue(
+      'Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks'
+    );
 
     const data: Playlist = {
       id_playlist: '1',
@@ -606,27 +654,26 @@ describe('PlaylistComponent', () => {
         { id_video: '6', titre: 'Baby Be Mine' },
         { id_video: '7', titre: 'Human Nature' },
         { id_video: '8', titre: 'P.Y.T. (Pretty Young Thing)' },
-        { id_video: '9', titre: 'The Lady in My Life' }
-      ]
+        { id_video: '9', titre: 'The Lady in My Life' },
+      ],
     } as Playlist;
 
     const result = component.getMetaDescription(data);
 
-    expect(translocoService.translate).toHaveBeenCalledWith(
-      'description_album_artist',
-      {
-        title: 'Thriller',
-        artist: 'Michael Jackson',
-        year: 1982,
-        count: 9
-      }
-    );
+    expect(translocoService.translate).toHaveBeenCalledWith('description_album_artist', {
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      year: 1982,
+      count: 9,
+    });
 
     expect(result).toBe('Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks');
   });
 
   it('should generate album metadata description with artist', () => {
-    spyOn(translocoService, 'translate').and.returnValue('Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks');
+    spyOn(translocoService, 'translate').and.returnValue(
+      'Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks'
+    );
 
     const data: Playlist = {
       id_playlist: '1',
@@ -636,53 +683,51 @@ describe('PlaylistComponent', () => {
       tab_video: [
         { id_video: '1', titre: 'Billie Jean' },
         { id_video: '2', titre: 'Beat It' },
-        { id_video: '3', titre: 'Wanna Be Startin\'' },
+        { id_video: '3', titre: "Wanna Be Startin'" },
         { id_video: '4', titre: 'The Girl Is Mine' },
         { id_video: '5', titre: 'Thriller' },
         { id_video: '6', titre: 'Baby Be Mine' },
         { id_video: '7', titre: 'Human Nature' },
         { id_video: '8', titre: 'P.Y.T. (Pretty Young Thing)' },
-        { id_video: '9', titre: 'The Lady in My Life' }
-      ]
+        { id_video: '9', titre: 'The Lady in My Life' },
+      ],
     } as Playlist;
 
     const result = component.getMetaDescription(data);
 
-    expect(translocoService.translate).toHaveBeenCalledWith(
-      'description_album_artist',
-      {
-        title: 'Thriller',
-        artist: 'Michael Jackson',
-        year: 1982,
-        count: 9
-      }
-    );
+    expect(translocoService.translate).toHaveBeenCalledWith('description_album_artist', {
+      title: 'Thriller',
+      artist: 'Michael Jackson',
+      year: 1982,
+      count: 9,
+    });
 
     expect(result).toBe('Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks');
   });
 
   it('should generate album metadata description without artist', () => {
-    spyOn(translocoService, 'translate').and.returnValue('Discover the playlist "Now That\'s What I Call Music! 10". Enjoy 30 carefully selected tracks.');
+    spyOn(translocoService, 'translate').and.returnValue(
+      'Discover the playlist "Now That\'s What I Call Music! 10". Enjoy 30 carefully selected tracks.'
+    );
 
     const data: Playlist = {
       id_playlist: '2',
-      titre: 'Now That\'s What I Call Music! 10',
+      titre: "Now That's What I Call Music! 10",
       artiste: undefined,
       year: 1987,
-      tab_video: new Array(30).fill({ id_video: '1', titre: 'Track' })
+      tab_video: new Array(30).fill({ id_video: '1', titre: 'Track' }),
     } as Playlist;
 
     const result = component.getMetaDescription(data);
 
-    expect(translocoService.translate).toHaveBeenCalledWith(
-      'description_playlist',
-      {
-        title: undefined,
-        count: 30
-      }
-    );
+    expect(translocoService.translate).toHaveBeenCalledWith('description_playlist', {
+      title: undefined,
+      count: 30,
+    });
 
-    expect(result).toBe('Discover the playlist "Now That\'s What I Call Music! 10". Enjoy 30 carefully selected tracks.');
+    expect(result).toBe(
+      'Discover the playlist "Now That\'s What I Call Music! 10". Enjoy 30 carefully selected tracks.'
+    );
   });
 
   it('should adjust the duration of the current video in the playlist', () => {
@@ -700,7 +745,7 @@ describe('PlaylistComponent', () => {
         key: 'another-key',
         ordre: '1',
         titre: 'Titre 1',
-        titre_album: 'Album 1'
+        titre_album: 'Album 1',
       },
       {
         id_video: '2',
@@ -711,7 +756,7 @@ describe('PlaylistComponent', () => {
         key: videoKey,
         ordre: '2',
         titre: 'Titre 2',
-        titre_album: 'Album 2'
+        titre_album: 'Album 2',
       },
       {
         id_video: '3',
@@ -722,8 +767,8 @@ describe('PlaylistComponent', () => {
         key: 'yet-another-key',
         ordre: '3',
         titre: 'Titre 3',
-        titre_album: 'Album 3'
-      }
+        titre_album: 'Album 3',
+      },
     ] as Video[];
 
     component.currentKey = videoKey;
@@ -754,7 +799,7 @@ describe('PlaylistComponent', () => {
         key: 'key1',
         ordre: '1',
         titre: 'Titre 1',
-        titre_album: 'Album 1'
+        titre_album: 'Album 1',
       },
       {
         id_video: '2',
@@ -765,8 +810,8 @@ describe('PlaylistComponent', () => {
         key: 'key2',
         ordre: '2',
         titre: 'Titre 2',
-        titre_album: 'Album 2'
-      }
+        titre_album: 'Album 2',
+      },
     ] as Video[];
 
     component.currentKey = 'non-existent-key';
@@ -808,11 +853,20 @@ describe('PlaylistComponent (Server context)', () => {
       'removeVideo',
       'addInCurrentList',
       'addVideoAfterCurrentInList',
-      'onPlayPause'
+      'onPlayPause',
     ]);
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({
+      isConnected: true,
+      pseudo: 'test-pseudo',
+      idPerso: 'test-idPerso',
+      mail: 'test-mail',
+    });
     playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({ currentKey: 'test-key', currentTitle: 'test-title', currentArtist: 'test-artist' });
+    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
+      currentKey: 'test-key',
+      currentTitle: 'test-title',
+      currentArtist: 'test-artist',
+    });
     playerServiceMock.subjectListFollow = new BehaviorSubject([]);
     playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
     playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
@@ -820,7 +874,7 @@ describe('PlaylistComponent (Server context)', () => {
     activatedRouteMock = jasmine.createSpyObj('ActivatedRoute', [], {
       snapshot: {
         paramMap: { get: () => '1' },
-        url: [{ path: 'like' }]
+        url: [{ path: 'like' }],
       },
       params: new BehaviorSubject({ id: '1' }),
     });
@@ -834,7 +888,9 @@ describe('PlaylistComponent (Server context)', () => {
         {
           provide: GoogleAnalyticsService,
           useValue: {
-            pageView: () => { },
+            pageView: () => {
+              // Mock pageView
+            },
           },
         },
         {
@@ -851,7 +907,7 @@ describe('PlaylistComponent (Server context)', () => {
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-      ]
+      ],
     }).compileComponents();
 
     translocoService = TestBed.inject(TranslocoService);
@@ -878,23 +934,33 @@ describe('PlaylistComponent (Server context)', () => {
 
     component.loadLike();
 
-    expect(titleServiceSpy).toHaveBeenCalledWith(translocoService.translate('mes_likes') + ' - Zeffyr Music');
+    expect(titleServiceSpy).toHaveBeenCalledWith(
+      translocoService.translate('mes_likes') + ' - Zeffyr Music'
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:title'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:title',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:description'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:description',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:image'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:image',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:url'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:url',
+      })
+    );
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
@@ -921,31 +987,50 @@ describe('PlaylistComponent (Server context)', () => {
       img_big: 'img_big',
       liste_video: ['1', '2', '3'],
       str_index: [1, 2, 3],
-      tab_video: [{ id_video: '1', title: 'title', artist: 'artist', id_artist: '1', img: 'img', duration: 'duration' }],
+      tab_video: [
+        {
+          id_video: '1',
+          title: 'title',
+          artist: 'artist',
+          id_artist: '1',
+          img: 'img',
+          duration: 'duration',
+        },
+      ],
       artiste: 'artiste',
-      id_artiste: '1'
+      id_artiste: '1',
     };
     spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistData));
 
     component.loadPlaylist(environment.URL_SERVER + 'json/playlist/1');
 
-    expect(titleServiceSpy).toHaveBeenCalledWith('title - The Must-Haves of the Moment | Zeffyr Music');
+    expect(titleServiceSpy).toHaveBeenCalledWith(
+      'title - The Must-Haves of the Moment | Zeffyr Music'
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:title'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:title',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:description'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:description',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:image'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:image',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:url'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:url',
+      })
+    );
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
@@ -972,9 +1057,18 @@ describe('PlaylistComponent (Server context)', () => {
       img_big: 'img_big',
       liste_video: ['1', '2', '3'],
       str_index: [1, 2, 3],
-      tab_video: [{ id_video: '1', title: 'title', artist: 'artist', id_artist: '1', img: 'img', duration: 'duration' }],
+      tab_video: [
+        {
+          id_video: '1',
+          title: 'title',
+          artist: 'artist',
+          id_artist: '1',
+          img: 'img',
+          duration: 'duration',
+        },
+      ],
       artiste: 'artiste',
-      id_artiste: '1'
+      id_artiste: '1',
     };
     spyOn(httpClient, 'get').and.returnValue(of(mockPlaylistData));
 
@@ -982,21 +1076,29 @@ describe('PlaylistComponent (Server context)', () => {
 
     expect(titleServiceSpy).toHaveBeenCalledWith('title');
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:title'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:title',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:description'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:description',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:image'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:image',
+      })
+    );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'og:url'
-    }));
+    expect(metaServiceSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        name: 'og:url',
+      })
+    );
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
   });

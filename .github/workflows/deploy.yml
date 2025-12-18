@@ -1,34 +1,55 @@
+name: Build and Deploy
+
 on:
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Tests
-        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
+      - name: Format Check
+        run: npm run format:check
 
       - name: Lint
         run: npm run lint
+
+      - name: Run Tests
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI --code-coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-deploy
+          path: coverage/
+          retention-days: 30
 
       - name: Build
         run: npm run build -- --configuration=production --deploy-url /dist/
@@ -44,10 +65,15 @@ jobs:
             exit 1
           fi
 
-      - name: Copy files to runner
-        uses: actions/checkout@v3
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: dist/
+          retention-days: 30
 
-      # - name: Copy files
+      # TODO: Configurer le déploiement plus tard
+      # - name: Deploy to server
       #   uses: appleboy/ssh-action@master
       #   with:
       #     host: ${{ secrets.server }}

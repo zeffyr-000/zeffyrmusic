@@ -27,8 +27,17 @@ describe('MyPlaylistsComponent', () => {
   let activeModalSpyObj: jasmine.SpyObj<NgbActiveModal>;
 
   beforeEach(async () => {
-    playerServiceMock = jasmine.createSpyObj('PlayerService', ['addNewPlaylist', 'switchVisibilityPlaylist', 'deletePlaylist', 'editPlaylistTitle']);
-    initServiceMock = jasmine.createSpyObj('InitService', ['loginSuccess', 'logOut', 'onMessageUnlog']);
+    playerServiceMock = jasmine.createSpyObj('PlayerService', [
+      'addNewPlaylist',
+      'switchVisibilityPlaylist',
+      'deletePlaylist',
+      'editPlaylistTitle',
+    ]);
+    initServiceMock = jasmine.createSpyObj('InitService', [
+      'loginSuccess',
+      'logOut',
+      'onMessageUnlog',
+    ]);
     userServiceMock = jasmine.createSpyObj('UserService', ['createPlaylist', 'editTitlePlaylist']);
     modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
 
@@ -42,9 +51,9 @@ describe('MyPlaylistsComponent', () => {
       idPerso: '',
       mail: '',
       darkModeEnabled: false,
-      language: 'fr'
+      language: 'fr',
     });
-    initServiceMock.logOut = jasmine.createSpy('logOut')
+    initServiceMock.logOut = jasmine.createSpy('logOut');
 
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule(), FormsModule, MyPlaylistsComponent],
@@ -56,7 +65,7 @@ describe('MyPlaylistsComponent', () => {
         { provide: AuthGuard, useValue: authGuardMock },
         { provide: NgbModal, useValue: modalServiceMock },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     initService = TestBed.inject(InitService);
@@ -81,10 +90,10 @@ describe('MyPlaylistsComponent', () => {
   });
 
   it('should call createPlaylist and addNewPlaylist on valid form submission', () => {
-    const form = <NgForm>{
+    const form = {
       valid: true,
-      form: { value: { titre: 'New Playlist' } }
-    };
+      form: { value: { titre: 'New Playlist' } },
+    } as NgForm;
 
     const response = { success: true, id_playlist: '1', titre: 'New Playlist', error: '' };
     userServiceMock.createPlaylist.and.returnValue(of(response));
@@ -96,10 +105,10 @@ describe('MyPlaylistsComponent', () => {
   });
 
   it('should set error message on failed playlist creation', () => {
-    const form = <NgForm>{
+    const form = {
       valid: true,
-      form: { value: { titre: 'New Playlist' } }
-    };
+      form: { value: { titre: 'New Playlist' } },
+    } as NgForm;
 
     const response = { success: false, error: 'error_message' } as CreatePlaylistResponse;
     userServiceMock.createPlaylist.and.returnValue(of(response));
@@ -111,12 +120,12 @@ describe('MyPlaylistsComponent', () => {
   });
 
   it('should set generic message on failed playlist creation', () => {
-    const form = <NgForm>{
+    const form = {
       valid: true,
-      form: { value: { titre: 'New Playlist' } }
-    };
+      form: { value: { titre: 'New Playlist' } },
+    } as NgForm;
 
-    const response = { success: false, } as CreatePlaylistResponse;
+    const response = { success: false } as CreatePlaylistResponse;
     userServiceMock.createPlaylist.and.returnValue(of(response));
 
     component.onCreatePlaylist(form);
@@ -174,10 +183,10 @@ describe('MyPlaylistsComponent', () => {
   });
 
   it('should call editTitlePlaylist on userService and editPlaylistTitle on playerService, then dismiss the modal on success', () => {
-    const form = <NgForm>{
+    const form = {
       valid: true,
-      form: { value: { playlist_titre: 'Updated Playlist Title' } }
-    };
+      form: { value: { playlist_titre: 'Updated Playlist Title' } },
+    } as NgForm;
     const response = { success: true, error: undefined } as CreatePlaylistResponse;
 
     userServiceMock.editTitlePlaylist.and.returnValue(of(response));
@@ -187,17 +196,17 @@ describe('MyPlaylistsComponent', () => {
 
     expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith({
       id_playlist: '1',
-      titre: 'Updated Playlist Title'
+      titre: 'Updated Playlist Title',
     });
     expect(playerServiceMock.editPlaylistTitle).toHaveBeenCalledWith('1', 'Updated Playlist Title');
     expect(activeModalSpyObj.dismiss).toHaveBeenCalled();
   });
 
   it('should set error message on failed playlist title update', () => {
-    const form = <NgForm>{
+    const form = {
       valid: true,
-      form: { value: { playlist_titre: 'Updated Playlist Title' } }
-    };
+      form: { value: { playlist_titre: 'Updated Playlist Title' } },
+    } as NgForm;
     const response = { success: false, error: 'error_message' } as CreatePlaylistResponse;
 
     userServiceMock.editTitlePlaylist.and.returnValue(of(response));
@@ -207,16 +216,16 @@ describe('MyPlaylistsComponent', () => {
 
     expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith({
       id_playlist: '1',
-      titre: 'Updated Playlist Title'
+      titre: 'Updated Playlist Title',
     });
     expect(component.error).toBe('error_message');
   });
 
   it('should set generic message on failed playlist title update', () => {
-    const form = <NgForm>{
+    const form = {
       valid: true,
-      form: { value: { playlist_titre: 'Updated Playlist Title' } }
-    };
+      form: { value: { playlist_titre: 'Updated Playlist Title' } },
+    } as NgForm;
     const response = { success: false } as CreatePlaylistResponse;
 
     userServiceMock.editTitlePlaylist.and.returnValue(of(response));
@@ -226,8 +235,7 @@ describe('MyPlaylistsComponent', () => {
 
     expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith({
       id_playlist: '1',
-      titre: 'Updated Playlist Title'
+      titre: 'Updated Playlist Title',
     });
   });
-
 });

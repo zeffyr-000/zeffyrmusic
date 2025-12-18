@@ -1,7 +1,6 @@
 import { PlayerRunning } from './player-running.model';
 
 describe('PlayerRunning', () => {
-
   const defaultKey = 'test-key';
   const defaultCurrentTimeStr = '01:30';
   const defaultTotalTimeStr = '03:45';

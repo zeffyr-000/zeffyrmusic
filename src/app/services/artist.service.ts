@@ -8,13 +8,12 @@ import { isPlatformServer } from '@angular/common';
 const ARTIST_KEY = (id: string) => makeStateKey<ArtistData>(`artist-${id}`);
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ArtistService {
   private platformId = inject(PLATFORM_ID);
   private httpClient = inject(HttpClient);
   private transferState = inject(TransferState);
-
 
   getArtist(idArtist: string): Observable<ArtistData> {
     const key = ARTIST_KEY(idArtist);
@@ -24,14 +23,12 @@ export class ArtistService {
       return of(storedValue);
     }
 
-    return this.httpClient
-      .get<ArtistData>(environment.URL_SERVER + 'json/artist/' + idArtist)
-      .pipe(
-        tap(data => {
-          if (isPlatformServer(this.platformId)) {
-            this.transferState.set(key, data);
-          }
-        })
-      );
+    return this.httpClient.get<ArtistData>(environment.URL_SERVER + 'json/artist/' + idArtist).pipe(
+      tap(data => {
+        if (isPlatformServer(this.platformId)) {
+          this.transferState.set(key, data);
+        }
+      })
+    );
   }
 }

@@ -4,20 +4,31 @@ import { Video } from '../models/video.model';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
-import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownItem,
+} from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-current',
   templateUrl: './current.component.html',
   styleUrl: './current.component.css',
-  imports: [LazyLoadImageDirective, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, TranslocoPipe]
+  imports: [
+    LazyLoadImageDirective,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+    TranslocoPipe,
+  ],
 })
 export class CurrentComponent implements OnInit, OnDestroy {
   private readonly playerService = inject(PlayerService);
   private readonly initService = inject(InitService);
   private readonly ngZone = inject(NgZone);
-
 
   isConnected = false;
   list: Video[];
@@ -57,5 +68,4 @@ export class CurrentComponent implements OnInit, OnDestroy {
     this.subscriptionChangeKey.unsubscribe();
     this.subscriptionConnected.unsubscribe();
   }
-
 }

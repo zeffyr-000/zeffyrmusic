@@ -2,7 +2,19 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { UserService } from './user.service';
 import { environment } from '../../environments/environment';
-import { CreatePlaylistResponse, ICreatePlaylist, IEditMail, IEditPass, IEditTitlePlaylist, ILogin, IPass, ISendPass, LoginResponse, SendPassResponse, UserReponse } from '../models/user.model';
+import {
+  CreatePlaylistResponse,
+  ICreatePlaylist,
+  IEditMail,
+  IEditPass,
+  IEditTitlePlaylist,
+  ILogin,
+  IPass,
+  ISendPass,
+  LoginResponse,
+  SendPassResponse,
+  UserReponse,
+} from '../models/user.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('UserService', () => {
@@ -12,7 +24,11 @@ describe('UserService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [UserService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+      providers: [
+        UserService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
 
     service = TestBed.inject(UserService);
@@ -118,7 +134,7 @@ describe('UserService', () => {
 
     const mockSendPassResponse: SendPassResponse = {
       success: true,
-      error: ''
+      error: '',
     };
 
     service.sendResetPass(mockSendPassData).subscribe(data => {
@@ -157,7 +173,7 @@ describe('UserService', () => {
 
   it('should perform a POST request for edit mail', () => {
     const mockEditMailData: IEditMail = {
-      mail: 'test_mail'
+      mail: 'test_mail',
     };
 
     const mockEditMailResponse: UserReponse = {
@@ -197,7 +213,7 @@ describe('UserService', () => {
   it('should send a POST request to edit language', () => {
     const mockResponse: UserReponse = {
       success: true,
-      error: ''
+      error: '',
     };
     const data = { language: 'en' };
 
@@ -215,7 +231,7 @@ describe('UserService', () => {
   it('should send a POST request to delete account', () => {
     const mockResponse: UserReponse = {
       success: true,
-      error: ''
+      error: '',
     };
     const data = { password: 'test_password' };
 
@@ -278,7 +294,7 @@ describe('UserService', () => {
   it('should send a POST request to associate Google account', () => {
     const mockResponse: UserReponse = {
       success: true,
-      error: ''
+      error: '',
     };
     const data = { id_token: 'test_id_token' };
 

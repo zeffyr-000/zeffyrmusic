@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UserReponse } from '../models/user.model';
@@ -16,7 +25,7 @@ declare var google: any;
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
-  imports: [FormsModule, TranslocoPipe]
+  imports: [FormsModule, TranslocoPipe],
 })
 export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   activeModal = inject(NgbActiveModal);
@@ -27,8 +36,8 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly initService = inject(InitService);
   private cdr = inject(ChangeDetectorRef);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @ViewChild('contentModalAssociateGoogleAccount') contentModalAssociateGoogleAccount: TemplateRef<any>;
+  @ViewChild('contentModalAssociateGoogleAccount')
+  contentModalAssociateGoogleAccount: TemplateRef<unknown>;
 
   successPass = false;
   successMail = false;
@@ -55,7 +64,7 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
       this.pseudo = data.pseudo;
       this.idPerso = data.idPerso;
       this.darkModeEnabled = data.darkModeEnabled;
-      this.language = data.language
+      this.language = data.language;
     });
   }
 
@@ -70,10 +79,10 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   onSubmitEditPass(form: NgForm) {
     if (form.valid) {
       if (form.form.value.password1 === form.form.value.password2) {
-        this.userService.editPass(
-          {
+        this.userService
+          .editPass({
             passwordold: form.form.value.passwordold,
-            passwordnew: form.form.value.password1
+            passwordnew: form.form.value.password1,
           })
           .subscribe({
             next: (data: UserReponse) => {
@@ -85,7 +94,7 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
                   idPerso: this.idPerso,
                   mail: this.mail,
                   darkModeEnabled: this.darkModeEnabled,
-                  language: this.language
+                  language: this.language,
                 });
                 setTimeout(() => {
                   this.successPass = false;
@@ -97,7 +106,7 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
             error: () => {
               this.isConnected = false;
               this.initService.onMessageUnlog();
-            }
+            },
           });
       } else {
         this.error = this.translocoService.translate('mot_de_passe_confirmer_invalide');
@@ -107,40 +116,14 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onSubmitEditMail(form: NgForm) {
     if (form.valid) {
-      this.userService.editMail(form.form.value)
-        .subscribe({
-          next: (data: UserReponse) => {
-            if (data.success !== undefined && data.success) {
-              this.successMail = true;
-
-              setTimeout(() => {
-                this.successMail = false;
-              }, 10000);
-            } else {
-              this.error = this.translocoService.translate(data.error);
-            }
-          },
-          error: () => {
-            this.isConnected = false;
-            this.initService.onMessageUnlog();
-          }
-        });
-    }
-  }
-
-  onSwitchDarkMode() {
-    this.userService.editDarkMode({ dark_mode_enabled: this.darkModeEnabled })
-      .subscribe({
+      this.userService.editMail(form.form.value).subscribe({
         next: (data: UserReponse) => {
           if (data.success !== undefined && data.success) {
-            this.initService.subjectConnectedChange.next({
-              isConnected: this.isConnected,
-              pseudo: this.pseudo,
-              idPerso: this.idPerso,
-              mail: this.mail,
-              darkModeEnabled: this.darkModeEnabled,
-              language: this.language
-            });
+            this.successMail = true;
+
+            setTimeout(() => {
+              this.successMail = false;
+            }, 10000);
           } else {
             this.error = this.translocoService.translate(data.error);
           }
@@ -148,61 +131,83 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
         error: () => {
           this.isConnected = false;
           this.initService.onMessageUnlog();
-        }
+        },
       });
+    }
+  }
+
+  onSwitchDarkMode() {
+    this.userService.editDarkMode({ dark_mode_enabled: this.darkModeEnabled }).subscribe({
+      next: (data: UserReponse) => {
+        if (data.success !== undefined && data.success) {
+          this.initService.subjectConnectedChange.next({
+            isConnected: this.isConnected,
+            pseudo: this.pseudo,
+            idPerso: this.idPerso,
+            mail: this.mail,
+            darkModeEnabled: this.darkModeEnabled,
+            language: this.language,
+          });
+        } else {
+          this.error = this.translocoService.translate(data.error);
+        }
+      },
+      error: () => {
+        this.isConnected = false;
+        this.initService.onMessageUnlog();
+      },
+    });
   }
 
   onSubmitEditLanguage(form: NgForm) {
     if (form.valid) {
-      this.userService.editLanguage(form.form.value)
-        .subscribe({
-          next: (data: UserReponse) => {
-            if (data.success !== undefined && data.success) {
-              this.successLanguage = true;
-              this.initService.subjectConnectedChange.next({
-                isConnected: this.isConnected,
-                pseudo: this.pseudo,
-                idPerso: this.idPerso,
-                mail: this.mail,
-                darkModeEnabled: this.darkModeEnabled,
-                language: this.language
-              });
+      this.userService.editLanguage(form.form.value).subscribe({
+        next: (data: UserReponse) => {
+          if (data.success !== undefined && data.success) {
+            this.successLanguage = true;
+            this.initService.subjectConnectedChange.next({
+              isConnected: this.isConnected,
+              pseudo: this.pseudo,
+              idPerso: this.idPerso,
+              mail: this.mail,
+              darkModeEnabled: this.darkModeEnabled,
+              language: this.language,
+            });
 
-              setTimeout(() => {
-                this.successLanguage = false;
-              }, 10000);
-            } else {
-              this.error = this.translocoService.translate(data.error);
-            }
-          },
-          error: () => {
-            this.isConnected = false;
-            this.initService.onMessageUnlog();
+            setTimeout(() => {
+              this.successLanguage = false;
+            }, 10000);
+          } else {
+            this.error = this.translocoService.translate(data.error);
           }
-        });
+        },
+        error: () => {
+          this.isConnected = false;
+          this.initService.onMessageUnlog();
+        },
+      });
     }
   }
 
   onSubmitDeleteAccount(form: NgForm) {
     if (form.valid) {
-      this.userService.deleteAccount(form.form.value)
-        .subscribe({
-          next: (data: UserReponse) => {
-            if (data.success !== undefined && data.success) {
-              this.successDelete = true;
-              setTimeout(() => {
-                this.successDelete = false;
-              }, 10000);
-              this.initService.logOut();
-            } else {
-              this.error = this.translocoService.translate(data.error);
-            }
-          },
-          error: () => {
-            this.isConnected = false;
-            this.initService.onMessageUnlog();
+      this.userService.deleteAccount(form.form.value).subscribe({
+        next: (data: UserReponse) => {
+          if (data.success !== undefined && data.success) {
+            this.successDelete = true;
+            setTimeout(() => {
+              this.successDelete = false;
+            }, 10000);
+            this.initService.logOut();
+          } else {
+            this.error = this.translocoService.translate(data.error);
           }
-        });
+        },
+        error: () => {
+          this.isConnected = false;
+          this.initService.onMessageUnlog();
+        },
+      });
     }
   }
 
@@ -210,22 +215,21 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
       google.accounts.id.initialize({
         client_id: environment.GOOGLE_CLIENT_ID,
-        callback: this.handleCredentialResponse.bind(this)
+        callback: this.handleCredentialResponse.bind(this),
       });
     }
   }
 
   renderGoogleSignInButton() {
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-      google.accounts.id.renderButton(
-        document.getElementById('google-signin-button'),
-        {}
-      );
+      google.accounts.id.renderButton(document.getElementById('google-signin-button'), {});
     }
   }
 
   openGoogleAccountModal() {
-    const modalRef: NgbModalRef = this.modalService.open(this.contentModalAssociateGoogleAccount, { size: 'lg' });
+    const modalRef: NgbModalRef = this.modalService.open(this.contentModalAssociateGoogleAccount, {
+      size: 'lg',
+    });
     modalRef.result.then(
       () => this.renderGoogleSignInButton(),
       () => this.renderGoogleSignInButton()
@@ -237,37 +241,34 @@ export class SettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   handleCredentialResponse(response: { credential: string }) {
-    this.userService.associateGoogleAccount({ id_token: response.credential })
-      .subscribe({
-        next: (data: UserReponse) => {
-          if (data.success !== undefined && data.success) {
-            this.successGoogleAccount = true;
-            this.initService.subjectConnectedChange.next({
-              isConnected: this.isConnected,
-              pseudo: this.pseudo,
-              idPerso: this.idPerso,
-              mail: this.mail,
-              darkModeEnabled: this.darkModeEnabled,
-              language: this.language
-            });
+    this.userService.associateGoogleAccount({ id_token: response.credential }).subscribe({
+      next: (data: UserReponse) => {
+        if (data.success !== undefined && data.success) {
+          this.successGoogleAccount = true;
+          this.initService.subjectConnectedChange.next({
+            isConnected: this.isConnected,
+            pseudo: this.pseudo,
+            idPerso: this.idPerso,
+            mail: this.mail,
+            darkModeEnabled: this.darkModeEnabled,
+            language: this.language,
+          });
 
-            this.cdr.detectChanges();
+          this.cdr.detectChanges();
 
-            setTimeout(() => {
-              this.successGoogleAccount = false;
-              this.cdr.detectChanges();
-            }, 10000);
-          }
-          else {
-            this.error = this.translocoService.translate(data.error);
+          setTimeout(() => {
+            this.successGoogleAccount = false;
             this.cdr.detectChanges();
-          }
+          }, 10000);
+        } else {
+          this.error = this.translocoService.translate(data.error);
+          this.cdr.detectChanges();
         }
-      });
+      },
+    });
   }
 
   ngOnDestroy() {
     this.subscriptionConnected.unsubscribe();
   }
-
 }

@@ -19,16 +19,39 @@ describe('CurrentComponent', () => {
     { key: 'key2', titre: 'Video 2', artiste: 'Artist 2' } as Video,
   ];
   const mockCurrentKey = { currentKey: 'key1', currentTitle: 'Video 1', currentArtist: 'Artist 1' };
-  const mockConnectedState = { isConnected: true, pseudo: 'test', idPerso: '1', mail: 'test@test.com' };
+  const mockConnectedState = {
+    isConnected: true,
+    pseudo: 'test',
+    idPerso: '1',
+    mail: 'test@test.com',
+  };
 
   let currentPlaylistSubject: BehaviorSubject<Video[]>;
-  let currentKeySubject: BehaviorSubject<{ currentKey: string; currentTitle: string; currentArtist: string; }>;
-  let connectedSubject: BehaviorSubject<{ isConnected: boolean; pseudo: string; idPerso: string; mail: string; }>;
+  let currentKeySubject: BehaviorSubject<{
+    currentKey: string;
+    currentTitle: string;
+    currentArtist: string;
+  }>;
+  let connectedSubject: BehaviorSubject<{
+    isConnected: boolean;
+    pseudo: string;
+    idPerso: string;
+    mail: string;
+  }>;
 
   beforeEach(async () => {
     currentPlaylistSubject = new BehaviorSubject<Video[]>(mockPlaylist);
-    currentKeySubject = new BehaviorSubject<{ currentKey: string; currentTitle: string; currentArtist: string; }>(mockCurrentKey);
-    connectedSubject = new BehaviorSubject<{ isConnected: boolean; pseudo: string; idPerso: string; mail: string; }>(mockConnectedState);
+    currentKeySubject = new BehaviorSubject<{
+      currentKey: string;
+      currentTitle: string;
+      currentArtist: string;
+    }>(mockCurrentKey);
+    connectedSubject = new BehaviorSubject<{
+      isConnected: boolean;
+      pseudo: string;
+      idPerso: string;
+      mail: string;
+    }>(mockConnectedState);
 
     playerServiceMock = jasmine.createSpyObj('PlayerService', ['lecture', 'removeToPlaylist'], {
       subjectCurrentPlaylistChange: {
@@ -36,14 +59,14 @@ describe('CurrentComponent', () => {
           const sub = currentPlaylistSubject.subscribe(callback);
           return sub;
         }),
-        getValue: jasmine.createSpy('getValue').and.returnValue(mockPlaylist)
+        getValue: jasmine.createSpy('getValue').and.returnValue(mockPlaylist),
       },
       subjectCurrentKeyChange: {
         subscribe: jasmine.createSpy('subscribe').and.callFake(callback => {
           const sub = currentKeySubject.subscribe(callback);
           return sub;
-        })
-      }
+        }),
+      },
     });
 
     initServiceMock = jasmine.createSpyObj('InitService', [], {
@@ -51,13 +74,12 @@ describe('CurrentComponent', () => {
         subscribe: jasmine.createSpy('subscribe').and.callFake(callback => {
           const sub = connectedSubject.subscribe(callback);
           return sub;
-        })
-      }
+        }),
+      },
     });
 
     ngZoneMock = new NgZone({ enableLongStackTrace: false });
     spyOn(ngZoneMock, 'run').and.callFake(<T>(fn: (...args: unknown[]) => T) => fn());
-
 
     await TestBed.configureTestingModule({
       imports: [CurrentComponent, getTranslocoModule()],
@@ -65,9 +87,9 @@ describe('CurrentComponent', () => {
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: InitService, useValue: initServiceMock },
         { provide: NgZone, useValue: ngZoneMock },
-        { provide: PLATFORM_ID, useValue: 'browser' }
+        { provide: PLATFORM_ID, useValue: 'browser' },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
 
@@ -121,7 +143,11 @@ describe('CurrentComponent', () => {
     it('should update currentKey and use NgZone.run when PlayerService.subjectCurrentKeyChange emits', fakeAsync(() => {
       component.ngOnInit();
 
-      const newCurrentKey = { currentKey: 'key3', currentTitle: 'Video 3', currentArtist: 'Artist 3' };
+      const newCurrentKey = {
+        currentKey: 'key3',
+        currentTitle: 'Video 3',
+        currentArtist: 'Artist 3',
+      };
       currentKeySubject.next(newCurrentKey);
       flush();
 
@@ -193,21 +219,17 @@ describe('CurrentComponent', () => {
     it('should handle playlist changes', () => {
       const emptyPlaylist: Video[] = [];
       component.list = emptyPlaylist;
-      fixture.detectChanges();
       expect(component.list.length).toBe(0);
 
       component.list = mockPlaylist;
-      fixture.detectChanges();
       expect(component.list.length).toBe(2);
     });
 
     it('should handle connection state changes', () => {
       component.isConnected = false;
-      fixture.detectChanges();
       expect(component.isConnected).toBeFalse();
 
       component.isConnected = true;
-      fixture.detectChanges();
       expect(component.isConnected).toBeTrue();
     });
   });

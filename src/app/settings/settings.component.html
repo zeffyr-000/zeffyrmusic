@@ -1,191 +1,290 @@
-<h1 class="h3">{{'settings' | transloco}}</h1>
+<h1 class="h3">{{ 'settings' | transloco }}</h1>
 
 <div class="list-group">
-    <div class="list-group-item">
-        <div class="d-flex w-100 justify-content-between">
-            <h5>{{'mot_de_passe' | transloco}}</h5>
-            <button class="btn btn-primary" (click)="openModal(contentModalEditPass)">
-                {{'modifier_mot_de_passe' | transloco}}
-            </button>
-        </div>
+  <div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between">
+      <h5>{{ 'mot_de_passe' | transloco }}</h5>
+      <button class="btn btn-primary" (click)="openModal(contentModalEditPass)">
+        {{ 'modifier_mot_de_passe' | transloco }}
+      </button>
     </div>
-    <div class="list-group-item">
-        <div class="d-flex w-100 justify-content-between">
-            <div class="d-flex flex-column align-items-start">
-                <h5>{{'mail' | transloco}}</h5>
-                <small>{{mail}}</small>
-            </div>
-            <button class="btn btn-primary" (click)="openModal(contentModalEditMail)">
-                {{'modifier_mail' | transloco}}
-            </button>
-        </div>
+  </div>
+  <div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between">
+      <div class="d-flex flex-column align-items-start">
+        <h5>{{ 'mail' | transloco }}</h5>
+        <small>{{ mail }}</small>
+      </div>
+      <button class="btn btn-primary" (click)="openModal(contentModalEditMail)">
+        {{ 'modifier_mail' | transloco }}
+      </button>
     </div>
-    <div class="list-group-item">
-        <div class="d-flex w-100 justify-content-between">
-            <h5>{{'enable_dark_mode' | transloco}}</h5>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="darkModeSwitch" (change)="onSwitchDarkMode()"
-                    [(ngModel)]="darkModeEnabled">
-            </div>
-        </div>
+  </div>
+  <div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between">
+      <h5>{{ 'enable_dark_mode' | transloco }}</h5>
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="darkModeSwitch"
+          (change)="onSwitchDarkMode()"
+          [(ngModel)]="darkModeEnabled"
+        />
+      </div>
     </div>
-    <div class="list-group-item">
-        <div class="d-flex w-100 justify-content-between">
-            <div class="d-flex flex-column align-items-start">
-                <h5>{{'language' | transloco}}</h5>
-                <small>{{'selected_language' | transloco}} : {{'langue_'+language | transloco}}</small>
-            </div>
-            <button class="btn btn-primary" (click)="openModal(contentModalEditLanguage)">
-                {{'change_language' | transloco}}
-            </button>
-        </div>
+  </div>
+  <div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between">
+      <div class="d-flex flex-column align-items-start">
+        <h5>{{ 'language' | transloco }}</h5>
+        <small
+          >{{ 'selected_language' | transloco }} : {{ 'langue_' + language | transloco }}</small
+        >
+      </div>
+      <button class="btn btn-primary" (click)="openModal(contentModalEditLanguage)">
+        {{ 'change_language' | transloco }}
+      </button>
     </div>
-    <div class="list-group-item">
-        <div class="d-flex w-100 justify-content-between">
-            <h5>{{'associate_google_account' | transloco}}</h5>
-            <button class="btn btn-primary" (click)="openGoogleAccountModal()">
-                {{'associate' | transloco}}
-            </button>
-        </div>
+  </div>
+  <div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between">
+      <h5>{{ 'associate_google_account' | transloco }}</h5>
+      <button class="btn btn-primary" (click)="openGoogleAccountModal()">
+        {{ 'associate' | transloco }}
+      </button>
     </div>
-    <div class="list-group-item">
-        <div class="d-flex w-100 justify-content-between">
-            <h5>{{'delete_account' | transloco}}</h5>
-            <button class="btn btn-danger" (click)="openModal(contentModalDelete)">
-                {{'delete_account' | transloco}}
-            </button>
-        </div>
+  </div>
+  <div class="list-group-item">
+    <div class="d-flex w-100 justify-content-between">
+      <h5>{{ 'delete_account' | transloco }}</h5>
+      <button class="btn btn-danger" (click)="openModal(contentModalDelete)">
+        {{ 'delete_account' | transloco }}
+      </button>
     </div>
+  </div>
 </div>
 
 <ng-template #contentModalEditPass let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'modifier_mot_de_passe' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <form (ngSubmit)="onSubmitEditPass(formEditPass)" #formEditPass="ngForm">
-            <p class="form-group">
-                <label class="control-label" for="passwordold">{{ 'mot_de_passe_actuel' | transloco}}</label>
-                <input type="password" name="passwordold" id="passwordold" class="form-control" ngbAutofocus ngModel
-                    required />
-            </p>
-            <p class="form-group">
-                <label class="control-label" for="password1">{{ 'mot_de_passe_nouveau' | transloco}}</label>
-                <input type="password" name="password1" id="password1" class="form-control" ngModel required />
-            </p>
-            <p class="form-group">
-                <label class="control-label" for="password2">{{ 'mot_de_passe_repeter' | transloco}}</label>
-                <input type="password" name="password2" id="password2" class="form-control" ngModel required />
-            </p>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ 'modifier_mot_de_passe' | transloco }}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="onSubmitEditPass(formEditPass)" #formEditPass="ngForm">
+      <p class="form-group">
+        <label class="control-label" for="passwordold">{{
+          'mot_de_passe_actuel' | transloco
+        }}</label>
+        <input
+          type="password"
+          name="passwordold"
+          id="passwordold"
+          class="form-control"
+          ngbAutofocus
+          ngModel
+          required
+        />
+      </p>
+      <p class="form-group">
+        <label class="control-label" for="password1">{{
+          'mot_de_passe_nouveau' | transloco
+        }}</label>
+        <input
+          type="password"
+          name="password1"
+          id="password1"
+          class="form-control"
+          ngModel
+          required
+        />
+      </p>
+      <p class="form-group">
+        <label class="control-label" for="password2">{{
+          'mot_de_passe_repeter' | transloco
+        }}</label>
+        <input
+          type="password"
+          name="password2"
+          id="password2"
+          class="form-control"
+          ngModel
+          required
+        />
+      </p>
 
-            <p><input type="submit" class="btn btn-primary" [disabled]="formEditPass.invalid"
-                    value="{{ 'envoyer' | transloco}}" /></p>
-            @if(formEditPass.dirty && error!=='') {
-            <p class="alert alert-danger">{{error}}</p>
-            }
-            @if(successPass) {
-            <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
-            }
-        </form>
-    </div>
+      <p>
+        <input
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="formEditPass.invalid"
+          value="{{ 'envoyer' | transloco }}"
+        />
+      </p>
+      @if(formEditPass.dirty && error!=='') {
+      <p class="alert alert-danger">{{ error }}</p>
+      } @if(successPass) {
+      <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+      }
+    </form>
+  </div>
 </ng-template>
 
 <ng-template #contentModalEditMail let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'modifier_mail' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <form (ngSubmit)="onSubmitEditMail(formEditMail)" #formEditMail="ngForm">
-            <p class="form-group">
-                <label class="control-label" for="mail">{{ 'mail' | transloco}}</label>
-                <input type="text" name="mail" id="mail" class="form-control" ngbAutofocus [(ngModel)]="mail" required
-                    email />
-            </p>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ 'modifier_mail' | transloco }}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="onSubmitEditMail(formEditMail)" #formEditMail="ngForm">
+      <p class="form-group">
+        <label class="control-label" for="mail">{{ 'mail' | transloco }}</label>
+        <input
+          type="text"
+          name="mail"
+          id="mail"
+          class="form-control"
+          ngbAutofocus
+          [(ngModel)]="mail"
+          required
+          email
+        />
+      </p>
 
-            <p><input type="submit" class="btn btn-primary" [disabled]="formEditMail.invalid"
-                    value="{{ 'envoyer' | transloco}}" /></p>
-            @if(formEditMail.dirty && error!=='') {
-            <p class="alert alert-danger">{{error}}</p>
-            }
-            @if(successMail) {
-            <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
-            }
-        </form>
-    </div>
+      <p>
+        <input
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="formEditMail.invalid"
+          value="{{ 'envoyer' | transloco }}"
+        />
+      </p>
+      @if(formEditMail.dirty && error!=='') {
+      <p class="alert alert-danger">{{ error }}</p>
+      } @if(successMail) {
+      <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+      }
+    </form>
+  </div>
 </ng-template>
 
 <ng-template #contentModalEditLanguage let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'language' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <form (ngSubmit)="onSubmitEditLanguage(formEditLanguage)" #formEditLanguage="ngForm">
-            <p class="form-group">
-                <label class="control-label" for="mail">{{ 'language' | transloco}}</label>
-                <select name="language" id="language" class="form-control" ngbAutofocus [(ngModel)]="language" required>
-                    @for (lang of availableLanguages; track lang) {
-                    <option [value]="lang">{{'langue_'+lang | transloco}}
-                    </option>
-                    }
-                </select>
-            </p>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ 'language' | transloco }}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="onSubmitEditLanguage(formEditLanguage)" #formEditLanguage="ngForm">
+      <p class="form-group">
+        <label class="control-label" for="mail">{{ 'language' | transloco }}</label>
+        <select
+          name="language"
+          id="language"
+          class="form-control"
+          ngbAutofocus
+          [(ngModel)]="language"
+          required
+        >
+          @for (lang of availableLanguages; track lang) {
+          <option [value]="lang">{{ 'langue_' + lang | transloco }}</option>
+          }
+        </select>
+      </p>
 
-            <p><input type="submit" class="btn btn-primary" [disabled]="formEditLanguage.invalid"
-                    value="{{ 'envoyer' | transloco}}" /></p>
-            @if(formEditLanguage.dirty && error!=='') {
-            <p class="alert alert-danger">{{error}}</p>
-            }
-            @if(successLanguage){
-            <p class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
-            }
-        </form>
-    </div>
+      <p>
+        <input
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="formEditLanguage.invalid"
+          value="{{ 'envoyer' | transloco }}"
+        />
+      </p>
+      @if(formEditLanguage.dirty && error!=='') {
+      <p class="alert alert-danger">{{ error }}</p>
+      } @if(successLanguage){
+      <p class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
+      }
+    </form>
+  </div>
 </ng-template>
 
 <ng-template #contentModalDelete let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'delete_account' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <div class="alert alert-danger">{{ 'delete_account_warning' | transloco}}</div>
-        <form (ngSubmit)="onSubmitDeleteAccount(formDeleteAccount)" #formDeleteAccount="ngForm">
-            <p class="form-group">
-                <label class="control-label" for="password">{{ 'mot_de_passe' | transloco}}</label>
-                <input type="password" name="password" id="password" class="form-control" ngbAutofocus ngModel
-                    required />
-            </p>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ 'delete_account' | transloco }}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="alert alert-danger">{{ 'delete_account_warning' | transloco }}</div>
+    <form (ngSubmit)="onSubmitDeleteAccount(formDeleteAccount)" #formDeleteAccount="ngForm">
+      <p class="form-group">
+        <label class="control-label" for="password">{{ 'mot_de_passe' | transloco }}</label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          class="form-control"
+          ngbAutofocus
+          ngModel
+          required
+        />
+      </p>
 
-            <p><input type="submit" class="btn btn-danger" [disabled]="formDeleteAccount.invalid"
-                    value="{{ 'envoyer' | transloco}}" /></p>
-            @if(formDeleteAccount.dirty && error!=='') {
-            <p class="alert alert-danger">{{error}}</p>
-            }
-            @if(successDelete){
-            <p class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
-            }
-        </form>
-    </div>
+      <p>
+        <input
+          type="submit"
+          class="btn btn-danger"
+          [disabled]="formDeleteAccount.invalid"
+          value="{{ 'envoyer' | transloco }}"
+        />
+      </p>
+      @if(formDeleteAccount.dirty && error!=='') {
+      <p class="alert alert-danger">{{ error }}</p>
+      } @if(successDelete){
+      <p class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
+      }
+    </form>
+  </div>
 </ng-template>
 
 <ng-template #contentModalAssociateGoogleAccount let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'associate_google_account' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <p class="bg-info p-2 rounded">{{ 'associate_google_account_description' | transloco }}</p>
-        <div id="google-signin-button"></div>
-        @if(error!=='') {
-        <p class="alert alert-danger">{{error}}</p>
-        }
-        @if(successGoogleAccount){
-        <p class="alert alert-success">
-            {{ 'associate_google_account_succesfully' | transloco }}
-        </p>
-        }
-    </div>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ 'associate_google_account' | transloco }}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <p class="bg-info p-2 rounded">{{ 'associate_google_account_description' | transloco }}</p>
+    <div id="google-signin-button"></div>
+    @if(error!=='') {
+    <p class="alert alert-danger">{{ error }}</p>
+    } @if(successGoogleAccount){
+    <p class="alert alert-success">
+      {{ 'associate_google_account_succesfully' | transloco }}
+    </p>
+    }
+  </div>
 </ng-template>

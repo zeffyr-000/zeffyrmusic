@@ -1,43 +1,49 @@
 <div id="artist_content" class="card panel-profile border-0 h-auto mt-2">
+  @if (isAvailable) {
 
-	@if (isAvailable) {
+  <div id="artist_haut" class="card-header clearfix border-0 row">
+    <div id="artist_img_content" class="col col-4 p-0">
+      <img id="artist_img_big" [src]="urlDeezer" class="rounded" alt="" />
+    </div>
+    <div class="panel_head_content col col-8 p-0">
+      <div id="artist_haut_titre">
+        <h1 class="h3">{{ name }}</h1>
+        <share-buttons show="2" showText="true"></share-buttons>
+      </div>
+    </div>
+  </div>
 
-	<div id="artist_haut" class="card-header clearfix border-0 row">
-		<div id="artist_img_content" class="col col-4 p-0">
-			<img id="artist_img_big" [src]="urlDeezer" class="rounded" alt="" />
-		</div>
-		<div class="panel_head_content col col-8 p-0">
-			<div id="artist_haut_titre">
-				<h1 class="h3">{{name}}</h1>
-				<share-buttons show="2" showText="true"></share-buttons>
-			</div>
-		</div>
-	</div>
+  <div class="card-body">
+    <div>
+      <h3>{{ 'albums' | transloco }}</h3>
+    </div>
 
-	<div class="card-body">
-		<div>
-			<h3>{{ 'albums' | transloco }}</h3>
-		</div>
-
-		<div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
-			@for (album of listAlbums; track album.id_playlist) {
-			<div class="col m-0 mt-1 mb-1" itemscope itemtype="http://schema.org/MusicAlbum">
-				<a class="card h-100" [routerLink]="'/playlist/' + album.id_playlist" itemprop="url">
-					<img [src]="album.img_big" class="card-img-top" [alt]="album.titre + ' cover'" itemprop="image"
-						appDefaultImage />
-					<div class="card-body">
-						<h5 class="card-title" itemprop="name">{{album.titre}}</h5>
-					</div>
-					<div class="card-footer">
-						<small class="text-muted" itemprop="datePublished">{{album.year_release}}</small>
-					</div>
-				</a>
-			</div>
-			}
-		</div>
-	</div>
-	} @else if (isAvailable === false){
-	<p class="bg-info p-2 rounded">{{ 'artist_not_available' | transloco }}</p>
-	<p><a routerLink="/">{{'back_home' | transloco}}</a></p>
-	}
+    <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+      @for (album of listAlbums; track album.id_playlist) {
+      <div class="col m-0 mt-1 mb-1" itemscope itemtype="http://schema.org/MusicAlbum">
+        <a class="card h-100" [routerLink]="'/playlist/' + album.id_playlist" itemprop="url">
+          <img
+            [src]="album.img_big"
+            class="card-img-top"
+            [alt]="album.titre + ' cover'"
+            itemprop="image"
+            appDefaultImage
+          />
+          <div class="card-body">
+            <h5 class="card-title" itemprop="name">{{ album.titre }}</h5>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted" itemprop="datePublished">{{ album.year_release }}</small>
+          </div>
+        </a>
+      </div>
+      }
+    </div>
+  </div>
+  } @else if (isAvailable === false){
+  <p class="bg-info p-2 rounded">{{ 'artist_not_available' | transloco }}</p>
+  <p>
+    <a routerLink="/">{{ 'back_home' | transloco }}</a>
+  </p>
+  }
 </div>

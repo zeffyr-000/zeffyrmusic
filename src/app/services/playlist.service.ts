@@ -8,7 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
 const PLAYLIST_KEY = (id: string) => makeStateKey<Playlist>(`playlist-${id}`);
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PlaylistService {
   private platformId = inject(PLATFORM_ID);
@@ -35,7 +35,7 @@ export class PlaylistService {
     }
 
     return this.httpClient.get<Playlist>(url).pipe(
-      tap((data) => {
+      tap(data => {
         if (!this.isBrowser) {
           this.transferState.set(key, data);
         }

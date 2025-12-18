@@ -1,189 +1,220 @@
 @if(!isLoading){
-<div id="playlist_content" class="card panel-profile border-0 h-auto mt-2" itemscope
-    [attr.itemtype]="!idTopCharts ? 'http://schema.org/MusicAlbum': 'http://schema.org/MusicGroup'">
-    @if(!isPrivate && (!isLikePage || playlist.length>0)){
-    <div id="playlist_haut" class="card-header clearfix border-0">
-        <div class="panel_head_content row">
-            @if(imgBig && imgBig!==undefined && imgBig!=='') {
-            <div id="playlist_img_content" class="col col-4 p-0">
-                <img id="playlist_img_big" [src]="imgBig" class="rounded" alt="" appDefaultImage itemprop="image" />
-            </div>
-            }
+<div
+  id="playlist_content"
+  class="card panel-profile border-0 h-auto mt-2"
+  itemscope
+  [attr.itemtype]="!idTopCharts ? 'http://schema.org/MusicAlbum' : 'http://schema.org/MusicGroup'"
+>
+  @if(!isPrivate && (!isLikePage || playlist.length>0)){
+  <div id="playlist_haut" class="card-header clearfix border-0">
+    <div class="panel_head_content row">
+      @if(imgBig && imgBig!==undefined && imgBig!=='') {
+      <div id="playlist_img_content" class="col col-4 p-0">
+        <img
+          id="playlist_img_big"
+          [src]="imgBig"
+          class="rounded"
+          alt=""
+          appDefaultImage
+          itemprop="image"
+        />
+      </div>
+      }
 
-            <div id="playlist_haut_titre" class="col col-8 p-0">
+      <div id="playlist_haut_titre" class="col col-8 p-0">
+        @if(idTopCharts===null && titre!=='') {
+        <h1 class="m-t-0 h3" itemprop="name">{{ titre }}</h1>
+        } @if(titre==='') {
+        <h1 class="m-t-0 h3" itemprop="name">{{ title }}</h1>
+        } @if(isLikePage){
+        <h1 class="m-t-0 h3">{{ 'mes_likes' | transloco }}</h1>
+        } @if(artist!==null && artist!=='') {
+        <h3 class="h4">
+          <a itemprop="byArtist url" routerLink="/artist/{{ idArtist }}">{{ artist }}</a>
+        </h3>
+        } @if(titre==='') {
+        <p class="m-t-0" itemtype="description">{{ description }}</p>
+        }
 
-                @if(idTopCharts===null && titre!=='') {
-                <h1 class="m-t-0 h3" itemprop="name">{{titre}}</h1>
-                }
-                @if(titre==='') {
-                <h1 class="m-t-0 h3" itemprop="name">{{title}}</h1>
-                }
-                @if(isLikePage){
-                <h1 class="m-t-0 h3">{{ 'mes_likes' | transloco }}</h1>
-                }
+        <div>
+          @if(idPlaylist !== currentIdPlaylistPlaying || !isPlaying) {
+          <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
+            <span class="material-icons">play_circle_outline</span>
+            {{ 'lire' | transloco }}
+          </button>
+          } @if(idPlaylist === currentIdPlaylistPlaying && isPlaying) {
+          <button class="btn btn-primary btn-lg" (click)="pausePlaylist()">
+            <span class="material-icons">pause_circle_outline</span>
+            {{ 'pause' | transloco }}
+          </button>
+          } @if(isConnected && idPersoOwner!==idPerso && idPlaylist !=='') {
+          <button
+            class="btn btn-secondary btn-lg"
+            [class.active]="isFollower"
+            (click)="switchFollow()"
+          >
+            {{ 'suivre' | transloco }}
+          </button>
+          }
 
-                @if(artist!==null && artist!=='') {
-                <h3 class="h4"><a itemprop="byArtist url" routerLink="/artist/{{idArtist}}">{{artist}}</a></h3>
-                }
+          <button class="btn btn-secondary btn-lg" (click)="addInCurrentList()">
+            {{ 'ajouter_liste_en_cours' | transloco }}
+          </button>
 
-                @if(titre==='') {
-                <p class="m-t-0" itemtype="description">{{description}}</p>
-                }
-
-                <div>
-                    @if(idPlaylist !== currentIdPlaylistPlaying || !isPlaying) {
-                    <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
-                        <span class="material-icons">play_circle_outline</span>
-                        {{ 'lire' | transloco }}
-                    </button>
-                    }
-
-                    @if(idPlaylist === currentIdPlaylistPlaying && isPlaying) {
-                    <button class="btn btn-primary btn-lg" (click)="pausePlaylist()">
-                        <span class="material-icons">pause_circle_outline</span>
-                        {{ 'pause' | transloco }}
-                    </button>
-                    }
-
-                    @if(isConnected && idPersoOwner!==idPerso && idPlaylist !=='') {
-                    <button class="btn btn-secondary btn-lg" [class.active]="isFollower"
-                        (click)="switchFollow()">{{'suivre' |
-                        transloco}}</button>
-                    }
-
-                    <button class="btn btn-secondary btn-lg" (click)="addInCurrentList()">{{'ajouter_liste_en_cours'
-                        | transloco}}</button>
-
-                    @if(!isLikePage) {
-                    <share-buttons class="d-inline-block" show="2" showText="true"></share-buttons>
-                    }
-                </div>
-
-                <div class="row m-t">
-                    <div id="playlist_infos" class="col-md-6">
-                        <span class="content_indication">
-                            <b>{{playlist && playlist.length}}</b>
-                            @if(playlist && playlist.length<=1) { <span> {{ 'titre' | transloco }}</span>
-                        }
-                        @if(playlist && playlist.length>1) {
-                        <span> {{ 'titres' | transloco }}</span>
-                        }
-                        {{sumDurationPlaylist()}}
-                        </span>
-                    </div>
-                </div>
-            </div>
+          @if(!isLikePage) {
+          <share-buttons class="d-inline-block" show="2" showText="true"></share-buttons>
+          }
         </div>
+
+        <div class="row m-t">
+          <div id="playlist_infos" class="col-md-6">
+            <span class="content_indication">
+              <b>{{ playlist && playlist.length }}</b>
+              @if(playlist && playlist.length<=1) { <span> {{ 'titre' | transloco }}</span>
+              } @if(playlist && playlist.length>1) {
+              <span> {{ 'titres' | transloco }}</span>
+              }
+              {{ sumDurationPlaylist() }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="card-body p-t-0">
-        <table id="table_playlist" class="table table-hover">
-            <thead>
-                <tr>
-                    <th class="d-none d-md-table-cell"></th>
-                    <th class="d-none d-md-table-cell"></th>
-                    <th>
-                        <span class="d-none d-md-inline">{{ 'intitule_artiste' |transloco }}</span>
-                    </th>
-                    <th class="d-none d-md-table-cell">{{ 'intitule_titre' |transloco }}</th>
-                    <th class="d-none d-md-table-cell"></th>
-                    <th></th>
-                </tr>
-            </thead>
+  <div class="card-body p-t-0">
+    <table id="table_playlist" class="table table-hover">
+      <thead>
+        <tr>
+          <th class="d-none d-md-table-cell"></th>
+          <th class="d-none d-md-table-cell"></th>
+          <th>
+            <span class="d-none d-md-inline">{{ 'intitule_artiste' | transloco }}</span>
+          </th>
+          <th class="d-none d-md-table-cell">{{ 'intitule_titre' | transloco }}</th>
+          <th class="d-none d-md-table-cell"></th>
+          <th></th>
+        </tr>
+      </thead>
 
-            <tbody>
-                @for (video of playlist; track video.id_video; let i = $index) {
-                <tr [attr.data-id-video]="video.key" (click)="runPlaylist(i)" [class.active]="video.key===currentKey"
-                    itemprop="track" itemscope itemtype="http://schema.org/MusicRecording">
-                    <td class="d-none d-md-table-cell" itemprop="position">{{ i+1 }}</td>
-                    <td class="d-none d-md-table-cell">
-                        <img [appLazyLoadImage]="'https://img.youtube.com/vi/'+video.key+'/mqdefault.jpg'"
-                            class="thumbnail" alt="" />
-                    </td>
-                    <td>
-                        <p class="d-block d-md-none" itemprop="name"><strong>{{video.titre}}</strong></p>
-                        <app-artist-list [artists]="video.artists"></app-artist-list>
-                    </td>
-                    <td class="d-none d-md-table-cell" itemprop="name">{{video.titre}}</td>
-                    <td class="d-none d-md-table-cell">
-                        @if(video.duree>0) {
-                        <span>{{video.duree | toMMSS }}</span>
-                        }
-                    </td>
-                    <td>
-                        <div class="d-flex">
-                            @if(isConnected && playerService.isLiked(video.key)) {
-                            <button type="button" class="btn btn-sm btn-link text-decoration-none"
-                                (click)="$event.stopPropagation();playerService.removeLike(video.key)">
-                                <span class="material-icons">favorite</span>
-                            </button>
-                            }
-                            @if(isConnected && !playerService.isLiked(video.key)) {
-                            <button type="button" class="btn btn-sm btn-link text-decoration-none text-body"
-                                (click)="$event.stopPropagation();playerService.addLike(video.key)">
-                                <span class="material-icons">favorite_border</span>
-                            </button>
-                            }
-                            <span class="btn btn-link btn-sm text-decoration-none text-body" tabindex="-1"
-                                (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()"
-                                (keydown.space)="$event.stopPropagation()" ngbDropdown>
-                                <span class="material-icons" tabindex="0" ngbDropdownToggle>more_vert</span>
-                                <ul ngbDropdownMenu>
-                                    <li ngbDropdownItem>
-                                        <button (click)="addVideoAfterCurrentInList(video)"
-                                            class="btn btn-link text-body text-decoration-none p-0">
-                                            <span class="material-icons">queue_music</span>
-                                            {{'ajouter_apres_courant' | transloco}}
-                                        </button>
-                                    </li>
-                                    <li ngbDropdownItem>
-                                        <button (click)="addVideoInEndCurrentList(video)"
-                                            class="btn btn-link text-body text-decoration-none p-0">
-                                            <span class="material-icons">playlist_add</span>
-                                            {{'ajouter_liste_en_cours' | transloco}}
-                                        </button>
-                                    </li>
-                                    @if(isConnected) {
-                                    <li ngbDropdownItem>
-                                        <button (click)="addVideo(video.key,video.artiste,video.titre,video.duree)"
-                                            class="btn btn-link text-body text-decoration-none p-0">
-                                            <span class="material-icons">add</span>
-                                            {{'ajouter_a_une_playlist' | transloco}}
-                                        </button>
-                                    </li>
-                                    }
-                                    @if(isConnected && idPersoOwner===idPerso) {
-                                    <li ngbDropdownItem>
-                                        <button (click)="removeVideo(video.id_video)"
-                                            class="btn btn-link text-body text-decoration-none p-0">
-                                            <span class="material-icons">clear</span>
-                                            {{'supprimer' | transloco}}
-                                        </button>
-                                    </li>
-                                    }
-                                </ul>
-                            </span>
-                        </div>
-                    </td>
-                </tr>
-                }
-            </tbody>
-
-        </table>
-    </div>
-    }
-
-    @if(isPrivate) {
-    <p class="bg-info p-2 rounded">{{ 'playlist_privee' | transloco }}</p>
-    <p><a routerLink="/">{{'back_home' | transloco}}</a></p>
-    }
-    @if(isLikePage && playlist.length===0) {
-    <p class="bg-info p-2 rounded">{{ 'likes_empty' | transloco }}</p>
-    }
+      <tbody>
+        @for (video of playlist; track video.id_video; let i = $index) {
+        <tr
+          [attr.data-id-video]="video.key"
+          (click)="runPlaylist(i)"
+          [class.active]="video.key === currentKey"
+          itemprop="track"
+          itemscope
+          itemtype="http://schema.org/MusicRecording"
+        >
+          <td class="d-none d-md-table-cell" itemprop="position">{{ i + 1 }}</td>
+          <td class="d-none d-md-table-cell">
+            <img
+              [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+              class="thumbnail"
+              alt=""
+            />
+          </td>
+          <td>
+            <p class="d-block d-md-none" itemprop="name">
+              <strong>{{ video.titre }}</strong>
+            </p>
+            <app-artist-list [artists]="video.artists"></app-artist-list>
+          </td>
+          <td class="d-none d-md-table-cell" itemprop="name">{{ video.titre }}</td>
+          <td class="d-none d-md-table-cell">
+            @if(video.duree>0) {
+            <span>{{ video.duree | toMMSS }}</span>
+            }
+          </td>
+          <td>
+            <div class="d-flex">
+              @if(isConnected && playerService.isLiked(video.key)) {
+              <button
+                type="button"
+                class="btn btn-sm btn-link text-decoration-none"
+                (click)="$event.stopPropagation(); playerService.removeLike(video.key)"
+              >
+                <span class="material-icons">favorite</span>
+              </button>
+              } @if(isConnected && !playerService.isLiked(video.key)) {
+              <button
+                type="button"
+                class="btn btn-sm btn-link text-decoration-none text-body"
+                (click)="$event.stopPropagation(); playerService.addLike(video.key)"
+              >
+                <span class="material-icons">favorite_border</span>
+              </button>
+              }
+              <span
+                class="btn btn-link btn-sm text-decoration-none text-body"
+                tabindex="-1"
+                (click)="$event.stopPropagation()"
+                (keydown.enter)="$event.stopPropagation()"
+                (keydown.space)="$event.stopPropagation()"
+                ngbDropdown
+              >
+                <span class="material-icons" tabindex="0" ngbDropdownToggle>more_vert</span>
+                <ul ngbDropdownMenu>
+                  <li ngbDropdownItem>
+                    <button
+                      (click)="addVideoAfterCurrentInList(video)"
+                      class="btn btn-link text-body text-decoration-none p-0"
+                    >
+                      <span class="material-icons">queue_music</span>
+                      {{ 'ajouter_apres_courant' | transloco }}
+                    </button>
+                  </li>
+                  <li ngbDropdownItem>
+                    <button
+                      (click)="addVideoInEndCurrentList(video)"
+                      class="btn btn-link text-body text-decoration-none p-0"
+                    >
+                      <span class="material-icons">playlist_add</span>
+                      {{ 'ajouter_liste_en_cours' | transloco }}
+                    </button>
+                  </li>
+                  @if(isConnected) {
+                  <li ngbDropdownItem>
+                    <button
+                      (click)="addVideo(video.key, video.artiste, video.titre, video.duree)"
+                      class="btn btn-link text-body text-decoration-none p-0"
+                    >
+                      <span class="material-icons">add</span>
+                      {{ 'ajouter_a_une_playlist' | transloco }}
+                    </button>
+                  </li>
+                  } @if(isConnected && idPersoOwner===idPerso) {
+                  <li ngbDropdownItem>
+                    <button
+                      (click)="removeVideo(video.id_video)"
+                      class="btn btn-link text-body text-decoration-none p-0"
+                    >
+                      <span class="material-icons">clear</span>
+                      {{ 'supprimer' | transloco }}
+                    </button>
+                  </li>
+                  }
+                </ul>
+              </span>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  } @if(isPrivate) {
+  <p class="bg-info p-2 rounded">{{ 'playlist_privee' | transloco }}</p>
+  <p>
+    <a routerLink="/">{{ 'back_home' | transloco }}</a>
+  </p>
+  } @if(isLikePage && playlist.length===0) {
+  <p class="bg-info p-2 rounded">{{ 'likes_empty' | transloco }}</p>
+  }
 </div>
 } @else {
 <div class="d-flex justify-content-center align-items-center">
-    <div class="spinner-border text-primary" role="status">
-    </div>
+  <div class="spinner-border text-primary" role="status"></div>
 </div>
 }

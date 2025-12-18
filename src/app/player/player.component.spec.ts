@@ -17,11 +17,20 @@ describe('PlayerComponent', () => {
     const playerServiceMock = jasmine.createSpyObj('PlayerService', [
       'launchYTApi',
       'lecture',
-      'removeToPlaylist'
+      'removeToPlaylist',
     ]);
     playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({ currentKey: 'test-key', currentTitle: 'test-title', currentArtist: 'test-artist' });
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({ isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail' });
+    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
+      currentKey: 'test-key',
+      currentTitle: 'test-title',
+      currentArtist: 'test-artist',
+    });
+    initServiceMock.subjectConnectedChange = new BehaviorSubject({
+      isConnected: true,
+      pseudo: 'test-pseudo',
+      idPerso: 'test-idPerso',
+      mail: 'test-mail',
+    });
 
     await TestBed.configureTestingModule({
       imports: [PlayerComponent],
@@ -35,7 +44,7 @@ describe('PlayerComponent', () => {
           useValue: playerServiceMock,
         },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
 
@@ -56,29 +65,42 @@ describe('PlayerComponent', () => {
   });
 
   it('should set list on playlist change', () => {
-    const list: Video[] = [{
-      id_video: '1',
-      artiste: 'Artiste 1',
-      artists: [{ id_artist: '1', label: 'Artiste 1' }],
-      duree: '100',
-      id_playlist: '1',
-      key: 'XXX-XXX',
-      ordre: '1',
-      titre: 'Titre 1',
-      titre_album: 'Titre album 1'
-    }];
+    const list: Video[] = [
+      {
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [{ id_artist: '1', label: 'Artiste 1' }],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1',
+      },
+    ];
     playerService.subjectCurrentPlaylistChange.next(list);
     expect(component.list).toEqual(list);
   });
 
   it('should set currentKey on current key change', () => {
-    const data = { currentKey: 'test-key', currentTitle: 'test-title', currentArtist: 'test-artist' };
+    const data = {
+      currentKey: 'test-key',
+      currentTitle: 'test-title',
+      currentArtist: 'test-artist',
+    };
     playerService.subjectCurrentKeyChange.next(data);
     expect(component.currentKey).toEqual(data.currentKey);
   });
 
   it('should set isConnected on connected change', () => {
-    const data = { isConnected: true, pseudo: 'test-pseudo', idPerso: 'test-idPerso', mail: 'test-mail', darkModeEnabled: false, language: 'en' };
+    const data = {
+      isConnected: true,
+      pseudo: 'test-pseudo',
+      idPerso: 'test-idPerso',
+      mail: 'test-mail',
+      darkModeEnabled: false,
+      language: 'en',
+    };
     initService.subjectConnectedChange.next(data);
     expect(component.isConnected).toEqual(data.isConnected);
   });

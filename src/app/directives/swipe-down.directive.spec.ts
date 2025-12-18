@@ -5,11 +5,13 @@ import { By } from '@angular/platform-browser';
 
 @Component({
   imports: [SwipeDownDirective],
-  template: `<div appSwipeDown (swipeDown)="onSwipeDown($event)"></div>`
+  template: `<div appSwipeDown (swipeDown)="onSwipeDown($event)"></div>`,
 })
 class TestComponent {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onSwipeDown(event: TouchEvent) { }
+  onSwipeDown(event: TouchEvent) {
+    // Test method stub
+  }
 }
 
 describe('SwipeDownDirective', () => {
@@ -20,7 +22,7 @@ describe('SwipeDownDirective', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TestComponent, SwipeDownDirective]
+      imports: [TestComponent, SwipeDownDirective],
     });
 
     fixture = TestBed.createComponent(TestComponent);
@@ -41,18 +43,20 @@ describe('SwipeDownDirective', () => {
     const touchStartEvent = new TouchEvent('touchstart', {
       bubbles: true,
       cancelable: true,
-      touches: [new Touch({
-        identifier: 0,
-        target: divEl.nativeElement,
-        clientX: 100,
-        clientY: 50
-      })]
+      touches: [
+        new Touch({
+          identifier: 0,
+          target: divEl.nativeElement,
+          clientX: 100,
+          clientY: 50,
+        }),
+      ],
     });
 
     const preventDefaultSpy = jasmine.createSpy('preventDefault');
     Object.defineProperty(touchStartEvent, 'preventDefault', {
       value: preventDefaultSpy,
-      writable: true
+      writable: true,
     });
 
     divEl.nativeElement.dispatchEvent(touchStartEvent);
@@ -60,18 +64,20 @@ describe('SwipeDownDirective', () => {
     const touchEndEvent = new TouchEvent('touchend', {
       bubbles: true,
       cancelable: true,
-      changedTouches: [new Touch({
-        identifier: 0,
-        target: divEl.nativeElement,
-        clientX: 100,
-        clientY: 250
-      })]
+      changedTouches: [
+        new Touch({
+          identifier: 0,
+          target: divEl.nativeElement,
+          clientX: 100,
+          clientY: 250,
+        }),
+      ],
     });
 
     const endPreventDefaultSpy = jasmine.createSpy('preventDefault');
     Object.defineProperty(touchEndEvent, 'preventDefault', {
       value: endPreventDefaultSpy,
-      writable: true
+      writable: true,
     });
 
     divEl.nativeElement.dispatchEvent(touchEndEvent);

@@ -1,100 +1,152 @@
-<h1 class="h3">{{ 'mes_playlists' | transloco}}</h1>
+<h1 class="h3">{{ 'mes_playlists' | transloco }}</h1>
 
 <div class="container-fluid px-0 my-4">
-    <div class="row">
-        <div class="col-md-8 col-lg-6">
-            <form (ngSubmit)="onCreatePlaylist(formCreatePlaylist)" #formCreatePlaylist="ngForm">
-                <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" name="titre"
-                        placeholder="{{ 'creer_nouvelle_playlist' | transloco }}" ngbAutofocus ngModel required>
-                    <input class="btn btn-primary" type="submit" [disabled]="formCreatePlaylist.invalid"
-                        value="{{ 'creer' | transloco }}" />
-                </div>
-            </form>
+  <div class="row">
+    <div class="col-md-8 col-lg-6">
+      <form (ngSubmit)="onCreatePlaylist(formCreatePlaylist)" #formCreatePlaylist="ngForm">
+        <div class="input-group input-group-lg">
+          <input
+            type="text"
+            class="form-control"
+            name="titre"
+            placeholder="{{ 'creer_nouvelle_playlist' | transloco }}"
+            ngbAutofocus
+            ngModel
+            required
+          />
+          <input
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="formCreatePlaylist.invalid"
+            value="{{ 'creer' | transloco }}"
+          />
         </div>
+      </form>
     </div>
+  </div>
 </div>
 
 <hr />
 <table class="table">
-    <thead>
-        <tr>
-            <th>{{ 'intitule_titre' | transloco }}</th>
-            <th></th>
-            <th>{{ 'visibility' | transloco }}</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (playlist of listPlaylist; track playlist.id_playlist) {
-        <tr>
-            <td>
-                <a [routerLink]="['/playlist', playlist.id_playlist]">{{playlist.titre}}</a>
-            </td>
+  <thead>
+    <tr>
+      <th>{{ 'intitule_titre' | transloco }}</th>
+      <th></th>
+      <th>{{ 'visibility' | transloco }}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (playlist of listPlaylist; track playlist.id_playlist) {
+    <tr>
+      <td>
+        <a [routerLink]="['/playlist', playlist.id_playlist]">{{ playlist.titre }}</a>
+      </td>
 
-            <td>
-                <button class="btn btn-secondary"
-                    (click)="onConfirmEditTitlePlaylist(playlist.id_playlist,playlist.titre, contentModalConfirmEditTitle)">
-                    <span class="material-icons">edit</span>
-                    {{ 'modifier_nom' | transloco }}
-                </button>
-            </td>
+      <td>
+        <button
+          class="btn btn-secondary"
+          (click)="
+            onConfirmEditTitlePlaylist(
+              playlist.id_playlist,
+              playlist.titre,
+              contentModalConfirmEditTitle
+            )
+          "
+        >
+          <span class="material-icons">edit</span>
+          {{ 'modifier_nom' | transloco }}
+        </button>
+      </td>
 
-            <td>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-light" [class.active]="!playlist.prive"
-                        (click)="onSwitchVisibility(playlist.id_playlist,'public')">
-                        {{ 'public' | transloco }}
-                    </button>
-                    <button type="button" class="btn btn-light" [class.active]="playlist.prive"
-                        (click)="onSwitchVisibility(playlist.id_playlist,'prive')">
-                        {{ 'prive' | transloco }}
-                    </button>
-                </div>
-            </td>
+      <td>
+        <div class="btn-group">
+          <button
+            type="button"
+            class="btn btn-light"
+            [class.active]="!playlist.prive"
+            (click)="onSwitchVisibility(playlist.id_playlist, 'public')"
+          >
+            {{ 'public' | transloco }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-light"
+            [class.active]="playlist.prive"
+            (click)="onSwitchVisibility(playlist.id_playlist, 'prive')"
+          >
+            {{ 'prive' | transloco }}
+          </button>
+        </div>
+      </td>
 
-            <td>
-                <a class="btn btn-secondary"
-                    (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
-                    role="button" tabindex="0"
-                    (keydown.enter)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
-                    (keydown.space)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist); $event.preventDefault()">
-                    <span class="material-icons">clear</span>
-                    {{'supprimer' | transloco}}
-                </a>
-            </td>
-        </tr>
-        }
-    </tbody>
+      <td>
+        <a
+          class="btn btn-secondary"
+          (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
+          role="button"
+          tabindex="0"
+          (keydown.enter)="
+            onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)
+          "
+          (keydown.space)="
+            onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist);
+            $event.preventDefault()
+          "
+        >
+          <span class="material-icons">clear</span>
+          {{ 'supprimer' | transloco }}
+        </a>
+      </td>
+    </tr>
+    }
+  </tbody>
 </table>
 
 <ng-template #contentModalConfirmDeletePlaylist let-modal>
-    <div class="modal-body">
-        {{ 'supprimer_playlist_confirmer' | transloco }}
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">{{ 'annuler' |
-            transloco}}</button>
-        <button type="button" class="btn btn-primary" (click)="onDeletePlaylist(modal)">{{ 'confirmer' |
-            transloco}}</button>
-    </div>
+  <div class="modal-body">
+    {{ 'supprimer_playlist_confirmer' | transloco }}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">
+      {{ 'annuler' | transloco }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="onDeletePlaylist(modal)">
+      {{ 'confirmer' | transloco }}
+    </button>
+  </div>
 </ng-template>
 
 <ng-template #contentModalConfirmEditTitle let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">{{ 'playlist_modifier_titre' | transloco}}</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <form (ngSubmit)="onEditTitlePlaylist(formEditTitle, modal)" #formEditTitle="ngForm">
-            <div class="input-group">
-                <input type="text" class="form-control" name="playlist_titre" [(ngModel)]="playlistTitle" required>
-                <input class="btn btn-primary" type="submit" [disabled]="formEditTitle.invalid"
-                    value="{{ 'modifier' | transloco }}" />
-            </div>
-            @if(formEditTitle.dirty && error!=='') {
-            <p class="alert alert-danger">{{error}}</p>
-            }
-        </form>
-    </div>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ 'playlist_modifier_titre' | transloco }}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="onEditTitlePlaylist(formEditTitle, modal)" #formEditTitle="ngForm">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          name="playlist_titre"
+          [(ngModel)]="playlistTitle"
+          required
+        />
+        <input
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="formEditTitle.invalid"
+          value="{{ 'modifier' | transloco }}"
+        />
+      </div>
+      @if(formEditTitle.dirty && error!=='') {
+      <p class="alert alert-danger">{{ error }}</p>
+      }
+    </form>
+  </div>
 </ng-template>
