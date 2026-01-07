@@ -13,7 +13,7 @@ import { FollowItem } from '../models/follow.model';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { UserVideo, Video } from '../models/video.model';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { Playlist } from '../models/playlist.model';
 
@@ -101,8 +101,9 @@ describe('PlaylistComponent', () => {
 
     await TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
-      imports: [getTranslocoModule(), PlaylistComponent],
+      imports: [PlaylistComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: PLATFORM_ID, useValue: 'browser' },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         {
@@ -895,8 +896,9 @@ describe('PlaylistComponent (Server context)', () => {
 
     await TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
-      imports: [getTranslocoModule(), PlaylistComponent],
+      imports: [PlaylistComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: PLATFORM_ID, useValue: 'server' },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         {

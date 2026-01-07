@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { ResetPasswordComponent } from './reset-password.component';
 import { UserService } from '../services/user.service';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 
 describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
@@ -26,8 +26,9 @@ describe('ResetPasswordComponent', () => {
     cdrMock = { detectChanges: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, ResetPasswordComponent, getTranslocoModule()],
+      imports: [ReactiveFormsModule, ResetPasswordComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: UserService, useValue: userServiceMock },
         { provide: Router, useValue: routerMock },
         { provide: ChangeDetectorRef, useValue: cdrMock },

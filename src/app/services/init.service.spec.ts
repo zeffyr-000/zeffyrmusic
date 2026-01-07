@@ -4,7 +4,7 @@ import { environment } from '../../environments/environment';
 import { InitService, PingResponse } from './init.service';
 import { HomeAlbum } from '../models/album.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -43,8 +43,9 @@ describe('InitService', () => {
   describe('In browser environment', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [getTranslocoModule()],
+        imports: [],
         providers: [
+          getTranslocoTestingProviders(),
           InitService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
@@ -418,8 +419,9 @@ describe('InitService', () => {
   describe('In server environment', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [getTranslocoModule()],
+        imports: [],
         providers: [
+          getTranslocoTestingProviders(),
           InitService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),

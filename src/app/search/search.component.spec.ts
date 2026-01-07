@@ -14,7 +14,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '../services/search.service';
 import { MockTestComponent } from '../mock-test.component';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -107,12 +107,12 @@ describe('SearchComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([{ path: 'test', component: MockTestComponent }]),
-        getTranslocoModule(),
         SearchComponent,
         ToMMSSPipe,
       ],
       declarations: [MockTestComponent],
       providers: [
+        getTranslocoTestingProviders(),
         {
           provide: PLATFORM_ID,
           useValue: 'browser',

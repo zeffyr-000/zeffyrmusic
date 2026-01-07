@@ -3,7 +3,7 @@ import { MyPlaylistsComponent } from './my-playlists.component';
 import { PlayerService } from '../services/player.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, of } from 'rxjs';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { InitService } from '../services/init.service';
 import { AuthGuard } from '../services/auth-guard.service';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
@@ -57,8 +57,9 @@ describe('MyPlaylistsComponent', () => {
     initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule(), FormsModule, MyPlaylistsComponent],
+      imports: [FormsModule, MyPlaylistsComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: InitService, useValue: initServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },

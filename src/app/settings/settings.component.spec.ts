@@ -7,7 +7,7 @@ import { NgbActiveModal, NgbModal, NgbModalModule, NgbModalRef } from '@ng-boots
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { UserService } from '../services/user.service';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { SettingsComponent } from './settings.component';
 import { AuthGuard } from '../services/auth-guard.service';
 import { UserReponse } from '../models/user.model';
@@ -60,8 +60,9 @@ describe('SettingsComponent', () => {
     initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
-      imports: [NgbModalModule, getTranslocoModule(), SettingsComponent],
+      imports: [NgbModalModule, SettingsComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: InitService, useValue: initServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: NgbModal, useValue: modalServiceSpyObj },

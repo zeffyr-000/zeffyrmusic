@@ -10,7 +10,7 @@ import { Album } from '../models/album.model';
 import { ArtistComponent } from './artist.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ArtistService } from '../services/artist.service';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { environment } from '../../environments/environment';
 
 describe('ArtistComponent', () => {
@@ -39,8 +39,9 @@ describe('ArtistComponent', () => {
       };
 
       await TestBed.configureTestingModule({
-        imports: [getTranslocoModule(), ArtistComponent, FontAwesomeTestingModule],
+        imports: [ArtistComponent, FontAwesomeTestingModule],
         providers: [
+          getTranslocoTestingProviders(),
           { provide: ArtistService, useValue: artistServiceMock },
           { provide: PLATFORM_ID, useValue: 'browser' },
           {
@@ -123,8 +124,9 @@ describe('ArtistComponent', () => {
       };
 
       await TestBed.configureTestingModule({
-        imports: [getTranslocoModule(), ArtistComponent, FontAwesomeTestingModule],
+        imports: [ArtistComponent, FontAwesomeTestingModule],
         providers: [
+          getTranslocoTestingProviders(),
           { provide: ArtistService, useValue: artistServiceMock },
           { provide: PLATFORM_ID, useValue: 'server' },
           {

@@ -10,7 +10,7 @@ import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/
 import { environment } from 'src/environments/environment';
 import { UserPlaylist } from '../models/playlist.model';
 import { FollowItem } from '../models/follow.model';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { PLATFORM_ID } from '@angular/core';
 
 describe('PlayerService', () => {
@@ -44,8 +44,9 @@ describe('PlayerService', () => {
       });
 
       await TestBed.configureTestingModule({
-        imports: [getTranslocoModule()],
+        imports: [],
         providers: [
+          getTranslocoTestingProviders(),
           {
             provide: Title,
             useValue: {
@@ -1226,8 +1227,9 @@ describe('PlayerService', () => {
         listLikeVideo: [],
       });
       TestBed.configureTestingModule({
-        imports: [getTranslocoModule()],
+        imports: [],
         providers: [
+          getTranslocoTestingProviders(),
           {
             provide: Title,
             useValue: {

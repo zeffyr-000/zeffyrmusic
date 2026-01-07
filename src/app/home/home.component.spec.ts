@@ -9,7 +9,7 @@ import { HomeAlbum } from '../models/album.model';
 import { HomeComponent } from './home.component';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID, StateKey, makeStateKey } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const HOME_DATA_KEY = makeStateKey<any>('randomTop');
@@ -153,8 +153,9 @@ describe('HomeComponent', () => {
 
       await TestBed.configureTestingModule({
         schemas: [NO_ERRORS_SCHEMA],
-        imports: [getTranslocoModule(), HomeComponent],
+        imports: [HomeComponent],
         providers: [
+          getTranslocoTestingProviders(),
           { provide: Title, useValue: titleService },
           { provide: Meta, useValue: metaService },
           { provide: GoogleAnalyticsService, useValue: googleAnalyticsService },
@@ -250,8 +251,9 @@ describe('HomeComponent', () => {
 
       await TestBed.configureTestingModule({
         schemas: [NO_ERRORS_SCHEMA],
-        imports: [getTranslocoModule(), HomeComponent],
+        imports: [HomeComponent],
         providers: [
+          getTranslocoTestingProviders(),
           { provide: Title, useValue: titleService },
           { provide: Meta, useValue: metaService },
           { provide: GoogleAnalyticsService, useValue: googleAnalyticsService },
