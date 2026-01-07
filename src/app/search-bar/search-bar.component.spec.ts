@@ -12,7 +12,7 @@ import { MockTestComponent } from '../mock-test.component';
 import { TestScheduler } from 'rxjs/testing';
 import { SearchService } from '../services/search.service';
 import { SearchBarResponse } from '../models/search.model';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -59,11 +59,11 @@ describe('SearchBarComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes([{ path: 'test', component: MockTestComponent }]),
-        getTranslocoModule(),
         SearchBarComponent,
       ],
       declarations: [MockTestComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: SearchService, useValue: searchServiceMock },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpy },
         { provide: RouterTestingModule, useValue: routerSpy },

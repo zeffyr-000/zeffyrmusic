@@ -16,7 +16,7 @@ import { UserVideo, VideoItem } from '../models/video.model';
 import { Component, NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { LoginResponse } from '../models/user.model';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { environment } from 'src/environments/environment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockTestComponent } from '../mock-test.component';
@@ -198,7 +198,6 @@ describe('HeaderComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         NgbModalModule,
-        getTranslocoModule(),
         HeaderComponent,
         FontAwesomeTestingModule,
         RouterTestingModule.withRoutes([{ path: 'test', component: MockTestComponent }]),
@@ -206,6 +205,7 @@ describe('HeaderComponent', () => {
         MockSearchBarComponent,
       ],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: InitService, useValue: initServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: UserService, useValue: userServiceMock },

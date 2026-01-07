@@ -5,7 +5,7 @@ import { CurrentComponent } from './current.component';
 import { PlayerService } from '../services/player.service';
 import { InitService } from '../services/init.service';
 import { Video } from '../models/video.model';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 
 describe('CurrentComponent', () => {
   let component: CurrentComponent;
@@ -72,8 +72,9 @@ describe('CurrentComponent', () => {
     vi.spyOn(ngZoneMock, 'run').mockImplementation(<T>(fn: (...args: unknown[]) => T) => fn());
 
     await TestBed.configureTestingModule({
-      imports: [CurrentComponent, getTranslocoModule()],
+      imports: [CurrentComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: InitService, useValue: initServiceMock },
         { provide: NgZone, useValue: ngZoneMock },

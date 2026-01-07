@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { HelpPageComponent } from './help-page.component';
-import { getTranslocoModule } from 'src/app/transloco-testing.module';
+import { getTranslocoTestingProviders } from 'src/app/transloco-testing';
 
 describe('HelpPageComponent', () => {
   let component: HelpPageComponent;
@@ -14,8 +14,9 @@ describe('HelpPageComponent', () => {
   beforeEach(async () => {
     getSpy = vi.fn().mockReturnValue('test-page');
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule(), HelpPageComponent],
+      imports: [HelpPageComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: getSpy } } } },
       ],
     }).compileComponents();

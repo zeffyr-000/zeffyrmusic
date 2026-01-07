@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
+import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { PlaylistComponent } from './playlist/playlist.component';
 import { HelpComponent } from './help/help.component';
@@ -7,7 +6,7 @@ import { HelpPageComponent } from './help/help-page/help-page.component';
 import { CurrentComponent } from './current/current.component';
 import { AuthGuard } from './services/auth-guard.service';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'top', component: HomeComponent },
   { path: 'albums', component: HomeComponent },
@@ -49,9 +48,3 @@ const routes: Routes = [
   },
   { path: '**', redirectTo: '' },
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {}

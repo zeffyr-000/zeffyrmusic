@@ -3,7 +3,7 @@ import { MySelectionComponent } from './my-selection.component';
 import { PlayerService } from '../services/player.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { getTranslocoModule } from '../transloco-testing.module';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 import { InitService } from '../services/init.service';
 import { AuthGuard } from '../services/auth-guard.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -40,8 +40,9 @@ describe('MySelectionComponent', () => {
     initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule(), MySelectionComponent],
+      imports: [MySelectionComponent],
       providers: [
+        getTranslocoTestingProviders(),
         { provide: InitService, useValue: initServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: AuthGuard, useValue: authGuardMock },
