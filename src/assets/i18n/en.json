@@ -45,6 +45,7 @@
   "mot_de_passe_repeter": "Repeat new password",
   "mot_de_passe_confirmer_invalide": "Confirmation password is incorrect",
   "mot_de_passe_modifie_succes": "Your password has been edited",
+  "mail_modifie_succes": "Your email address has been updated",
   "ancien_passe_incorrect": "Former password is incorrect",
   "mot_de_passe_invalide": "This password is not valid (between 4 and 16 characters)",
   "settings": "Settings",

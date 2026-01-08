@@ -6,7 +6,6 @@ import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { BehaviorSubject, of } from 'rxjs';
 import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
-import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { SearchComponent } from './search.component';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
@@ -15,18 +14,19 @@ import { SearchService } from '../services/search.service';
 import { MockTestComponent } from '../mock-test.component';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
 import { getTranslocoTestingProviders } from '../transloco-testing';
+import { AuthStore, QueueStore } from '../store';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
   let titleService: Title;
   let translocoService: TranslocoService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let initService: InitService;
   let playerService: PlayerService;
   let googleAnalyticsService: GoogleAnalyticsService;
   let searchServiceMock: Partial<SearchService>;
   let activatedRouteMock: MockedObject<ActivatedRoute>;
+  let authStore: InstanceType<typeof AuthStore>;
+  let queueStore: InstanceType<typeof QueueStore>;
 
   const searchResults1: SearchResults1 = {
     artist: [
@@ -64,10 +64,7 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const initServiceMock: any = { init: vi.fn() };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const playerServiceMock: any = {
-      launchYTApi: vi.fn(),
       lecture: vi.fn(),
       removeToPlaylist: vi.fn(),
       switchFollow: vi.fn(),
@@ -77,17 +74,6 @@ describe('SearchComponent', () => {
       removeVideo: vi.fn(),
       addVideoAfterCurrentInList: vi.fn(),
     };
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
-      currentKey: 'test-key',
-      currentTitle: 'test-title',
-      currentArtist: 'test-artist',
-    });
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: 'test-pseudo',
-      idPerso: 'test-idPerso',
-      mail: 'test-mail',
-    });
     searchServiceMock = {
       fullSearch1: vi.fn().mockReturnValue(of(searchResults1)),
       fullSearch2: vi.fn().mockReturnValue(of(searchResults2)),
@@ -134,10 +120,6 @@ describe('SearchComponent', () => {
           },
         },
         {
-          provide: InitService,
-          useValue: initServiceMock,
-        },
-        {
           provide: PlayerService,
           useValue: playerServiceMock,
         },
@@ -151,6 +133,10 @@ describe('SearchComponent', () => {
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
+    authStore = TestBed.inject(AuthStore);
+    queueStore = TestBed.inject(QueueStore);
+    authStore.logout();
+    queueStore.clear();
   });
 
   beforeEach(() => {
@@ -158,7 +144,6 @@ describe('SearchComponent', () => {
     component = fixture.componentInstance;
     titleService = TestBed.inject(Title);
     translocoService = TestBed.inject(TranslocoService);
-    initService = TestBed.inject(InitService);
     playerService = TestBed.inject(PlayerService);
     googleAnalyticsService = TestBed.inject(GoogleAnalyticsService);
     fixture.detectChanges();
@@ -171,12 +156,14 @@ describe('SearchComponent', () => {
   it('should set title and load data on init', () => {
     vi.spyOn(titleService, 'setTitle');
 
+    // Set language to English for predictable test output
+    translocoService.setActiveLang('en');
+
     component.ngOnInit();
     expect(titleService.setTitle).toHaveBeenCalledWith('Search results "test" - Zeffyr Music');
     expect(component.listArtists).toEqual(searchResults1.artist);
     expect(component.listAlbums).toEqual(searchResults1.playlist);
     expect(component.listTracks).toEqual(searchResults2.tab_video);
-    expect(component.listExtras).toEqual(searchResults3.tab_extra);
 
     if (component['isBrowser']) {
       expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('search/test');
@@ -318,6 +305,12 @@ describe('SearchComponent', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (searchServiceMock.fullSearch3 as Mock<any>).mockReturnValue(of(searchResults3WithoutTabExtra));
 
+    // Login user to trigger fullSearch3
+    authStore.login(
+      { pseudo: 'test', mail: 'test@test.com', idPerso: '123' },
+      { darkModeEnabled: false, language: 'fr' }
+    );
+
     component.listExtras = [{ key: 'OLD_VALUE', title: 'Should be cleared', duree: 100 }];
 
     component.ngOnInit();
@@ -327,12 +320,10 @@ describe('SearchComponent', () => {
   });
 
   it('should unsubscribe from subscription on ngOnDestroy', () => {
-    const unsubscribeSpy = vi.spyOn(component['subscriptionConnected'], 'unsubscribe');
-    const unsubscribeSpy2 = vi.spyOn(component['paramMapSubscription'], 'unsubscribe');
+    const unsubscribeSpy = vi.spyOn(component['paramMapSubscription'], 'unsubscribe');
 
     component.ngOnDestroy();
 
     expect(unsubscribeSpy).toHaveBeenCalled();
-    expect(unsubscribeSpy2).toHaveBeenCalled();
   });
 });

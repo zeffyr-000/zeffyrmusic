@@ -1,15 +1,15 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
-  OnDestroy,
-  OnInit,
   PLATFORM_ID,
   Renderer2,
   TemplateRef,
   ViewChild,
   DOCUMENT,
   inject,
+  effect,
 } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -28,22 +28,21 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
-import { distinctUntilChanged, Subscription } from 'rxjs';
+import { UserLibraryService } from '../services/user-library.service';
+import { AuthStore, UserDataStore, PlayerStore, QueueStore, UiStore } from '../store';
 import { UserService } from '../services/user.service';
 import { LoginResponse, UserReponse } from '../models/user.model';
 import { isPlatformBrowser } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
-import { UserPlaylist } from '../models/playlist.model';
 import { AngularDraggableModule } from 'angular2-draggable';
-
-// eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
-declare var google: any;
+import '../models/google-identity.model';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgbDropdown,
     NgbDropdownToggle,
@@ -58,11 +57,17 @@ declare var google: any;
     AngularDraggableModule,
   ],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent {
   activeModal = inject(NgbActiveModal);
   private readonly modalService = inject(NgbModal);
   private readonly initService = inject(InitService);
+  readonly authStore = inject(AuthStore);
+  readonly userDataStore = inject(UserDataStore);
+  readonly playerStore = inject(PlayerStore);
+  readonly queueStore = inject(QueueStore);
+  readonly uiStore = inject(UiStore);
   playerService = inject(PlayerService);
+  readonly userLibraryService = inject(UserLibraryService);
   private readonly ref = inject(ChangeDetectorRef);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
@@ -72,39 +77,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private renderer = inject(Renderer2);
   private document = inject<Document>(DOCUMENT);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @ViewChild('contentModalLogin') contentModalLogin: TemplateRef<any>;
+  @ViewChild('contentModalLogin') contentModalLogin: TemplateRef<unknown>;
   @ViewChild('contentModalRegister') contentModalRegister: TemplateRef<unknown>;
+  @ViewChild('sliderPlayer', {}) sliderPlayerRef: ElementRef;
+  @ViewChild('sliderVolume', {}) sliderVolumeRef: ElementRef;
+  @ViewChild('contentModalAddVideo', {})
+  private readonly contentModalAddVideo: TemplateRef<unknown>;
 
-  isConnected: boolean;
-  pseudo: string;
-  mail: string;
-  isRepeat: boolean;
-  isRandom: boolean;
-  isPlaying: boolean;
-  currentTitle: string;
-  currentArtist: string;
-  currentKey: string;
-  listPlaylist: UserPlaylist[];
-
-  subscriptionConnected: Subscription;
-  subscriptionRepeat: Subscription;
-  subscriptionRandom: Subscription;
-  subscriptionIsPlaying: Subscription;
-  subscriptionVolume: Subscription;
-  subscriptionPlayerRunning: Subscription;
-  subscriptionAddVideo: Subscription;
-  subscriptionChangeKey: Subscription;
-  subscriptionListPlaylist: Subscription;
-
-  valueSliderPlayer: number;
-  valueSliderVolume: number;
-  currentTimeStr = '0:00';
-  totalTimeStr = '0:00';
   onDragingPlayer = false;
-
-  loadVideo = 0;
-
   isRegistered = false;
   error = '';
   isSuccess = false;
@@ -116,84 +96,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   addDuration: number;
   URL_ASSETS: string;
   isPlayerExpanded = false;
-  darkModeEnabled = false;
 
-  @ViewChild('sliderPlayer', {}) sliderPlayerRef: ElementRef;
-  @ViewChild('sliderVolume', {}) sliderVolumeRef: ElementRef;
-
-  @ViewChild('contentModalAddVideo', {})
-  private readonly contentModalAddVideo: TemplateRef<unknown>;
   public isBrowser: boolean;
 
   constructor() {
     const platformId = inject(PLATFORM_ID);
 
     this.isBrowser = isPlatformBrowser(platformId);
-    this.isConnected = false;
     this.URL_ASSETS = environment.URL_ASSETS;
-  }
 
-  ngOnInit() {
-    this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
-      this.isConnected = data.isConnected;
-      this.pseudo = data.pseudo;
-      this.mail = data.mail;
-      this.darkModeEnabled = data.darkModeEnabled;
-
-      this.translocoService.setActiveLang(data.language);
-
-      if (data.darkModeEnabled) {
-        this.renderer.setAttribute(this.document.body, 'data-bs-theme', 'dark');
-      } else {
-        this.renderer.removeAttribute(this.document.body, 'data-bs-theme');
-      }
-    });
-
-    this.subscriptionRepeat = this.playerService.subjectRepeatChange.subscribe(isRepeat => {
-      this.isRepeat = isRepeat;
-    });
-
-    this.subscriptionRandom = this.playerService.subjectRandomChange.subscribe(isRandom => {
-      this.isRandom = isRandom;
-    });
-
-    this.subscriptionIsPlaying = this.playerService.subjectIsPlayingChange.subscribe(isPlaying => {
-      this.isPlaying = isPlaying;
-      this.ref.detectChanges();
-    });
-
-    this.subscriptionVolume = this.playerService.subjectVolumeChange.subscribe(volume => {
-      this.valueSliderVolume = volume;
-      if (this.isBrowser && this.sliderVolumeRef?.nativeElement) {
-        this.sliderVolumeRef.nativeElement.style.transform = 'none';
-      }
-    });
-
-    this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange
-      ?.pipe(distinctUntilChanged((prev, curr) => prev && curr && prev.equals(curr)))
-      .subscribe(data => {
-        if (!data) {
-          return;
-        }
-
-        if (!this.onDragingPlayer) {
-          this.valueSliderPlayer = data.slideLength;
-          this.currentTimeStr = data.currentTimeStr;
-          this.totalTimeStr = data.totalTimeStr;
-          this.loadVideo = data.loadVideo;
-
-          this.ref.detectChanges();
-        }
-      });
-
-    this.subscriptionAddVideo = this.playerService.subjectAddVideo.subscribe(data => {
-      if (
-        data &&
-        typeof data === 'object' &&
-        'key' in data &&
-        'artist' in data &&
-        'title' in data
-      ) {
+    effect(() => {
+      const data = this.uiStore.addVideoData();
+      if (data) {
         this.addKey = data.key;
         this.addArtist = data.artist;
         this.addTitle = data.title;
@@ -201,24 +115,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
         this.openModal(this.contentModalAddVideo);
       }
-    });
-
-    this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-      if (
-        data &&
-        typeof data === 'object' &&
-        'currentTitle' in data &&
-        'currentArtist' in data &&
-        'currentKey' in data
-      ) {
-        this.currentTitle = data.currentTitle;
-        this.currentArtist = data.currentArtist;
-        this.currentKey = data.currentKey;
-      }
-    });
-
-    this.subscriptionListPlaylist = this.playerService.subjectListPlaylist.subscribe(data => {
-      this.listPlaylist = data;
     });
   }
 
@@ -277,7 +173,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onDragMovingVolume(e: { x: number }) {
-    this.playerService.player.setVolume(e.x);
+    this.playerService.updateVolume(e.x);
     if (this.sliderVolumeRef?.nativeElement) {
       this.sliderVolumeRef.nativeElement.style.left = 'auto';
     }
@@ -314,7 +210,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const volume = Math.round((100 * value) / size);
 
     this.playerService.updateVolume(volume);
-    this.valueSliderVolume = volume;
   }
 
   onPlayPause() {
@@ -369,8 +264,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (token || form.valid) {
       this.userService.login(form?.form?.value, token).subscribe((data: LoginResponse) => {
         if (data.success !== undefined && data.success) {
-          this.isConnected = true;
+          // Login via AuthStore
+          this.authStore.login(
+            { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail },
+            {
+              darkModeEnabled: data.dark_mode_enabled,
+              language: data.language as 'fr' | 'en',
+            }
+          );
 
+          // Keep InitService.loginSuccess for compatibility
           this.initService.loginSuccess(
             data.pseudo,
             data.id_perso,
@@ -378,8 +281,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
             data.dark_mode_enabled,
             data.language
           );
-
-          this.mail = data.mail;
 
           this.playerService.onLoadListLogin(
             data.liste_playlist,
@@ -402,7 +303,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onLogout() {
     this.userService.logout().subscribe((data: UserReponse) => {
       if (data.success !== undefined && data.success) {
+        // Logout via AuthStore
+        this.authStore.logout();
+
+        // Keep InitService.logOut for compatibility
         this.initService.logOut();
+
         const url = this.router.url;
         const urlProtected = this.router.config
           ?.filter(route => route.canActivate !== undefined)
@@ -455,7 +361,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         client_id: environment.GOOGLE_CLIENT_ID,
         callback: this.handleCredentialResponse.bind(this),
       });
-      google.accounts.id.renderButton(document.getElementById('google-signin-button-header'), {});
+      google.accounts.id.renderButton(document.getElementById('google-signin-button-header')!, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+      });
     }
   }
 
@@ -469,7 +379,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         client_id: environment.GOOGLE_CLIENT_ID,
         callback: this.handleCredentialResponse.bind(this),
       });
-      google.accounts.id.renderButton(document.getElementById('google-register-button-header'), {});
+      google.accounts.id.renderButton(document.getElementById('google-register-button-header')!, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+      });
     }
   }
 
@@ -483,16 +397,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.renderGoogleRegisterButton();
     }, 0);
-  }
-
-  ngOnDestroy() {
-    this.subscriptionConnected.unsubscribe();
-    this.subscriptionRepeat.unsubscribe();
-    this.subscriptionRandom.unsubscribe();
-    this.subscriptionIsPlaying.unsubscribe();
-    this.subscriptionVolume.unsubscribe();
-    this.subscriptionPlayerRunning.unsubscribe();
-    this.subscriptionChangeKey.unsubscribe();
-    this.subscriptionListPlaylist.unsubscribe();
   }
 }

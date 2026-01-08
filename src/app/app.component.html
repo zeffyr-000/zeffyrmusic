@@ -5,13 +5,13 @@
     <app-player class="col-xs-3 col-md-3" id="gauche"></app-player>
 
     <div class="col-xs-9 col-md-9" id="content">
-      @if((playerService.currentIdTopCharts || playerService.currentIdPlaylist) &&
+      @if((queueStore.sourceTopChartsId() || queueStore.sourcePlaylistId()) &&
       !isRedirectingToCurrentUrl()){
       <a
         [routerLink]="
-          playerService.currentIdTopCharts
-            ? ['top', playerService.currentIdTopCharts]
-            : ['playlist', playerService.currentIdPlaylist]
+          queueStore.sourceTopChartsId()
+            ? ['top', queueStore.sourceTopChartsId()]
+            : ['playlist', queueStore.sourcePlaylistId()]
         "
       >
         <span class="material-icons">chevron_left</span>
@@ -27,8 +27,8 @@
 <ngb-alert id="alert_perte_connexion" (close)="isOnline = true" type="danger">
   {{ 'perte_connexion' | transloco }}
 </ngb-alert>
-} @if(showMessageUnlog){
-<ngb-alert id="alert_deconnexion" (close)="showMessageUnlog = false" type="danger">
+} @if(uiStore.showSessionExpiredMessage()){
+<ngb-alert id="alert_deconnexion" (close)="uiStore.hideSessionExpired()" type="danger">
   {{ 'veuillez_vous_reconnecter' | transloco }}
 </ngb-alert>
 } @if(errorMessage){

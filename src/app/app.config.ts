@@ -1,4 +1,8 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideShareButtonsOptions, withConfig } from 'ngx-sharebuttons';
 import { shareIcons } from 'ngx-sharebuttons/icons';
@@ -15,7 +19,7 @@ import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withFetch(), withInterceptors([httpConfigInterceptor])),
     provideShareButtonsOptions(

@@ -1,10 +1,10 @@
-import { Directive, Output, EventEmitter, ElementRef, HostListener, inject } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject, output } from '@angular/core';
 
 @Directive({ selector: '[appSwipeDown]' })
 export class SwipeDownDirective {
   private el = inject(ElementRef);
 
-  @Output() swipeDown = new EventEmitter();
+  readonly swipeDown = output<TouchEvent>();
 
   private startY: number;
 

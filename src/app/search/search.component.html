@@ -104,7 +104,7 @@
       @for (video of listTracks | slice:0:limitTrack ; track video.id_video; let index = $index) {
       <tr
         [attr.data-id-video]="video.key"
-        [class.active]="video.key === currentKey"
+        [class.active]="video.key === queueStore.currentKey()"
         role="button"
         tabindex="0"
         (click)="runPlaylistTrack(index)"
@@ -142,7 +142,7 @@
           }
         </td>
         <td>
-          @if(isConnected){
+          @if(authStore.isAuthenticated()){
           <span
             class="btn btn-default"
             (click)="
@@ -192,11 +192,11 @@
     <button class="btn btn-link" (click)="moreExtras()">{{ 'more' | transloco }}</button>
     }
   </div>
-  @if (!isConnected) {
+  @if (!authStore.isAuthenticated()) {
   <div class="bg-info p-2 rounded">
     {{ 'extras_info' | transloco }}
   </div>
-  } @if(!isLoading3 && isConnected && listExtras && listExtras.length>0){
+  } @if(!isLoading3 && authStore.isAuthenticated() && listExtras && listExtras.length>0){
   <table id="table_extra" class="table table-hover">
     <thead>
       <tr>
@@ -212,7 +212,7 @@
       @for (extra of listExtras | slice:0:limitExtra ; track extra.id_video; let index = $index) {
       <tr
         [attr.data-id-video]="extra.key"
-        [class.active]="extra.key === currentKey"
+        [class.active]="extra.key === queueStore.currentKey()"
         role="button"
         tabindex="0"
         (click)="runPlaylistExtra(index)"
@@ -234,7 +234,7 @@
           }
         </td>
         <td>
-          @if(isConnected) {
+          @if(authStore.isAuthenticated()) {
           <span
             class="btn btn-default"
             (click)="addVideo(extra.key, '', extra.title, extra.duree)"

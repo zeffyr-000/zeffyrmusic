@@ -1,4 +1,11 @@
-import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  PLATFORM_ID,
+  inject,
+} from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -15,6 +22,7 @@ import { SeoService } from '../services/seo.service';
   selector: 'app-artist',
   templateUrl: './artist.component.html',
   styleUrls: ['./artist.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ShareButtons, RouterLink, DefaultImageDirective, TranslocoPipe],
 })
 export class ArtistComponent implements OnInit {
@@ -25,6 +33,7 @@ export class ArtistComponent implements OnInit {
   private readonly seoService = inject(SeoService);
   private readonly translocoService = inject(TranslocoService);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   name: string;
   idArtistDeezer: string;
@@ -103,6 +112,8 @@ export class ArtistComponent implements OnInit {
           if (this.isBrowser) {
             this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
           }
+
+          this.cdr.markForCheck();
         }
       );
   }

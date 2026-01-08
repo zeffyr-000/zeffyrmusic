@@ -13,7 +13,7 @@
     <div class="d-flex w-100 justify-content-between">
       <div class="d-flex flex-column align-items-start">
         <h5>{{ 'mail' | transloco }}</h5>
-        <small>{{ mail }}</small>
+        <small>{{ mail() }}</small>
       </div>
       <button class="btn btn-primary" (click)="openModal(contentModalEditMail)">
         {{ 'modifier_mail' | transloco }}
@@ -29,7 +29,7 @@
           type="checkbox"
           id="darkModeSwitch"
           (change)="onSwitchDarkMode()"
-          [(ngModel)]="darkModeEnabled"
+          [checked]="darkModeEnabled()"
         />
       </div>
     </div>
@@ -39,7 +39,7 @@
       <div class="d-flex flex-column align-items-start">
         <h5>{{ 'language' | transloco }}</h5>
         <small
-          >{{ 'selected_language' | transloco }} : {{ 'langue_' + language | transloco }}</small
+          >{{ 'selected_language' | transloco }} : {{ 'langue_' + language() | transloco }}</small
         >
       </div>
       <button class="btn btn-primary" (click)="openModal(contentModalEditLanguage)">
@@ -126,9 +126,9 @@
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formEditPass.dirty && error!=='') {
-      <p class="alert alert-danger">{{ error }}</p>
-      } @if(successPass) {
+      @if(formEditPass.dirty && error()!=='') {
+      <p class="alert alert-danger">{{ error() }}</p>
+      } @if(successPass()) {
       <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
       }
     </form>
@@ -155,7 +155,7 @@
           id="mail"
           class="form-control"
           ngbAutofocus
-          [(ngModel)]="mail"
+          [ngModel]="mail()"
           required
           email
         />
@@ -169,10 +169,10 @@
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formEditMail.dirty && error!=='') {
-      <p class="alert alert-danger">{{ error }}</p>
-      } @if(successMail) {
-      <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+      @if(formEditMail.dirty && error()!=='') {
+      <p class="alert alert-danger">{{ error() }}</p>
+      } @if(successMail()) {
+      <p class="alert alert-success">{{ 'mail_modifie_succes' | transloco }}</p>
       }
     </form>
   </div>
@@ -197,10 +197,10 @@
           id="language"
           class="form-control"
           ngbAutofocus
-          [(ngModel)]="language"
+          [ngModel]="language()"
           required
         >
-          @for (lang of availableLanguages; track lang) {
+          @for (lang of availableLanguages(); track lang) {
           <option [value]="lang">{{ 'langue_' + lang | transloco }}</option>
           }
         </select>
@@ -214,9 +214,9 @@
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formEditLanguage.dirty && error!=='') {
-      <p class="alert alert-danger">{{ error }}</p>
-      } @if(successLanguage){
+      @if(formEditLanguage.dirty && error()!=='') {
+      <p class="alert alert-danger">{{ error() }}</p>
+      } @if(successLanguage()){
       <p class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
       }
     </form>
@@ -257,9 +257,9 @@
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formDeleteAccount.dirty && error!=='') {
-      <p class="alert alert-danger">{{ error }}</p>
-      } @if(successDelete){
+      @if(formDeleteAccount.dirty && error()!=='') {
+      <p class="alert alert-danger">{{ error() }}</p>
+      } @if(successDelete()){
       <p class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
       }
     </form>
@@ -279,9 +279,9 @@
   <div class="modal-body">
     <p class="bg-info p-2 rounded">{{ 'associate_google_account_description' | transloco }}</p>
     <div id="google-signin-button"></div>
-    @if(error!=='') {
-    <p class="alert alert-danger">{{ error }}</p>
-    } @if(successGoogleAccount){
+    @if(error()!=='') {
+    <p class="alert alert-danger">{{ error() }}</p>
+    } @if(successGoogleAccount()){
     <p class="alert alert-success">
       {{ 'associate_google_account_succesfully' | transloco }}
     </p>

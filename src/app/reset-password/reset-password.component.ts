@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +17,7 @@ import { UserService } from '../services/user.service';
   imports: [ReactiveFormsModule, TranslocoPipe],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent implements OnInit {
   private formBuilder = inject(FormBuilder);

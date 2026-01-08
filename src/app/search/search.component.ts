@@ -1,8 +1,15 @@
-import { Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  inject,
+} from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
-import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Album, Extra } from '../models/search.model';
@@ -15,11 +22,13 @@ import { isPlatformBrowser, SlicePipe } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { AuthStore, QueueStore } from '../store';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe, NgbTooltip],
 })
 export class SearchComponent implements OnInit, OnDestroy {
@@ -29,13 +38,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
   private readonly translocoService = inject(TranslocoService);
-  private readonly initService = inject(InitService);
   private readonly playerService = inject(PlayerService);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
-  private readonly ngZone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
+  readonly authStore = inject(AuthStore);
+  readonly queueStore = inject(QueueStore);
 
-  currentKey: string;
-  isConnected: boolean;
   query: string;
   isLoading1: boolean;
   isLoading2: boolean;
@@ -54,8 +62,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   listExtras: Extra[];
   limitExtra: number;
 
-  private subscriptionConnected: Subscription;
-  subscriptionChangeKey: Subscription;
   private paramMapSubscription: Subscription;
 
   constructor() {
@@ -63,21 +69,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
-      this.isConnected = data.isConnected;
-    });
-
-    this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-      this.ngZone.run(() => {
-        this.currentKey = data.currentKey;
-      });
-    });
-
     this.paramMapSubscription = this.activatedRoute.paramMap.subscribe(params => {
       this.query = params.get('query');
       this.isLoading1 = true;
       this.isLoading2 = true;
-      if (this.isConnected) {
+      if (this.authStore.isAuthenticated()) {
         this.isLoading3 = true;
       }
       this.listArtists = undefined;
@@ -104,6 +100,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
           this.listAlbums = data.playlist;
           this.limitAlbum = 5;
+
+          this.cdr.markForCheck();
         });
 
       this.searchService.fullSearch2(this.query).subscribe((data: { tab_video: Video[] }) => {
@@ -111,14 +109,18 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         this.listTracks = data.tab_video;
         this.limitTrack = 5;
+
+        this.cdr.markForCheck();
       });
 
-      if (this.isConnected) {
+      if (this.authStore.isAuthenticated()) {
         this.searchService.fullSearch3(this.query).subscribe((data: { tab_extra: Extra[] }) => {
           this.isLoading3 = false;
 
           this.listExtras = data.tab_extra || [];
           this.limitExtra = 5;
+
+          this.cdr.markForCheck();
         });
       }
 
@@ -162,8 +164,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptionConnected.unsubscribe();
-    this.subscriptionChangeKey.unsubscribe();
     this.paramMapSubscription.unsubscribe();
   }
 }

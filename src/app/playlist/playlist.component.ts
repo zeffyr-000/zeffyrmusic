@@ -1,10 +1,12 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  OnDestroy,
   NgZone,
   ChangeDetectorRef,
   PLATFORM_ID,
   inject,
+  effect,
+  computed,
 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -15,7 +17,6 @@ import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Video } from '../models/video.model';
 import { Playlist } from '../models/playlist.model';
-import { distinctUntilChanged, Subscription } from 'rxjs';
 import { PlaylistService } from '../services/playlist.service';
 import { APP_BASE_HREF, isPlatformBrowser } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
@@ -30,11 +31,15 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 import { SeoService } from '../services/seo.service';
+import { UserLibraryService } from '../services/user-library.service';
+import { UserDataStore } from '../store/user-data/user-data.store';
+import { AuthStore, PlayerStore, QueueStore } from '../store';
 
 @Component({
   selector: 'app-playlist',
   templateUrl: './playlist.component.html',
   styleUrls: ['./playlist.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DefaultImageDirective,
     RouterLink,
@@ -49,7 +54,7 @@ import { SeoService } from '../services/seo.service';
     ToMMSSPipe,
   ],
 })
-export class PlaylistComponent implements OnDestroy {
+export class PlaylistComponent {
   private readonly ref = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
   private baseHref = inject(APP_BASE_HREF, { optional: true });
@@ -64,6 +69,11 @@ export class PlaylistComponent implements OnDestroy {
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
   private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
+  readonly userDataStore = inject(UserDataStore);
+  readonly authStore = inject(AuthStore);
+  readonly playerStore = inject(PlayerStore);
+  readonly queueStore = inject(QueueStore);
+  readonly userLibraryService = inject(UserLibraryService);
 
   isLoading = true;
   isPrivate = false;
@@ -75,23 +85,48 @@ export class PlaylistComponent implements OnDestroy {
   title = '';
   titre = '';
   description = '';
-  isFollower = false;
   artist: string | null = null;
   idArtist: string | null = null;
-  isConnected = false;
-  idPerso = '';
-  currentKey = '';
-  isPlaying = false;
-  currentIdPlaylistPlaying = '';
   isLikePage = false;
-  subscriptionConnected: Subscription;
-  subscriptionChangeKey: Subscription;
-  subscriptionChangeFollow: Subscription;
-  subscriptionListLikeVideo: Subscription;
-  subscriptionIsPlaying: Subscription;
-  subscriptionCurrentPlaylist: Subscription;
-  subscriptionPlayerRunning: Subscription;
   isBrowser: boolean;
+
+  // Computed signal pour suivre si l'utilisateur suit cette playlist
+  readonly isFollower = computed(() => {
+    if (!this.idPlaylist) {
+      return false;
+    }
+    return this.userDataStore.isFollowing(this.idPlaylist);
+  });
+
+  // Computed signal pour la playlist en cours de lecture
+  readonly currentIdPlaylistPlaying = computed(() => {
+    return this.queueStore.sourcePlaylistId() || '';
+  });
+
+  private adjustDurationEffect = effect(() => {
+    const currentKey = this.queueStore.currentKey();
+    const duration = this.playerStore.duration();
+    if (currentKey && duration > 0) {
+      this.adjustPlaylistDuration(duration);
+    }
+  });
+
+  private likedVideosEffect = effect(() => {
+    const likedVideos = this.userDataStore.likedVideos();
+
+    // Ne rien faire si pas sur la page like ou si pas de vidéos
+    if (!this.isLikePage || !likedVideos || likedVideos.length === 0) {
+      return;
+    }
+
+    // Clear and rebuild playlist from liked videos
+    this.playlist = likedVideos.map(element => {
+      const elementToPush = { ...element } as unknown as Video;
+      elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
+      return elementToPush;
+    });
+    this.ref.markForCheck();
+  });
 
   constructor() {
     const activatedRoute = this.activatedRoute;
@@ -105,52 +140,6 @@ export class PlaylistComponent implements OnDestroy {
   }
 
   initLoad() {
-    this.subscriptionConnected = this.initService.subjectConnectedChange.subscribe(data => {
-      this.isConnected = data.isConnected;
-      this.idPerso = data.idPerso;
-    });
-
-    this.subscriptionChangeKey = this.playerService.subjectCurrentKeyChange.subscribe(data => {
-      this.ngZone.run(() => {
-        this.currentKey = data.currentKey;
-      });
-    });
-
-    this.subscriptionChangeFollow = this.playerService.subjectListFollow.subscribe(listFollow => {
-      if (!listFollow) {
-        return;
-      }
-
-      const listFiltered = listFollow.filter(e => e.id_playlist === this.idPlaylist);
-
-      if (listFiltered.length > 0) {
-        this.isFollower = true;
-      } else {
-        this.isFollower = false;
-      }
-    });
-
-    this.subscriptionIsPlaying = this.playerService.subjectIsPlayingChange.subscribe(isPlaying => {
-      this.isPlaying = isPlaying;
-      setTimeout(() => {
-        this.ref.detectChanges();
-      });
-    });
-
-    this.subscriptionCurrentPlaylist = this.playerService.subjectCurrentPlaylistChange?.subscribe(
-      list => {
-        this.currentIdPlaylistPlaying = list[0]?.id_playlist || '';
-      }
-    );
-
-    this.subscriptionPlayerRunning = this.playerService.subjectPlayerRunningChange
-      ?.pipe(distinctUntilChanged((prev, curr) => prev && curr && prev.equals(curr)))
-      .subscribe(data => {
-        if (data && data.totalTimeStr !== '0:00' && !!this.currentKey) {
-          this.adjustPlaylistDuration(data.totalTime);
-        }
-      });
-
     if (this.activatedRoute.snapshot.url[0].path === 'like') {
       this.loadLike();
     } else {
@@ -168,7 +157,6 @@ export class PlaylistComponent implements OnDestroy {
         }
       }
 
-      this.currentIdPlaylistPlaying = this.playerService.currentIdPlaylist;
       this.loadPlaylist(url);
     }
   }
@@ -243,7 +231,17 @@ export class PlaylistComponent implements OnDestroy {
         this.title = data.title;
         this.titre = data.titre || '';
         this.description = data.description || '';
-        this.isFollower = data.est_suivi;
+        // isFollower est calculé automatiquement via le computed signal basé sur userDataStore.follows()
+        // Si le serveur retourne est_suivi=true mais que le store n'a pas encore cette info,
+        // on peut ajouter le follow au store
+        if (data.est_suivi && !this.userDataStore.isFollowing(data.id_playlist)) {
+          this.userDataStore.addFollow({
+            id_playlist: data.id_playlist,
+            titre: data.titre || data.title,
+            artiste: data.artiste,
+            url_image: data.img_big,
+          });
+        }
         this.artist = data.artiste || '';
         this.idArtist = data.id_artiste;
         this.idPersoOwner = data.id_perso;
@@ -303,6 +301,8 @@ export class PlaylistComponent implements OnDestroy {
       if (this.isBrowser) {
         this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
       }
+
+      this.ref.markForCheck();
     });
   }
 
@@ -316,25 +316,20 @@ export class PlaylistComponent implements OnDestroy {
     this.title = '';
     this.titre = '';
     this.description = '';
-    this.isFollower = false;
     this.artist = null;
     this.idArtist = null;
     this.idPersoOwner = null;
     this.isLikePage = true;
 
-    this.subscriptionListLikeVideo = this.playerService.subjectListLikeVideo.subscribe(
-      listLikeVideo => {
-        if (!listLikeVideo) {
-          return;
-        }
-
-        listLikeVideo.forEach(element => {
-          const elementToPush = element as unknown as Video;
-          elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
-          this.playlist.push(elementToPush);
-        });
-      }
-    );
+    // Charger les vidéos likées initialement depuis le store
+    const likedVideos = this.userDataStore.likedVideos();
+    if (likedVideos && likedVideos.length > 0) {
+      this.playlist = likedVideos.map(element => {
+        const elementToPush = { ...element } as unknown as Video;
+        elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
+        return elementToPush;
+      });
+    }
 
     this.titleService.setTitle(this.translocoService.translate('mes_likes') + ' - Zeffyr Music');
     this.metaService.updateTag({ name: 'og:title', content: '' });
@@ -361,8 +356,7 @@ export class PlaylistComponent implements OnDestroy {
   }
 
   runPlaylist(index = 0) {
-    this.currentIdPlaylistPlaying = this.idPlaylist || '';
-    this.isPlaying = true;
+    // Le queueStore.sourcePlaylistId() sera mis à jour par playerService.runPlaylist()
     this.playerService.runPlaylist(this.playlist, index, this.idTopCharts);
   }
 
@@ -419,21 +413,12 @@ export class PlaylistComponent implements OnDestroy {
   }
 
   adjustPlaylistDuration(totalTime: number) {
+    const currentKey = this.queueStore.currentKey();
     this.playlist.forEach(video => {
-      if (video.key === this.currentKey) {
+      if (video.key === currentKey) {
         video.duree = totalTime.toString();
         this.ref.detectChanges();
       }
     });
-  }
-
-  ngOnDestroy() {
-    this.subscriptionConnected.unsubscribe();
-    this.subscriptionChangeKey.unsubscribe();
-    this.subscriptionChangeFollow.unsubscribe();
-    this.subscriptionListLikeVideo?.unsubscribe();
-    this.subscriptionIsPlaying.unsubscribe();
-    this.subscriptionCurrentPlaylist.unsubscribe();
-    this.subscriptionPlayerRunning.unsubscribe();
   }
 }

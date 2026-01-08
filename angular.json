@@ -15,7 +15,7 @@
           "options": {
             "outputPath": "dist",
             "index": "src/index.html",
-            "polyfills": ["src/polyfills.ts"],
+            "polyfills": ["@angular/localize/init"],
             "tsConfig": "src/tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styling/styles.scss"],

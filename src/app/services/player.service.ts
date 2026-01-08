@@ -1,21 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { effect, Injectable, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { PlayerRunning } from 'src/app/models/player-running.model';
+import { Subject, Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { InitService } from './init.service';
-import { UserVideo, Video, VideoItem } from '../models/video.model';
-import { UserPlaylist } from '../models/playlist.model';
-import { FollowItem } from '../models/follow.model';
+import { UserVideo, Video } from '../models/video.model';
 import { isPlatformBrowser } from '@angular/common';
+import { UserDataStore } from '../store/user-data/user-data.store';
+import { PlayerStore } from '../store/player/player.store';
+import { QueueStore } from '../store/queue/queue.store';
+import { UiStore } from '../store/ui/ui.store';
+import { YoutubePlayerService } from './youtube-player.service';
+import { FollowItem } from '../models/follow.model';
+import { UserPlaylist } from '../models/playlist.model';
 
-interface CurrentKey {
-  currentKey: string;
-  currentTitle: string;
-  currentArtist: string;
-}
-
+/**
+ * PlayerService - Playback orchestration and playlist management
+ *
+ * Coordinates YouTube player, stores and playlist CRUD operations.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -23,56 +26,27 @@ export class PlayerService implements OnDestroy {
   private readonly titleService = inject(Title);
   private readonly httpClient = inject(HttpClient);
   private readonly initService = inject(InitService);
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly userDataStore = inject(UserDataStore);
+  private readonly playerStore = inject(PlayerStore);
+  private readonly queueStore = inject(QueueStore);
+  private readonly uiStore = inject(UiStore);
+  private readonly youtubePlayer = inject(YoutubePlayerService);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  YT: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  player: any;
-  tabIndexInitial: number[];
-  tabIndex: number[];
-  isRandom: boolean;
+  tabIndexInitial: number[] = [];
+  tabIndex: number[] = [];
   currentIndex = 0;
-  isRepeat: boolean;
-  listPlaylist: UserPlaylist[] = [];
-  listFollow: FollowItem[] = [];
   listVideo: Video[] = [];
   isPlaying = false;
   refInterval: number | null = null;
   currentTitle = '';
   currentArtist = '';
   currentKey = '';
-  currentIdPlaylist = '';
-  currentIdTopCharts = '';
-  listLikeVideo: UserVideo[] = [];
 
-  subjectCurrentPlaylistChange: BehaviorSubject<Video[]> = new BehaviorSubject<Video[]>([]);
-  subjectRepeatChange: Subject<boolean> = new Subject<boolean>();
-  subjectRandomChange: Subject<boolean> = new Subject<boolean>();
-  subjectIsPlayingChange: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  subjectVolumeChange: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  subjectPlayerRunningChange: BehaviorSubject<PlayerRunning> = new BehaviorSubject<PlayerRunning>(
-    undefined
-  );
-  subjectListPlaylist: BehaviorSubject<UserPlaylist[]> = new BehaviorSubject<UserPlaylist[]>(
-    this.listPlaylist
-  );
-  subjectListFollow: BehaviorSubject<FollowItem[]> = new BehaviorSubject<FollowItem[]>(
-    this.listFollow
-  );
-  subjectListLikeVideo: BehaviorSubject<UserVideo[]> = new BehaviorSubject<UserVideo[]>(
-    this.listLikeVideo
-  );
-  subjectAddVideo: Subject<VideoItem> = new Subject<VideoItem>();
-  subjectCurrentKeyChange: BehaviorSubject<CurrentKey> = new BehaviorSubject<CurrentKey>({
-    currentKey: this.currentKey,
-    currentTitle: this.currentTitle,
-    currentArtist: this.currentArtist,
-  });
+  private stateChangeSubscription: Subscription;
+  private queueInitialized = false;
 
-  subscriptionInitializePlaylist: Subscription;
-
-  private errorMessageSubject = new BehaviorSubject<string | null>(null);
+  private errorMessageSubject = new Subject<string | null>();
   errorMessage$ = this.errorMessageSubject.asObservable();
 
   private isBrowser: boolean;
@@ -81,154 +55,72 @@ export class PlayerService implements OnDestroy {
     this.isBrowser = isPlatformBrowser(this.platformId);
 
     if (this.isBrowser) {
-      if ('requestIdleCallback' in window) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).requestIdleCallback(() => this.init());
-      } else {
-        setTimeout(() => this.init(), 0);
-      }
-    }
+      this.youtubePlayer.initPlayer('player');
 
-    this.subscriptionInitializePlaylist = this.initService.subjectInitializePlaylist.subscribe(
-      data => {
-        this.listPlaylist = data.listPlaylist;
-        this.listFollow = data.listFollow;
-        this.listVideo = data.listVideo;
-        this.tabIndex = data.tabIndex;
-        this.listLikeVideo = data.listLikeVideo;
-
-        this.tabIndexInitial = this.tabIndex.slice(0);
-
-        if (this.isRandom) {
-          this.shuffle(this.tabIndex);
-        }
-
-        this.currentKey = this.listVideo[this.currentIndex].key;
-        this.currentTitle = this.listVideo[this.currentIndex].titre;
-        if (
-          this.listVideo[this.currentIndex].artiste &&
-          this.listVideo[this.currentIndex].artiste !== ''
-        ) {
-          this.currentArtist = this.listVideo[this.currentIndex].artiste;
-        } else {
-          this.currentArtist = '';
-        }
-
-        this.subjectCurrentKeyChange.next({
-          currentKey: this.currentKey,
-          currentTitle: this.currentTitle,
-          currentArtist: this.currentArtist,
-        });
-
-        this.onChangeCurrentPlaylist();
-
-        this.onChangeListPlaylist();
-        this.onChangeListFollow();
-        this.onChangeListLikeVideo();
-      }
-    );
-  }
-
-  onStateChangeYT(event: { data: number }) {
-    this.finvideo(event);
-  }
-
-  onReadyYT() {
-    if (this.tabIndex !== undefined && this.tabIndex[0] !== undefined) {
-      this.player.cueVideoById(this.listVideo[0].key);
-    }
-
-    if (
-      localStorage.volume === 'undefined' ||
-      localStorage.volume === undefined ||
-      Number.parseInt(localStorage.volume, 10) > 100 ||
-      Number.parseInt(localStorage.volume, 10) < 0
-    ) {
-      if (typeof this.player.getVolume() === 'number') {
-        localStorage.volume = this.player.getVolume();
-      } else {
-        localStorage.volume = '100';
-      }
-    }
-
-    this.updateVolume(Number.parseInt(localStorage.volume, 10));
-  }
-
-  onErrorYT(event: { data: number }) {
-    let errorMessage: string;
-    switch (event.data) {
-      case 2:
-        errorMessage = 'error_invalid_parameter';
-        break;
-      case 5:
-        errorMessage = 'error_html_player';
-        break;
-      case 100:
-        errorMessage = 'error_request_not_found';
-        break;
-      case 101:
-      case 150:
-        errorMessage = 'error_request_access_denied';
-        break;
-      default:
-        errorMessage = 'error_unknown';
-        break;
-    }
-    this.errorMessageSubject.next(errorMessage);
-  }
-
-  launchYTApi() {
-    if (!this.isBrowser) {
-      return;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).onYouTubeIframeAPIReady = () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.YT = (window as any).YT;
-      this.player = new this.YT.Player('player', {
-        playerVars: {
-          controls: 0,
-          hd: 1,
-          showinfo: 0,
-          origin: window.location.href,
-          rel: 0,
-          widget_referrer: window.location.href,
-        },
-        events: {
-          onStateChange: this.onStateChangeYT.bind(this),
-          onReady: this.onReadyYT.bind(this),
-          onError: this.onErrorYT.bind(this),
-        },
+      this.stateChangeSubscription = this.youtubePlayer.stateChange$.subscribe(state => {
+        this.handleStateChange(state);
       });
-    };
+
+      this.youtubePlayer.error$.subscribe(error => {
+        if (error) {
+          this.errorMessageSubject.next(error);
+        }
+      });
+
+      effect(() => {
+        const items = this.queueStore.items();
+        const currentKey = this.queueStore.currentKey();
+
+        if (items.length > 0 && currentKey && !this.queueInitialized) {
+          this.queueInitialized = true;
+
+          this.listVideo = items;
+          this.tabIndex = this.queueStore.tabIndex();
+          this.tabIndexInitial = this.queueStore.tabIndexOriginal();
+          this.currentKey = currentKey;
+          this.currentTitle = this.queueStore.currentTitle();
+          this.currentArtist = this.queueStore.currentArtist();
+
+          this.youtubePlayer.cueVideo(currentKey);
+        }
+      });
+    }
   }
 
-  finvideo(state: { data: number }) {
-    switch (state.data) {
-      case -1:
-      case 0:
-      case 2:
+  private handleStateChange(state: YT.PlayerState): void {
+    switch (state) {
+      case 0: // ENDED
         this.isPlaying = false;
+        this.playerStore.setEnded();
         break;
-
-      case 1:
+      case 2: // PAUSED
+        this.isPlaying = false;
+        this.playerStore.pause();
+        break;
+      case -1: // UNSTARTED
+        this.isPlaying = false;
+        this.playerStore.setIdle();
+        break;
+      case 1: // PLAYING
         this.isPlaying = true;
+        this.playerStore.play();
+        break;
+      case 3: // BUFFERING
+        this.playerStore.setLoading();
         break;
     }
 
-    this.subjectIsPlayingChange.next(this.isPlaying);
-
-    if (state.data === 0) {
+    if (state === 0) {
       this.after();
     }
 
-    if (state.data === 1 || state.data === -1 || state.data === 3) {
+    if (state === 1 || state === -1 || state === 3) {
       if (this.refInterval === null) {
         this.refInterval = window.setInterval(this.playerRunning.bind(this), 200);
       }
     }
 
-    if (state.data === 2) {
+    if (state === 2) {
       clearInterval(this.refInterval);
       this.refInterval = null;
     }
@@ -241,7 +133,7 @@ export class PlayerService implements OnDestroy {
       this.currentIndex = this.tabIndex[indice];
     }
 
-    this.player.loadVideoById(this.listVideo[this.currentIndex].key, 0, 'large');
+    this.youtubePlayer.loadVideo(this.listVideo[this.currentIndex].key);
 
     this.currentKey = this.listVideo[this.currentIndex].key;
     this.currentTitle = this.listVideo[this.currentIndex].titre;
@@ -259,72 +151,55 @@ export class PlayerService implements OnDestroy {
 
     this.titleService.setTitle(fullTitle + ' - Zeffyr Music');
 
-    this.subjectCurrentKeyChange.next({
-      currentKey: this.currentKey,
-      currentTitle: this.currentTitle,
-      currentArtist: this.currentArtist,
-    });
+    this.queueStore.goToIndex(indice);
 
     this.currentIndex = indice;
   }
 
   before() {
-    this.clearErrorMessage();
+    this.youtubePlayer.clearError();
     if (this.listVideo[this.tabIndex[this.currentIndex - 1]] !== undefined) {
       this.lecture(this.currentIndex - 1);
     }
   }
 
   after() {
-    this.clearErrorMessage();
+    this.youtubePlayer.clearError();
     if (this.tabIndex[this.currentIndex + 1] !== undefined) {
       this.lecture(this.currentIndex + 1);
-    } else if (this.isRepeat) {
+    } else if (this.playerStore.isRepeat()) {
       this.currentIndex = 0;
       this.lecture(this.currentIndex);
     }
   }
 
   onPlayPause() {
-    if (
-      this.player.getPlayerState() === 2 ||
-      this.player.getPlayerState() === -1 ||
-      this.player.getPlayerState() === 5
-    ) {
-      this.player.playVideo();
-      this.isPlaying = true;
-    } else {
-      this.player.pauseVideo();
-      this.isPlaying = false;
-    }
-
-    this.subjectIsPlayingChange.next(this.isPlaying);
+    const isNowPlaying = this.youtubePlayer.togglePlayPause();
+    this.isPlaying = isNowPlaying;
+    // PlayerStore est mis à jour via handleStateChange quand YouTube émet l'état
   }
 
   updateVolume(volume: number) {
-    localStorage.volume = volume.toString();
-    this.player.setVolume(volume);
-
-    this.subjectVolumeChange.next(volume);
+    this.youtubePlayer.setVolume(volume);
+    this.playerStore.setVolume(volume);
   }
 
   updatePositionSlider(position: number) {
-    this.player.seekTo(Number.parseInt((position * this.player.getDuration()).toString(), 10));
+    this.youtubePlayer.seekToPercent(position * 100);
   }
 
   removeToPlaylist(index: number) {
-    this.currentIdTopCharts = '';
-    this.currentIdPlaylist = '';
+    this.queueStore.setSource(null, null);
     this.listVideo.splice(index, 1);
     this.tabIndexInitial.pop();
     this.tabIndex = this.tabIndexInitial.slice(0);
 
-    if (this.isRandom) {
+    if (this.queueStore.isShuffled()) {
       this.shuffle(this.tabIndex);
     }
 
     if (index === this.currentIndex) {
-      this.player.pauseVideo();
+      this.youtubePlayer.pause();
     } else {
       if (index < this.currentIndex) {
         this.currentIndex--;
@@ -344,54 +219,25 @@ export class PlayerService implements OnDestroy {
   }
 
   switchRepeat() {
-    this.isRepeat = !this.isRepeat;
-
-    this.subjectRepeatChange.next(this.isRepeat);
+    this.playerStore.toggleRepeat();
   }
 
   switchRandom() {
-    this.isRandom = !this.isRandom;
+    const isShuffled = this.queueStore.toggleShuffle();
 
-    if (this.isRandom) {
+    if (isShuffled) {
       this.shuffle(this.tabIndex);
     } else {
       this.tabIndex = this.tabIndexInitial.slice(0);
     }
-
-    this.subjectRandomChange.next(this.isRandom);
   }
 
   playerRunning() {
-    const currentTime = this.player.getCurrentTime() || 0;
+    const currentTime = this.youtubePlayer.getCurrentTime();
+    const totalTime = this.youtubePlayer.getDuration();
+    const loadVideo = 100 * this.youtubePlayer.getLoadedFraction();
 
-    const currentTimeStr =
-      Math.floor(currentTime / 60) +
-      ':' +
-      (Math.round(currentTime % 60) < 10 ? '0' : '') +
-      Math.round(currentTime % 60);
-
-    const totalTime: number = this.player.getDuration() || 0;
-
-    const totalTimeStr =
-      Math.floor(totalTime / 60) +
-      ':' +
-      (Math.round(totalTime % 60) < 10 ? '0' : '') +
-      Math.round(totalTime % 60);
-
-    const slideLength = (100 * currentTime) / totalTime;
-
-    const loadVideo = 100 * this.player.getVideoLoadedFraction();
-
-    const newPlayerRunning = new PlayerRunning(
-      this.currentKey,
-      currentTimeStr,
-      totalTimeStr,
-      slideLength,
-      loadVideo,
-      totalTime
-    );
-
-    this.subjectPlayerRunningChange.next(newPlayerRunning);
+    this.playerStore.updateProgress(currentTime, totalTime, loadVideo / 100);
   }
 
   removeVideo(idVideo: string, callbackSuccess: () => void) {
@@ -413,50 +259,23 @@ export class PlayerService implements OnDestroy {
     });
   }
 
-  onChangeCurrentPlaylist() {
-    this.subjectCurrentPlaylistChange.next(this.listVideo);
-  }
-
-  onChangeListPlaylist() {
-    this.subjectListPlaylist.next(this.listPlaylist);
-  }
-
-  onChangeListFollow() {
-    this.subjectListFollow.next(this.listFollow);
-  }
-
-  onChangeListLikeVideo() {
-    this.subjectListLikeVideo.next(this.listLikeVideo);
-  }
-
   onLoadListLogin(listPlaylist: UserPlaylist[], listFollow: FollowItem[], listLike: UserVideo[]) {
-    this.listPlaylist = listPlaylist;
-    this.listFollow = listFollow;
-    this.listLikeVideo = listLike;
-
-    this.onChangeListPlaylist();
-    this.onChangeListFollow();
-    this.onChangeListLikeVideo();
+    this.userDataStore.setPlaylists(listPlaylist);
+    this.userDataStore.setFollows(listFollow);
+    this.userDataStore.setLikedVideos(listLike);
   }
 
   addNewPlaylist(idPlaylist: string, title: string) {
-    this.listPlaylist.unshift({
+    const playlist: UserPlaylist = {
       id_playlist: idPlaylist,
       titre: title,
       prive: false,
-    });
-
-    this.onChangeListPlaylist();
+    };
+    this.userDataStore.addPlaylist(playlist);
   }
 
   editPlaylistTitle(idPlaylist: string, title: string) {
-    this.listPlaylist
-      .filter(a => a.id_playlist === idPlaylist)
-      .forEach(a => {
-        a.titre = title;
-      });
-
-    this.onChangeListPlaylist();
+    this.userDataStore.updatePlaylistTitle(idPlaylist, title);
   }
 
   switchVisibilityPlaylist(idPlaylist: string, isPrivate: boolean) {
@@ -475,12 +294,7 @@ export class PlayerService implements OnDestroy {
       .subscribe({
         next: (data: { success: boolean }) => {
           if (data.success !== undefined && data.success) {
-            this.listPlaylist
-              .filter(a => a.id_playlist === idPlaylist)
-              .forEach(a => {
-                a.prive = isPrivate;
-              });
-            this.onChangeListPlaylist();
+            this.userDataStore.togglePlaylistVisibility(idPlaylist, isPrivate);
           }
         },
         error: () => {
@@ -493,12 +307,7 @@ export class PlayerService implements OnDestroy {
     this.httpClient.get(environment.URL_SERVER + 'playlist-supprimer/' + idPlaylist).subscribe({
       next: (data: { success: boolean }) => {
         if (data.success !== undefined && data.success) {
-          for (let i = 0; i < this.listPlaylist.length; i++) {
-            if (this.listPlaylist[i].id_playlist === idPlaylist) {
-              this.listPlaylist.splice(i, 1);
-            }
-          }
-          this.onChangeListPlaylist();
+          this.userDataStore.removePlaylist(idPlaylist);
         }
       },
       error: () => {
@@ -516,21 +325,15 @@ export class PlayerService implements OnDestroy {
       next: (data: { success: boolean; est_suivi: boolean }) => {
         if (data.success !== undefined && data.success) {
           if (data.est_suivi) {
-            this.listFollow.unshift({
+            this.userDataStore.addFollow({
               id_playlist: idPlaylist,
               titre: title,
               artiste: artist,
               url_image: urlImage,
             });
           } else {
-            for (let i = 0; i < this.listFollow.length; i++) {
-              if (this.listFollow[i].id_playlist === idPlaylist) {
-                this.listFollow.splice(i, 1);
-              }
-            }
+            this.userDataStore.removeFollow(idPlaylist);
           }
-
-          this.onChangeListFollow();
         }
       },
       error: () => {
@@ -540,7 +343,7 @@ export class PlayerService implements OnDestroy {
   }
 
   addVideoInPlaylist(key: string, artist: string, title: string, duration: number) {
-    this.subjectAddVideo.next({ key, artist, title, duration });
+    this.uiStore.openAddVideoModal({ key, artist, title, duration });
   }
 
   addVideoInPlaylistRequest(
@@ -559,11 +362,6 @@ export class PlayerService implements OnDestroy {
         duree: addDuration,
       })
       .subscribe({
-        next: (data: { success: boolean }) => {
-          if (data.success !== undefined && data.success) {
-            this.onChangeListPlaylist();
-          }
-        },
         error: () => {
           this.initService.onMessageUnlog();
         },
@@ -572,11 +370,12 @@ export class PlayerService implements OnDestroy {
 
   addInCurrentList(playlist: Video[], idTopCharts: string | null = '') {
     if (this.listVideo.length === 0) {
-      this.currentIdPlaylist = playlist[0].id_playlist;
-      this.currentIdTopCharts = idTopCharts;
+      // Source sera définie via queueStore.setQueue dans runPlaylist
+      // ou directement ici si appelé directement
+      this.queueStore.setSource(playlist[0]?.id_playlist ?? null, idTopCharts);
     } else {
-      this.currentIdPlaylist = '';
-      this.currentIdTopCharts = '';
+      // Si on ajoute à une liste existante, on ne peut plus identifier une source unique
+      this.queueStore.setSource(null, null);
     }
     this.listVideo = this.listVideo.concat(playlist);
 
@@ -588,11 +387,11 @@ export class PlayerService implements OnDestroy {
       this.tabIndex.push(i + index);
     }
 
-    if (this.isRandom) {
+    if (this.queueStore.isShuffled()) {
       this.shuffle(this.tabIndex);
     }
 
-    this.onChangeCurrentPlaylist();
+    this.queueStore.addToQueue(playlist);
   }
 
   addVideoAfterCurrentInList(video: Video) {
@@ -604,11 +403,11 @@ export class PlayerService implements OnDestroy {
     this.tabIndexInitial.push(index + 1);
     this.tabIndex.push(iMax + 1);
 
-    if (this.isRandom) {
+    if (this.queueStore.isShuffled()) {
       this.shuffle(this.tabIndex);
     }
 
-    this.onChangeCurrentPlaylist();
+    this.queueStore.addAfterCurrent(video);
   }
 
   runPlaylist(playlist: Video[], index: number, idTopCharts: string | null = '') {
@@ -616,68 +415,18 @@ export class PlayerService implements OnDestroy {
     this.tabIndexInitial = [];
     this.tabIndex = [];
     this.addInCurrentList(playlist, idTopCharts);
+    this.queueStore.setQueue(playlist, playlist[0]?.id_playlist ?? null, idTopCharts);
 
     this.lecture(index, true);
   }
 
-  isLiked(key: string) {
-    let found;
-
-    if (this.listLikeVideo) {
-      found = this.listLikeVideo.find(e => e.key === key);
-    }
-    return found && found !== undefined;
-  }
-
-  addLike(key: string) {
-    this.httpClient
-      .post(environment.URL_SERVER + 'add_like', {
-        key,
-      })
-      .subscribe(
-        (data: { success: boolean; like: UserVideo }) => {
-          if (data.success !== undefined && data.success) {
-            this.listLikeVideo.unshift(data.like);
-          }
-        },
-        () => {
-          this.initService.onMessageUnlog();
-        }
-      );
-  }
-
-  removeLike(key: string) {
-    this.httpClient
-      .post(environment.URL_SERVER + 'remove_like', {
-        key,
-      })
-      .subscribe({
-        next: (data: { success: boolean }) => {
-          if (data.success !== undefined && data.success) {
-            this.listLikeVideo = this.listLikeVideo.filter(e => e.key !== key);
-          }
-        },
-        error: () => {
-          this.initService.onMessageUnlog();
-        },
-      });
-  }
-
   clearErrorMessage() {
+    this.youtubePlayer.clearError();
     this.errorMessageSubject.next(null);
   }
 
   ngOnDestroy() {
-    this.subscriptionInitializePlaylist.unsubscribe();
-  }
-
-  private init() {
-    if (!this.isBrowser) {
-      return;
-    }
-    const tag = document.createElement('script');
-    tag.src = '//www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    this.stateChangeSubscription?.unsubscribe();
+    this.youtubePlayer.destroy();
   }
 }

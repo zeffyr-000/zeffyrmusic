@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   OnDestroy,
@@ -29,11 +30,14 @@ import { environment } from 'src/environments/environment';
 import { HeaderComponent } from './header/header.component';
 import { PlayerComponent } from './player/player.component';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { QueueStore } from './store/queue/queue.store';
+import { UiStore } from './store/ui/ui.store';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [HeaderComponent, PlayerComponent, RouterLink, RouterOutlet, NgbAlert, TranslocoPipe],
 })
 export class AppComponent implements OnInit, OnDestroy {
@@ -42,6 +46,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private rendererFactory = inject(RendererFactory2);
   private readonly initService = inject(InitService);
   protected readonly playerService = inject(PlayerService);
+  protected readonly queueStore = inject(QueueStore);
+  protected readonly uiStore = inject(UiStore);
   private readonly router = inject(Router);
   private readonly metaService = inject(Meta);
   private readonly translocoService = inject(TranslocoService);
@@ -50,10 +56,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   title = 'zeffyrmusic';
   isOnline = true;
-  showMessageUnlog = false;
   currentUrl: string;
 
-  subscriptionMessageUnlog: Subscription;
   renderer: Renderer2;
   errorMessage: string | null = null;
   private errorMessageSubscription: Subscription;
@@ -66,9 +70,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.renderer = this.rendererFactory.createRenderer(null, null);
 
-    this.subscriptionMessageUnlog = this.initService.subjectMessageUnlog.subscribe(isShow => {
-      this.showMessageUnlog = isShow;
-    });
     if (this.isBrowser) {
       this.router.events
         .pipe(filter(event => event instanceof NavigationEnd))
@@ -150,9 +151,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   isRedirectingToCurrentUrl(): boolean {
-    const targetUrl = this.playerService.currentIdTopCharts
-      ? `/top/${this.playerService.currentIdTopCharts}`
-      : `/playlist/${this.playerService.currentIdPlaylist}`;
+    const targetUrl = this.queueStore.sourceTopChartsId()
+      ? `/top/${this.queueStore.sourceTopChartsId()}`
+      : `/playlist/${this.queueStore.sourcePlaylistId()}`;
     return this.currentUrl === targetUrl;
   }
 
@@ -165,7 +166,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptionMessageUnlog?.unsubscribe();
     this.errorMessageSubscription?.unsubscribe();
   }
 }

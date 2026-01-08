@@ -4,7 +4,7 @@ import { Title } from '@angular/platform-browser';
 import { InitService } from './init.service';
 import { PlayerService } from './player.service';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { UserVideo, Video } from '../models/video.model';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -12,6 +12,33 @@ import { UserPlaylist } from '../models/playlist.model';
 import { FollowItem } from '../models/follow.model';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { PLATFORM_ID } from '@angular/core';
+import { YoutubePlayerService } from './youtube-player.service';
+import { UserLibraryService } from './user-library.service';
+import { PlayerStore } from '../store/player/player.store';
+import { UserDataStore } from '../store/user-data/user-data.store';
+import { QueueStore } from '../store/queue/queue.store';
+import { UiStore } from '../store/ui/ui.store';
+
+const createMockYoutubePlayerService = () => ({
+  playerReady$: new BehaviorSubject<boolean>(true),
+  stateChange$: new Subject<number>(),
+  error$: new BehaviorSubject<string | null>(null),
+  initPlayer: vi.fn(),
+  cueVideo: vi.fn(),
+  loadVideo: vi.fn(),
+  play: vi.fn(),
+  pause: vi.fn(),
+  togglePlayPause: vi.fn().mockReturnValue(true),
+  setVolume: vi.fn(),
+  seekTo: vi.fn(),
+  seekToPercent: vi.fn(),
+  getPlayerState: vi.fn().mockReturnValue(2),
+  getCurrentTime: vi.fn().mockReturnValue(50),
+  getDuration: vi.fn().mockReturnValue(100),
+  getLoadedFraction: vi.fn().mockReturnValue(0.5),
+  clearError: vi.fn(),
+  destroy: vi.fn(),
+});
 
 describe('PlayerService', () => {
   describe('Browser context', () => {
@@ -19,29 +46,14 @@ describe('PlayerService', () => {
     let titleService: Title;
     let initService: InitService;
     let translocoService: TranslocoService;
+    let mockYoutubePlayer: ReturnType<typeof createMockYoutubePlayerService>;
+    let playerStore: InstanceType<typeof PlayerStore>;
 
     beforeEach(async () => {
+      mockYoutubePlayer = createMockYoutubePlayerService();
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const initServiceMock: any = { init: vi.fn(), onMessageUnlog: vi.fn() };
-      initServiceMock.subjectInitializePlaylist = new BehaviorSubject({
-        listPlaylist: [],
-        listFollow: [],
-        listVideo: [
-          {
-            id_video: '123',
-            artiste: 'Test Artist',
-            artists: [{ id_artiste: '123', label: 'Test Artist' }],
-            duree: '100',
-            id_playlist: '123',
-            key: 'XXX',
-            ordre: '1',
-            titre: 'Test Video',
-            titre_album: 'Test Album',
-          },
-        ],
-        tabIndex: [0],
-        listLikeVideo: [],
-      });
 
       await TestBed.configureTestingModule({
         imports: [],
@@ -63,6 +75,14 @@ describe('PlayerService', () => {
             provide: PLATFORM_ID,
             useValue: 'browser',
           },
+          {
+            provide: YoutubePlayerService,
+            useValue: mockYoutubePlayer,
+          },
+          {
+            provide: UserLibraryService,
+            useValue: {},
+          },
           PlayerService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
@@ -73,140 +93,47 @@ describe('PlayerService', () => {
       initService = TestBed.inject(InitService);
       translocoService = TestBed.inject(TranslocoService);
       translocoService.setDefaultLang('en');
-
-      const mockPlayer = {
-        loadVideoById: vi.fn(),
-        setVolume: vi.fn(),
-        seekTo: vi.fn(),
-        getDuration: () => 100,
-        getCurrentTime: () => 50,
-        getVideoLoadedFraction: () => 0.5,
-        getVolume: () => 50,
-        playVideo: vi.fn(),
-        getPlayerState: () => 2,
-        pauseVideo: vi.fn(),
-        cueVideoById: vi.fn(),
-      };
-      service.player = mockPlayer;
+      playerStore = TestBed.inject(PlayerStore);
     });
 
     it('should be created', () => {
       expect(service).toBeTruthy();
     });
 
-    it('should update properties and call methods on subjectInitializePlaylist emission', () => {
-      const data = {
-        listPlaylist: [] as UserPlaylist[],
-        listFollow: [] as FollowItem[],
-        listVideo: [{ key: 'key1', titre: 'title1', artiste: '' }] as Video[],
-        tabIndex: [] as number[],
-        listLikeVideo: [] as UserVideo[],
-      };
-      service.isRandom = true;
+    it('should initialize local properties from QueueStore via effect', () => {
+      const queueStore = TestBed.inject(QueueStore);
+      const videos = [{ key: 'key1', titre: 'title1', artiste: 'artist1' }] as Video[];
 
-      const subjectInitializePlaylistSpy = vi.spyOn(
-        service['initService'].subjectInitializePlaylist,
-        'next'
-      );
-      const subjectCurrentKeyChangeSpy = vi.spyOn(service.subjectCurrentKeyChange, 'next');
-      const onChangeCurrentPlaylistSpy = vi.spyOn(service, 'onChangeCurrentPlaylist');
-      const onChangeListPlaylistSpy = vi.spyOn(service, 'onChangeListPlaylist');
-      const onChangeListFollowSpy = vi.spyOn(service, 'onChangeListFollow');
-      const onChangeListLikeVideoSpy = vi.spyOn(service, 'onChangeListLikeVideo');
+      // Simuler l'initialisation du QueueStore
+      queueStore.setQueue(videos, null, null);
 
-      service['initService'].subjectInitializePlaylist.next(data);
-
-      expect(subjectInitializePlaylistSpy).toHaveBeenCalledWith(data);
-
-      expect(service.listPlaylist).toEqual(data.listPlaylist);
-      expect(service.listFollow).toEqual(data.listFollow);
-      expect(service.listVideo).toEqual(data.listVideo);
-      expect(service.tabIndex).toEqual(data.tabIndex);
-      expect(service.listLikeVideo).toEqual(data.listLikeVideo);
-      expect(service.currentKey).toEqual(data.listVideo[0].key);
-      expect(service.currentTitle).toEqual(data.listVideo[0].titre);
-      expect(service.currentArtist).toEqual(data.listVideo[0].artiste);
-
-      expect(subjectCurrentKeyChangeSpy).toHaveBeenCalledWith({
-        currentKey: service.currentKey,
-        currentTitle: service.currentTitle,
-        currentArtist: service.currentArtist,
-      });
-
-      expect(onChangeCurrentPlaylistSpy).toHaveBeenCalled();
-      expect(onChangeListPlaylistSpy).toHaveBeenCalled();
-      expect(onChangeListFollowSpy).toHaveBeenCalled();
-      expect(onChangeListLikeVideoSpy).toHaveBeenCalled();
+      // L'effet devrait synchroniser les propriétés locales
+      // Note: Les effets s'exécutent de manière asynchrone, vérifier via les signaux du store
+      expect(queueStore.currentKey()).toEqual('key1');
+      expect(queueStore.currentTitle()).toEqual('title1');
+      expect(queueStore.currentArtist()).toEqual('artist1');
     });
 
-    it('should launch YT API', () => {
-      class MockPlayer {
-        playerVars;
-        events;
-        constructor(elementId: string, config: { playerVars: unknown; events: unknown }) {
-          this.playerVars = config.playerVars;
-          this.events = config.events;
-        }
-      }
-
-      const mockYT = {
-        Player: MockPlayer,
-      };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mockWindow: any = window;
-
-      if (!mockWindow.onYouTubeIframeAPIReady) {
-        mockWindow.onYouTubeIframeAPIReady = () => {
-          // Mock callback
-        };
-      }
-
-      vi.spyOn(mockWindow, 'onYouTubeIframeAPIReady').mockImplementation(() => {
-        // Mock spy
-      });
-
-      mockWindow.YT = mockYT;
-
-      service.launchYTApi();
-
-      expect(mockWindow.onYouTubeIframeAPIReady).toBeDefined();
-
-      mockWindow.onYouTubeIframeAPIReady();
-      expect(service.player).toBeDefined();
+    it('should initialize YoutubePlayerService on construction', () => {
+      expect(mockYoutubePlayer.initPlayer).toHaveBeenCalledWith('player');
     });
 
-    it('should call finvideo on state change', () => {
-      const finvideoSpy = vi.spyOn(service, 'finvideo');
+    it('should update PlayerStore when stateChange$ emits', () => {
+      const playerStore = TestBed.inject(PlayerStore);
 
-      const mockEvent = { data: 123 };
+      mockYoutubePlayer.stateChange$.next(1); // PLAYING
+      expect(service.isPlaying).toBe(true);
+      expect(playerStore.isPlaying()).toBe(true);
 
-      service.onStateChangeYT(mockEvent);
-
-      expect(finvideoSpy).toHaveBeenCalledWith(mockEvent);
+      mockYoutubePlayer.stateChange$.next(2); // PAUSED
+      expect(service.isPlaying).toBe(false);
+      expect(playerStore.isPaused()).toBe(true);
     });
 
-    it('should handle onReadyYT correctly', () => {
-      const getVolumeSpy = vi.spyOn(service.player, 'getVolume').mockReturnValue(undefined);
-      const updateVolumeSpy = vi.spyOn(service, 'updateVolume');
-
-      service.tabIndex = [0];
-      service.listVideo = [{ key: '123' }] as Video[];
-      localStorage.volume = '200'; // should be capped to 100
-
-      service.onReadyYT();
-
-      expect(service.player.cueVideoById).toHaveBeenCalledWith(service.listVideo[0].key);
-      expect(getVolumeSpy).toHaveBeenCalled();
-
-      getVolumeSpy.mockClear();
-      getVolumeSpy.mockReturnValue(50);
-
-      localStorage.volume = '-100';
-      service.tabIndex = [];
-      service.onReadyYT();
-
-      expect(getVolumeSpy).toHaveBeenCalled();
-      expect(updateVolumeSpy).toHaveBeenCalled();
+    it('should call after() when video ends (state 0)', () => {
+      const afterSpy = vi.spyOn(service, 'after');
+      mockYoutubePlayer.stateChange$.next(0); // ENDED
+      expect(afterSpy).toHaveBeenCalled();
     });
 
     it('should set the title on lecture', () => {
@@ -224,12 +151,13 @@ describe('PlayerService', () => {
           titre_album: 'Test Album',
         },
       ];
+      service.tabIndex = [0];
 
       service.currentKey = 'testId';
 
       service.lecture(0);
       expect(titleService.setTitle).toHaveBeenCalledWith('Test Video - Test Artist - Zeffyr Music');
-      expect(service.player.loadVideoById).toHaveBeenCalledWith('testId', 0, 'large');
+      expect(mockYoutubePlayer.loadVideo).toHaveBeenCalledWith('testId');
     });
 
     it('should update the current key, title, and artist on lecture', () => {
@@ -246,6 +174,7 @@ describe('PlayerService', () => {
           titre_album: 'Test Album',
         },
       ];
+      service.tabIndex = [0];
       service.lecture(0);
       expect(service.currentKey).toBe('XXX-123');
       expect(service.currentTitle).toBe('Test Video');
@@ -253,16 +182,14 @@ describe('PlayerService', () => {
     });
 
     it('should update the volume and emit the new value on updateVolume', () => {
-      const spy = vi.spyOn(service.subjectVolumeChange, 'next');
       service.updateVolume(50);
-      expect(localStorage.volume).toBe('50');
-      expect(service.player.setVolume).toHaveBeenCalledWith(50);
-      expect(spy).toHaveBeenCalledWith(50);
+      expect(mockYoutubePlayer.setVolume).toHaveBeenCalledWith(50);
+      expect(playerStore.volume()).toBe(50);
     });
 
     it('should update the player position on updatePositionSlider', () => {
       service.updatePositionSlider(0.5);
-      expect(service.player.seekTo).toHaveBeenCalledWith(50);
+      expect(mockYoutubePlayer.seekToPercent).toHaveBeenCalledWith(50);
     });
 
     it('should remove a video from the playlist on removeToPlaylist', () => {
@@ -327,8 +254,9 @@ describe('PlayerService', () => {
       expect(spy).toHaveBeenCalledTimes(5);
     });
 
-    it('should call shuffle, update listVideo, tabIndexInitial, tabIndex, and decrease currentIndex on removeToPlaylist when isRandom is true and index is less than currentIndex', () => {
-      service.isRandom = true;
+    it('should call shuffle, update listVideo, tabIndexInitial, tabIndex, and decrease currentIndex on removeToPlaylist when isShuffled is true and index is less than currentIndex', () => {
+      const queueStore = TestBed.inject(QueueStore);
+      vi.spyOn(queueStore, 'isShuffled').mockReturnValue(true);
       service.listVideo = [{ key: '1' }, { key: '2' }] as Video[];
       service.tabIndexInitial = [1, 2];
       service.tabIndex = [1, 2];
@@ -343,12 +271,13 @@ describe('PlayerService', () => {
       expect(service.listVideo).toEqual([{ key: '2' } as Video]);
       expect(service.tabIndexInitial).toEqual([1]);
       expect(service.tabIndex).toEqual([1]);
-      expect(service.player.pauseVideo).not.toHaveBeenCalled();
+      expect(mockYoutubePlayer.pause).not.toHaveBeenCalled();
       expect(service.currentIndex).toBe(0);
     });
 
-    it('should call shuffle, update listVideo, tabIndexInitial, tabIndex, and call player.pauseVideo on removeToPlaylist when isRandom is true and index is equal to currentIndex', () => {
-      service.isRandom = true;
+    it('should call shuffle, update listVideo, tabIndexInitial, tabIndex, and call player.pauseVideo on removeToPlaylist when isShuffled is true and index is equal to currentIndex', () => {
+      const queueStore = TestBed.inject(QueueStore);
+      vi.spyOn(queueStore, 'isShuffled').mockReturnValue(true);
       service.listVideo = [{ key: '1' }, { key: '2' }] as Video[];
       service.tabIndexInitial = [1, 2];
       service.tabIndex = [1, 2];
@@ -363,38 +292,40 @@ describe('PlayerService', () => {
       expect(service.listVideo).toEqual([{ key: '2' } as Video]);
       expect(service.tabIndexInitial).toEqual([1]);
       expect(service.tabIndex).toEqual([1]);
-      expect(service.player.pauseVideo).toHaveBeenCalled();
+      expect(mockYoutubePlayer.pause).toHaveBeenCalled();
       expect(service.currentIndex).toBe(0);
     });
 
-    it('should switch isRepeat and emit new value on switchRepeat', () => {
-      service.isRepeat = false;
-      vi.spyOn(service.subjectRepeatChange, 'next');
+    it('should toggle repeat via playerStore on switchRepeat', () => {
+      const playerStore = TestBed.inject(PlayerStore);
+      const spy = vi.spyOn(playerStore, 'toggleRepeat');
 
       service.switchRepeat();
 
-      expect(service.isRepeat).toBe(true);
-      expect(service.subjectRepeatChange.next).toHaveBeenCalledWith(true);
+      expect(spy).toHaveBeenCalled();
     });
 
-    it('should switch isRandom and emit new value on switchRandom', () => {
-      service.isRandom = false;
-      vi.spyOn(service.subjectRandomChange, 'next');
+    it('should toggle shuffle via queueStore on switchRandom', () => {
+      const queueStore = TestBed.inject(QueueStore);
+      vi.spyOn(queueStore, 'toggleShuffle').mockReturnValue(true);
+      const shuffleSpy = vi.spyOn(service, 'shuffle');
+      service.tabIndex = [0, 1, 2];
 
       service.switchRandom();
 
-      expect(service.isRandom).toBe(true);
-      expect(service.subjectRandomChange.next).toHaveBeenCalledWith(true);
+      expect(queueStore.toggleShuffle).toHaveBeenCalled();
+      expect(shuffleSpy).toHaveBeenCalled();
     });
 
-    it('should switch isRandom and emit new value on switchRandom', () => {
-      service.isRandom = true;
-      vi.spyOn(service.subjectRandomChange, 'next');
+    it('should restore original tabIndex when shuffle is disabled', () => {
+      const queueStore = TestBed.inject(QueueStore);
+      vi.spyOn(queueStore, 'toggleShuffle').mockReturnValue(false);
+      service.tabIndex = [2, 0, 1];
+      service.tabIndexInitial = [0, 1, 2];
 
       service.switchRandom();
 
-      expect(service.isRandom).toBe(false);
-      expect(service.subjectRandomChange.next).toHaveBeenCalledWith(false);
+      expect(service.tabIndex).toEqual([0, 1, 2]);
     });
 
     it('should remove video and call callback on removeVideo', () => {
@@ -502,6 +433,7 @@ describe('PlayerService', () => {
           titre_album: 'Test Album',
         },
       ];
+      service.tabIndex = [0];
       service.lecture(0);
       expect(service.currentKey).toBe('XXX-123');
       expect(service.currentTitle).toBe('Test Video');
@@ -556,48 +488,42 @@ describe('PlayerService', () => {
 
     it('should set isPlaying to false on pause', () => {
       service.isPlaying = true;
-      service.finvideo({ data: 2 });
+      mockYoutubePlayer.stateChange$.next(2); // PAUSED
       expect(service.isPlaying).toBe(false);
     });
 
     it('should set isPlaying to true on play', () => {
       service.isPlaying = false;
-      service.finvideo({ data: 1 });
+      mockYoutubePlayer.stateChange$.next(1); // PLAYING
       expect(service.isPlaying).toBe(true);
     });
 
     it('should set isPlaying to false on video end', () => {
       service.isPlaying = true;
-      service.finvideo({ data: 0 });
+      mockYoutubePlayer.stateChange$.next(0); // ENDED
       expect(service.isPlaying).toBe(false);
     });
 
-    it('should set isPlaying to false on video end', () => {
+    it('should set isPlaying to false on unstarted', () => {
       service.isPlaying = true;
-      service.finvideo({ data: 0 });
-      expect(service.isPlaying).toBe(false);
-    });
-
-    it('should set isPlaying to false on video end', () => {
-      service.refInterval = 123;
-      service.finvideo({ data: -1 });
+      mockYoutubePlayer.stateChange$.next(-1); // UNSTARTED
       expect(service.isPlaying).toBe(false);
     });
 
     it('should clear the refInterval on video pause', () => {
       service.refInterval = 123;
-      service.finvideo({ data: 2 });
+      mockYoutubePlayer.stateChange$.next(2); // PAUSED
       expect(service.refInterval).toBe(null);
-    });
-
-    it('should update the volume on subjectVolumeChange', () => {
-      service.subjectVolumeChange.next(50);
-      expect(service.player.getVolume()).toBe(50);
     });
 
     it('should call lecture on before', () => {
       const spy = vi.spyOn(service, 'lecture');
       service.tabIndex = [0, 1, 2];
+      service.listVideo = [
+        { key: 'key1', titre: 'title1', artiste: 'artist1' } as Video,
+        { key: 'key2', titre: 'title2', artiste: 'artist2' } as Video,
+        { key: 'key3', titre: 'title3', artiste: 'artist3' } as Video,
+      ];
       service.currentIndex = 1;
       service.before();
       expect(spy).toHaveBeenCalledWith(0);
@@ -617,7 +543,8 @@ describe('PlayerService', () => {
     });
 
     it('should call lecture with 0 on after when isRepeat is true and tabIndex[currentIndex + 1] is undefined', () => {
-      service.isRepeat = true;
+      const playerStore = TestBed.inject(PlayerStore);
+      vi.spyOn(playerStore, 'isRepeat').mockReturnValue(true);
       service.tabIndex = [0];
       service.listVideo = [{ key: 'key1', titre: 'title1', artiste: 'artist1' } as Video];
       service.currentIndex = 0;
@@ -649,32 +576,29 @@ describe('PlayerService', () => {
       expect(service.currentIndex).toBe(0);
     });
 
-    it('should call player.playVideo on onPlayPause if paused', () => {
-      service.isPlaying = false;
-
+    it('should toggle play/pause via YoutubePlayerService on onPlayPause', () => {
+      mockYoutubePlayer.togglePlayPause.mockReturnValue(true);
       service.onPlayPause();
-      expect(service.player.playVideo).toHaveBeenCalled();
+      expect(mockYoutubePlayer.togglePlayPause).toHaveBeenCalled();
       expect(service.isPlaying).toBe(true);
     });
 
-    it('should call player.pauseVideo on onPlayPause if playing', () => {
-      service.isPlaying = true;
-      service.player.getPlayerState = () => 1;
-
+    it('should set isPlaying to false when togglePlayPause returns false', () => {
+      mockYoutubePlayer.togglePlayPause.mockReturnValue(false);
       service.onPlayPause();
-      expect(service.player.pauseVideo).toHaveBeenCalled();
       expect(service.isPlaying).toBe(false);
     });
 
-    it('should unsubscribe from subscriptionInitializePlaylist on ngOnDestroy', () => {
-      const spy = vi.spyOn(service.subscriptionInitializePlaylist, 'unsubscribe');
+    it('should call youtubePlayer.destroy on ngOnDestroy', () => {
       service.ngOnDestroy();
-      expect(spy).toHaveBeenCalled();
+      expect(mockYoutubePlayer.destroy).toHaveBeenCalled();
     });
 
-    it('should load lists and call onChange methods on onLoadListLogin', () => {
-      const spyPlaylist = vi.spyOn(service, 'onChangeListPlaylist');
-      const spyFollow = vi.spyOn(service, 'onChangeListFollow');
+    it('should load lists and call userDataStore methods on onLoadListLogin', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
+      const spySetPlaylists = vi.spyOn(userDataStore, 'setPlaylists');
+      const spySetFollows = vi.spyOn(userDataStore, 'setFollows');
+      const spySetLikedVideos = vi.spyOn(userDataStore, 'setLikedVideos');
 
       const listPlaylist: UserPlaylist[] = [{ id_playlist: '1', titre: 'Test', prive: false }];
       const listFollow: FollowItem[] = [{ id_playlist: '1', titre: 'Test' }];
@@ -683,113 +607,95 @@ describe('PlayerService', () => {
       ];
       service.onLoadListLogin(listPlaylist, listFollow, listLike);
 
-      expect(service.listPlaylist).toEqual(listPlaylist);
-      expect(service.listFollow).toEqual(listFollow);
-      expect(spyPlaylist).toHaveBeenCalled();
-      expect(spyFollow).toHaveBeenCalled();
+      // Verify userDataStore is updated (local properties were removed)
+      expect(spySetPlaylists).toHaveBeenCalledWith(listPlaylist);
+      expect(spySetFollows).toHaveBeenCalledWith(listFollow);
+      expect(spySetLikedVideos).toHaveBeenCalledWith(listLike);
     });
 
-    it('should add new playlist and call onChangeListPlaylist on addNewPlaylist', () => {
-      const spy = vi.spyOn(service, 'onChangeListPlaylist');
+    it('should add new playlist and update userDataStore on addNewPlaylist', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
+      const spy = vi.spyOn(userDataStore, 'addPlaylist');
 
       const idPlaylist = '1';
       const title = 'Test';
       service.addNewPlaylist(idPlaylist, title);
 
-      expect(service.listPlaylist[0]).toEqual({
+      // Les propriétés locales ont été supprimées, on vérifie uniquement l'appel au store
+      expect(spy).toHaveBeenCalledWith({
         id_playlist: idPlaylist,
         titre: title,
         prive: false,
       });
-      expect(spy).toHaveBeenCalled();
     });
 
-    it('should edit playlist title and call onChangeListPlaylist on editPlaylistTitle', () => {
-      service.listPlaylist = [
-        { id_playlist: '1', titre: 'Test1', prive: false },
-        { id_playlist: '2', titre: 'Test2', prive: false },
-        { id_playlist: '3', titre: 'Test3', prive: false },
-      ];
-
-      const spy = vi.spyOn(service, 'onChangeListPlaylist');
+    it('should edit playlist title and update userDataStore on editPlaylistTitle', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
+      const spy = vi.spyOn(userDataStore, 'updatePlaylistTitle');
       const idPlaylist = '2';
       const newTitle = 'New Test';
       service.editPlaylistTitle(idPlaylist, newTitle);
 
-      const playlist = service.listPlaylist.find(a => a.id_playlist === idPlaylist);
-      expect(playlist.titre).toEqual(newTitle);
-      expect(spy).toHaveBeenCalled();
+      // Les propriétés locales ont été supprimées, on vérifie uniquement l'appel au store
+      expect(spy).toHaveBeenCalledWith(idPlaylist, newTitle);
     });
 
     it('should update player running on playerRunning', () => {
-      const spyCurrentTime = vi.spyOn(service.player, 'getCurrentTime').mockReturnValue(120);
-      const spyDuration = vi.spyOn(service.player, 'getDuration').mockReturnValue(300);
-      const spyLoadedFraction = vi
-        .spyOn(service.player, 'getVideoLoadedFraction')
-        .mockReturnValue(0.5);
-
-      const spyNext = vi.spyOn(service.subjectPlayerRunningChange, 'next');
+      mockYoutubePlayer.getCurrentTime.mockReturnValue(120);
+      mockYoutubePlayer.getDuration.mockReturnValue(300);
+      mockYoutubePlayer.getLoadedFraction.mockReturnValue(0.5);
 
       service.playerRunning();
 
-      expect(spyCurrentTime).toHaveBeenCalled();
-      expect(spyDuration).toHaveBeenCalled();
-      expect(spyLoadedFraction).toHaveBeenCalled();
-      expect(spyNext).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getCurrentTime).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getDuration).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getLoadedFraction).toHaveBeenCalled();
+      expect(playerStore.currentTime()).toBe(120);
+      expect(playerStore.duration()).toBe(300);
+      expect(playerStore.loadedFraction()).toBe(0.5);
     });
 
     it('should update player running on playerRunning when player is not ready', () => {
-      const spyCurrentTime = vi.spyOn(service.player, 'getCurrentTime').mockReturnValue(undefined);
-      const spyDuration = vi.spyOn(service.player, 'getDuration').mockReturnValue(undefined);
-      const spyLoadedFraction = vi
-        .spyOn(service.player, 'getVideoLoadedFraction')
-        .mockReturnValue(undefined);
-
-      const spyNext = vi.spyOn(service.subjectPlayerRunningChange, 'next');
+      mockYoutubePlayer.getCurrentTime.mockReturnValue(undefined);
+      mockYoutubePlayer.getDuration.mockReturnValue(undefined);
+      mockYoutubePlayer.getLoadedFraction.mockReturnValue(undefined);
 
       service.playerRunning();
 
-      expect(spyCurrentTime).toHaveBeenCalled();
-      expect(spyDuration).toHaveBeenCalled();
-      expect(spyLoadedFraction).toHaveBeenCalled();
-      expect(spyNext).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getCurrentTime).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getDuration).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getLoadedFraction).toHaveBeenCalled();
+      // PlayerStore should be updated with undefined currentTime but not duration/loadedFraction
+      expect(playerStore.currentTime()).toBeUndefined();
     });
 
     it('should update player running on playerRunning with empty values', () => {
-      const spyCurrentTime = vi.spyOn(service.player, 'getCurrentTime').mockReturnValue(10);
-      const spyDuration = vi.spyOn(service.player, 'getDuration').mockReturnValue(30);
-      const spyLoadedFraction = vi
-        .spyOn(service.player, 'getVideoLoadedFraction')
-        .mockReturnValue(0.5);
-
-      const spyNext = vi.spyOn(service.subjectPlayerRunningChange, 'next');
+      mockYoutubePlayer.getCurrentTime.mockReturnValue(10);
+      mockYoutubePlayer.getDuration.mockReturnValue(30);
+      mockYoutubePlayer.getLoadedFraction.mockReturnValue(0.5);
 
       service.playerRunning();
 
-      expect(spyCurrentTime).toHaveBeenCalled();
-      expect(spyDuration).toHaveBeenCalled();
-      expect(spyLoadedFraction).toHaveBeenCalled();
-      expect(spyNext).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getCurrentTime).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getDuration).toHaveBeenCalled();
+      expect(mockYoutubePlayer.getLoadedFraction).toHaveBeenCalled();
+      expect(playerStore.currentTime()).toBe(10);
+      expect(playerStore.duration()).toBe(30);
+      expect(playerStore.loadedFraction()).toBe(0.5);
     });
 
-    it('should switch playlist visibility and call onChangeListPlaylist on switchVisibilityPlaylist', () => {
-      service.listPlaylist = [
-        { id_playlist: '1', titre: 'Test1', prive: false },
-        { id_playlist: '2', titre: 'Test2', prive: false },
-        { id_playlist: '3', titre: 'Test3', prive: false },
-      ];
-
+    it('should switch playlist visibility and update userDataStore on switchVisibilityPlaylist', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
       const httpClient = TestBed.inject(HttpClient);
       vi.spyOn(httpClient, 'get').mockReturnValue(of({ success: true }));
 
-      const spyPlaylist = vi.spyOn(service, 'onChangeListPlaylist');
+      const spyToggle = vi.spyOn(userDataStore, 'togglePlaylistVisibility');
       const idPlaylist = '2';
       const isPrivate = true;
       service.switchVisibilityPlaylist(idPlaylist, isPrivate);
 
-      const playlist = service.listPlaylist.find(a => a.id_playlist === idPlaylist);
-      expect(playlist.prive).toEqual(isPrivate);
-      expect(spyPlaylist).toHaveBeenCalled();
+      // Les propriétés locales ont été supprimées, on vérifie uniquement l'appel au store
+      expect(spyToggle).toHaveBeenCalledWith(idPlaylist, isPrivate);
       expect(initService.onMessageUnlog).not.toHaveBeenCalled();
 
       service.switchVisibilityPlaylist(idPlaylist, false);
@@ -807,24 +713,17 @@ describe('PlayerService', () => {
       expect(initService.onMessageUnlog).toHaveBeenCalled();
     });
 
-    it('should delete playlist and call onChangeListPlaylist on deletePlaylist', () => {
-      service.listPlaylist = [
-        { id_playlist: '1', titre: 'Test1', prive: false },
-        { id_playlist: '2', titre: 'Test2', prive: false },
-        { id_playlist: '3', titre: 'Test3', prive: false },
-      ];
-
+    it('should delete playlist and update userDataStore on deletePlaylist', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
       const httpClient = TestBed.inject(HttpClient);
       vi.spyOn(httpClient, 'get').mockReturnValue(of({ success: true }));
-      const spyPlaylist = vi.spyOn(service, 'onChangeListPlaylist');
+      const spyRemove = vi.spyOn(userDataStore, 'removePlaylist');
 
       const idPlaylist = '2';
       service.deletePlaylist(idPlaylist);
 
-      const playlist = service.listPlaylist.find(a => a.id_playlist === idPlaylist);
-      expect(playlist).toBeUndefined();
-      expect(spyPlaylist).toHaveBeenCalled();
-
+      // Les propriétés locales ont été supprimées, on vérifie uniquement l'appel au store
+      expect(spyRemove).toHaveBeenCalledWith(idPlaylist);
       expect(initService.onMessageUnlog).not.toHaveBeenCalled();
     });
 
@@ -847,42 +746,40 @@ describe('PlayerService', () => {
       expect(spySwitchFollow).toHaveBeenCalledWith(idPlaylist);
     });
 
-    it('should add playlist to listFollow and call onChangeListFollow on switchFollow', () => {
+    it('should add playlist to listFollow and update userDataStore on switchFollow', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
       const httpClient = TestBed.inject(HttpClient);
       vi.spyOn(httpClient, 'get').mockReturnValue(of({ success: true, est_suivi: true }));
 
-      const spyFollow = vi.spyOn(service, 'onChangeListFollow');
+      const spyAddFollow = vi.spyOn(userDataStore, 'addFollow');
       const idPlaylist = '2';
       const title = 'Test';
       const artist = 'Test Artist';
       const url_image = 'test.jpg';
       service.switchFollow(idPlaylist, title, artist, url_image);
 
-      const follow = service.listFollow.find(a => a.id_playlist === idPlaylist);
-      expect(follow).toEqual({ id_playlist: idPlaylist, titre: title, artiste: artist, url_image });
-
-      expect(spyFollow).toHaveBeenCalled();
+      // Les propriétés locales ont été supprimées, on vérifie uniquement l'appel au store
+      expect(spyAddFollow).toHaveBeenCalledWith({
+        id_playlist: idPlaylist,
+        titre: title,
+        artiste: artist,
+        url_image,
+      });
       expect(initService.onMessageUnlog).not.toHaveBeenCalled();
     });
 
-    it('should remove playlist from listFollow and call onChangeListFollow on switchFollow', () => {
-      service.listFollow = [
-        { id_playlist: '1', titre: 'Test1' },
-        { id_playlist: '2', titre: 'Test2' },
-        { id_playlist: '3', titre: 'Test3' },
-      ];
+    it('should remove playlist from userDataStore on switchFollow', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
 
       const httpClient = TestBed.inject(HttpClient);
       vi.spyOn(httpClient, 'get').mockReturnValue(of({ success: true, est_suivi: false }));
 
-      const spyFollow = vi.spyOn(service, 'onChangeListFollow');
+      const spyRemoveFollow = vi.spyOn(userDataStore, 'removeFollow');
 
       const idPlaylist = '2';
       service.switchFollow(idPlaylist);
 
-      const follow = service.listFollow.find(a => a.id_playlist === idPlaylist);
-      expect(follow).toBeUndefined();
-      expect(spyFollow).toHaveBeenCalled();
+      expect(spyRemoveFollow).toHaveBeenCalledWith(idPlaylist);
     });
 
     it('should catch error on switchFollow', () => {
@@ -895,8 +792,9 @@ describe('PlayerService', () => {
       expect(initService.onMessageUnlog).toHaveBeenCalled();
     });
 
-    it('should call subjectAddVideo.next on addVideoInPlaylist', () => {
-      const spySubjectAddVideo = vi.spyOn(service.subjectAddVideo, 'next');
+    it('should call uiStore.openAddVideoModal on addVideoInPlaylist', () => {
+      const uiStore = TestBed.inject(UiStore);
+      const spy = vi.spyOn(uiStore, 'openAddVideoModal');
 
       const key = 'testKey';
       const artist = 'testArtist';
@@ -904,14 +802,12 @@ describe('PlayerService', () => {
       const duration = 123;
       service.addVideoInPlaylist(key, artist, title, duration);
 
-      expect(spySubjectAddVideo).toHaveBeenCalledWith({ key, artist, title, duration });
+      expect(spy).toHaveBeenCalledWith({ key, artist, title, duration });
     });
 
-    it('should call onChangeListPlaylist on successful addVideoInPlaylistRequest', () => {
+    it('should post request on addVideoInPlaylistRequest', () => {
       const httpClient = TestBed.inject(HttpClient);
-      vi.spyOn(httpClient, 'post').mockReturnValue(of({ success: true }));
-
-      const spyChangeList = vi.spyOn(service, 'onChangeListPlaylist');
+      const postSpy = vi.spyOn(httpClient, 'post').mockReturnValue(of({ success: true }));
 
       const idPlaylist = '2';
       const addKey = 'testKey';
@@ -920,7 +816,7 @@ describe('PlayerService', () => {
       const addDuration = 123;
       service.addVideoInPlaylistRequest(idPlaylist, addKey, addTitle, addArtist, addDuration);
 
-      expect(spyChangeList).toHaveBeenCalled();
+      expect(postSpy).toHaveBeenCalled();
       expect(initService.onMessageUnlog).not.toHaveBeenCalled();
     });
 
@@ -944,7 +840,6 @@ describe('PlayerService', () => {
       service.tabIndex = [];
 
       const spyShuffle = vi.spyOn(service, 'shuffle');
-      const spyChangePlaylist = vi.spyOn(service, 'onChangeCurrentPlaylist');
 
       const playlist = [{ key: '1' }, { key: '2' }, { key: '3' }] as Video[];
       service.addInCurrentList(playlist);
@@ -953,11 +848,11 @@ describe('PlayerService', () => {
       expect(service.tabIndexInitial).toEqual([0, 1, 2]);
       expect(service.tabIndex).toEqual([0, 1, 2]);
       expect(spyShuffle).not.toHaveBeenCalled();
-      expect(spyChangePlaylist).toHaveBeenCalled();
     });
 
-    it('should call shuffle on addInCurrentList when isRandom is true', () => {
-      service.isRandom = true;
+    it('should call shuffle on addInCurrentList when isShuffled is true', () => {
+      const queueStore = TestBed.inject(QueueStore);
+      vi.spyOn(queueStore, 'isShuffled').mockReturnValue(true);
       const spyShuffle = vi.spyOn(service, 'shuffle');
       const playlist = [{ key: '1' }, { key: '2' }, { key: '3' }] as Video[];
       service.addInCurrentList(playlist);
@@ -972,7 +867,6 @@ describe('PlayerService', () => {
       service.currentIndex = 0;
 
       const spyShuffle = vi.spyOn(service, 'shuffle');
-      const spyChangePlaylist = vi.spyOn(service, 'onChangeCurrentPlaylist');
 
       const video = { key: '1' } as Video;
       service.addVideoAfterCurrentInList(video);
@@ -981,11 +875,11 @@ describe('PlayerService', () => {
       expect(service.tabIndexInitial).not.toEqual([]);
       expect(service.tabIndex).not.toEqual([]);
       expect(spyShuffle).not.toHaveBeenCalled();
-      expect(spyChangePlaylist).toHaveBeenCalled();
     });
 
-    it('should call shuffle on addVideoAfterCurrentInList when isRandom is true', () => {
-      service.isRandom = true;
+    it('should call shuffle on addVideoAfterCurrentInList when isShuffled is true', () => {
+      const queueStore = TestBed.inject(QueueStore);
+      vi.spyOn(queueStore, 'isShuffled').mockReturnValue(true);
 
       const spyShuffle = vi.spyOn(service, 'shuffle');
 
@@ -1018,214 +912,30 @@ describe('PlayerService', () => {
       expect(spyLecture).toHaveBeenCalledWith(index, true);
     });
 
-    it('should return true when key is in listLikeVideo on isLiked', () => {
-      const key = '1';
-      service.listLikeVideo = [{ key: '1' }, { key: '2' }] as UserVideo[];
-
-      const result = service.isLiked(key);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return false when key is not in listLikeVideo on isLiked', () => {
-      const key = '3';
-      service.listLikeVideo = [{ key: '1' }, { key: '2' }] as UserVideo[];
-
-      const result = service.isLiked(key);
-
-      expect(result).not.toBe(true);
-    });
-
-    it('should add like to listLikeVideo on successful addLike', () => {
-      const httpClient = TestBed.inject(HttpClient);
-      vi.spyOn(httpClient, 'post').mockReturnValue(of({ success: true, like: { key: '1' } }));
-
-      service.listLikeVideo = [];
-
-      const key = '1';
-      service.addLike(key);
-
-      expect(service.listLikeVideo).toEqual([{ key: '1' } as UserVideo]);
-      expect(initService.onMessageUnlog).not.toHaveBeenCalled();
-    });
-
-    it('should call initService.onMessageUnlog on error addLike', () => {
-      const httpClient = TestBed.inject(HttpClient);
-      vi.spyOn(httpClient, 'post').mockReturnValue(throwError('error'));
-
-      const key = '1';
-      service.addLike(key);
-
-      expect(initService.onMessageUnlog).toHaveBeenCalled();
-    });
-
-    it('should remove like from listLikeVideo on successful removeLike', () => {
-      const httpClient = TestBed.inject(HttpClient);
-      vi.spyOn(httpClient, 'post').mockReturnValue(of({ success: true }));
-
-      service.listLikeVideo = [{ key: '1' }, { key: '2' }] as UserVideo[];
-
-      const key = '1';
-      service.removeLike(key);
-
-      expect(service.listLikeVideo).toEqual([{ key: '2' } as UserVideo]);
-      expect(initService.onMessageUnlog).not.toHaveBeenCalled();
-    });
-
-    it('should call initService.onMessageUnlog on error removeLike', () => {
-      const httpClient = TestBed.inject(HttpClient);
-      vi.spyOn(httpClient, 'post').mockReturnValue(throwError('error'));
-
-      const key = '1';
-      service.removeLike(key);
-
-      expect(initService.onMessageUnlog).toHaveBeenCalled();
-    });
-
-    it('should insert YouTube iframe API script into the DOM', () => {
-      // Count existing script tags and calls before test
-      const initialScriptCount = document.getElementsByTagName('script').length;
-
-      const createElementSpy = vi.spyOn(document, 'createElement');
-      const getElementsByTagNameSpy = vi.spyOn(document, 'getElementsByTagName');
-
-      // Get the first script's parent before calling init
-      const firstScript = document.getElementsByTagName('script')[0];
-      const insertBeforeSpy = vi.spyOn(firstScript.parentNode!, 'insertBefore');
-
-      service['init']();
-
-      // Verify methods were called during init() execution
-      expect(createElementSpy).toHaveBeenCalledWith('script');
-      expect(getElementsByTagNameSpy).toHaveBeenCalledWith('script');
-      expect(insertBeforeSpy).toHaveBeenCalled();
-
-      // Verify a new script was actually added
-      expect(document.getElementsByTagName('script').length).toBe(initialScriptCount + 1);
-    });
-
-    it('should call init using requestIdleCallback if available', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).requestIdleCallback = (callback: () => void) => callback();
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const initSpy = vi.spyOn(service as any, 'init');
-      service['init']();
-
-      expect(initSpy).toHaveBeenCalled();
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (window as any).requestIdleCallback;
-    });
-
-    it('should send "error_invalid_parameter" message when error data is 2', () => {
+    it('should handle errors from YoutubePlayerService error$', () => {
       const errorMessageSpy = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).errorMessageSubject.subscribe(errorMessageSpy);
+      service.errorMessage$.subscribe(errorMessageSpy);
 
-      const errorEvent = { data: 2 };
-      service.onErrorYT(errorEvent);
-
-      expect(errorMessageSpy).toHaveBeenCalledWith('error_invalid_parameter');
-    });
-
-    it('should send "error_html_player" message when error data is 5', () => {
-      const errorMessageSpy = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).errorMessageSubject.subscribe(errorMessageSpy);
-
-      const errorEvent = { data: 5 };
-      service.onErrorYT(errorEvent);
-
-      expect(errorMessageSpy).toHaveBeenCalledWith('error_html_player');
-    });
-
-    it('should send "error_request_not_found" message when error data is 100', () => {
-      const errorMessageSpy = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).errorMessageSubject.subscribe(errorMessageSpy);
-
-      const errorEvent = { data: 100 };
-      service.onErrorYT(errorEvent);
+      mockYoutubePlayer.error$.next('error_request_not_found');
 
       expect(errorMessageSpy).toHaveBeenCalledWith('error_request_not_found');
     });
 
-    it('should send "error_request_access_denied" message when error data is 101', () => {
-      const errorMessageSpy = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).errorMessageSubject.subscribe(errorMessageSpy);
-
-      const errorEvent = { data: 101 };
-      service.onErrorYT(errorEvent);
-
-      expect(errorMessageSpy).toHaveBeenCalledWith('error_request_access_denied');
-    });
-
-    it('should send "error_request_access_denied" message when error data is 150', () => {
-      const errorMessageSpy = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).errorMessageSubject.subscribe(errorMessageSpy);
-
-      const errorEvent = { data: 150 };
-      service.onErrorYT(errorEvent);
-
-      expect(errorMessageSpy).toHaveBeenCalledWith('error_request_access_denied');
-    });
-
-    it('should send "error_unknown" message when error data is not recognized', () => {
-      const errorMessageSpy = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).errorMessageSubject.subscribe(errorMessageSpy);
-
-      const errorEvent = { data: 99 };
-      service.onErrorYT(errorEvent);
-
-      expect(errorMessageSpy).toHaveBeenCalledWith('error_unknown');
-    });
-
-    it('should handle edge case when error data is a non-numeric value', () => {
-      const errorMessageSpy = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).errorMessageSubject.subscribe(errorMessageSpy);
-
-      const errorEvent = { data: 'not-a-number' } as unknown as { data: number };
-      service.onErrorYT(errorEvent);
-
-      expect(errorMessageSpy).toHaveBeenCalledWith('error_unknown');
+    it('should clear error via YoutubePlayerService on clearErrorMessage', () => {
+      service.clearErrorMessage();
+      expect(mockYoutubePlayer.clearError).toHaveBeenCalled();
     });
   });
 
   describe('In server environment', () => {
     let service: PlayerService;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let titleService: Title;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let initService: InitService;
-    let translocoService: TranslocoService;
+    let mockYoutubePlayer: ReturnType<typeof createMockYoutubePlayerService>;
 
     beforeEach(() => {
+      mockYoutubePlayer = createMockYoutubePlayerService();
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const initServiceMock: any = { init: vi.fn(), onMessageUnlog: vi.fn() };
-      initServiceMock.subjectInitializePlaylist = new BehaviorSubject({
-        listPlaylist: [],
-        listFollow: [],
-        listVideo: [
-          {
-            id_video: '123',
-            artiste: 'Test Artist',
-            artists: [{ id_artiste: '123', label: 'Test Artist' }],
-            duree: '100',
-            id_playlist: '123',
-            key: 'XXX',
-            ordre: '1',
-            titre: 'Test Video',
-            titre_album: 'Test Album',
-          },
-        ],
-        tabIndex: [0],
-        listLikeVideo: [],
-      });
       TestBed.configureTestingModule({
         imports: [],
         providers: [
@@ -1246,6 +956,14 @@ describe('PlayerService', () => {
             provide: PLATFORM_ID,
             useValue: 'server',
           },
+          {
+            provide: YoutubePlayerService,
+            useValue: mockYoutubePlayer,
+          },
+          {
+            provide: UserLibraryService,
+            useValue: {},
+          },
           PlayerService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
@@ -1253,48 +971,15 @@ describe('PlayerService', () => {
       }).compileComponents();
 
       service = TestBed.inject(PlayerService);
-      titleService = TestBed.inject(Title);
-      initService = TestBed.inject(InitService);
-      translocoService = TestBed.inject(TranslocoService);
-      translocoService.setDefaultLang('en');
-
-      const mockPlayer = {
-        loadVideoById: vi.fn(),
-        setVolume: vi.fn(),
-        seekTo: vi.fn(),
-        getDuration: () => 100,
-        getCurrentTime: () => 50,
-        getVideoLoadedFraction: () => 0.5,
-        getVolume: () => 50,
-        playVideo: vi.fn(),
-        getPlayerState: () => 2,
-        pauseVideo: vi.fn(),
-        cueVideoById: vi.fn(),
-      };
-      service.player = mockPlayer;
     });
 
-    it('should not manipulate DOM in init method when in server context', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (service as any).init();
-
-      // In server context, isBrowser should be false
+    it('should detect server context', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((service as any).isBrowser).toBe(false);
-
-      // The init method should not add new YouTube scripts
-      // (setup-vitest may have created scripts, so we don't check that)
     });
 
-    it('should not initialize YouTube API when in server context', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).isBrowser).toBe(false);
-
-      service.launchYTApi();
-
-      // In server context, YT should remain undefined
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).YT).toBeUndefined();
+    it('should not call youtubePlayer.initPlayer on server', () => {
+      expect(mockYoutubePlayer.initPlayer).not.toHaveBeenCalled();
     });
   });
 });

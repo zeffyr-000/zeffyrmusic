@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { RouterLink } from '@angular/router';
@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrl: './help.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe],
 })
 export class HelpComponent implements OnInit {

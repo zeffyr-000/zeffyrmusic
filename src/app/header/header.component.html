@@ -10,7 +10,7 @@
         </a>
       </li>
       <li class="dropdown-divider"></li>
-      @if(!isConnected) {
+      @if(!authStore.isAuthenticated()) {
       <li ngbDropdownItem>
         <a
           (click)="openModalRegister()"
@@ -39,10 +39,10 @@
           <span class="material-icons">help</span>{{ 'help_title' | transloco }}
         </a>
       </li>
-      @if(isConnected) {
+      @if(authStore.isAuthenticated()) {
       <li class="dropdown-divider"></li>
       <li ngbDropdownItem class="bg-primary text-white">
-        {{ pseudo }}
+        {{ authStore.pseudo() }}
       </li>
       <li ngbDropdownItem>
         <a class="text-decoration-none text-body" routerLink="/like">
@@ -78,7 +78,7 @@
     <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="" routerLink="">
       <img
         [src]="
-          this.darkModeEnabled
+          authStore.isDarkMode()
             ? URL_ASSETS + 'assets/img/logo_dark.png'
             : URL_ASSETS + 'assets/img/logo.png'
         "
@@ -89,7 +89,7 @@
       />
       <img
         [src]="
-          this.darkModeEnabled
+          authStore.isDarkMode()
             ? URL_ASSETS + 'assets/img/logo_mobile_dark.png'
             : URL_ASSETS + 'assets/img/logo_mobile.png'
         "
@@ -100,10 +100,10 @@
   </div>
 
   <ul class="nav col-5 d-none d-lg-flex" id="header_nav">
-    @if(isConnected) {
+    @if(authStore.isAuthenticated()) {
     <li class="nav-item align-self-center d-flex" ngbDropdown>
       <a id="header_toggle_big" class="btn btn-light" ngbDropdownToggle>
-        {{ pseudo }} <span class="caret"></span>
+        {{ authStore.pseudo() }} <span class="caret"></span>
       </a>
       <ul ngbDropdownMenu>
         <li ngbDropdownItem>
@@ -185,33 +185,37 @@
   </button>
 
   <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
-    @if(isConnected && playerService.isLiked(currentKey)){
+    @if(authStore.isAuthenticated() && userLibraryService.isLiked(queueStore.currentKey())){
     <button
       id="header_player_gauche_liked"
       class="btn btn-sm btn-link text-decoration-none float-end"
-      (click)="$event.stopPropagation(); playerService.removeLike(currentKey)"
+      (click)="
+        $event.stopPropagation(); userLibraryService.removeLike(queueStore.currentKey()).subscribe()
+      "
     >
       <span class="material-icons">favorite</span>
     </button>
-    } @if(isConnected && !playerService.isLiked(currentKey)){
+    } @if(authStore.isAuthenticated() && !userLibraryService.isLiked(queueStore.currentKey())){
     <button
       id="header_player_gauche_like"
       class="btn btn-sm btn-link text-decoration-none text-body float-end"
-      (click)="$event.stopPropagation(); playerService.addLike(currentKey)"
+      (click)="
+        $event.stopPropagation(); userLibraryService.addLike(queueStore.currentKey()).subscribe()
+      "
     >
       <span class="material-icons">favorite_border</span>
     </button>
-    } @if(currentKey){
+    } @if(queueStore.currentKey()){
     <img
-      [src]="'https://img.youtube.com/vi/' + currentKey + '/mqdefault.jpg'"
+      [src]="'https://img.youtube.com/vi/' + queueStore.currentKey() + '/mqdefault.jpg'"
       class="float-start"
       alt=""
     />
     }
     <div>
-      <b>{{ currentTitle }}</b>
+      <b>{{ queueStore.currentVideo()?.titre }}</b>
     </div>
-    <div>{{ currentArtist }}</div>
+    <div>{{ queueStore.currentVideo()?.artiste }}</div>
   </div>
 
   <div id="header_player_centre" class="col-md-6">
@@ -225,17 +229,21 @@
         (keydown.space)="expandPlayer(); $event.preventDefault()"
       >
         <div>
-          <b>{{ currentTitle }}</b>
+          <b>{{ queueStore.currentVideo()?.titre }}</b>
         </div>
-        <div>{{ currentArtist }}</div>
+        <div>{{ queueStore.currentVideo()?.artiste }}</div>
       </a>
 
       <div class="btn-group btn-group-sm">
         <a
           class="btn text-light w-100 d-none d-md-block"
           tabindex="0"
-          [class.disabled]="playerService.currentIndex === 0 && currentTimeStr === '0:00'"
-          [class.border-0]="playerService.currentIndex === 0 && currentTimeStr === '0:00'"
+          [class.disabled]="
+            !queueStore.hasPrevious() && playerStore.currentTimeFormatted() === '0:00'
+          "
+          [class.border-0]="
+            !queueStore.hasPrevious() && playerStore.currentTimeFormatted() === '0:00'
+          "
           (click)="onBefore()"
           (keydown.enter)="onBefore()"
           (keydown.space)="onBefore(); $event.preventDefault()"
@@ -250,7 +258,7 @@
           (keydown.enter)="onPlayPause()"
           (keydown.space)="onPlayPause(); $event.preventDefault()"
         >
-          @if(isPlaying){
+          @if(playerStore.isPlaying()){
           <span class="material-icons">pause</span>
           }@else{
           <span class="material-icons">play_arrow</span>
@@ -259,8 +267,8 @@
         <a
           class="btn text-light w-100 d-none d-md-block"
           tabindex="0"
-          [class.disabled]="playerService.currentIndex === playerService?.tabIndex?.length - 1"
-          [class.border-0]="playerService.currentIndex === playerService?.tabIndex?.length - 1"
+          [class.disabled]="!queueStore.hasNext()"
+          [class.border-0]="!queueStore.hasNext()"
           (click)="onAfter()"
           (keydown.enter)="onAfter()"
           (keydown.space)="onAfter(); $event.preventDefault()"
@@ -287,7 +295,7 @@
         <a
           id="repeat"
           class="btn text-light"
-          [class.active]="isRepeat"
+          [class.active]="playerStore.isRepeat()"
           tabindex="0"
           (click)="repeat()"
           placement="top"
@@ -300,7 +308,7 @@
         <a
           id="random"
           class="btn text-light"
-          [class.active]="isRandom"
+          [class.active]="queueStore.isShuffled()"
           tabindex="0"
           (click)="random()"
           placement="top"
@@ -314,7 +322,7 @@
     </div>
 
     <div id="header_player_center_load">
-      <div id="chrono_en_cours">{{ currentTimeStr }}</div>
+      <div id="chrono_en_cours">{{ playerStore.currentTimeFormatted() }}</div>
       <div id="slider_1_main">
         <div
           id="slider_1_content"
@@ -329,7 +337,7 @@
           <span
             class="ui-slider-handle"
             #sliderPlayer
-            [style.left.%]="valueSliderPlayer"
+            [style.left.%]="playerStore.progress()"
             ngDraggable
             [bounds]="contentSlider1"
             [inBounds]="true"
@@ -340,10 +348,10 @@
           ></span>
           }
         </div>
-        <div id="load_video" [style.width.%]="loadVideo"></div>
-        <div id="load_video_current" [style.width.%]="valueSliderPlayer"></div>
+        <div id="load_video" [style.width.%]="playerStore.loadedProgress()"></div>
+        <div id="load_video_current" [style.width.%]="playerStore.progress()"></div>
       </div>
-      <div id="chrono_total">{{ totalTimeStr }}</div>
+      <div id="chrono_total">{{ playerStore.durationFormatted() }}</div>
     </div>
   </div>
 
@@ -364,7 +372,7 @@
           <span
             class="ui-slider-handle"
             #sliderVolume
-            [style.left.%]="valueSliderVolume"
+            [style.left.%]="playerStore.volume()"
             ngDraggable
             [bounds]="contentSlider2"
             [inBounds]="true"
@@ -375,7 +383,7 @@
           ></span>
           }
         </div>
-        <div id="load_volume_current" [style.width.%]="valueSliderVolume"></div>
+        <div id="load_volume_current" [style.width.%]="playerStore.volume()"></div>
       </div>
     </div>
   </div>
@@ -589,13 +597,13 @@
     <p>{{ 'ajouter' | transloco }}: {{ addTitle }} {{ addArtist }}</p>
     @if(error!==''){
     <p class="alert alert-danger">{{ error }}</p>
-    } @if (listPlaylist.length===0) {
+    } @if (userDataStore.playlists().length===0) {
     <div class="bg-info p-2 rounded">
       {{ 'ajouter_musique_playlist_empty' | transloco }}
     </div>
     }
     <table class="table">
-      @for (playlist of listPlaylist; track playlist.id_playlist) {
+      @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
       <tr>
         <td>
           <bouton class="btn btn-link" (click)="onAddVideo(playlist.id_playlist, modal)">
