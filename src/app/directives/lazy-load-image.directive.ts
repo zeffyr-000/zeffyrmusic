@@ -16,7 +16,7 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
   private renderer = inject(Renderer2);
 
   readonly src = input<string>(undefined, { alias: 'appLazyLoadImage' });
-  private observer: IntersectionObserver;
+  private observer!: IntersectionObserver;
   private isBrowser: boolean;
 
   constructor() {
@@ -43,7 +43,10 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
   }
 
   private loadImage() {
-    this.renderer.setAttribute(this.el.nativeElement, 'src', this.src());
+    const src = this.src();
+    if (src) {
+      this.renderer.setAttribute(this.el.nativeElement, 'src', src);
+    }
   }
 
   ngOnDestroy() {

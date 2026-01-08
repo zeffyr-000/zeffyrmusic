@@ -23,6 +23,7 @@ export interface Track {
 }
 
 export interface Extra {
+  id_video?: string;
   key: string;
   title: string;
   duree: number;

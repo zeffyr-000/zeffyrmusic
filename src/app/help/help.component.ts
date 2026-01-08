@@ -20,10 +20,13 @@ export class HelpComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('help_meta_title'));
-    this.metaService.updateTag({
-      name: 'description',
-      content: this.translocoService.translate('help_meta_description'),
-    });
+    const description = this.translocoService.translate('help_meta_description');
+    if (description) {
+      this.metaService.updateTag({
+        name: 'description',
+        content: description,
+      });
+    }
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help`);
   }
 }

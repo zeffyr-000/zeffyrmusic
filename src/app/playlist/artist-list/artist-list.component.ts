@@ -10,5 +10,5 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
 })
 export class ArtistListComponent {
-  readonly artists = input<Artist[]>(undefined);
+  readonly artists = input<Artist[]>([]);
 }

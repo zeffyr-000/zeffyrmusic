@@ -70,7 +70,7 @@ export class InitService {
   }
 
   public getPing(): Observable<boolean> {
-    const storedValue = this.transferState.get<PingResponse>(PING_KEY, null);
+    const storedValue = this.transferState.get<PingResponse | undefined>(PING_KEY, undefined);
     if (storedValue && this.isBrowser) {
       this.transferState.remove(PING_KEY);
       this.handlePingResponse(storedValue);

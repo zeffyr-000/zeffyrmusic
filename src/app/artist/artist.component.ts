@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnInit,
   PLATFORM_ID,
   inject,
+  signal,
 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -33,15 +33,14 @@ export class ArtistComponent implements OnInit {
   private readonly seoService = inject(SeoService);
   private readonly translocoService = inject(TranslocoService);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
-  name: string;
-  idArtistDeezer: string;
-  urlDeezer = '';
-  idArtist: string;
-  listAlbums: Album[];
-  isAvailable: boolean | undefined;
-  isBrowser: boolean;
+  readonly name = signal('');
+  readonly idArtistDeezer = signal('');
+  readonly urlDeezer = signal('');
+  readonly listAlbums = signal<Album[]>([]);
+  readonly isAvailable = signal<boolean | undefined>(undefined);
+
+  private isBrowser: boolean;
 
   constructor() {
     const platformId = inject(PLATFORM_ID);
@@ -58,6 +57,11 @@ export class ArtistComponent implements OnInit {
   initLoad() {
     const idArtist = this.activatedRoute.snapshot.paramMap.get('id_artist');
 
+    if (!idArtist) {
+      this.isAvailable.set(false);
+      return;
+    }
+
     this.artistService
       .getArtist(idArtist)
       .subscribe(
@@ -68,30 +72,31 @@ export class ArtistComponent implements OnInit {
           list_albums: Album[];
         }) => {
           if (data.nom) {
-            this.isAvailable = true;
-            this.name = data.nom;
-            this.idArtistDeezer = data.id_artiste_deezer;
-            this.urlDeezer =
-              'https://api.deezer.com/artist/' + data.id_artiste_deezer + '/image?size=big';
-            this.idArtist = data.id_artist;
-            this.listAlbums = data.list_albums;
+            this.isAvailable.set(true);
+            this.name.set(data.nom);
+            this.idArtistDeezer.set(data.id_artiste_deezer);
+            this.urlDeezer.set(
+              'https://api.deezer.com/artist/' + data.id_artiste_deezer + '/image?size=big'
+            );
+            this.listAlbums.set(data.list_albums);
 
-            this.titleService.setTitle(this.name + ' - Zeffyr Music');
             this.titleService.setTitle(
-              this.translocoService.translate('title_artist', { artist: this.name })
+              this.translocoService.translate('title_artist', { artist: this.name() })
             );
 
             this.metaService.updateTag({
               name: 'og:title',
-              content: this.translocoService.translate('title_artist', { artist: this.name }),
+              content:
+                this.translocoService.translate('title_artist', { artist: this.name() }) || '',
             });
             this.metaService.updateTag({
               name: 'og:description',
-              content: this.translocoService.translate('description_partage_artist', {
-                artist: this.name,
-              }),
+              content:
+                this.translocoService.translate('description_partage_artist', {
+                  artist: this.name(),
+                }) || '',
             });
-            this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer });
+            this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer() });
             this.metaService.updateTag({
               name: 'og:url',
               content: `${environment.URL_BASE}artist/${idArtist}`,
@@ -100,20 +105,19 @@ export class ArtistComponent implements OnInit {
 
             this.metaService.updateTag({
               name: 'description',
-              content: this.translocoService.translate('description_artist', {
-                artist: this.name,
-                count: this.listAlbums.length,
-              }),
+              content:
+                this.translocoService.translate('description_artist', {
+                  artist: this.name(),
+                  count: this.listAlbums().length,
+                }) || '',
             });
           } else {
-            this.isAvailable = false;
+            this.isAvailable.set(false);
           }
 
           if (this.isBrowser) {
             this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
           }
-
-          this.cdr.markForCheck();
         }
       );
   }

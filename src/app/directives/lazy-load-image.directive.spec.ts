@@ -111,7 +111,7 @@ describe('LazyLoadImageDirective', () => {
     });
 
     it('should not throw error when observer is undefined on destroy', () => {
-      directive['observer'] = undefined;
+      directive['observer'] = undefined as unknown as IntersectionObserver;
 
       expect(() => {
         directive.ngOnDestroy();

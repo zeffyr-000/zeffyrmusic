@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
   inject,
+  signal,
 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -40,29 +40,28 @@ export class SearchComponent implements OnInit, OnDestroy {
   private readonly translocoService = inject(TranslocoService);
   private readonly playerService = inject(PlayerService);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
-  private readonly cdr = inject(ChangeDetectorRef);
   readonly authStore = inject(AuthStore);
   readonly queueStore = inject(QueueStore);
 
-  query: string;
-  isLoading1: boolean;
-  isLoading2: boolean;
-  isLoading3: boolean;
+  readonly query = signal('');
+  readonly isLoading1 = signal(false);
+  readonly isLoading2 = signal(false);
+  readonly isLoading3 = signal(false);
+
+  readonly listArtists = signal<ArtistResult[] | undefined>(undefined);
+  readonly limitArtist = signal(5);
+
+  readonly listAlbums = signal<Album[] | undefined>(undefined);
+  readonly limitAlbum = signal(5);
+
+  readonly listTracks = signal<Video[] | undefined>(undefined);
+  readonly limitTrack = signal(5);
+
+  readonly listExtras = signal<Extra[] | undefined>(undefined);
+  readonly limitExtra = signal(5);
+
   private isBrowser: boolean;
-
-  listArtists: ArtistResult[];
-  limitArtist: number;
-
-  listAlbums: Album[];
-  limitAlbum: number;
-
-  listTracks: Video[];
-  limitTrack: number;
-
-  listExtras: Extra[];
-  limitExtra: number;
-
-  private paramMapSubscription: Subscription;
+  private paramMapSubscription!: Subscription;
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -70,57 +69,56 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.paramMapSubscription = this.activatedRoute.paramMap.subscribe(params => {
-      this.query = params.get('query');
-      this.isLoading1 = true;
-      this.isLoading2 = true;
+      this.query.set(params.get('query') ?? '');
+      this.isLoading1.set(true);
+      this.isLoading2.set(true);
       if (this.authStore.isAuthenticated()) {
-        this.isLoading3 = true;
+        this.isLoading3.set(true);
       }
-      this.listArtists = undefined;
-      this.listAlbums = undefined;
-      this.listTracks = undefined;
-      this.listExtras = undefined;
+      this.listArtists.set(undefined);
+      this.listAlbums.set(undefined);
+      this.listTracks.set(undefined);
+      this.listExtras.set(undefined);
 
       this.searchService
-        .fullSearch1(this.query)
+        .fullSearch1(this.query())
         .subscribe((data: { artist: ArtistResult[]; playlist: PlaylistResult[] }) => {
-          this.isLoading1 = false;
+          this.isLoading1.set(false);
 
           this.titleService.setTitle(
-            this.translocoService.translate('resultats_recherche', { query: this.query }) +
+            this.translocoService.translate('resultats_recherche', { query: this.query() }) +
               ' - Zeffyr Music'
           );
-          this.metaService.updateTag({
-            name: 'description',
-            content: this.translocoService.translate('description_search', { query: this.query }),
+          const description = this.translocoService.translate('description_search', {
+            query: this.query(),
           });
+          if (description) {
+            this.metaService.updateTag({
+              name: 'description',
+              content: description,
+            });
+          }
 
-          this.listArtists = data.artist;
-          this.limitArtist = 5;
+          this.listArtists.set(data.artist);
+          this.limitArtist.set(5);
 
-          this.listAlbums = data.playlist;
-          this.limitAlbum = 5;
-
-          this.cdr.markForCheck();
+          this.listAlbums.set(data.playlist);
+          this.limitAlbum.set(5);
         });
 
-      this.searchService.fullSearch2(this.query).subscribe((data: { tab_video: Video[] }) => {
-        this.isLoading2 = false;
+      this.searchService.fullSearch2(this.query()).subscribe((data: { tab_video: Video[] }) => {
+        this.isLoading2.set(false);
 
-        this.listTracks = data.tab_video;
-        this.limitTrack = 5;
-
-        this.cdr.markForCheck();
+        this.listTracks.set(data.tab_video);
+        this.limitTrack.set(5);
       });
 
       if (this.authStore.isAuthenticated()) {
-        this.searchService.fullSearch3(this.query).subscribe((data: { tab_extra: Extra[] }) => {
-          this.isLoading3 = false;
+        this.searchService.fullSearch3(this.query()).subscribe((data: { tab_extra: Extra[] }) => {
+          this.isLoading3.set(false);
 
-          this.listExtras = data.tab_extra || [];
-          this.limitExtra = 5;
-
-          this.cdr.markForCheck();
+          this.listExtras.set(data.tab_extra || []);
+          this.limitExtra.set(5);
         });
       }
 
@@ -131,27 +129,32 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   moreArtists() {
-    this.limitArtist = this.listArtists.length;
+    this.limitArtist.set(this.listArtists()?.length ?? 0);
   }
 
   moreAlbums() {
-    this.limitAlbum = this.listAlbums.length;
+    this.limitAlbum.set(this.listAlbums()?.length ?? 0);
   }
 
   runPlaylistTrack(index: number) {
-    this.playerService.runPlaylist(this.listTracks, index);
+    const tracks = this.listTracks();
+    if (tracks) {
+      this.playerService.runPlaylist(tracks, index);
+    }
   }
 
-  addVideo(key: string, artist: string, title: string, duration: number) {
+  addVideo(key: string, artist: string, title: string, duration: string | number) {
     this.playerService.addVideoInPlaylist(key, artist, title, duration);
   }
 
   moreTracks() {
-    this.limitTrack = this.listTracks.length;
+    this.limitTrack.set(this.listTracks()?.length ?? 0);
   }
 
   runPlaylistExtra(index: number) {
-    const listTransformed = this.listExtras.map(e => ({
+    const extras = this.listExtras();
+    if (!extras) return;
+    const listTransformed = extras.map(e => ({
       ...e,
       titre: e.title,
     })) as unknown as Video[];
@@ -160,7 +163,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   moreExtras() {
-    this.limitExtra = this.listExtras.length;
+    this.limitExtra.set(this.listExtras()?.length ?? 0);
   }
 
   ngOnDestroy() {

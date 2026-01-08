@@ -43,7 +43,7 @@ export class PlayerService implements OnDestroy {
   currentArtist = '';
   currentKey = '';
 
-  private stateChangeSubscription: Subscription;
+  private stateChangeSubscription!: Subscription;
   private queueInitialized = false;
 
   private errorMessageSubject = new Subject<string | null>();
@@ -121,7 +121,9 @@ export class PlayerService implements OnDestroy {
     }
 
     if (state === 2) {
-      clearInterval(this.refInterval);
+      if (this.refInterval !== null) {
+        clearInterval(this.refInterval);
+      }
       this.refInterval = null;
     }
   }
@@ -241,22 +243,24 @@ export class PlayerService implements OnDestroy {
   }
 
   removeVideo(idVideo: string, callbackSuccess: () => void) {
-    this.httpClient.get(environment.URL_SERVER + 'supprimer/' + idVideo).subscribe({
-      next: (data: { success: boolean }) => {
-        if (data.success !== undefined && data.success) {
-          for (let i = 0; i < this.listVideo.length; i++) {
-            if (this.listVideo[i].id_video === idVideo) {
-              this.listVideo.splice(i, 1);
+    this.httpClient
+      .get<{ success: boolean }>(environment.URL_SERVER + 'supprimer/' + idVideo)
+      .subscribe({
+        next: (data: { success: boolean }) => {
+          if (data.success !== undefined && data.success) {
+            for (let i = 0; i < this.listVideo.length; i++) {
+              if (this.listVideo[i].id_video === idVideo) {
+                this.listVideo.splice(i, 1);
+              }
             }
-          }
 
-          callbackSuccess();
-        }
-      },
-      error: () => {
-        this.initService.onMessageUnlog();
-      },
-    });
+            callbackSuccess();
+          }
+        },
+        error: () => {
+          this.initService.onMessageUnlog();
+        },
+      });
   }
 
   onLoadListLogin(listPlaylist: UserPlaylist[], listFollow: FollowItem[], listLike: UserVideo[]) {
@@ -288,7 +292,7 @@ export class PlayerService implements OnDestroy {
     }
 
     this.httpClient
-      .get(
+      .get<{ success: boolean }>(
         environment.URL_SERVER + 'switch_publique?id_playlist=' + idPlaylist + '&statut=' + status
       )
       .subscribe({
@@ -304,16 +308,18 @@ export class PlayerService implements OnDestroy {
   }
 
   deletePlaylist(idPlaylist: string) {
-    this.httpClient.get(environment.URL_SERVER + 'playlist-supprimer/' + idPlaylist).subscribe({
-      next: (data: { success: boolean }) => {
-        if (data.success !== undefined && data.success) {
-          this.userDataStore.removePlaylist(idPlaylist);
-        }
-      },
-      error: () => {
-        this.initService.onMessageUnlog();
-      },
-    });
+    this.httpClient
+      .get<{ success: boolean }>(environment.URL_SERVER + 'playlist-supprimer/' + idPlaylist)
+      .subscribe({
+        next: (data: { success: boolean }) => {
+          if (data.success !== undefined && data.success) {
+            this.userDataStore.removePlaylist(idPlaylist);
+          }
+        },
+        error: () => {
+          this.initService.onMessageUnlog();
+        },
+      });
   }
 
   deleteFollow(idPlaylist: string) {
@@ -321,29 +327,34 @@ export class PlayerService implements OnDestroy {
   }
 
   switchFollow(idPlaylist: string, title = '', artist = '', urlImage = '') {
-    this.httpClient.get(environment.URL_SERVER + 'switch_suivi/' + idPlaylist).subscribe({
-      next: (data: { success: boolean; est_suivi: boolean }) => {
-        if (data.success !== undefined && data.success) {
-          if (data.est_suivi) {
-            this.userDataStore.addFollow({
-              id_playlist: idPlaylist,
-              titre: title,
-              artiste: artist,
-              url_image: urlImage,
-            });
-          } else {
-            this.userDataStore.removeFollow(idPlaylist);
+    this.httpClient
+      .get<{ success: boolean; est_suivi: boolean }>(
+        environment.URL_SERVER + 'switch_suivi/' + idPlaylist
+      )
+      .subscribe({
+        next: (data: { success: boolean; est_suivi: boolean }) => {
+          if (data.success !== undefined && data.success) {
+            if (data.est_suivi) {
+              this.userDataStore.addFollow({
+                id_playlist: idPlaylist,
+                titre: title,
+                artiste: artist,
+                url_image: urlImage,
+              });
+            } else {
+              this.userDataStore.removeFollow(idPlaylist);
+            }
           }
-        }
-      },
-      error: () => {
-        this.initService.onMessageUnlog();
-      },
-    });
+        },
+        error: () => {
+          this.initService.onMessageUnlog();
+        },
+      });
   }
 
-  addVideoInPlaylist(key: string, artist: string, title: string, duration: number) {
-    this.uiStore.openAddVideoModal({ key, artist, title, duration });
+  addVideoInPlaylist(key: string, artist: string, title: string, duration: string | number) {
+    const durationNum = typeof duration === 'string' ? parseInt(duration, 10) : duration;
+    this.uiStore.openAddVideoModal({ key, artist, title, duration: durationNum });
   }
 
   addVideoInPlaylistRequest(

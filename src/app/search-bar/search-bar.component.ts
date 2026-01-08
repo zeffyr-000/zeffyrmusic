@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { ArtistResult } from '../models/artist.model';
@@ -26,13 +20,12 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
 })
 export class SearchBarComponent implements OnInit {
   private readonly searchService = inject(SearchService);
-  private readonly ref = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
 
-  query: string;
-  resultsArtist: ArtistResult[];
-  resultsAlbum: PlaylistResult[];
+  readonly query = signal('');
+  readonly resultsArtist = signal<ArtistResult[]>([]);
+  readonly resultsAlbum = signal<PlaylistResult[]>([]);
   private searchSubject = new Subject<string>();
 
   ngOnInit() {
@@ -42,21 +35,21 @@ export class SearchBarComponent implements OnInit {
         distinctUntilChanged(),
         tap(query => {
           if (query.length === 0) {
-            this.resultsAlbum = [];
-            this.resultsArtist = [];
+            this.resultsAlbum.set([]);
+            this.resultsArtist.set([]);
           }
         }),
         filter(query => query.length >= 2),
         switchMap(query => this.searchService.searchBar(query))
       )
       .subscribe((data: SearchBarResponse) => {
-        this.resultsAlbum = data.playlist;
-        this.resultsArtist = data.artist;
+        this.resultsAlbum.set(data.playlist);
+        this.resultsArtist.set(data.artist);
       });
   }
 
   search() {
-    this.searchSubject.next(this.query);
+    this.searchSubject.next(this.query());
   }
 
   reset(element: ArtistResult | PlaylistResult, redirect: boolean, url: string) {
@@ -76,19 +69,18 @@ export class SearchBarComponent implements OnInit {
       }
 
       if (query.length > 0) {
-        this.googleAnalyticsService.pageView('/recherche?q=' + this.query);
+        this.googleAnalyticsService.pageView('/recherche?q=' + this.query());
       }
     }
 
-    this.query = '';
-    this.resultsAlbum = [];
-    this.resultsArtist = [];
-    this.ref.detectChanges();
+    this.query.set('');
+    this.resultsAlbum.set([]);
+    this.resultsArtist.set([]);
 
     this.router.navigate([url]);
   }
 
   getQuerystr() {
-    return encodeURIComponent(this.query);
+    return encodeURIComponent(this.query());
   }
 }

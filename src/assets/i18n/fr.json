@@ -50,6 +50,11 @@
   "mot_de_passe_invalide": "Ce mot de passe est invalide (minimum 4 caractères)",
   "settings": "Paramètres",
 
+  "validation_email_invalid": "Veuillez entrer une adresse e-mail valide",
+  "validation_password_minlength": "Le mot de passe doit contenir au moins {{ min }} caractères",
+  "validation_minlength": "Ce champ doit contenir au moins {{ min }} caractères",
+  "validation_passwords_not_matching": "Les mots de passe ne correspondent pas",
+
   "modifier_mail": "Modifier son e-mail",
   "mail_inexistant": "Ce mail n'existe pas",
   "mail_invalide": "Ce mail n'est pas valide",

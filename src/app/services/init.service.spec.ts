@@ -91,7 +91,7 @@ describe('InitService', () => {
           expect(success).toBe(true);
         });
 
-        expect(transferState.get).toHaveBeenCalledWith(PING_KEY, null);
+        expect(transferState.get).toHaveBeenCalledWith(PING_KEY, undefined);
         expect(transferState.remove).toHaveBeenCalledWith(PING_KEY);
         expect(handlePingResponseSpy).toHaveBeenCalledWith(mockPingResponse);
         expect(initializeSpy).toHaveBeenCalled();

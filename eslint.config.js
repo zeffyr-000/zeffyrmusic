@@ -45,6 +45,7 @@ module.exports = tseslint.config(
         },
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-private-class-members': 'warn',
     },
   },
   {

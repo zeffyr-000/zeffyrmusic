@@ -1,18 +1,16 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   PLATFORM_ID,
-  Renderer2,
   TemplateRef,
   ViewChild,
-  DOCUMENT,
   inject,
   effect,
+  signal,
 } from '@angular/core';
-import { NgForm, FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { form, Field, required, minLength, email } from '@angular/forms/signals';
+import { Router, RouterLink } from '@angular/router';
 import {
   NgbActiveModal,
   NgbModal,
@@ -52,7 +50,7 @@ import '../models/google-identity.model';
     SearchBarComponent,
     SwipeDownDirective,
     NgbTooltip,
-    FormsModule,
+    Field,
     TranslocoPipe,
     AngularDraggableModule,
   ],
@@ -68,34 +66,67 @@ export class HeaderComponent {
   readonly uiStore = inject(UiStore);
   playerService = inject(PlayerService);
   readonly userLibraryService = inject(UserLibraryService);
-  private readonly ref = inject(ChangeDetectorRef);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
   private readonly translocoService = inject(TranslocoService);
-  private renderer = inject(Renderer2);
-  private document = inject<Document>(DOCUMENT);
 
-  @ViewChild('contentModalLogin') contentModalLogin: TemplateRef<unknown>;
-  @ViewChild('contentModalRegister') contentModalRegister: TemplateRef<unknown>;
-  @ViewChild('sliderPlayer', {}) sliderPlayerRef: ElementRef;
-  @ViewChild('sliderVolume', {}) sliderVolumeRef: ElementRef;
+  @ViewChild('contentModalLogin') contentModalLogin!: TemplateRef<unknown>;
+  @ViewChild('contentModalRegister') contentModalRegister!: TemplateRef<unknown>;
+  @ViewChild('sliderPlayer', {}) sliderPlayerRef!: ElementRef;
+  @ViewChild('sliderVolume', {}) sliderVolumeRef!: ElementRef;
   @ViewChild('contentModalAddVideo', {})
-  private readonly contentModalAddVideo: TemplateRef<unknown>;
+  private readonly contentModalAddVideo!: TemplateRef<unknown>;
 
   onDragingPlayer = false;
-  isRegistered = false;
-  error = '';
-  isSuccess = false;
-  currentIdPlaylistEdit: string;
-  playlistTitle: string;
-  addKey: string;
-  addArtist: string;
-  addTitle: string;
-  addDuration: number;
+  readonly isRegistered = signal(false);
+  readonly error = signal('');
+  readonly isSuccess = signal(false);
+  currentIdPlaylistEdit = '';
+  playlistTitle = '';
+  addKey = '';
+  addArtist = '';
+  addTitle = '';
+  addDuration = 0;
   URL_ASSETS: string;
-  isPlayerExpanded = false;
+  readonly isPlayerExpanded = signal(false);
+
+  // Signal Forms models
+  readonly registerModel = signal({ pseudo: '', mail: '', password: '' });
+  readonly registerForm = form(this.registerModel, schemaPath => {
+    required(schemaPath.pseudo);
+    minLength(schemaPath.pseudo, 4, {
+      message: this.translocoService.translate('validation_minlength', { min: 4 }),
+    });
+    required(schemaPath.mail);
+    email(schemaPath.mail, {
+      message: this.translocoService.translate('validation_email_invalid'),
+    });
+    required(schemaPath.password);
+    minLength(schemaPath.password, 4, {
+      message: this.translocoService.translate('validation_password_minlength', { min: 4 }),
+    });
+  });
+
+  readonly loginModel = signal({ pseudo: '', password: '' });
+  readonly loginForm = form(this.loginModel, schemaPath => {
+    required(schemaPath.pseudo);
+    minLength(schemaPath.pseudo, 4, {
+      message: this.translocoService.translate('validation_minlength', { min: 4 }),
+    });
+    required(schemaPath.password);
+    minLength(schemaPath.password, 4, {
+      message: this.translocoService.translate('validation_password_minlength', { min: 4 }),
+    });
+  });
+
+  readonly resetPassModel = signal({ mail: '' });
+  readonly resetPassForm = form(this.resetPassModel, schemaPath => {
+    required(schemaPath.mail);
+    email(schemaPath.mail, {
+      message: this.translocoService.translate('validation_email_invalid'),
+    });
+  });
 
   public isBrowser: boolean;
 
@@ -120,7 +151,7 @@ export class HeaderComponent {
 
   goFullscreen(id: string) {
     const el = document.getElementById(id);
-    el.requestFullscreen();
+    el?.requestFullscreen();
   }
 
   repeat() {
@@ -225,11 +256,11 @@ export class HeaderComponent {
   }
 
   expandPlayer() {
-    this.isPlayerExpanded = true;
+    this.isPlayerExpanded.set(true);
   }
 
   collapsePlayer() {
-    this.isPlayerExpanded = false;
+    this.isPlayerExpanded.set(false);
   }
 
   openModal(content: TemplateRef<unknown>) {
@@ -246,23 +277,26 @@ export class HeaderComponent {
     this.openModalLogin();
   }
 
-  onSubmitRegister(form: NgForm) {
-    if (form.valid) {
-      this.userService.register(form.form.value).subscribe((data: UserReponse) => {
+  onSubmitRegister(event: Event) {
+    event.preventDefault();
+    if (this.registerForm().valid()) {
+      this.userService.register(this.registerModel()).subscribe((data: UserReponse) => {
         if (data.success !== undefined && data.success) {
-          this.isRegistered = true;
+          this.isRegistered.set(true);
 
           this.googleAnalyticsService.pageView('/inscription/succes');
         } else {
-          this.error = this.translocoService.translate(data?.error || 'generic_error');
+          this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
         }
       });
     }
   }
 
-  onLogIn(form: NgForm, modal: NgbActiveModal, token: string) {
-    if (token || form.valid) {
-      this.userService.login(form?.form?.value, token).subscribe((data: LoginResponse) => {
+  onLogIn(event: Event | null, modal: NgbActiveModal | null, token: string) {
+    event?.preventDefault();
+    if (token || this.loginForm().valid()) {
+      const formValue = this.loginModel();
+      this.userService.login(formValue, token).subscribe((data: LoginResponse) => {
         if (data.success !== undefined && data.success) {
           // Login via AuthStore
           this.authStore.login(
@@ -294,7 +328,7 @@ export class HeaderComponent {
             this.modalService.dismissAll();
           }
         } else {
-          this.error = this.translocoService.translate(data?.error || 'generic_error');
+          this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
         }
       });
     }
@@ -320,13 +354,14 @@ export class HeaderComponent {
     });
   }
 
-  onSubmitResetPass(form: NgForm) {
-    if (form.valid) {
-      this.userService.resetPass(form.form.value).subscribe((data: UserReponse) => {
+  onSubmitResetPass(event: Event) {
+    event.preventDefault();
+    if (this.resetPassForm().valid()) {
+      this.userService.resetPass(this.resetPassModel()).subscribe((data: UserReponse) => {
         if (data.success !== undefined && data.success) {
-          this.isSuccess = true;
+          this.isSuccess.set(true);
         } else {
-          this.error = this.translocoService.translate(data?.error || 'generic_error');
+          this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
         }
       });
     }

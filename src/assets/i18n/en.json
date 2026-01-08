@@ -50,6 +50,11 @@
   "mot_de_passe_invalide": "This password is not valid (between 4 and 16 characters)",
   "settings": "Settings",
 
+  "validation_email_invalid": "Please enter a valid email address",
+  "validation_password_minlength": "Password must be at least {{ min }} characters",
+  "validation_minlength": "This field must be at least {{ min }} characters",
+  "validation_passwords_not_matching": "Passwords do not match",
+
   "modifier_mail": "Edit your email",
   "mail_inexistant": "This email doesn't exist",
   "mail_invalide": "This email is not valid",

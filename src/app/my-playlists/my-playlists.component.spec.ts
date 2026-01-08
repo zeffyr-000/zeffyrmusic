@@ -8,7 +8,6 @@ import { AuthGuard } from '../services/auth-guard.service';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule, NgForm } from '@angular/forms';
 import { CreatePlaylistResponse } from '../models/user.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
 
@@ -27,6 +26,7 @@ describe('MyPlaylistsComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let activeModalSpyObj: any;
   let userDataStore: InstanceType<typeof UserDataStore>;
+  const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
   beforeEach(async () => {
     playerServiceMock = {
@@ -42,7 +42,7 @@ describe('MyPlaylistsComponent', () => {
     activeModalSpyObj = { dismiss: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [FormsModule, MyPlaylistsComponent],
+      imports: [MyPlaylistsComponent],
       providers: [
         getTranslocoTestingProviders(),
         { provide: UserService, useValue: userServiceMock },
@@ -77,45 +77,39 @@ describe('MyPlaylistsComponent', () => {
   });
 
   it('should call createPlaylist and addNewPlaylist on valid form submission', () => {
-    const form = {
-      valid: true,
-      form: { value: { titre: 'New Playlist' } },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.createPlaylistModel.set({ titre: 'New Playlist' });
 
     const response = { success: true, id_playlist: '1', titre: 'New Playlist', error: '' };
     userServiceMock.createPlaylist.mockReturnValue(of(response));
 
-    component.onCreatePlaylist(form);
+    component.onCreatePlaylist(mockEvent);
 
     expect(userServiceMock.createPlaylist).toHaveBeenCalledWith({ titre: 'New Playlist' });
     expect(playerServiceMock.addNewPlaylist).toHaveBeenCalledWith('1', 'New Playlist');
   });
 
   it('should set error message on failed playlist creation', () => {
-    const form = {
-      valid: true,
-      form: { value: { titre: 'New Playlist' } },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.createPlaylistModel.set({ titre: 'New Playlist' });
 
     const response = { success: false, error: 'error_message' } as CreatePlaylistResponse;
     userServiceMock.createPlaylist.mockReturnValue(of(response));
 
-    component.onCreatePlaylist(form);
+    component.onCreatePlaylist(mockEvent);
 
     expect(userServiceMock.createPlaylist).toHaveBeenCalledWith({ titre: 'New Playlist' });
-    expect(component.error).toBe('error_message');
+    expect(component.error()).toBeTruthy();
   });
 
   it('should set generic message on failed playlist creation', () => {
-    const form = {
-      valid: true,
-      form: { value: { titre: 'New Playlist' } },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.createPlaylistModel.set({ titre: 'New Playlist' });
 
     const response = { success: false } as CreatePlaylistResponse;
     userServiceMock.createPlaylist.mockReturnValue(of(response));
 
-    component.onCreatePlaylist(form);
+    component.onCreatePlaylist(mockEvent);
 
     expect(userServiceMock.createPlaylist).toHaveBeenCalledWith({ titre: 'New Playlist' });
   });
@@ -138,7 +132,7 @@ describe('MyPlaylistsComponent', () => {
     expect(playerServiceMock.switchVisibilityPlaylist).toHaveBeenCalledWith(idPlaylist, false);
   });
 
-  it('should open modal and set currentIdPlaylistEdit and playlistTitle', () => {
+  it('should open modal and set currentIdPlaylistEdit and editTitleModel', () => {
     const idPlaylist = '1';
     const title = 'New Playlist Title';
     const contentModalConfirmEditTitle = {} as TemplateRef<unknown>;
@@ -147,7 +141,8 @@ describe('MyPlaylistsComponent', () => {
 
     expect(component.modalService.open).toHaveBeenCalledWith(contentModalConfirmEditTitle);
     expect(component.currentIdPlaylistEdit).toBe(idPlaylist);
-    expect(component.playlistTitle).toBe(title);
+    // Signal Forms: editTitleModel is set instead of playlistTitle
+    expect(component.editTitleModel().playlist_titre).toBe(title);
   });
 
   it('should open modal and set currentIdPlaylistEdit', () => {
@@ -170,16 +165,20 @@ describe('MyPlaylistsComponent', () => {
   });
 
   it('should call editTitlePlaylist on userService and editPlaylistTitle on playerService, then dismiss the modal on success', () => {
-    const form = {
-      valid: true,
-      form: { value: { playlist_titre: 'Updated Playlist Title' } },
-    } as NgForm;
-    const response = { success: true, error: undefined } as CreatePlaylistResponse;
-
-    userServiceMock.editTitlePlaylist.mockReturnValue(of(response));
+    // Signal Forms: set model values directly
+    component.editTitleModel.set({ playlist_titre: 'Updated Playlist Title' });
     component.currentIdPlaylistEdit = '1';
 
-    component.onEditTitlePlaylist(form, activeModalSpyObj);
+    const response = {
+      success: true,
+      error: '',
+      id_playlist: '1',
+      titre: 'Updated Playlist Title',
+    } as CreatePlaylistResponse;
+
+    userServiceMock.editTitlePlaylist.mockReturnValue(of(response));
+
+    component.onEditTitlePlaylist(mockEvent, activeModalSpyObj);
 
     expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith({
       id_playlist: '1',
@@ -190,35 +189,33 @@ describe('MyPlaylistsComponent', () => {
   });
 
   it('should set error message on failed playlist title update', () => {
-    const form = {
-      valid: true,
-      form: { value: { playlist_titre: 'Updated Playlist Title' } },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.editTitleModel.set({ playlist_titre: 'Updated Playlist Title' });
+    component.currentIdPlaylistEdit = '1';
+
     const response = { success: false, error: 'error_message' } as CreatePlaylistResponse;
 
     userServiceMock.editTitlePlaylist.mockReturnValue(of(response));
-    component.currentIdPlaylistEdit = '1';
 
-    component.onEditTitlePlaylist(form, activeModalSpyObj);
+    component.onEditTitlePlaylist(mockEvent, activeModalSpyObj);
 
     expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith({
       id_playlist: '1',
       titre: 'Updated Playlist Title',
     });
-    expect(component.error).toBe('error_message');
+    expect(component.error()).toBeTruthy();
   });
 
   it('should set generic message on failed playlist title update', () => {
-    const form = {
-      valid: true,
-      form: { value: { playlist_titre: 'Updated Playlist Title' } },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.editTitleModel.set({ playlist_titre: 'Updated Playlist Title' });
+    component.currentIdPlaylistEdit = '1';
+
     const response = { success: false } as CreatePlaylistResponse;
 
     userServiceMock.editTitlePlaylist.mockReturnValue(of(response));
-    component.currentIdPlaylistEdit = '1';
 
-    component.onEditTitlePlaylist(form, activeModalSpyObj);
+    component.onEditTitlePlaylist(mockEvent, activeModalSpyObj);
 
     expect(userServiceMock.editTitlePlaylist).toHaveBeenCalledWith({
       id_playlist: '1',

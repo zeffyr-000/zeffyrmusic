@@ -76,7 +76,7 @@ describe('UserService', () => {
       error: '',
     };
 
-    service.login(mockLoginData, null).subscribe(data => {
+    service.login(mockLoginData, '').subscribe(data => {
       expect(data).toEqual(mockLoginResponse);
     });
 

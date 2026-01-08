@@ -9,7 +9,6 @@ import { FollowItem } from '../models/follow.model';
 import { UserPlaylist } from '../models/playlist.model';
 import { PlayerService } from '../services/player.service';
 import { HeaderComponent } from './header.component';
-import { NgForm } from '@angular/forms';
 import { of } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { UserVideo, VideoItem } from '../models/video.model';
@@ -75,6 +74,7 @@ describe('HeaderComponent', () => {
   let initServiceMock: Partial<MockInitService>;
   let playerServiceMock: Partial<MockPlayerService>;
   let searchServiceMock: Partial<SearchService>;
+  const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
   const searchResults1: SearchResults1 = {
     artist: [
@@ -224,10 +224,10 @@ describe('HeaderComponent', () => {
 
     // Reset component properties to initial state
     component.onDragingPlayer = false;
-    component.isRegistered = false;
-    component.error = '';
-    component.isSuccess = false;
-    component.isPlayerExpanded = false;
+    component.isRegistered.set(false);
+    component.error.set('');
+    component.isSuccess.set(false);
+    component.isPlayerExpanded.set(false);
   });
 
   it('should create', () => {
@@ -311,12 +311,12 @@ describe('HeaderComponent', () => {
 
   it('should expand player', () => {
     component.expandPlayer();
-    expect(component.isPlayerExpanded).toBe(true);
+    expect(component.isPlayerExpanded()).toBe(true);
   });
 
   it('should collapse player', () => {
     component.collapsePlayer();
-    expect(component.isPlayerExpanded).toBe(false);
+    expect(component.isPlayerExpanded()).toBe(false);
   });
 
   it('should call modalService.open with the correct arguments when openModal is called', () => {
@@ -415,59 +415,57 @@ describe('HeaderComponent', () => {
 
   describe('onSubmitRegister', () => {
     it('should call userService.register and set isRegistered on success', () => {
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            email: 'test@example.com',
-            password: 'password',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.registerModel.set({
+        pseudo: 'testuser',
+        mail: 'test@example.com',
+        password: 'password',
+      });
+
       const registerResponse = { success: true, error: '' };
       vi.spyOn(userService, 'register').mockReturnValue(of(registerResponse));
 
-      component.onSubmitRegister(form);
+      component.onSubmitRegister(mockEvent);
 
-      expect(userService.register).toHaveBeenCalledWith(form.form.value);
-      expect(component.isRegistered).toBe(true);
+      expect(userService.register).toHaveBeenCalledWith({
+        pseudo: 'testuser',
+        mail: 'test@example.com',
+        password: 'password',
+      });
+      expect(component.isRegistered()).toBe(true);
       expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/inscription/succes');
     });
 
     it('should set error on register failure', () => {
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            email: 'test@example.com',
-            password: 'password',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.registerModel.set({
+        pseudo: 'testuser',
+        mail: 'test@example.com',
+        password: 'password',
+      });
+
       const error = 'invalid_email';
       const registerResponse = { success: false, error };
       vi.spyOn(userService, 'register').mockReturnValue(of(registerResponse));
 
-      component.onSubmitRegister(form);
+      component.onSubmitRegister(mockEvent);
 
-      expect(userService.register).toHaveBeenCalledWith(form.form.value);
+      expect(userService.register).toHaveBeenCalledWith({
+        pseudo: 'testuser',
+        mail: 'test@example.com',
+        password: 'password',
+      });
       // Le composant utilise translocoService.translate pour afficher l'erreur
       // mais stocke le résultat de translate, donc on doit vérifier que translate a été appelé
-      expect(component.error).toBeTruthy();
+      expect(component.error()).toBeTruthy();
     });
   });
 
   describe('onLogIn', () => {
     it('should login successfully and dismiss modal', () => {
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            email: 'test@example.com',
-            password: 'password',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.loginModel.set({ pseudo: 'test@example.com', password: 'password' });
+
       const pseudo = 'testuser';
       const id_perso = '123';
       const mail = 'testuser@example.com';
@@ -490,9 +488,13 @@ describe('HeaderComponent', () => {
       } as LoginResponse;
       vi.spyOn(userService, 'login').mockReturnValue(of(loginResponse));
 
-      component.onLogIn(form, activeModalSpy, null);
+      // Signal Forms: onLogIn now takes (modal, token) instead of (form, modal, token)
+      component.onLogIn(mockEvent, activeModalSpy, '');
 
-      expect(userService.login).toHaveBeenCalledWith(form.form.value, null);
+      expect(userService.login).toHaveBeenCalledWith(
+        { pseudo: 'test@example.com', password: 'password' },
+        ''
+      );
       expect(component.authStore.isAuthenticated()).toBe(true);
       expect(initService.loginSuccess).toHaveBeenCalledWith(
         pseudo,
@@ -511,49 +513,51 @@ describe('HeaderComponent', () => {
     });
 
     it('should set error on login failure', () => {
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            email: 'test@example.com',
-            password: 'password',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.loginModel.set({ pseudo: 'test@example.com', password: 'password' });
+
       const error = 'invalid_credentials';
 
       const loginResponse = { success: false, error } as LoginResponse;
       vi.spyOn(userService, 'login').mockReturnValue(of(loginResponse));
 
-      component.onLogIn(form, activeModalSpy, null);
+      // Signal Forms: onLogIn now takes (modal, token) instead of (form, modal, token)
+      component.onLogIn(mockEvent, activeModalSpy, '');
 
-      expect(userService.login).toHaveBeenCalledWith(form.form.value, null);
-      expect(component.error).toBeTruthy();
+      expect(userService.login).toHaveBeenCalledWith(
+        { pseudo: 'test@example.com', password: 'password' },
+        ''
+      );
+      expect(component.error()).toBeTruthy();
     });
   });
 
   describe('onSubmitResetPass', () => {
     it('should call userService.resetPass and set isSuccess on success', () => {
-      const form = { valid: true, form: { value: 'testValue' } } as NgForm;
+      // Signal Forms: set model values directly
+      component.resetPassModel.set({ mail: 'test@example.com' });
+
       const successResponse = { success: true, error: '' };
       vi.spyOn(userService, 'resetPass').mockReturnValue(of(successResponse));
 
-      component.onSubmitResetPass(form);
+      component.onSubmitResetPass(mockEvent);
 
-      expect(userService.resetPass).toHaveBeenCalledWith(form.form.value);
-      expect(component.isSuccess).toBe(true);
+      expect(userService.resetPass).toHaveBeenCalledWith({ mail: 'test@example.com' });
+      expect(component.isSuccess()).toBe(true);
     });
 
     it('should set error on reset password failure', () => {
-      const form = { valid: true, form: { value: 'testValue' } } as NgForm;
+      // Signal Forms: set model values directly
+      component.resetPassModel.set({ mail: 'test@example.com' });
+
       const errorResponse = { success: false, error: 'Invalid credentials' };
       vi.spyOn(translocoService, 'translate').mockReturnValue('Invalid credentials');
       vi.spyOn(userService, 'resetPass').mockReturnValue(of(errorResponse));
 
-      component.onSubmitResetPass(form);
+      component.onSubmitResetPass(mockEvent);
 
-      expect(userService.resetPass).toHaveBeenCalledWith(form.form.value);
-      expect(component.error).toBe('Invalid credentials');
+      expect(userService.resetPass).toHaveBeenCalledWith({ mail: 'test@example.com' });
+      expect(component.error()).toBe('Invalid credentials');
     });
   });
 
@@ -644,7 +648,7 @@ describe('HeaderComponent', () => {
         liste_playlist: [],
         liste_suivi: [],
         like_video: [],
-        error: null,
+        error: undefined,
       })
     );
 
@@ -653,6 +657,7 @@ describe('HeaderComponent', () => {
 
     component.handleCredentialResponse(mockResponse);
 
+    // Signal Forms: onLogIn now takes (event, modal, token)
     expect(component.onLogIn).toHaveBeenCalledWith(null, null, 'mockCredential');
   });
 });

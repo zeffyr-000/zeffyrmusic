@@ -3,20 +3,21 @@
   type="search"
   placeholder="{{ 'rechercher' | transloco }}"
   id="input_search_header"
-  [(ngModel)]="query"
+  [ngModel]="query()"
+  (ngModelChange)="query.set($event)"
   (input)="search()"
 />
 
 <ul class="list-group list-unstyled" id="liste_resultat_recherche">
-  @if(query && query.length>0) {
+  @if(query() && query().length>0) {
   <li>
     <a
       class="list-group-item all_results"
-      (click)="reset(element, false, '/search/' + query)"
+      (click)="reset($any({}), false, '/search/' + query())"
       role="button"
       tabindex="0"
-      (keydown.enter)="reset(element, false, '/search/' + query)"
-      (keydown.space)="reset(element, false, '/search/' + query); $event.preventDefault()"
+      (keydown.enter)="reset($any({}), false, '/search/' + query())"
+      (keydown.space)="reset($any({}), false, '/search/' + query()); $event.preventDefault()"
     >
       <h4>
         <span class="material-icons img_artiste_recherche">search</span>
@@ -24,7 +25,7 @@
       </h4>
     </a>
   </li>
-  } @for (element of resultsArtist; track element.id_artiste) {
+  } @for (element of resultsArtist(); track element.id_artiste) {
   <li>
     <a
       class="list-group-item"
@@ -46,7 +47,7 @@
       </h4>
     </a>
   </li>
-  } @for (element of resultsAlbum; track element.id_playlist) {
+  } @for (element of resultsAlbum(); track element.id_playlist) {
   <li>
     <a
       class="list-group-item"

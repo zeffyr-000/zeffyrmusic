@@ -2,8 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({ name: 'toMMSS' })
 export class ToMMSSPipe implements PipeTransform {
-  transform(value: string): string {
-    const secNum = Number.parseInt(value, 10);
+  transform(value: string | number): string {
+    const secNum = typeof value === 'number' ? value : Number.parseInt(value, 10);
     const minuts = Math.floor(secNum / 60);
     const seconds = secNum - minuts * 60;
 

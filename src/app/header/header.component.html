@@ -176,7 +176,7 @@
 <div
   id="header_player"
   class="row g-0"
-  [class.expanded]="isPlayerExpanded"
+  [class.expanded]="isPlayerExpanded()"
   appSwipeDown
   (swipeDown)="collapsePlayer()"
 >
@@ -329,8 +329,8 @@
           class="ui-slider"
           tabindex="0"
           (click)="onClickSliderPlayer($event)"
-          (keydown.enter)="onClickSliderPlayer($event)"
-          (keydown.space)="onClickSliderPlayer($event); $event.preventDefault()"
+          (keydown.enter)="$event.preventDefault()"
+          (keydown.space)="$event.preventDefault()"
           #contentSlider1
         >
           @if(isBrowser){
@@ -342,7 +342,7 @@
             [bounds]="contentSlider1"
             [inBounds]="true"
             lockAxis="y"
-            preventDefaultEvent="true"
+            [preventDefaultEvent]="true"
             (movingOffset)="onDragMovingPlayer($event)"
             (endOffset)="onDragEndPlayer($event)"
           ></span>
@@ -364,8 +364,8 @@
           class="ui-slider"
           tabindex="0"
           (click)="onClickSliderVolume($event)"
-          (keydown.enter)="onClickSliderVolume($event)"
-          (keydown.space)="onClickSliderVolume($event); $event.preventDefault()"
+          (keydown.enter)="$event.preventDefault()"
+          (keydown.space)="$event.preventDefault()"
           #contentSlider2
         >
           @if(isBrowser) {
@@ -377,7 +377,7 @@
             [bounds]="contentSlider2"
             [inBounds]="true"
             lockAxis="y"
-            preventDefaultEvent="true"
+            [preventDefaultEvent]="true"
             (movingOffset)="onDragMovingVolume($event)"
             (endOffset)="onDragEndVolume($event)"
           ></span>
@@ -409,47 +409,36 @@
       </span>
       <hr class="flex-grow-1" />
     </div>
-    @if(!isRegistered){
-    <form (ngSubmit)="onSubmitRegister(formRegister)" #formRegister="ngForm">
+    @if(!isRegistered()){
+    <form (submit)="onSubmitRegister($event)">
       <p class="form-group">
         <label class="control-label" for="pseudo">{{ 'pseudo' | transloco }}</label>
         <input
           type="text"
-          name="pseudo"
           id="pseudo"
           class="form-control"
-          minlength="4"
           ngbAutofocus
-          ngModel
-          required
+          [field]="registerForm.pseudo"
         />
       </p>
       <p class="form-group">
         <label class="control-label" for="mailLogin">{{ 'mail' | transloco }}</label>
-        <input type="text" name="mail" id="mailLogin" class="form-control" ngModel required email />
+        <input type="text" id="mailLogin" class="form-control" [field]="registerForm.mail" />
       </p>
       <p class="form-group">
         <label class="control-label" for="password">{{ 'mot_de_passe' | transloco }}</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          class="form-control"
-          minlength="4"
-          ngModel
-          required
-        />
+        <input type="password" id="password" class="form-control" [field]="registerForm.password" />
       </p>
       <p>
         <input
           type="submit"
           class="btn btn-primary"
-          [disabled]="formRegister.invalid"
+          [disabled]="registerForm().invalid()"
           value="{{ 'je_m_inscris' | transloco }}"
         />
       </p>
-      @if(formRegister.dirty && error!=='') {
-      <p class="alert alert-danger">{{ error }}</p>
+      @if(registerForm().dirty() && error()!=='') {
+      <p class="alert alert-danger">{{ error() }}</p>
       }
     </form>
     } @else {
@@ -488,42 +477,36 @@
       </span>
       <hr class="flex-grow-1" />
     </div>
-    <form (ngSubmit)="onLogIn(formLogIn, modal)" #formLogIn="ngForm">
+    <form (submit)="onLogIn($event, modal, '')">
       <p class="form-group">
-        <label class="control-label" for="pseudo">{{ 'pseudo_ou_mail' | transloco }}</label>
+        <label class="control-label" for="pseudoLogin">{{ 'pseudo_ou_mail' | transloco }}</label>
         <input
           type="text"
-          name="pseudo"
-          id="pseudo"
+          id="pseudoLogin"
           class="form-control"
-          minlength="4"
           ngbAutofocus
-          ngModel
-          required
+          [field]="loginForm.pseudo"
         />
       </p>
       <p class="form-group">
-        <label class="control-label" for="password">{{ 'mot_de_passe' | transloco }}</label>
+        <label class="control-label" for="passwordLogin">{{ 'mot_de_passe' | transloco }}</label>
         <input
           type="password"
-          name="password"
-          id="password"
+          id="passwordLogin"
           class="form-control"
-          minlength="4"
-          ngModel
-          required
+          [field]="loginForm.password"
         />
       </p>
       <p>
         <input
           type="submit"
           class="btn btn-primary"
-          [disabled]="formLogIn.invalid"
+          [disabled]="loginForm().invalid()"
           value="{{ 'connexion' | transloco }}"
         />
       </p>
-      @if(formLogIn.dirty && error!==''){
-      <p class="alert alert-danger">{{ error }}</p>
+      @if(loginForm().dirty() && error()!==''){
+      <p class="alert alert-danger">{{ error() }}</p>
       }
 
       <p>
@@ -550,31 +533,28 @@
     ></button>
   </div>
   <div class="modal-body">
-    @if(!isSuccess){
-    <form (ngSubmit)="onSubmitResetPass(formResetPass)" #formResetPass="ngForm">
+    @if(!isSuccess()){
+    <form (submit)="onSubmitResetPass($event)">
       <p class="form-group">
         <label class="control-label" for="mailReset">{{ 'mail' | transloco }}</label>
         <input
           type="text"
-          name="mail"
           id="mailReset"
           class="form-control"
           ngbAutofocus
-          ngModel
-          required
-          email
+          [field]="resetPassForm.mail"
         />
       </p>
       <p>
         <input
           type="submit"
           class="btn btn-primary"
-          [disabled]="formResetPass.invalid"
+          [disabled]="resetPassForm().invalid()"
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formResetPass.dirty && error!=='') {
-      <p class="alert alert-danger">{{ error }}</p>
+      @if(resetPassForm().dirty() && error()!=='') {
+      <p class="alert alert-danger">{{ error() }}</p>
       }
     </form>
     } @else {
@@ -595,8 +575,8 @@
   </div>
   <div class="modal-body">
     <p>{{ 'ajouter' | transloco }}: {{ addTitle }} {{ addArtist }}</p>
-    @if(error!==''){
-    <p class="alert alert-danger">{{ error }}</p>
+    @if(error()!==''){
+    <p class="alert alert-danger">{{ error() }}</p>
     } @if (userDataStore.playlists().length===0) {
     <div class="bg-info p-2 rounded">
       {{ 'ajouter_musique_playlist_empty' | transloco }}
@@ -606,9 +586,9 @@
       @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
       <tr>
         <td>
-          <bouton class="btn btn-link" (click)="onAddVideo(playlist.id_playlist, modal)">
+          <button class="btn btn-link" (click)="onAddVideo(playlist.id_playlist, modal)">
             {{ playlist.titre }}
-          </bouton>
+          </button>
         </td>
       </tr>
       }

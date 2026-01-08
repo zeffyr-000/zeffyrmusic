@@ -10,7 +10,9 @@ export interface Album {
 
 export interface HomeAlbum {
   id: string;
+  id_playlist?: string;
   titre: string;
+  artiste?: string;
   description: string;
   url_image: string;
   decade?: boolean;

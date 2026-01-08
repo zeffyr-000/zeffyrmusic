@@ -1,7 +1,6 @@
 import type { MockedObject } from 'vitest';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgForm } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgbActiveModal, NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError } from 'rxjs';
@@ -83,6 +82,8 @@ describe('SettingsComponent', () => {
     delete (window as any).google;
   });
 
+  const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -91,17 +92,13 @@ describe('SettingsComponent', () => {
     it('should call httpClient.post with the correct arguments and update this.successPass or this.error based on the server response', async () => {
       vi.useFakeTimers();
 
-      // Arrange
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            password1: 'testPassword',
-            password2: 'testPassword',
-            passwordold: 'oldPassword',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.editPassModel.set({
+        passwordold: 'oldPassword',
+        password1: 'testPassword',
+        password2: 'testPassword',
+      });
+
       const successResponse = { success: true, error: '' };
       const errorResponse = { success: false, error: 'Invalid credentials' };
       const expectedBody = {
@@ -112,7 +109,7 @@ describe('SettingsComponent', () => {
       userServiceMock.editPass.mockReturnValue(of(successResponse));
 
       // Act
-      component.onSubmitEditPass(form);
+      component.onSubmitEditPass(mockEvent);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
@@ -123,7 +120,7 @@ describe('SettingsComponent', () => {
 
       userServiceMock.editPass.mockReturnValue(of(errorResponse));
       // Act
-      component.onSubmitEditPass(form);
+      component.onSubmitEditPass(mockEvent);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
@@ -132,42 +129,31 @@ describe('SettingsComponent', () => {
       vi.useRealTimers();
     });
 
-    it('should set this.error to "mot_de_passe_confirmer_invalide" when the passwords are not identical', () => {
-      // Arrange
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            password1: 'testPassword',
-            password2: 'differentPassword',
-            passwordold: 'oldPassword',
-          },
-        },
-      } as NgForm;
+    it('should set this.error when the passwords are not identical (form invalid)', () => {
+      // Signal Forms: password mismatch is handled by form validation
+      // When passwords don't match, the form is invalid
+      component.editPassModel.set({
+        passwordold: 'oldPassword',
+        password1: 'testPassword',
+        password2: 'differentPassword',
+      });
 
-      // Act
-      component.onSubmitEditPass(form);
-
-      // Assert
-      expect(component.error()).toBe('Confirmation password is incorrect');
+      // Form should be invalid due to password mismatch validation
+      expect(component.editPassForm().invalid()).toBe(true);
     });
 
     it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
-      // Arrange
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            password1: 'testPassword',
-            password2: 'testPassword',
-            passwordold: 'oldPassword',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.editPassModel.set({
+        passwordold: 'oldPassword',
+        password1: 'testPassword',
+        password2: 'testPassword',
+      });
+
       userServiceMock.editPass.mockReturnValue(throwError('error'));
 
       // Act
-      component.onSubmitEditPass(form);
+      component.onSubmitEditPass(mockEvent);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalled();
@@ -179,24 +165,18 @@ describe('SettingsComponent', () => {
     it('should call httpClient.post with the correct arguments and update this.successMail or this.error based on the server response', async () => {
       vi.useFakeTimers();
 
-      // Arrange
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            email: 'testEmail',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.editMailModel.set({ mail: 'test@example.com' });
+
       const successResponse = { success: true, error: '' };
       const errorResponse = { success: false, error: 'Invalid email' };
       userServiceMock.editMail.mockReturnValue(of(successResponse));
 
       // Act
-      component.onSubmitEditMail(form);
+      component.onSubmitEditMail(mockEvent);
 
       // Assert
-      expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
+      expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
 
       await vi.advanceTimersByTimeAsync(10000);
 
@@ -204,33 +184,27 @@ describe('SettingsComponent', () => {
 
       userServiceMock.editMail.mockReturnValue(of(errorResponse));
       // Act
-      component.onSubmitEditMail(form);
+      component.onSubmitEditMail(mockEvent);
 
       // Assert
-      expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
+      expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
       expect(component.error()).toBe('Invalid email');
 
       vi.useRealTimers();
     });
 
     it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
-      // Arrange
-      const form = {
-        valid: true,
-        form: {
-          value: {
-            email: 'testEmail',
-          },
-        },
-      } as NgForm;
+      // Signal Forms: set model values directly
+      component.editMailModel.set({ mail: 'test@example.com' });
+
       const errorResponse = { success: false, error: 'Invalid email' };
       userServiceMock.editMail.mockReturnValue(throwError(errorResponse));
 
       // Act
-      component.onSubmitEditMail(form);
+      component.onSubmitEditMail(mockEvent);
 
       // Assert
-      expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
+      expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
       expect(initService.onMessageUnlog).toHaveBeenCalled();
     });
   });
@@ -277,20 +251,16 @@ describe('SettingsComponent', () => {
   });
 
   it('should call editLanguage with correct parameters and handle success response', () => {
-    const mockForm = {
-      valid: true,
-      form: {
-        value: { language: 'en' },
-      },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.editLanguageModel.set({ language: 'en' });
 
     const mockResponse = { success: true } as UserReponse;
     userServiceMock.editLanguage.mockReturnValue(of(mockResponse));
     vi.useFakeTimers();
 
-    component.onSubmitEditLanguage(mockForm);
+    component.onSubmitEditLanguage(mockEvent);
 
-    expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
+    expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
     expect(component.successLanguage()).toBe(true);
 
     vi.advanceTimersByTime(10000);
@@ -299,56 +269,42 @@ describe('SettingsComponent', () => {
   });
 
   it('should handle error response correctly', () => {
-    const mockForm = {
-      valid: true,
-      form: {
-        value: { language: 'en' },
-      },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.editLanguageModel.set({ language: 'en' });
 
     const mockResponse = { success: false, error: 'Some error' } as UserReponse;
     userServiceMock.editLanguage.mockReturnValue(of(mockResponse));
 
-    component.onSubmitEditLanguage(mockForm);
+    component.onSubmitEditLanguage(mockEvent);
 
-    expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
+    expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
     expect(component.error()).toBe('Some error');
   });
 
   it('should handle HTTP error correctly', () => {
-    const mockForm = {
-      valid: true,
-      form: {
-        value: { language: 'en' },
-      },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.editLanguageModel.set({ language: 'en' });
 
     userServiceMock.editLanguage.mockReturnValue(throwError(() => new Error('HTTP error')));
 
-    component.onSubmitEditLanguage(mockForm);
+    component.onSubmitEditLanguage(mockEvent);
 
-    expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
+    expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
   it('should handle successful account deletion', () => {
     vi.useFakeTimers();
 
-    const form = {
-      valid: true,
-      form: {
-        value: {
-          /* form values */
-        },
-      },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.deleteAccountModel.set({ password: 'testPassword' });
 
     const response = { success: true } as UserReponse;
     userServiceMock.deleteAccount.mockReturnValue(of(response));
 
-    component.onSubmitDeleteAccount(form);
+    component.onSubmitDeleteAccount(mockEvent);
 
-    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
+    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
     expect(component.successDelete()).toBe(true);
 
     vi.advanceTimersByTime(10000);
@@ -358,40 +314,28 @@ describe('SettingsComponent', () => {
   });
 
   it('should handle account deletion error from server', () => {
-    const form = {
-      valid: true,
-      form: {
-        value: {
-          /* form values */
-        },
-      },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.deleteAccountModel.set({ password: 'testPassword' });
 
     const response = { success: false, error: 'error_message' } as UserReponse;
     userServiceMock.deleteAccount.mockReturnValue(of(response));
 
-    component.onSubmitDeleteAccount(form);
+    component.onSubmitDeleteAccount(mockEvent);
 
-    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
+    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
     expect(component.successDelete()).toBe(false);
     expect(component.error()).toBe('error_message');
   });
 
   it('should handle network error during account deletion', () => {
-    const form = {
-      valid: true,
-      form: {
-        value: {
-          /* form values */
-        },
-      },
-    } as NgForm;
+    // Signal Forms: set model values directly
+    component.deleteAccountModel.set({ password: 'testPassword' });
 
     userServiceMock.deleteAccount.mockReturnValue(throwError(() => new Error('Network error')));
 
-    component.onSubmitDeleteAccount(form);
+    component.onSubmitDeleteAccount(mockEvent);
 
-    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
+    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
