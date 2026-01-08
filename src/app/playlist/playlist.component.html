@@ -1,18 +1,18 @@
-@if(!isLoading){
+@if(!isLoading()){
 <div
   id="playlist_content"
   class="card panel-profile border-0 h-auto mt-2"
   itemscope
-  [attr.itemtype]="!idTopCharts ? 'http://schema.org/MusicAlbum' : 'http://schema.org/MusicGroup'"
+  [attr.itemtype]="!idTopCharts() ? 'http://schema.org/MusicAlbum' : 'http://schema.org/MusicGroup'"
 >
-  @if(!isPrivate && (!isLikePage || playlist.length>0)){
+  @if(!isPrivate() && (!isLikePage() || playlist().length>0)){
   <div id="playlist_haut" class="card-header clearfix border-0">
     <div class="panel_head_content row">
-      @if(imgBig && imgBig!==undefined && imgBig!=='') {
+      @if(imgBig() && imgBig()!==undefined && imgBig()!=='') {
       <div id="playlist_img_content" class="col col-4 p-0">
         <img
           id="playlist_img_big"
-          [src]="imgBig"
+          [src]="imgBig()"
           class="rounded"
           alt=""
           appDefaultImage
@@ -22,32 +22,32 @@
       }
 
       <div id="playlist_haut_titre" class="col col-8 p-0">
-        @if(idTopCharts===null && titre!=='') {
-        <h1 class="m-t-0 h3" itemprop="name">{{ titre }}</h1>
-        } @if(titre==='') {
-        <h1 class="m-t-0 h3" itemprop="name">{{ title }}</h1>
-        } @if(isLikePage){
+        @if(idTopCharts()===null && titre()!=='') {
+        <h1 class="m-t-0 h3" itemprop="name">{{ titre() }}</h1>
+        } @if(titre()==='') {
+        <h1 class="m-t-0 h3" itemprop="name">{{ title() }}</h1>
+        } @if(isLikePage()){
         <h1 class="m-t-0 h3">{{ 'mes_likes' | transloco }}</h1>
-        } @if(artist!==null && artist!=='') {
+        } @if(artist()!==null && artist()!=='') {
         <h3 class="h4">
-          <a itemprop="byArtist url" routerLink="/artist/{{ idArtist }}">{{ artist }}</a>
+          <a itemprop="byArtist url" routerLink="/artist/{{ idArtist() }}">{{ artist() }}</a>
         </h3>
-        } @if(titre==='') {
-        <p class="m-t-0" itemtype="description">{{ description }}</p>
+        } @if(titre()==='') {
+        <p class="m-t-0" itemtype="description">{{ description() }}</p>
         }
 
         <div>
-          @if(idPlaylist !== currentIdPlaylistPlaying() || !playerStore.isPlaying()) {
+          @if(idPlaylist() !== currentIdPlaylistPlaying() || !playerStore.isPlaying()) {
           <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
             <span class="material-icons">play_circle_outline</span>
             {{ 'lire' | transloco }}
           </button>
-          } @if(idPlaylist === currentIdPlaylistPlaying() && playerStore.isPlaying()) {
+          } @if(idPlaylist() === currentIdPlaylistPlaying() && playerStore.isPlaying()) {
           <button class="btn btn-primary btn-lg" (click)="pausePlaylist()">
             <span class="material-icons">pause_circle_outline</span>
             {{ 'pause' | transloco }}
           </button>
-          } @if(authStore.isAuthenticated() && idPersoOwner!==authStore.idPerso() && idPlaylist
+          } @if(authStore.isAuthenticated() && idPersoOwner()!==authStore.idPerso() && idPlaylist()
           !=='') {
           <button
             class="btn btn-secondary btn-lg"
@@ -62,7 +62,7 @@
             {{ 'ajouter_liste_en_cours' | transloco }}
           </button>
 
-          @if(!isLikePage) {
+          @if(!isLikePage()) {
           <share-buttons class="d-inline-block" show="2" showText="true"></share-buttons>
           }
         </div>
@@ -70,9 +70,9 @@
         <div class="row m-t">
           <div id="playlist_infos" class="col-md-6">
             <span class="content_indication">
-              <b>{{ playlist && playlist.length }}</b>
-              @if(playlist && playlist.length<=1) { <span> {{ 'titre' | transloco }}</span>
-              } @if(playlist && playlist.length>1) {
+              <b>{{ playlist() && playlist().length }}</b>
+              @if(playlist() && playlist().length<=1) { <span> {{ 'titre' | transloco }}</span>
+              } @if(playlist() && playlist().length>1) {
               <span> {{ 'titres' | transloco }}</span>
               }
               {{ sumDurationPlaylist() }}
@@ -99,7 +99,7 @@
       </thead>
 
       <tbody>
-        @for (video of playlist; track video.id_video; let i = $index) {
+        @for (video of playlist(); track video.id_video; let i = $index) {
         <tr
           [attr.data-id-video]="video.key"
           (click)="runPlaylist(i)"
@@ -124,7 +124,7 @@
           </td>
           <td class="d-none d-md-table-cell" itemprop="name">{{ video.titre }}</td>
           <td class="d-none d-md-table-cell">
-            @if(video.duree>0) {
+            @if(video.duree && +video.duree>0) {
             <span>{{ video.duree | toMMSS }}</span>
             }
           </td>
@@ -189,7 +189,7 @@
                       {{ 'ajouter_a_une_playlist' | transloco }}
                     </button>
                   </li>
-                  } @if(authStore.isAuthenticated() && idPersoOwner===authStore.idPerso()) {
+                  } @if(authStore.isAuthenticated() && idPersoOwner()===authStore.idPerso()) {
                   <li ngbDropdownItem>
                     <button
                       (click)="removeVideo(video.id_video)"
@@ -209,12 +209,12 @@
       </tbody>
     </table>
   </div>
-  } @if(isPrivate) {
+  } @if(isPrivate()) {
   <p class="bg-info p-2 rounded">{{ 'playlist_privee' | transloco }}</p>
   <p>
     <a routerLink="/">{{ 'back_home' | transloco }}</a>
   </p>
-  } @if(isLikePage && playlist.length===0) {
+  } @if(isLikePage() && playlist().length===0) {
   <p class="bg-info p-2 rounded">{{ 'likes_empty' | transloco }}</p>
   }
 </div>

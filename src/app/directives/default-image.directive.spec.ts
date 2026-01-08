@@ -1,18 +1,15 @@
-import { Component, DebugElement, PLATFORM_ID } from '@angular/core';
+import { Component, DebugElement, PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DefaultImageDirective } from './default-image.directive';
 import { By } from '@angular/platform-browser';
 
 @Component({
   imports: [DefaultImageDirective],
-  template: `<img
-    src="url/image/invalide.jpg"
-    alt=""
-    appDefaultImage
-    defaultSrc="assets/img/default.jpg"
-  />`,
+  template: `<img [src]="imageSrc()" alt="" appDefaultImage defaultSrc="assets/img/default.jpg" />`,
 })
-class TestComponent {}
+class TestComponent {
+  imageSrc = signal('url/image/invalide.jpg');
+}
 
 describe('DefaultImageDirective', () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -48,21 +45,8 @@ describe('DefaultImageDirective', () => {
       expect(imgEl.nativeElement.src).toContain(src);
     });
 
-    it('should set the src attribute with the provided value', () => {
-      const testSrc = 'assets/img/test-image.jpg';
-
-      setAttributeSpy.mockClear();
-
-      directive.ngOnChanges({
-        src: {
-          currentValue: testSrc,
-          previousValue: null,
-          firstChange: true,
-          isFirstChange: () => true,
-        },
-      });
-
-      expect(directive['renderer'].setAttribute).toHaveBeenCalledWith(
+    it('should set loading image on init', () => {
+      expect(setAttributeSpy).toHaveBeenCalledWith(
         directive['el'].nativeElement,
         'src',
         'assets/img/loading.jpg'
@@ -71,8 +55,6 @@ describe('DefaultImageDirective', () => {
 
     it('should set the original src when image loads successfully', () => {
       const testSrc = 'assets/img/test-image.jpg';
-
-      setAttributeSpy.mockClear();
 
       const imgMock = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,6 +71,11 @@ describe('DefaultImageDirective', () => {
       } as any;
 
       try {
+        // Reset isLoading to allow loadImage to run
+        directive['isLoading'] = false;
+        directive['currentSrc'] = testSrc; // Set currentSrc to match what loadImage will check
+        setAttributeSpy.mockClear();
+
         directive['loadImage'](testSrc);
 
         expect(imgMock.src).toBe(testSrc);
@@ -124,42 +111,22 @@ describe('DefaultImageDirective', () => {
     });
 
     it('should handle server-side rendering safely', () => {
-      const testSrc = 'assets/img/test-image.jpg';
-
-      setAttributeSpy.mockClear();
-
-      directive.ngOnChanges({
-        src: {
-          currentValue: testSrc,
-          previousValue: null,
-          firstChange: true,
-          isFirstChange: () => true,
-        },
-      });
-
-      expect(setAttributeSpy).not.toHaveBeenCalled();
+      expect(directive['isBrowser']).toBeFalsy();
 
       setAttributeSpy.mockClear();
       imgEl.triggerEventHandler('error', null);
       expect(setAttributeSpy).not.toHaveBeenCalled();
     });
 
-    it('should exit loadImage() method early when not in browser', () => {
+    it('should set src directly without loading image in server environment', () => {
       expect(directive['isBrowser']).toBeFalsy();
 
-      setAttributeSpy.mockClear();
-
-      const imageSpy = vi.fn();
-      const originalImage = window.Image;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      window.Image = imageSpy as any;
-
-      try {
-        directive['loadImage']('test-url.jpg');
-        expect(imageSpy).not.toHaveBeenCalled();
-      } finally {
-        window.Image = originalImage;
-      }
+      // In server environment, the effect sets src directly without calling loadImage
+      expect(setAttributeSpy).toHaveBeenCalledWith(
+        directive['el'].nativeElement,
+        'src',
+        'url/image/invalide.jpg'
+      );
     });
   });
 });

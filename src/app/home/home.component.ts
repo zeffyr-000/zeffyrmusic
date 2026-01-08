@@ -1,12 +1,12 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   makeStateKey,
   OnInit,
   PLATFORM_ID,
   TransferState,
   inject,
+  signal,
 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -38,21 +38,18 @@ export class HomeComponent implements OnInit {
   private readonly translocoService = inject(TranslocoService);
   private transferState = inject(TransferState);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
-  isLoading = false;
+  readonly isLoading = signal(false);
+  readonly listTop = signal<HomeAlbum[]>([]);
+  readonly listTopDecade = signal<HomeAlbum[]>([]);
+  readonly listTopSliced = signal<HomeAlbum[]>([]);
+  readonly listTopAlbums = signal<HomeAlbum[]>([]);
+  readonly listTopAlbumsSliced = signal<HomeAlbum[]>([]);
 
-  private listTop: HomeAlbum[];
-  private listTopDecade: HomeAlbum[];
-  private listTopSliced: HomeAlbum[];
-  private listTopAlbums: HomeAlbum[];
-  private listTopAlbumsSliced: HomeAlbum[];
-  private lang: string;
-  protected page: string;
+  protected page = '';
 
   ngOnInit() {
-    this.isLoading = true;
-    this.lang = this.translocoService.getActiveLang();
+    this.isLoading.set(true);
 
     const url = this.route.snapshot.url.join('/');
     switch (url) {
@@ -70,41 +67,40 @@ export class HomeComponent implements OnInit {
     this.titleService.setTitle(this.translocoService.translate('title_' + this.page));
     this.metaService.updateTag({
       name: 'description',
-      content: this.translocoService.translate('meta_description_' + this.page),
+      content: this.translocoService.translate('meta_description_' + this.page) || '',
     });
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}${url}`);
 
     this.initService.getHomeInit().subscribe({
       next: (data: { top: HomeAlbum[]; top_albums: HomeAlbum[] }) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
 
         if (isPlatformServer(this.platformId)) {
           const randomizedTop = data.top.sort(() => Math.random() - 0.5).slice(0, 5);
           this.transferState.set(RANDOM_TOP_KEY, randomizedTop);
-          this.listTopSliced = randomizedTop;
+          this.listTopSliced.set(randomizedTop);
         } else {
           const storedTop = this.transferState.get(RANDOM_TOP_KEY, null);
-          this.listTopSliced = storedTop || data.top.slice(0, 5);
+          this.listTopSliced.set(storedTop || data.top.slice(0, 5));
           this.transferState.remove(RANDOM_TOP_KEY);
         }
 
-        this.listTop = data.top.filter((album: HomeAlbum) => !album.decade);
-        this.listTopDecade = data.top
-          .filter((album: HomeAlbum) => album.decade)
-          .sort((a, b) => a.id.localeCompare(b.id));
+        this.listTop.set(data.top.filter((album: HomeAlbum) => !album.decade));
+        this.listTopDecade.set(
+          data.top
+            .filter((album: HomeAlbum) => album.decade)
+            .sort((a, b) => a.id.localeCompare(b.id))
+        );
 
-        this.listTopAlbumsSliced = data.top_albums.slice(0, 5);
-        this.listTopAlbums = data.top_albums;
+        this.listTopAlbumsSliced.set(data.top_albums.slice(0, 5));
+        this.listTopAlbums.set(data.top_albums);
 
         if (!isPlatformServer(this.platformId)) {
           this.googleAnalyticsService.pageView('/');
         }
-
-        this.cdr.markForCheck();
       },
       error: () => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
+        this.isLoading.set(false);
       },
     });
   }

@@ -1,18 +1,16 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  NgZone,
-  ChangeDetectorRef,
   PLATFORM_ID,
   inject,
   effect,
   computed,
+  signal,
 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { environment } from 'src/environments/environment';
-import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Video } from '../models/video.model';
@@ -55,19 +53,16 @@ import { AuthStore, PlayerStore, QueueStore } from '../store';
   ],
 })
 export class PlaylistComponent {
-  private readonly ref = inject(ChangeDetectorRef);
   private platformId = inject(PLATFORM_ID);
   private baseHref = inject(APP_BASE_HREF, { optional: true });
   private readonly playlistService = inject(PlaylistService);
   private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly initService = inject(InitService);
   private readonly playerService = inject(PlayerService);
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
   private readonly seoService = inject(SeoService);
   private readonly translocoService = inject(TranslocoService);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
-  private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
   readonly userDataStore = inject(UserDataStore);
   readonly authStore = inject(AuthStore);
@@ -75,27 +70,28 @@ export class PlaylistComponent {
   readonly queueStore = inject(QueueStore);
   readonly userLibraryService = inject(UserLibraryService);
 
-  isLoading = true;
-  isPrivate = false;
-  idPlaylist: string | null = null;
-  playlist: Video[] = [];
-  imgBig = '';
-  idTopCharts: string | null = null;
-  idPersoOwner = '';
-  title = '';
-  titre = '';
-  description = '';
-  artist: string | null = null;
-  idArtist: string | null = null;
-  isLikePage = false;
+  readonly isLoading = signal(true);
+  readonly isPrivate = signal(false);
+  readonly idPlaylist = signal<string | null>(null);
+  readonly playlist = signal<Video[]>([]);
+  readonly imgBig = signal('');
+  readonly idTopCharts = signal<string | null>(null);
+  readonly idPersoOwner = signal('');
+  readonly title = signal('');
+  readonly titre = signal('');
+  readonly description = signal('');
+  readonly artist = signal<string | null>(null);
+  readonly idArtist = signal<string | null>(null);
+  readonly isLikePage = signal(false);
   isBrowser: boolean;
 
   // Computed signal pour suivre si l'utilisateur suit cette playlist
   readonly isFollower = computed(() => {
-    if (!this.idPlaylist) {
+    const id = this.idPlaylist();
+    if (!id) {
       return false;
     }
-    return this.userDataStore.isFollowing(this.idPlaylist);
+    return this.userDataStore.isFollowing(id);
   });
 
   // Computed signal pour la playlist en cours de lecture
@@ -103,39 +99,63 @@ export class PlaylistComponent {
     return this.queueStore.sourcePlaylistId() || '';
   });
 
-  private adjustDurationEffect = effect(() => {
-    const currentKey = this.queueStore.currentKey();
-    const duration = this.playerStore.duration();
-    if (currentKey && duration > 0) {
-      this.adjustPlaylistDuration(duration);
-    }
-  });
-
-  private likedVideosEffect = effect(() => {
-    const likedVideos = this.userDataStore.likedVideos();
-
-    // Ne rien faire si pas sur la page like ou si pas de vidéos
-    if (!this.isLikePage || !likedVideos || likedVideos.length === 0) {
-      return;
-    }
-
-    // Clear and rebuild playlist from liked videos
-    this.playlist = likedVideos.map(element => {
-      const elementToPush = { ...element } as unknown as Video;
-      elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
-      return elementToPush;
-    });
-    this.ref.markForCheck();
-  });
+  private lastAdjustedKey: string | null = null;
+  private lastAdjustedDuration = 0;
+  private pendingKeyChange = false;
 
   constructor() {
-    const activatedRoute = this.activatedRoute;
-
     this.isBrowser = isPlatformBrowser(this.platformId);
 
-    activatedRoute.params.subscribe(() => {
-      this.isLoading = true;
+    this.activatedRoute.params.subscribe(() => {
+      this.isLoading.set(true);
       this.initLoad();
+    });
+
+    // Effect to adjust playlist duration when track changes
+    effect(() => {
+      const currentKey = this.queueStore.currentKey();
+      const duration = this.playerStore.duration();
+
+      if (!currentKey || duration <= 0) {
+        return;
+      }
+
+      if (currentKey !== this.lastAdjustedKey) {
+        this.lastAdjustedKey = currentKey;
+        this.lastAdjustedDuration = duration;
+        this.pendingKeyChange = true;
+        return;
+      }
+
+      if (this.pendingKeyChange) {
+        if (Math.abs(duration - this.lastAdjustedDuration) > 1) {
+          this.pendingKeyChange = false;
+          this.lastAdjustedDuration = duration;
+          this.adjustPlaylistDuration(duration);
+        }
+        return;
+      }
+
+      if (Math.abs(duration - this.lastAdjustedDuration) > 1) {
+        this.lastAdjustedDuration = duration;
+        this.adjustPlaylistDuration(duration);
+      }
+    });
+
+    // Effect to sync liked videos to playlist on like page
+    effect(() => {
+      const likedVideos = this.userDataStore.likedVideos();
+      if (!this.isLikePage() || !likedVideos || likedVideos.length === 0) {
+        return;
+      }
+
+      this.playlist.set(
+        likedVideos.map(element => {
+          const elementToPush = { ...element } as unknown as Video;
+          elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
+          return elementToPush;
+        })
+      );
     });
   }
 
@@ -219,116 +239,125 @@ export class PlaylistComponent {
   }
 
   loadPlaylist(url: string) {
-    this.playlistService.getPlaylist(url, this.idPlaylist).subscribe((data: Playlist) => {
-      this.isLoading = false;
+    this.lastAdjustedKey = null;
+    this.lastAdjustedDuration = 0;
 
-      if (data.est_prive === undefined) {
-        this.isPrivate = false;
-        this.idPlaylist = data.id_playlist;
-        this.playlist = data.tab_video;
-        this.imgBig = data.img_big || `${environment.URL_ASSETS}assets/img/default.jpg`;
-        this.idTopCharts = data.id_top || null;
-        this.title = data.title;
-        this.titre = data.titre || '';
-        this.description = data.description || '';
-        // isFollower est calculé automatiquement via le computed signal basé sur userDataStore.follows()
-        // Si le serveur retourne est_suivi=true mais que le store n'a pas encore cette info,
-        // on peut ajouter le follow au store
-        if (data.est_suivi && !this.userDataStore.isFollowing(data.id_playlist)) {
-          this.userDataStore.addFollow({
-            id_playlist: data.id_playlist,
-            titre: data.titre || data.title,
-            artiste: data.artiste,
-            url_image: data.img_big,
-          });
-        }
-        this.artist = data.artiste || '';
-        this.idArtist = data.id_artiste;
-        this.idPersoOwner = data.id_perso;
+    this.playlistService
+      .getPlaylist(url, this.idPlaylist() ?? undefined)
+      .subscribe((data: Playlist) => {
+        this.isLoading.set(false);
 
-        this.titleService.setTitle(this.getMetaTitle(data));
-        this.metaService.updateTag({ name: 'og:title', content: this.getMetaTitle(data) });
-        this.metaService.updateTag({
-          name: 'description',
-          content: this.getMetaDescription(data),
-        });
-
-        if (data.artiste !== undefined && data.titre !== undefined) {
-          this.metaService.updateTag({
-            name: 'og:description',
-            content: this.translocoService.translate('description_partage', {
+        if (data.est_prive === undefined) {
+          this.isPrivate.set(false);
+          this.idPlaylist.set(data.id_playlist);
+          this.playlist.set(data.tab_video);
+          this.imgBig.set(data.img_big || `${environment.URL_ASSETS}assets/img/default.jpg`);
+          this.idTopCharts.set(data.id_top || null);
+          this.title.set(data.title);
+          this.titre.set(data.titre || '');
+          this.description.set(data.description || '');
+          if (data.est_suivi && !this.userDataStore.isFollowing(data.id_playlist)) {
+            this.userDataStore.addFollow({
+              id_playlist: data.id_playlist,
+              titre: data.titre || data.title,
               artiste: data.artiste,
-              album: data.titre,
-            }),
-          });
-        } else {
-          this.metaService.updateTag({
-            name: 'og:description',
-            content: this.translocoService.translate('description_partage_playlist', {
-              playlist: data.title,
-            }),
-          });
-        }
+              url_image: data.img_big,
+            });
+          }
+          this.artist.set(data.artiste || '');
+          this.idArtist.set(data.id_artiste ?? null);
+          this.idPersoOwner.set(data.id_perso);
 
-        if (data.og_image !== undefined || data.img_big !== undefined) {
-          this.metaService.updateTag({ name: 'og:image', content: data.og_image || data.img_big });
+          this.titleService.setTitle(this.getMetaTitle(data));
+          this.metaService.updateTag({ name: 'og:title', content: this.getMetaTitle(data) });
+          this.metaService.updateTag({
+            name: 'description',
+            content: this.getMetaDescription(data),
+          });
+
+          if (data.artiste !== undefined && data.titre !== undefined) {
+            this.metaService.updateTag({
+              name: 'og:description',
+              content:
+                this.translocoService.translate('description_partage', {
+                  artiste: data.artiste,
+                  album: data.titre,
+                }) || '',
+            });
+          } else {
+            this.metaService.updateTag({
+              name: 'og:description',
+              content:
+                this.translocoService.translate('description_partage_playlist', {
+                  playlist: data.title,
+                }) || '',
+            });
+          }
+
+          if (data.og_image !== undefined || data.img_big !== undefined) {
+            this.metaService.updateTag({
+              name: 'og:image',
+              content: data.og_image || data.img_big,
+            });
+          }
+
+          if (this.isBrowser) {
+            this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+            this.seoService.updateCanonicalUrl(document.location.href);
+          } else {
+            if (data.id_top !== undefined) {
+              this.metaService.updateTag({
+                name: 'og:url',
+                content: `${environment.URL_BASE}top/${data.id_top}`,
+              });
+              this.seoService.updateCanonicalUrl(`${environment.URL_BASE}top/${data.id_top}`);
+            } else {
+              this.metaService.updateTag({
+                name: 'og:url',
+                content: `${environment.URL_BASE}playlist/${this.idPlaylist()}`,
+              });
+              this.seoService.updateCanonicalUrl(
+                `${environment.URL_BASE}playlist/${this.idPlaylist()}`
+              );
+            }
+          }
+        } else {
+          this.isPrivate.set(true);
         }
 
         if (this.isBrowser) {
-          this.metaService.updateTag({ name: 'og:url', content: document.location.href });
-          this.seoService.updateCanonicalUrl(document.location.href);
-        } else {
-          if (data.id_top !== undefined) {
-            this.metaService.updateTag({
-              name: 'og:url',
-              content: `${environment.URL_BASE}top/${data.id_top}`,
-            });
-            this.seoService.updateCanonicalUrl(`${environment.URL_BASE}top/${data.id_top}`);
-          } else {
-            this.metaService.updateTag({
-              name: 'og:url',
-              content: `${environment.URL_BASE}playlist/${this.idPlaylist}`,
-            });
-            this.seoService.updateCanonicalUrl(
-              `${environment.URL_BASE}playlist/${this.idPlaylist}`
-            );
-          }
+          this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
         }
-      } else {
-        this.isPrivate = true;
-      }
-
-      if (this.isBrowser) {
-        this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
-      }
-
-      this.ref.markForCheck();
-    });
+      });
   }
 
   loadLike() {
-    this.isLoading = false;
-    this.isPrivate = false;
-    this.idPlaylist = '';
-    this.playlist = [];
-    this.imgBig = `${environment.URL_ASSETS}assets/img/default.jpg`;
-    this.idTopCharts = null;
-    this.title = '';
-    this.titre = '';
-    this.description = '';
-    this.artist = null;
-    this.idArtist = null;
-    this.idPersoOwner = null;
-    this.isLikePage = true;
+    this.lastAdjustedKey = null;
+    this.lastAdjustedDuration = 0;
 
-    // Charger les vidéos likées initialement depuis le store
+    this.isLoading.set(false);
+    this.isPrivate.set(false);
+    this.idPlaylist.set('');
+    this.playlist.set([]);
+    this.imgBig.set(`${environment.URL_ASSETS}assets/img/default.jpg`);
+    this.idTopCharts.set(null);
+    this.title.set('');
+    this.titre.set('');
+    this.description.set('');
+    this.artist.set(null);
+    this.idArtist.set(null);
+    this.idPersoOwner.set('');
+    this.isLikePage.set(true);
+
     const likedVideos = this.userDataStore.likedVideos();
     if (likedVideos && likedVideos.length > 0) {
-      this.playlist = likedVideos.map(element => {
-        const elementToPush = { ...element } as unknown as Video;
-        elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
-        return elementToPush;
-      });
+      this.playlist.set(
+        likedVideos.map(element => {
+          const elementToPush = { ...element } as unknown as Video;
+          elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
+          return elementToPush;
+        })
+      );
     }
 
     this.titleService.setTitle(this.translocoService.translate('mes_likes') + ' - Zeffyr Music');
@@ -352,12 +381,14 @@ export class PlaylistComponent {
   }
 
   switchFollow() {
-    this.playerService.switchFollow(this.idPlaylist, this.titre, this.artist, this.imgBig);
+    const id = this.idPlaylist();
+    if (id) {
+      this.playerService.switchFollow(id, this.titre(), this.artist() ?? '', this.imgBig());
+    }
   }
 
   runPlaylist(index = 0) {
-    // Le queueStore.sourcePlaylistId() sera mis à jour par playerService.runPlaylist()
-    this.playerService.runPlaylist(this.playlist, index, this.idTopCharts);
+    this.playerService.runPlaylist(this.playlist(), index, this.idTopCharts());
   }
 
   pausePlaylist() {
@@ -365,15 +396,15 @@ export class PlaylistComponent {
   }
 
   addInCurrentList() {
-    this.playerService.addInCurrentList(this.playlist, this.idTopCharts);
+    this.playerService.addInCurrentList(this.playlist(), this.idTopCharts());
   }
 
-  addVideo(key: string, artist: string, title: string, duration: number) {
+  addVideo(key: string, artist: string, title: string, duration: string | number) {
     this.playerService.addVideoInPlaylist(key, artist, title, duration);
   }
 
   removeVideo(idVideo: string) {
-    this.playerService.removeVideo(idVideo, this.loadPlaylist.bind(this));
+    this.playerService.removeVideo(idVideo, () => this.loadPlaylist(''));
   }
 
   addVideoAfterCurrentInList(video: Video) {
@@ -381,15 +412,16 @@ export class PlaylistComponent {
   }
 
   addVideoInEndCurrentList(video: Video) {
-    this.playerService.addInCurrentList([video], this.idTopCharts);
+    this.playerService.addInCurrentList([video], this.idTopCharts());
   }
 
   sumDurationPlaylist() {
-    if (this.playlist !== undefined) {
+    const currentPlaylist = this.playlist();
+    if (currentPlaylist !== undefined) {
       let charDuration = '';
       let sumDuration = 0;
 
-      for (const element of this.playlist) {
+      for (const element of currentPlaylist) {
         if (Number.parseInt(element.duree, 10) > 0) {
           sumDuration += Number.parseInt(element.duree, 10);
         }
@@ -414,11 +446,12 @@ export class PlaylistComponent {
 
   adjustPlaylistDuration(totalTime: number) {
     const currentKey = this.queueStore.currentKey();
-    this.playlist.forEach(video => {
+    const updatedPlaylist = this.playlist().map(video => {
       if (video.key === currentKey) {
-        video.duree = totalTime.toString();
-        this.ref.detectChanges();
+        return { ...video, duree: totalTime.toString() };
       }
+      return video;
     });
+    this.playlist.set(updatedPlaylist);
   }
 }

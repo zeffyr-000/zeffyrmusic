@@ -5,7 +5,7 @@
   itemscope
   itemtype="http://schema.org/MusicPlaylist"
 >
-  @if(isLoading) {
+  @if(isLoading()) {
   <div class="content_loading">
     <div class="spinner-border text-primary"></div>
   </div>
@@ -13,7 +13,7 @@
   <h1 class="h3" itemprop="name">{{ 'hits_by_decade' | transloco }}</h1>
 
   <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
-    @for(chart of listTopDecade; track chart.id) {
+    @for(chart of listTopDecade(); track chart.id) {
     <div
       class="col m-0 mt-1 mb-1"
       itemprop="track"
@@ -47,7 +47,7 @@
     [class.row-cols-xl-6]="page === 'home'"
     [class.row-cols-xl-5]="page !== 'home'"
   >
-    @for (chart of page === 'home' ? listTopSliced : listTop; track chart.id) {
+    @for (chart of page === 'home' ? listTopSliced() : listTop(); track chart.id) {
     <div
       class="col m-0 mt-1 mb-1"
       itemprop="track"
@@ -93,7 +93,7 @@
   <h1 class="border-0 h3" [class.text-center]="page === 'home'" itemprop="name">
     {{ 'top_albums' | transloco }}
   </h1>
-  @if(isLoading) {
+  @if(isLoading()) {
   <div class="content_loading">
     <div class="spinner-border text-primary"></div>
   </div>
@@ -105,15 +105,19 @@
     itemscope
     itemtype="http://schema.org/MusicAlbum"
   >
-    @for (album of page === 'home' ? listTopAlbumsSliced : listTopAlbums; track album.id_playlist;
-    let i = $index) {
+    @for (album of page === 'home' ? listTopAlbumsSliced() : listTopAlbums(); track album.id; let i
+    = $index) {
     <div
       class="col m-0 mt-1 mb-1"
       itemprop="track"
       itemscope
       itemtype="http://schema.org/MusicRecording"
     >
-      <a class="card h-100" routerLink="/playlist/{{ album.id_playlist }}" itemprop="url">
+      <a
+        class="card h-100"
+        routerLink="/playlist/{{ album.id_playlist ?? album.id }}"
+        itemprop="url"
+      >
         <img
           src="{{ album.url_image }}"
           class="card-img-top"
@@ -127,7 +131,7 @@
             <span class="badge bg-primary text-light">{{ i + 1 }}</span>
             {{ album.titre }}
           </h5>
-          @if(album.artiste!=='') {
+          @if(album.artiste && album.artiste!=='') {
           <p class="card-text" itemprop="byArtist">{{ album.artiste }}</p>
           }
         </div>

@@ -76,19 +76,17 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="onSubmitEditPass(formEditPass)" #formEditPass="ngForm">
+    <form (submit)="onSubmitEditPass($event)">
       <p class="form-group">
         <label class="control-label" for="passwordold">{{
           'mot_de_passe_actuel' | transloco
         }}</label>
         <input
           type="password"
-          name="passwordold"
           id="passwordold"
           class="form-control"
           ngbAutofocus
-          ngModel
-          required
+          [field]="editPassForm.passwordold"
         />
       </p>
       <p class="form-group">
@@ -97,11 +95,9 @@
         }}</label>
         <input
           type="password"
-          name="password1"
           id="password1"
           class="form-control"
-          ngModel
-          required
+          [field]="editPassForm.password1"
         />
       </p>
       <p class="form-group">
@@ -110,11 +106,9 @@
         }}</label>
         <input
           type="password"
-          name="password2"
           id="password2"
           class="form-control"
-          ngModel
-          required
+          [field]="editPassForm.password2"
         />
       </p>
 
@@ -122,11 +116,11 @@
         <input
           type="submit"
           class="btn btn-primary"
-          [disabled]="formEditPass.invalid"
+          [disabled]="editPassForm().invalid()"
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formEditPass.dirty && error()!=='') {
+      @if(editPassForm().dirty() && error()!=='') {
       <p class="alert alert-danger">{{ error() }}</p>
       } @if(successPass()) {
       <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
@@ -146,18 +140,15 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="onSubmitEditMail(formEditMail)" #formEditMail="ngForm">
+    <form (submit)="onSubmitEditMail($event)">
       <p class="form-group">
         <label class="control-label" for="mail">{{ 'mail' | transloco }}</label>
         <input
           type="text"
-          name="mail"
           id="mail"
           class="form-control"
           ngbAutofocus
-          [ngModel]="mail()"
-          required
-          email
+          [field]="editMailForm.mail"
         />
       </p>
 
@@ -165,11 +156,11 @@
         <input
           type="submit"
           class="btn btn-primary"
-          [disabled]="formEditMail.invalid"
+          [disabled]="editMailForm().invalid()"
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formEditMail.dirty && error()!=='') {
+      @if(editMailForm().dirty() && error()!=='') {
       <p class="alert alert-danger">{{ error() }}</p>
       } @if(successMail()) {
       <p class="alert alert-success">{{ 'mail_modifie_succes' | transloco }}</p>
@@ -189,17 +180,10 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="onSubmitEditLanguage(formEditLanguage)" #formEditLanguage="ngForm">
+    <form (submit)="onSubmitEditLanguage($event)">
       <p class="form-group">
-        <label class="control-label" for="mail">{{ 'language' | transloco }}</label>
-        <select
-          name="language"
-          id="language"
-          class="form-control"
-          ngbAutofocus
-          [ngModel]="language()"
-          required
-        >
+        <label class="control-label" for="language">{{ 'language' | transloco }}</label>
+        <select id="language" class="form-control" ngbAutofocus [field]="editLanguageForm.language">
           @for (lang of availableLanguages(); track lang) {
           <option [value]="lang">{{ 'langue_' + lang | transloco }}</option>
           }
@@ -210,11 +194,11 @@
         <input
           type="submit"
           class="btn btn-primary"
-          [disabled]="formEditLanguage.invalid"
+          [disabled]="editLanguageForm().invalid()"
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formEditLanguage.dirty && error()!=='') {
+      @if(editLanguageForm().dirty() && error()!=='') {
       <p class="alert alert-danger">{{ error() }}</p>
       } @if(successLanguage()){
       <p class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
@@ -235,17 +219,15 @@
   </div>
   <div class="modal-body">
     <div class="alert alert-danger">{{ 'delete_account_warning' | transloco }}</div>
-    <form (ngSubmit)="onSubmitDeleteAccount(formDeleteAccount)" #formDeleteAccount="ngForm">
+    <form (submit)="onSubmitDeleteAccount($event)">
       <p class="form-group">
-        <label class="control-label" for="password">{{ 'mot_de_passe' | transloco }}</label>
+        <label class="control-label" for="passwordDelete">{{ 'mot_de_passe' | transloco }}</label>
         <input
           type="password"
-          name="password"
-          id="password"
+          id="passwordDelete"
           class="form-control"
           ngbAutofocus
-          ngModel
-          required
+          [field]="deleteAccountForm.password"
         />
       </p>
 
@@ -253,11 +235,11 @@
         <input
           type="submit"
           class="btn btn-danger"
-          [disabled]="formDeleteAccount.invalid"
+          [disabled]="deleteAccountForm().invalid()"
           value="{{ 'envoyer' | transloco }}"
         />
       </p>
-      @if(formDeleteAccount.dirty && error()!=='') {
+      @if(deleteAccountForm().dirty() && error()!=='') {
       <p class="alert alert-danger">{{ error() }}</p>
       } @if(successDelete()){
       <p class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>

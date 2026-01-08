@@ -1,57 +1,248 @@
 # ZeffyrMusic
 
-🚀 ZeffyrMusic is a web-based music streaming application built with Angular. It allows users to explore and listen to music online while managing playlists and favorites.
+🎵 **ZeffyrMusic** is a modern music streaming web application built with **Angular 21**. It allows users to explore and listen to music online while managing playlists and favorites.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.3.
+[![codecov](https://codecov.io/github/zeffyr-000/zeffyrmusic/graph/badge.svg?token=HU7ROB7BDP)](https://codecov.io/github/zeffyr-000/zeffyrmusic)
+[![Angular](https://img.shields.io/badge/Angular-21-red.svg)](https://angular.dev/)
 
-## Development server
+🌐 **[Production server](https://www.zeffyrmusic.com/)**
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## ✨ Features
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- 🔍 **Music Search**: Advanced search for songs, albums, and artists
+- ▶️ **Music Playback**: Integration with YouTube for music video playback
+- 📋 **Playlists**: Create and manage custom playlists
+- ❤️ **Favorites**: Like and save your favorite tracks
+- 🌙 **Dark Mode**: Support for dark mode for a better user experience
+- 🌍 **Internationalization**: Multi-language support (French/English) with Transloco
+- 📱 **Responsive**: Mobile-first responsive design
 
-## Build
+---
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## 🚀 Tech Stack
 
-## Running unit tests
+### Core
 
-Run `ng test` to execute the unit tests via [Vitest](https://vitest.dev/).
+| Technology        | Version | Purpose                       |
+| ----------------- | ------- | ----------------------------- |
+| **Angular**       | 21.x    | Frontend framework            |
+| **@ngrx/signals** | 21.x    | State management with signals |
+| **RxJS**          | 7.x     | Reactive programming          |
+| **TypeScript**    | 5.7     | Type-safe JavaScript          |
 
-## Running end-to-end tests
+### UI & Styling
 
-Run `ng e2e` to execute the end-to-end tests via [Cypress](https://www.cypress.io/).
+| Technology         | Purpose                      |
+| ------------------ | ---------------------------- |
+| **Bootstrap 5**    | CSS framework                |
+| **NgBootstrap**    | Angular Bootstrap components |
+| **SCSS**           | Styling preprocessor         |
+| **Material Icons** | Icon library                 |
 
-## Further help
+### Testing
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+| Technology  | Purpose                  |
+| ----------- | ------------------------ |
+| **Vitest**  | Unit testing (527 tests) |
+| **Cypress** | E2E testing              |
 
-## Description
+### Tooling
 
-Zeffyrmusic is a music web application developed with Angular. This project demonstrates advanced usage of Angular to create a feature-rich, performant, and maintainable application.
+| Technology      | Purpose              |
+| --------------- | -------------------- |
+| **Angular CLI** | Development tooling  |
+| **ESLint**      | Code linting         |
+| **Prettier**    | Code formatting      |
+| **Transloco**   | Internationalization |
 
-## Features
+---
 
-- **Music Search**: Advanced search for songs, albums, and artists.
-- **Music Playback**: Integration with YouTube for music video playback.
-- **Playlists**: Create and manage custom playlists.
-- **Dark Mode**: Support for dark mode for a better user experience.
-- **Internationalization**: Multi-language support with Transloco.
+## 🏗️ Architecture Highlights
 
-## Technologies Used
+### Modern Angular Patterns
 
-- **Angular**: Main framework for application development.
-- **RxJS**: Reactive programming for data streams management.
-- **NgBootstrap**: Bootstrap components for Angular.
-- **Transloco**: Internationalization and localization.
-- **Angular CLI**: Command-line tools for Angular.
-- **Cypress**: End-to-end testing.
-- **Vitest**: Unit testing framework.
-- **YouTube Player API**: Integration with YouTube for video playback.
+- ✅ **Zoneless Change Detection** - No Zone.js for optimal performance
+- ✅ **Signal-Based State** - 5 Signal Stores (Auth, Player, Queue, UserData, UI)
+- ✅ **Signal Forms** - Experimental Signal Forms API with Transloco i18n
+- ✅ **Standalone Components** - 100% standalone, no NgModules
+- ✅ **OnPush Everywhere** - All components use OnPush change detection
+- ✅ **SSR with Hydration** - Server-side rendering with client hydration
+- ✅ **Strict TypeScript** - Full strict mode enabled
 
-## Screenshots
+### Performance Optimizations
+
+- 📦 **Bundle Budget**: < 1.5MB initial load
+- 🚀 **Lazy Loading**: All routes lazy-loaded
+- 🖼️ **Image Optimization**: Lazy loading directives
+- ⚡ **Fine-grained Reactivity**: Signal-based updates
+
+> 📖 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture documentation.
+
+---
+
+## 📋 Prerequisites
+
+- **Node.js** >= 20.x
+- **npm** >= 10.x
+- **Angular CLI** >= 21.x
+
+---
+
+## 🛠️ Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/zeffyr-000/zeffyrmusic.git
+cd zeffyrmusic
+
+# Install dependencies
+npm install
+```
+
+---
+
+## 💻 Development
+
+### Development Server
+
+```bash
+npm start
+# or
+ng serve
+```
+
+Navigate to `http://localhost:4200/`. The app will automatically reload on file changes.
+
+### Development with SSR
+
+```bash
+npm run dev:ssr
+```
+
+---
+
+## 🧪 Testing
+
+### Unit Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+**Current coverage**: 527 tests passing ✅
+
+### E2E Tests
+
+```bash
+# Run Cypress tests
+npm run e2e
+
+# Open Cypress UI
+npm run cypress:open
+```
+
+---
+
+## 📦 Building
+
+### Production Build
+
+```bash
+npm run build
+```
+
+### Production Build without SSR
+
+```bash
+npm run build:no-ssr
+```
+
+### Staging Build
+
+```bash
+npm run build:staging
+```
+
+Build artifacts are stored in the `dist/` directory.
+
+---
+
+## 🔧 Configuration
+
+### TypeScript Strict Mode
+
+The project uses strict TypeScript configuration:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}
+```
+
+### Environment Configuration
+
+- `environment.ts` - Development
+- `environment.staging.ts` - Staging
+- `environment.prod.ts` - Production
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── store/           # Signal stores (@ngrx/signals)
+│   │   ├── auth/        # Authentication state
+│   │   ├── player/      # Player state
+│   │   ├── queue/       # Music queue
+│   │   ├── ui/          # UI state
+│   │   └── user-data/   # User data (playlists, likes)
+│   ├── services/        # Business logic services
+│   ├── directives/      # Custom directives
+│   ├── pipes/           # Custom pipes
+│   ├── models/          # TypeScript interfaces
+│   └── [features]/      # Feature components
+├── assets/
+│   ├── i18n/            # Translation files
+│   └── img/             # Images
+└── styling/             # Global SCSS
+```
+
+---
+
+## 🌍 Internationalization
+
+The app supports multiple languages via Transloco:
+
+- 🇫🇷 French (default)
+- 🇬🇧 English
+
+Translation files are in `src/assets/i18n/`.
+
+---
+
+## 📸 Screenshots
 
 ### ZeffyrMusic in 2014
 
@@ -61,6 +252,33 @@ Zeffyrmusic is a music web application developed with Angular. This project demo
 
 ![ZeffyrMusic 2020](src/assets/img/screenshots/2020.jpg)
 
-[![codecov](https://codecov.io/github/zeffyr-000/zeffyrmusic/graph/badge.svg?token=HU7ROB7BDP)](https://codecov.io/github/zeffyr-000/zeffyrmusic)
+---
 
-[Production server](https://www.zeffyrmusic.com/)
+## 📚 Documentation
+
+- [Architecture Documentation](docs/ARCHITECTURE.md)
+- [Angular Documentation](https://angular.dev/)
+- [ng-bootstrap Documentation](https://ng-bootstrap.github.io/)
+- [RxJS Documentation](https://rxjs.dev/)
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## Acknowledgments
+
+- [Angular Team](https://angular.dev/) for the amazing framework
+- [NgRx Team](https://ngrx.io/) for signal stores
+- [ng-bootstrap Team](https://ng-bootstrap.github.io/) for Angular Bootstrap components
+- [RxJS Team](https://rxjs.dev/) for reactive programming
+- [YouTube API](https://developers.google.com/youtube) for music playback
+
+---

@@ -1,15 +1,15 @@
 <div id="search_content" class="card card-body border-0 h-auto mt-2">
-  <h1 class="m-t-0 h3">{{ 'resultats_recherche' | transloco : { query: query } }}</h1>
+  <h1 class="m-t-0 h3">{{ 'resultats_recherche' | transloco : { query: query() } }}</h1>
 
   <div class="d-flex justify-content-between align-items-center">
     <h2 class="h4">{{ 'artistes' | transloco }}</h2>
-    @if(listArtists && listArtists.length>limitArtist) {
+    @if(listArtists()?.length && listArtists()!.length>limitArtist()) {
     <button class="btn btn-link" (click)="moreArtists()">{{ 'show_all' | transloco }}</button>
     }
   </div>
-  @if(!isLoading1){
+  @if(!isLoading1()){
   <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
-    @for (artist of listArtists | slice:0:limitArtist ; track artist.id_artiste) {
+    @for (artist of listArtists() | slice:0:limitArtist() ; track artist.id_artiste) {
     <div class="col m-0 mt-1 mb-1">
       <a class="card h-100" routerLink="/artist/{{ artist.id_artiste }}">
         <img
@@ -24,7 +24,7 @@
     </div>
     }
   </div>
-  } @if(listArtists && listArtists.length===0) {
+  } @if(listArtists() && listArtists()!.length===0) {
   <div class="col m-0 mt-1 mb-1">
     <div class="card h-100">
       <div class="card-body">
@@ -35,7 +35,7 @@
       </div>
     </div>
   </div>
-  } @if(isLoading1){
+  } @if(isLoading1()){
   <div class="content_loading">
     <div class="spinner-border text-primary"></div>
   </div>
@@ -43,13 +43,13 @@
 
   <div class="d-flex justify-content-between align-items-center">
     <h2 class="h4">{{ 'albums' | transloco }}</h2>
-    @if(listAlbums && listAlbums.length>limitAlbum) {
+    @if(listAlbums()?.length && listAlbums()!.length>limitAlbum()) {
     <button class="btn btn-link" (click)="moreAlbums()">{{ 'show_all' | transloco }}</button>
     }
   </div>
-  @if(!isLoading1){
+  @if(!isLoading1()){
   <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
-    @for (album of listAlbums | slice:0:limitAlbum ; track album.id_playlist) {
+    @for (album of listAlbums() | slice:0:limitAlbum() ; track album.id_playlist) {
     <div class="col m-0 mt-1 mb-1">
       <a class="card h-100" routerLink="/playlist/{{ album.id_playlist }}">
         <img [src]="album.url_image" class="card-img-top" [alt]="album.titre" appDefaultImage />
@@ -63,7 +63,7 @@
     </div>
     }
   </div>
-  } @if(listAlbums && listAlbums.length===0) {
+  } @if(listAlbums() && listAlbums()!.length===0) {
   <div class="col m-0 mt-1 mb-1">
     <div class="card h-100">
       <div class="card-body">
@@ -74,7 +74,7 @@
       </div>
     </div>
   </div>
-  } @if(isLoading1){
+  } @if(isLoading1()){
   <div class="content_loading">
     <div class="spinner-border text-primary"></div>
   </div>
@@ -82,11 +82,11 @@
 
   <div class="d-flex justify-content-between align-items-center">
     <h2 class="h4">{{ 'morceaux' | transloco }}</h2>
-    @if(listTracks && listTracks.length>limitTrack) {
+    @if(listTracks()?.length && listTracks()!.length>limitTrack()) {
     <button class="btn btn-link" (click)="moreTracks()">{{ 'show_all' | transloco }}</button>
     }
   </div>
-  @if(!isLoading2 && listTracks && listTracks.length>0){
+  @if(!isLoading2() && listTracks()?.length && listTracks()!.length>0){
   <table id="table_playlist" class="table table-hover">
     <thead>
       <tr>
@@ -101,7 +101,8 @@
     </thead>
 
     <tbody>
-      @for (video of listTracks | slice:0:limitTrack ; track video.id_video; let index = $index) {
+      @for (video of listTracks() | slice:0:limitTrack() ; track video.id_video; let index = $index)
+      {
       <tr
         [attr.data-id-video]="video.key"
         [class.active]="video.key === queueStore.currentKey()"
@@ -122,7 +123,7 @@
         <td>
           @if(video.id_artiste===undefined || video.id_artiste<=0) {
           <p>{{ video.artiste }}</p>
-          } @if(video.id_artiste>0){
+          } @if(video.id_artiste!==undefined && video.id_artiste>0){
           <a (click)="$event.stopPropagation()" routerLink="/artist/{{ video.id_artiste }}">{{
             video.artiste
           }}</a>
@@ -137,7 +138,7 @@
           }
         </td>
         <td>
-          @if(video.duree>0){
+          @if(video.duree && +video.duree>0){
           <span>{{ video.duree | toMMSS }}</span>
           }
         </td>
@@ -169,7 +170,7 @@
       }
     </tbody>
   </table>
-  } @if(listTracks && listTracks.length===0) {
+  } @if(listTracks() && listTracks()!.length===0) {
   <div class="col m-0 mt-1 mb-1">
     <div class="card h-100">
       <div class="card-body">
@@ -180,7 +181,7 @@
       </div>
     </div>
   </div>
-  } @if(isLoading2){
+  } @if(isLoading2()){
   <div class="content_loading">
     <div class="spinner-border text-primary"></div>
   </div>
@@ -188,7 +189,7 @@
 
   <div class="d-flex justify-content-between align-items-center">
     <h2 class="h4">{{ 'extras' | transloco }}</h2>
-    @if(listExtras && listExtras.length>limitExtra) {
+    @if(listExtras()?.length && listExtras()!.length>limitExtra()) {
     <button class="btn btn-link" (click)="moreExtras()">{{ 'more' | transloco }}</button>
     }
   </div>
@@ -196,7 +197,8 @@
   <div class="bg-info p-2 rounded">
     {{ 'extras_info' | transloco }}
   </div>
-  } @if(!isLoading3 && authStore.isAuthenticated() && listExtras && listExtras.length>0){
+  } @if(!isLoading3() && authStore.isAuthenticated() && listExtras()?.length &&
+  listExtras()!.length>0){
   <table id="table_extra" class="table table-hover">
     <thead>
       <tr>
@@ -209,7 +211,7 @@
     </thead>
 
     <tbody>
-      @for (extra of listExtras | slice:0:limitExtra ; track extra.id_video; let index = $index) {
+      @for (extra of listExtras() | slice:0:limitExtra() ; track extra.key; let index = $index) {
       <tr
         [attr.data-id-video]="extra.key"
         [class.active]="extra.key === queueStore.currentKey()"
@@ -255,7 +257,7 @@
       }
     </tbody>
   </table>
-  } @if(listExtras && listExtras.length===0) {
+  } @if(listExtras() && listExtras()!.length===0) {
   <div class="col m-0 mt-1 mb-1">
     <div class="card h-100">
       <div class="card-body">
@@ -266,7 +268,7 @@
       </div>
     </div>
   </div>
-  } @if(isLoading3) {
+  } @if(isLoading3()) {
   <div class="content_loading">
     <div class="spinner-border text-primary"></div>
   </div>

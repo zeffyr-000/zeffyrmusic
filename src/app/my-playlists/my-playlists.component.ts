@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit, TemplateRef, inject } from '@angular/core';
-import { NgForm, FormsModule } from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  TemplateRef,
+  inject,
+  signal,
+} from '@angular/core';
+import { form, Field, required } from '@angular/forms/signals';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,7 +21,7 @@ import { UserDataStore } from '../store/user-data/user-data.store';
   templateUrl: './my-playlists.component.html',
   styleUrl: './my-playlists.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, TranslocoPipe],
+  imports: [Field, RouterLink, TranslocoPipe],
 })
 export class MyPlaylistsComponent implements OnInit {
   playerService = inject(PlayerService);
@@ -24,10 +31,20 @@ export class MyPlaylistsComponent implements OnInit {
   userService = inject(UserService);
   modalService = inject(NgbModal);
 
-  error: string;
+  readonly error = signal('');
 
-  currentIdPlaylistEdit: string;
-  playlistTitle: string;
+  currentIdPlaylistEdit = '';
+
+  // Signal Forms
+  readonly createPlaylistModel = signal({ titre: '' });
+  readonly createPlaylistForm = form(this.createPlaylistModel, schemaPath => {
+    required(schemaPath.titre);
+  });
+
+  readonly editTitleModel = signal({ playlist_titre: '' });
+  readonly editTitleForm = form(this.editTitleModel, schemaPath => {
+    required(schemaPath.playlist_titre);
+  });
 
   ngOnInit() {
     this.titleService.setTitle(
@@ -35,14 +52,16 @@ export class MyPlaylistsComponent implements OnInit {
     );
   }
 
-  onCreatePlaylist(form: NgForm) {
-    if (form.valid) {
-      this.userService.createPlaylist(form.form.value).subscribe({
+  onCreatePlaylist(event: Event) {
+    event.preventDefault();
+    if (this.createPlaylistForm().valid()) {
+      this.userService.createPlaylist(this.createPlaylistModel()).subscribe({
         next: (data: CreatePlaylistResponse) => {
           if (data.success !== undefined && data.success) {
             this.playerService.addNewPlaylist(data.id_playlist, data.titre);
+            this.createPlaylistModel.set({ titre: '' });
           } else {
-            this.error = this.translocoService.translate(data?.error || 'generic_error');
+            this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
           }
         },
       });
@@ -60,26 +79,25 @@ export class MyPlaylistsComponent implements OnInit {
   ) {
     this.modalService.open(contentModalConfirmEditTitle);
     this.currentIdPlaylistEdit = idPlaylist;
-    this.playlistTitle = title;
+    this.editTitleModel.set({ playlist_titre: title });
   }
 
-  onEditTitlePlaylist(form: NgForm, modal: NgbActiveModal) {
-    if (form.valid) {
+  onEditTitlePlaylist(event: Event, modal: NgbActiveModal) {
+    event.preventDefault();
+    if (this.editTitleForm().valid()) {
+      const newTitle = this.editTitleModel().playlist_titre;
       this.userService
         .editTitlePlaylist({
           id_playlist: this.currentIdPlaylistEdit,
-          titre: form.form.value.playlist_titre,
+          titre: newTitle,
         })
         .subscribe({
           next: (data: UserReponse) => {
             if (data.success !== undefined && data.success) {
-              this.playerService.editPlaylistTitle(
-                this.currentIdPlaylistEdit,
-                form.form.value.playlist_titre
-              );
+              this.playerService.editPlaylistTitle(this.currentIdPlaylistEdit, newTitle);
               modal.dismiss();
             } else {
-              this.error = this.translocoService.translate(data?.error || 'generic_error');
+              this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
             }
           },
         });

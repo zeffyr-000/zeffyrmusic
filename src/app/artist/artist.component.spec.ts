@@ -97,7 +97,9 @@ describe('ArtistComponent', () => {
 
     it('should set title and track pageview on init', () => {
       component.initLoad();
-      expect(titleService.setTitle).toHaveBeenCalledWith('Test Artist - Zeffyr Music');
+      expect(titleService.setTitle).toHaveBeenCalledWith(
+        translocoService.translate('title_artist', { artist: 'Test Artist' })
+      );
       expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('artist/1');
     });
 
@@ -107,13 +109,13 @@ describe('ArtistComponent', () => {
       artistServiceMock.getArtist = vi.fn().mockReturnValue(of(emptyData));
 
       component.initLoad();
-      expect(component.isAvailable).toBe(false);
+      expect(component.isAvailable()).toBe(false);
     });
 
     it('should set isAvailable to true when artist name is provided', () => {
       component.initLoad();
 
-      expect(component.isAvailable).toBe(true);
+      expect(component.isAvailable()).toBe(true);
     });
   });
 

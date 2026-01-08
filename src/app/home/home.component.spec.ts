@@ -25,7 +25,7 @@ describe('HomeComponent', () => {
         of({ top: [], top_albums: [] })
       );
       component.ngOnInit();
-      expect(component.isLoading).toBe(false);
+      expect(component.isLoading()).toBe(false);
     });
 
     it('should set listTopAlbums and listTop after http request', () => {
@@ -50,8 +50,8 @@ describe('HomeComponent', () => {
       };
       vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(of(data));
       component.ngOnInit();
-      expect(component['listTopAlbums']).toEqual(data.top_albums);
-      expect(component['listTop']).toEqual(data.top);
+      expect(component['listTopAlbums']()).toEqual(data.top_albums);
+      expect(component['listTop']()).toEqual(data.top);
     });
 
     it('should set isLoading to false after http request error', () => {
@@ -59,7 +59,7 @@ describe('HomeComponent', () => {
         throwError(() => new Error('Test error'))
       );
       component.ngOnInit();
-      expect(component.isLoading).toBe(false);
+      expect(component.isLoading()).toBe(false);
     });
 
     it('should set page to "top" when url is "top"', () => {
@@ -118,18 +118,18 @@ describe('HomeComponent', () => {
 
       component.ngOnInit();
 
-      expect(component['listTopDecade'].length).toBe(3);
+      expect(component['listTopDecade']().length).toBe(3);
 
-      expect(component['listTopDecade'][0].id).toBe('1');
-      expect(component['listTopDecade'][1].id).toBe('2');
-      expect(component['listTopDecade'][2].id).toBe('4');
+      expect(component['listTopDecade']()[0].id).toBe('1');
+      expect(component['listTopDecade']()[1].id).toBe('2');
+      expect(component['listTopDecade']()[2].id).toBe('4');
 
-      const albumSansDecade = component['listTopDecade'].find(album => album.id === '3');
+      const albumSansDecade = component['listTopDecade']().find(album => album.id === '3');
       expect(albumSansDecade).toBeUndefined();
 
-      expect(component['listTopDecade'][0].titre).toBe('Album 80s');
-      expect(component['listTopDecade'][1].titre).toBe('Album 90s');
-      expect(component['listTopDecade'][2].titre).toBe('Album 2000s');
+      expect(component['listTopDecade']()[0].titre).toBe('Album 80s');
+      expect(component['listTopDecade']()[1].titre).toBe('Album 90s');
+      expect(component['listTopDecade']()[2].titre).toBe('Album 2000s');
     });
   }
 
@@ -227,8 +227,8 @@ describe('HomeComponent', () => {
 
       expect(component['transferState'].get).toHaveBeenCalled();
 
-      expect(component['listTop'].length).toBe(1);
-      expect(component['listTop'][0].titre).toBe('TransferState Album');
+      expect(component['listTop']().length).toBe(1);
+      expect(component['listTop']()[0].titre).toBe('TransferState Album');
 
       expect(initServiceSpy).toHaveBeenCalled();
       expect(component['transferState'].remove).toHaveBeenCalledWith(HOME_DATA_KEY);

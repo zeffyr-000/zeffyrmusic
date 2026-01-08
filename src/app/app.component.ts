@@ -1,7 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -12,6 +11,7 @@ import {
   inject,
   ViewChild,
   TemplateRef,
+  signal,
 } from '@angular/core';
 import {
   Event,
@@ -51,19 +51,18 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly metaService = inject(Meta);
   private readonly translocoService = inject(TranslocoService);
-  private cdr = inject(ChangeDetectorRef);
   private readonly modalService = inject(NgbModal);
 
   title = 'zeffyrmusic';
-  isOnline = true;
-  currentUrl: string;
+  readonly isOnline = signal(true);
+  currentUrl = '';
 
   renderer: Renderer2;
-  errorMessage: string | null = null;
-  private errorMessageSubscription: Subscription;
+  readonly errorMessage = signal<string | null>(null);
+  private errorMessageSubscription!: Subscription;
   private isBrowser: boolean;
 
-  @ViewChild('contentModalReload') contentModalReload: TemplateRef<unknown>;
+  @ViewChild('contentModalReload') contentModalReload!: TemplateRef<unknown>;
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -88,11 +87,11 @@ export class AppComponent implements OnInit, OnDestroy {
       });
 
       window.addEventListener('offline', () => {
-        this.isOnline = false;
+        this.isOnline.set(false);
       });
 
       window.addEventListener('online', () => {
-        this.isOnline = true;
+        this.isOnline.set(true);
       });
     }
   }
@@ -145,8 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.renderer.appendChild(document.head, link);
 
     this.errorMessageSubscription = this.playerService.errorMessage$.subscribe(message => {
-      this.errorMessage = message;
-      this.cdr.detectChanges();
+      this.errorMessage.set(message);
     });
   }
 

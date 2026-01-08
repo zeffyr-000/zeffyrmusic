@@ -103,14 +103,14 @@ describe('SearchBarComponent', () => {
 
       testScheduler.flush();
 
-      expect(component['resultsAlbum']).toEqual(mockSearchBarResponse.playlist);
-      expect(component['resultsArtist']).toBe(mockSearchBarResponse.artist);
+      expect(component['resultsAlbum']()).toEqual(mockSearchBarResponse.playlist);
+      expect(component['resultsArtist']()).toBe(mockSearchBarResponse.artist);
     });
   });
 
   it('should emit query value when search is called', () => {
     const query = 'test';
-    component['query'] = query;
+    component['query'].set(query);
     const searchSubjectSpy = vi.spyOn(component['searchSubject'], 'next');
 
     component.search();
@@ -120,7 +120,7 @@ describe('SearchBarComponent', () => {
 
   it('should clear results when query is empty', () => {
     testScheduler.run(() => {
-      component.resultsAlbum = [
+      component.resultsAlbum.set([
         {
           id_playlist: '1',
           artiste: 'Test Artist',
@@ -129,16 +129,16 @@ describe('SearchBarComponent', () => {
           url_image: 'https://example.com/image.jpg',
           year_release: 2020,
         },
-      ];
+      ]);
 
-      component.resultsArtist = [
+      component.resultsArtist.set([
         {
           artist: 'Test Artist',
           artiste: 'Test Artist',
           id_artiste: '1',
           id_artiste_deezer: '123',
         },
-      ];
+      ]);
 
       const searchSubject = new Subject<string>();
       component['searchSubject'] = searchSubject;
@@ -152,8 +152,8 @@ describe('SearchBarComponent', () => {
 
       testScheduler.flush();
 
-      expect(component.resultsAlbum).toEqual([]);
-      expect(component.resultsArtist).toEqual([]);
+      expect(component.resultsAlbum()).toEqual([]);
+      expect(component.resultsArtist()).toEqual([]);
 
       expect(searchServiceMock.searchBar).not.toHaveBeenCalled();
     });
@@ -176,18 +176,18 @@ describe('SearchBarComponent', () => {
         year_release: 2000,
       };
       const url = '/test';
-      component.query = 'test';
-      component.resultsArtist = [artistResult];
-      component.resultsAlbum = [playlistResult];
+      component.query.set('test');
+      component.resultsArtist.set([artistResult]);
+      component.resultsAlbum.set([playlistResult]);
 
       ngZone.run(() => {
         component.reset(artistResult, true, url);
       });
 
       expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/recherche?q=test');
-      expect(component.query).toEqual('');
-      expect(component.resultsArtist).toEqual([]);
-      expect(component.resultsAlbum).toEqual([]);
+      expect(component.query()).toEqual('');
+      expect(component.resultsArtist()).toEqual([]);
+      expect(component.resultsAlbum()).toEqual([]);
 
       ngZone.run(() => {
         component.reset(playlistResult, true, url);
@@ -199,7 +199,7 @@ describe('SearchBarComponent', () => {
   describe('getQuerystr', () => {
     it('should return the query string encoded', () => {
       const query = 'test query';
-      component.query = query;
+      component.query.set(query);
 
       const result = component.getQuerystr();
 

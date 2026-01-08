@@ -3,21 +3,19 @@
 <div class="container-fluid px-0 my-4">
   <div class="row">
     <div class="col-md-8 col-lg-6">
-      <form (ngSubmit)="onCreatePlaylist(formCreatePlaylist)" #formCreatePlaylist="ngForm">
+      <form (submit)="onCreatePlaylist($event)">
         <div class="input-group input-group-lg">
           <input
             type="text"
             class="form-control"
-            name="titre"
             placeholder="{{ 'creer_nouvelle_playlist' | transloco }}"
             ngbAutofocus
-            ngModel
-            required
+            [field]="createPlaylistForm.titre"
           />
           <input
             class="btn btn-primary"
             type="submit"
-            [disabled]="formCreatePlaylist.invalid"
+            [disabled]="createPlaylistForm().invalid()"
             value="{{ 'creer' | transloco }}"
           />
         </div>
@@ -128,24 +126,18 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="onEditTitlePlaylist(formEditTitle, modal)" #formEditTitle="ngForm">
+    <form (submit)="onEditTitlePlaylist($event, modal)">
       <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          name="playlist_titre"
-          [(ngModel)]="playlistTitle"
-          required
-        />
+        <input type="text" class="form-control" [field]="editTitleForm.playlist_titre" />
         <input
           class="btn btn-primary"
           type="submit"
-          [disabled]="formEditTitle.invalid"
+          [disabled]="editTitleForm().invalid()"
           value="{{ 'modifier' | transloco }}"
         />
       </div>
-      @if(formEditTitle.dirty && error!=='') {
-      <p class="alert alert-danger">{{ error }}</p>
+      @if(editTitleForm().dirty() && error()!=='') {
+      <p class="alert alert-danger">{{ error() }}</p>
       }
     </form>
   </div>

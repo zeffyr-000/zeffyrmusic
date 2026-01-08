@@ -161,9 +161,9 @@ describe('SearchComponent', () => {
 
     component.ngOnInit();
     expect(titleService.setTitle).toHaveBeenCalledWith('Search results "test" - Zeffyr Music');
-    expect(component.listArtists).toEqual(searchResults1.artist);
-    expect(component.listAlbums).toEqual(searchResults1.playlist);
-    expect(component.listTracks).toEqual(searchResults2.tab_video);
+    expect(component.listArtists()).toEqual(searchResults1.artist);
+    expect(component.listAlbums()).toEqual(searchResults1.playlist);
+    expect(component.listTracks()).toEqual(searchResults2.tab_video);
 
     if (component['isBrowser']) {
       expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('search/test');
@@ -171,7 +171,7 @@ describe('SearchComponent', () => {
   });
 
   it('should set limitArtist to listArtists length on moreArtists', () => {
-    component.listArtists = [
+    component.listArtists.set([
       {
         artist: 'Test Artist',
         artiste: 'Test Artist',
@@ -184,13 +184,13 @@ describe('SearchComponent', () => {
         id_artiste: '2',
         id_artiste_deezer: '1234',
       },
-    ];
+    ]);
     component.moreArtists();
-    expect(component.limitArtist).toEqual(component.listArtists.length);
+    expect(component.limitArtist()).toEqual(component.listArtists()!.length);
   });
 
   it('should set limitAlbum to listAlbums length on moreAlbums', () => {
-    component.listAlbums = [
+    component.listAlbums.set([
       {
         artiste: 'Test Artist',
         id_playlist: '1',
@@ -207,14 +207,14 @@ describe('SearchComponent', () => {
         url_image: '',
         year_release: 2021,
       },
-    ];
+    ]);
     component.moreAlbums();
-    expect(component.limitAlbum).toEqual(component.listAlbums.length);
+    expect(component.limitAlbum()).toEqual(component.listAlbums()!.length);
   });
 
   it('should call playerService.runPlaylist on runPlaylistTrack', () => {
     const index = 0;
-    component.listTracks = [
+    component.listTracks.set([
       {
         id_video: '1',
         artiste: 'Test Artist',
@@ -226,9 +226,9 @@ describe('SearchComponent', () => {
         titre: 'Test Track',
         titre_album: 'Test Album',
       },
-    ];
+    ]);
     component.runPlaylistTrack(index);
-    expect(playerService.runPlaylist).toHaveBeenCalledWith(component.listTracks, index);
+    expect(playerService.runPlaylist).toHaveBeenCalledWith(component.listTracks(), index);
   });
 
   it('should call playerService.addVideoInPlaylist on addVideo', () => {
@@ -241,7 +241,7 @@ describe('SearchComponent', () => {
   });
 
   it('should set limitTrack to listTracks length on moreTracks', () => {
-    component.listTracks = [
+    component.listTracks.set([
       {
         id_video: '1',
         artiste: 'Test Artist',
@@ -264,26 +264,26 @@ describe('SearchComponent', () => {
         titre: 'Test Track 2',
         titre_album: 'Test Album 2',
       },
-    ];
+    ]);
     component.moreTracks();
-    expect(component.limitTrack).toEqual(component.listTracks.length);
+    expect(component.limitTrack()).toEqual(component.listTracks()!.length);
   });
 
   it('should call playerService.runPlaylist on runPlaylistExtra', () => {
     const index = 0;
-    component.listExtras = [
+    component.listExtras.set([
       {
         key: 'TEST',
         title: 'TITLE',
         duree: 100,
       },
-    ];
+    ]);
     component.runPlaylistExtra(index);
     expect(playerService.runPlaylist).toHaveBeenCalled();
   });
 
   it('should set limitExtra to listExtras length on moreExtras', () => {
-    component.listExtras = [
+    component.listExtras.set([
       {
         key: 'TEST',
         title: 'TITLE',
@@ -294,9 +294,9 @@ describe('SearchComponent', () => {
         title: 'TITLE2',
         duree: 100,
       },
-    ];
+    ]);
     component.moreExtras();
-    expect(component.limitExtra).toEqual(component.listExtras.length);
+    expect(component.limitExtra()).toEqual(component.listExtras()!.length);
   });
 
   it('should handle undefined tab_extra in search results', () => {
@@ -311,11 +311,11 @@ describe('SearchComponent', () => {
       { darkModeEnabled: false, language: 'fr' }
     );
 
-    component.listExtras = [{ key: 'OLD_VALUE', title: 'Should be cleared', duree: 100 }];
+    component.listExtras.set([{ key: 'OLD_VALUE', title: 'Should be cleared', duree: 100 }]);
 
     component.ngOnInit();
 
-    expect(component.listExtras).toEqual([]);
+    expect(component.listExtras()).toEqual([]);
     expect(searchServiceMock.fullSearch3).toHaveBeenCalled();
   });
 

@@ -6,6 +6,7 @@ export interface Video {
   artists: Artist[];
   duree: string;
   id_playlist: string;
+  id_artiste?: number;
   key: string;
   ordre: string;
   titre: string;

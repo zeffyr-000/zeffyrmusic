@@ -18,9 +18,27 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `computed()` for derived state
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Prefer inline templates for small components
-- Prefer Reactive forms instead of Template-driven ones
+- Use Signal Forms (`@angular/forms/signals`) for all forms
 - Do NOT use `ngClass`, use `class` bindings instead
 - DO NOT use `ngStyle`, use `style` bindings instead
+
+## Signal Forms
+- Use `form()` function with a signal model and schema validators
+- Use `[field]` directive for input binding
+- Use `formModel().invalid()` to check form validity
+- For `required()`: no message needed as submit button is disabled when form is invalid
+- For other validators (`minLength`, `email`, `validate`): use `TranslocoService.translate()` for i18n
+  ```typescript
+  private transloco = inject(TranslocoService);
+  
+  readonly myForm = form(this.formModel, schemaPath => {
+    required(schemaPath.email);
+    minLength(schemaPath.password, 6, { 
+      message: this.transloco.translate('validation_password_minlength', { min: 6 }) 
+    });
+  });
+  ```
+- Template displays message directly: `{{ error.message }}`
 
 ## State Management
 - Use signals for local component state

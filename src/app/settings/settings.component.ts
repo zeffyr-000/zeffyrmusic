@@ -8,7 +8,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { NgForm, FormsModule } from '@angular/forms';
+import { form, Field, required, email, minLength, validate } from '@angular/forms/signals';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UserReponse } from '../models/user.model';
 import { UserService } from '../services/user.service';
@@ -24,7 +24,7 @@ import '../models/google-identity.model';
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, TranslocoPipe],
+  imports: [Field, TranslocoPipe],
 })
 export class SettingsComponent implements OnInit, AfterViewInit {
   activeModal = inject(NgbActiveModal);
@@ -36,7 +36,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   readonly authStore = inject(AuthStore);
 
   @ViewChild('contentModalAssociateGoogleAccount')
-  contentModalAssociateGoogleAccount: TemplateRef<unknown>;
+  contentModalAssociateGoogleAccount!: TemplateRef<unknown>;
 
   // Local UI state as signals
   readonly successPass = signal(false);
@@ -46,6 +46,44 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   readonly successGoogleAccount = signal(false);
   readonly error = signal('');
   readonly availableLanguages = signal<string[]>([]);
+
+  // Signal Forms models
+  readonly editPassModel = signal({ passwordold: '', password1: '', password2: '' });
+  readonly editPassForm = form(this.editPassModel, schemaPath => {
+    required(schemaPath.passwordold);
+    required(schemaPath.password1);
+    minLength(schemaPath.password1, 4, {
+      message: this.translocoService.translate('validation_password_minlength', { min: 4 }),
+    });
+    required(schemaPath.password2);
+    validate(schemaPath.password2, ({ value, valueOf }) => {
+      if (value() !== valueOf(schemaPath.password1)) {
+        return {
+          kind: 'matching',
+          message: this.translocoService.translate('validation_passwords_not_matching'),
+        };
+      }
+      return null;
+    });
+  });
+
+  readonly editMailModel = signal({ mail: '' });
+  readonly editMailForm = form(this.editMailModel, schemaPath => {
+    required(schemaPath.mail);
+    email(schemaPath.mail, {
+      message: this.translocoService.translate('validation_email_invalid'),
+    });
+  });
+
+  readonly editLanguageModel = signal({ language: '' });
+  readonly editLanguageForm = form(this.editLanguageModel, schemaPath => {
+    required(schemaPath.language);
+  });
+
+  readonly deleteAccountModel = signal({ password: '' });
+  readonly deleteAccountForm = form(this.deleteAccountModel, schemaPath => {
+    required(schemaPath.password);
+  });
 
   // Computed properties from AuthStore (direct access to signals)
   readonly isConnected = this.authStore.isAuthenticated;
@@ -58,6 +96,9 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('settings') + ' - Zeffyr Music');
     this.availableLanguages.set(this.translocoService.getAvailableLangs() as string[]);
+    // Initialize form with current mail and language
+    this.editMailModel.set({ mail: this.mail() });
+    this.editLanguageModel.set({ language: this.language() });
   }
 
   ngAfterViewInit() {
@@ -68,34 +109,33 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     this.modalService.open(content, { size: 'lg' });
   }
 
-  onSubmitEditPass(form: NgForm) {
-    if (form.valid) {
-      if (form.form.value.password1 === form.form.value.password2) {
-        this.userService
-          .editPass({
-            passwordold: form.form.value.passwordold,
-            passwordnew: form.form.value.password1,
-          })
-          .subscribe({
-            next: (data: UserReponse) => {
-              if (data.success !== undefined && data.success) {
-                this.successPass.set(true);
-                setTimeout(() => this.successPass.set(false), 10000);
-              } else {
-                this.error.set(this.translocoService.translate(data.error));
-              }
-            },
-            error: () => this.initService.onMessageUnlog(),
-          });
-      } else {
-        this.error.set(this.translocoService.translate('mot_de_passe_confirmer_invalide'));
-      }
+  onSubmitEditPass(event: Event) {
+    event.preventDefault();
+    if (this.editPassForm().valid()) {
+      const model = this.editPassModel();
+      this.userService
+        .editPass({
+          passwordold: model.passwordold,
+          passwordnew: model.password1,
+        })
+        .subscribe({
+          next: (data: UserReponse) => {
+            if (data.success !== undefined && data.success) {
+              this.successPass.set(true);
+              setTimeout(() => this.successPass.set(false), 10000);
+            } else {
+              this.error.set(this.translocoService.translate(data.error));
+            }
+          },
+          error: () => this.initService.onMessageUnlog(),
+        });
     }
   }
 
-  onSubmitEditMail(form: NgForm) {
-    if (form.valid) {
-      this.userService.editMail(form.form.value).subscribe({
+  onSubmitEditMail(event: Event) {
+    event.preventDefault();
+    if (this.editMailForm().valid()) {
+      this.userService.editMail(this.editMailModel()).subscribe({
         next: (data: UserReponse) => {
           if (data.success !== undefined && data.success) {
             this.successMail.set(true);
@@ -123,13 +163,15 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onSubmitEditLanguage(form: NgForm) {
-    if (form.valid) {
-      this.userService.editLanguage(form.form.value).subscribe({
+  onSubmitEditLanguage(event: Event) {
+    event.preventDefault();
+    if (this.editLanguageForm().valid()) {
+      const model = this.editLanguageModel();
+      this.userService.editLanguage(model).subscribe({
         next: (data: UserReponse) => {
           if (data.success !== undefined && data.success) {
             this.successLanguage.set(true);
-            this.authStore.setLanguage(form.form.value.language as 'fr' | 'en');
+            this.authStore.setLanguage(model.language as 'fr' | 'en');
             setTimeout(() => this.successLanguage.set(false), 10000);
           } else {
             this.error.set(this.translocoService.translate(data.error));
@@ -140,9 +182,10 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onSubmitDeleteAccount(form: NgForm) {
-    if (form.valid) {
-      this.userService.deleteAccount(form.form.value).subscribe({
+  onSubmitDeleteAccount(event: Event) {
+    event.preventDefault();
+    if (this.deleteAccountForm().valid()) {
+      this.userService.deleteAccount(this.deleteAccountModel()).subscribe({
         next: (data: UserReponse) => {
           if (data.success !== undefined && data.success) {
             this.successDelete.set(true);

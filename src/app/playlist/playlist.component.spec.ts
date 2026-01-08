@@ -54,7 +54,7 @@ describe('PlaylistComponent', () => {
         duration: 'duration',
       },
     ],
-    est_prive: undefined as boolean,
+    est_prive: undefined as unknown as boolean,
     titre: 'titre',
     artiste: 'artiste',
     id_artiste: '1',
@@ -141,7 +141,7 @@ describe('PlaylistComponent', () => {
     const fixture = TestBed.createComponent(PlaylistComponent);
     const component = fixture.componentInstance;
 
-    component.idPlaylist = '1';
+    component.idPlaylist.set('1');
     userDataStore.setFollows([{ id_playlist: '1', titre: 'titre' }] as FollowItem[]);
 
     fixture.detectChanges();
@@ -157,7 +157,7 @@ describe('PlaylistComponent', () => {
     const fixture = TestBed.createComponent(PlaylistComponent);
     const component = fixture.componentInstance;
 
-    component.idPlaylist = '1';
+    component.idPlaylist.set('1');
     userDataStore.setFollows([{ id_playlist: '2', titre: 'autre' }] as FollowItem[]);
 
     fixture.detectChanges();
@@ -177,7 +177,7 @@ describe('PlaylistComponent', () => {
 
   it('should call loadPlaylist with correct url when url path is not "like"', () => {
     const loadPlaylistSpy = vi.spyOn(component, 'loadPlaylist');
-    component.idPlaylist = null;
+    component.idPlaylist.set(null);
 
     // Mock ActivatedRoute
     const activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
@@ -193,7 +193,7 @@ describe('PlaylistComponent', () => {
 
   it('should call loadPlaylist with correct url when url path is playlist', () => {
     const loadPlaylistSpy = vi.spyOn(component, 'loadPlaylist');
-    component.idPlaylist = null;
+    component.idPlaylist.set(null);
 
     // Mock ActivatedRoute
     const activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
@@ -211,7 +211,7 @@ describe('PlaylistComponent', () => {
     const fixture = TestBed.createComponent(PlaylistComponent);
     const component = fixture.componentInstance;
 
-    component.idPlaylist = null;
+    component.idPlaylist.set(null);
 
     fixture.detectChanges();
 
@@ -230,8 +230,8 @@ describe('PlaylistComponent', () => {
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(url);
-    expect(component.isPrivate).toBe(false);
-    expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
+    expect(component.isPrivate()).toBe(false);
+    expect(component.idPlaylist()).toEqual(mockPlaylistData.id_playlist);
     // Check other properties in the same way
     //expect(titleServiceSpy).toHaveBeenCalledWith(mockPlaylistData.title + ' - Zeffyr Music');
     expect(metaService.updateTag).toHaveBeenCalled();
@@ -252,13 +252,13 @@ describe('PlaylistComponent', () => {
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(url);
-    expect(component.isPrivate).toBe(true);
+    expect(component.isPrivate()).toBe(true);
     // Check other properties in the same way
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
   });
 
   it('share title', () => {
-    const mockPlaylistDataTitle = { ...mockPlaylistData, titre: undefined as string };
+    const mockPlaylistDataTitle = { ...mockPlaylistData, titre: undefined as unknown as string };
 
     const httpClient = TestBed.inject(HttpClient);
     const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistDataTitle));
@@ -272,8 +272,8 @@ describe('PlaylistComponent', () => {
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(url);
-    expect(component.isPrivate).toBe(false);
-    expect(component.idPlaylist).toEqual(mockPlaylistData.id_playlist);
+    expect(component.isPrivate()).toBe(false);
+    expect(component.idPlaylist()).toEqual(mockPlaylistData.id_playlist);
     // Check other properties in the same way
     expect(titleServiceSpy).toHaveBeenCalledWith(
       'title - The Must-Haves of the Moment | Zeffyr Music'
@@ -286,7 +286,7 @@ describe('PlaylistComponent', () => {
     const httpClient = TestBed.inject(HttpClient);
     const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
     const url = '';
-    component.idPlaylist = '1';
+    component.idPlaylist.set('1');
 
     component.loadPlaylist(url);
 
@@ -299,12 +299,12 @@ describe('PlaylistComponent', () => {
       .spyOn(httpClient, 'get')
       .mockReturnValue(of({ ...mockPlaylistData, description: undefined }));
     const url = environment.URL_SERVER + 'json/playlist/1';
-    component.idPlaylist = '1';
+    component.idPlaylist.set('1');
 
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(environment.URL_SERVER + 'json/playlist/1');
-    expect(component.description).toEqual('');
+    expect(component.description()).toEqual('');
   });
 
   it('should initialize properties and call services with correct arguments when loadLike is called', () => {
@@ -316,9 +316,9 @@ describe('PlaylistComponent', () => {
 
     component.loadLike();
 
-    expect(component.isPrivate).toBe(false);
-    expect(component.idPlaylist).toEqual('');
-    expect(component.isLikePage).toBe(true);
+    expect(component.isPrivate()).toBe(false);
+    expect(component.idPlaylist()).toEqual('');
+    expect(component.isLikePage()).toBe(true);
     // L'effect likedVideosEffect chargera les vidéos likées automatiquement
     expect(titleServiceSpy).toHaveBeenCalledWith(
       translocoService.translate('mes_likes') + ' - Zeffyr Music'
@@ -331,8 +331,8 @@ describe('PlaylistComponent', () => {
     component.loadLike();
     fixture.detectChanges();
 
-    expect(component.isLikePage).toBe(true);
-    expect(component.idPlaylist).toEqual('');
+    expect(component.isLikePage()).toBe(true);
+    expect(component.idPlaylist()).toEqual('');
   });
 
   it('should populate playlist from likedVideos when loadLike is called', () => {
@@ -361,19 +361,19 @@ describe('PlaylistComponent', () => {
     component.loadLike();
     fixture.detectChanges();
 
-    expect(component.isLikePage).toBe(true);
-    expect(component.playlist.length).toEqual(2);
-    expect(component.playlist[0].artists[0].label).toEqual('Artist 1');
+    expect(component.isLikePage()).toBe(true);
+    expect(component.playlist().length).toEqual(2);
+    expect(component.playlist()[0].artists[0].label).toEqual('Artist 1');
 
     // Reset
     userDataStore.reset();
   });
 
   it('should call playerService.switchFollow with correct arguments when switchFollow is called', () => {
-    component.idPlaylist = 'testId';
-    component.titre = 'testTitle';
-    component.artist = 'testArtist';
-    component.imgBig = 'testImgBig';
+    component.idPlaylist.set('testId');
+    component.titre.set('testTitle');
+    component.artist.set('testArtist');
+    component.imgBig.set('testImgBig');
 
     component.switchFollow();
 
@@ -399,7 +399,7 @@ describe('PlaylistComponent', () => {
         titre_album: 'Titre album 1',
       },
     ] as Video[];
-    component.playlist = playlistData;
+    component.playlist.set(playlistData);
 
     component.runPlaylist(0);
 
@@ -420,7 +420,7 @@ describe('PlaylistComponent', () => {
         titre_album: 'Titre album 1',
       },
     ] as Video[];
-    component.playlist = playlistData;
+    component.playlist.set(playlistData);
     component.runPlaylist();
 
     expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0, null);
@@ -440,7 +440,7 @@ describe('PlaylistComponent', () => {
         titre_album: 'Titre album 1',
       },
     ] as Video[];
-    component.playlist = playlistData;
+    component.playlist.set(playlistData);
 
     component.addInCurrentList();
 
@@ -501,11 +501,11 @@ describe('PlaylistComponent', () => {
   });
 
   it('should return correct duration when sumDurationPlaylist is called with playlist', () => {
-    component.playlist = [
+    component.playlist.set([
       { duree: '120' } as Video,
       { duree: '240' } as Video,
       { duree: '3600' } as Video,
-    ];
+    ]);
 
     const result = component.sumDurationPlaylist();
 
@@ -513,7 +513,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should return empty string when sumDurationPlaylist is called without playlist', () => {
-    component.playlist = undefined;
+    component.playlist.set([]);
 
     const result = component.sumDurationPlaylist();
 
@@ -521,7 +521,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should return correct duration when sumDurationPlaylist is called with playlist without hours', () => {
-    component.playlist = [{ duree: '120' } as Video, { duree: '240' } as Video];
+    component.playlist.set([{ duree: '120' } as Video, { duree: '240' } as Video]);
 
     const result = component.sumDurationPlaylist();
 
@@ -593,7 +593,10 @@ describe('PlaylistComponent', () => {
   });
 
   it('should display the default image when img_big is not defined', () => {
-    const mockPlaylistDataImageDefault = { ...mockPlaylistData, img_big: undefined as string };
+    const mockPlaylistDataImageDefault = {
+      ...mockPlaylistData,
+      img_big: undefined as unknown as string,
+    };
 
     const httpClient = TestBed.inject(HttpClient);
     const httpClientSpy = vi
@@ -608,12 +611,12 @@ describe('PlaylistComponent', () => {
     component.loadPlaylist(url);
 
     expect(httpClientSpy).toHaveBeenCalledWith(url);
-    expect(component.imgBig).toBe('assets/img/default.jpg');
+    expect(component.imgBig()).toBe('assets/img/default.jpg');
   });
 
   it('should assign title from data', () => {
     const data = { title: 'Test Title' } as Playlist;
-    component.title = data.title;
+    component.title.set(data.title);
 
     const title = component.getMetaTitle(data);
 
@@ -751,7 +754,7 @@ describe('PlaylistComponent', () => {
     const initialDuration = '180';
     const newDuration = 240;
 
-    component.playlist = [
+    component.playlist.set([
       {
         id_video: '1',
         artiste: 'Artiste 1',
@@ -785,28 +788,23 @@ describe('PlaylistComponent', () => {
         titre: 'Titre 3',
         titre_album: 'Album 3',
       },
-    ] as Video[];
+    ] as Video[]);
 
     // Mock le queueStore.currentKey() pour retourner videoKey
     vi.spyOn(component.queueStore, 'currentKey').mockReturnValue(videoKey);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const detectChangesSpy = vi.spyOn((component as any).ref, 'detectChanges');
-
     component.adjustPlaylistDuration(newDuration);
 
-    expect(component.playlist[0].duree).toBe(initialDuration);
-    expect(component.playlist[1].duree).toBe(newDuration.toString());
-    expect(component.playlist[2].duree).toBe(initialDuration);
-
-    expect(detectChangesSpy).toHaveBeenCalled();
+    expect(component.playlist()[0].duree).toBe(initialDuration);
+    expect(component.playlist()[1].duree).toBe(newDuration.toString());
+    expect(component.playlist()[2].duree).toBe(initialDuration);
   });
 
   it('should not modify playlist when current key does not match any video', () => {
     const initialDuration = '180';
     const newDuration = 240;
 
-    component.playlist = [
+    component.playlist.set([
       {
         id_video: '1',
         artiste: 'Artiste 1',
@@ -829,20 +827,15 @@ describe('PlaylistComponent', () => {
         titre: 'Titre 2',
         titre_album: 'Album 2',
       },
-    ] as Video[];
+    ] as Video[]);
 
     // Mock le queueStore.currentKey() pour retourner une clé inexistante
     vi.spyOn(component.queueStore, 'currentKey').mockReturnValue('non-existent-key');
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const detectChangesSpy = vi.spyOn((component as any).ref, 'detectChanges');
-
     component.adjustPlaylistDuration(newDuration);
 
-    expect(component.playlist[0].duree).toBe(initialDuration);
-    expect(component.playlist[1].duree).toBe(initialDuration);
-
-    expect(detectChangesSpy).not.toHaveBeenCalled();
+    expect(component.playlist()[0].duree).toBe(initialDuration);
+    expect(component.playlist()[1].duree).toBe(initialDuration);
   });
 });
 
@@ -972,9 +965,9 @@ describe('PlaylistComponent (Server context)', () => {
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
-    expect(component.isPrivate).toBe(false);
-    expect(component.idPlaylist).toEqual('');
-    expect(component.isLikePage).toBe(true);
+    expect(component.isPrivate()).toBe(false);
+    expect(component.idPlaylist()).toEqual('');
+    expect(component.isLikePage()).toBe(true);
   });
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context', () => {
@@ -1042,11 +1035,11 @@ describe('PlaylistComponent (Server context)', () => {
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
-    expect(component.isPrivate).toBe(false);
-    expect(component.idPlaylist).toEqual('1');
-    expect(component.title).toEqual('title');
-    expect(component.description).toEqual('description');
-    expect(component.imgBig).toEqual('img_big');
+    expect(component.isPrivate()).toBe(false);
+    expect(component.idPlaylist()).toEqual('1');
+    expect(component.title()).toEqual('title');
+    expect(component.description()).toEqual('description');
+    expect(component.imgBig()).toEqual('img_big');
   });
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context not id top', () => {

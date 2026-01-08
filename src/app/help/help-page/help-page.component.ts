@@ -19,11 +19,11 @@ export class HelpPageComponent implements OnInit {
   private readonly seoService = inject(SeoService);
   private readonly translocoService = inject(TranslocoService);
 
-  page: string;
+  page = '';
   URL_ASSETS = environment.URL_ASSETS;
 
   ngOnInit() {
-    this.page = this.route.snapshot.paramMap.get('page');
+    this.page = this.route.snapshot.paramMap.get('page') ?? '';
     let pageTitle = '';
     let pageDescription = '';
 
@@ -59,10 +59,13 @@ export class HelpPageComponent implements OnInit {
     }
 
     this.titleService.setTitle(this.translocoService.translate(pageTitle) + ' - Zeffyr Music');
-    this.metaService.updateTag({
-      name: 'description',
-      content: this.translocoService.translate(pageDescription),
-    });
+    const description = this.translocoService.translate(pageDescription);
+    if (description) {
+      this.metaService.updateTag({
+        name: 'description',
+        content: description,
+      });
+    }
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help/${this.page}`);
   }
 }
