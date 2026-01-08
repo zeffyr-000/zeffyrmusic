@@ -16,6 +16,7 @@ import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { Playlist } from '../models/playlist.model';
+import { UserDataStore } from '../store/user-data/user-data.store';
 
 describe('PlaylistComponent', () => {
   let component: PlaylistComponent;
@@ -63,7 +64,6 @@ describe('PlaylistComponent', () => {
     metaServiceMock = { updateTag: vi.fn() };
     initServiceMock = { init: vi.fn() };
     playerServiceMock = {
-      launchYTApi: vi.fn(),
       lecture: vi.fn(),
       removeToPlaylist: vi.fn(),
       switchFollow: vi.fn(),
@@ -74,22 +74,7 @@ describe('PlaylistComponent', () => {
       addVideoAfterCurrentInList: vi.fn(),
       onPlayPause: vi.fn(),
     };
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: 'test-pseudo',
-      idPerso: 'test-idPerso',
-      mail: 'test-mail',
-    });
-    playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
-      currentKey: 'test-key',
-      currentTitle: 'test-title',
-      currentArtist: 'test-artist',
-    });
-    playerServiceMock.subjectListFollow = new BehaviorSubject([]);
-    playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
-    playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
-    playerServiceMock.subjectPlayerRunningChange = new BehaviorSubject([]);
+    // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
       snapshot: {
         paramMap: { get: () => '1' },
@@ -151,23 +136,36 @@ describe('PlaylistComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should subscribe to subjectListFollow', () => {
-    component.initLoad();
-    expect(component.subscriptionChangeFollow).toBeDefined();
-  });
-
-  it('should update isFollower when subjectListFollow emits', () => {
-    const listFollow = [{ id_playlist: '1', titre: 'titre' }] as FollowItem[];
+  it('should compute isFollower based on userDataStore.follows()', () => {
+    const userDataStore = TestBed.inject(UserDataStore);
     const fixture = TestBed.createComponent(PlaylistComponent);
     const component = fixture.componentInstance;
 
-    component.idPlaylist = '1'; // Initialisez idPlaylist avant d'émettre une nouvelle valeur à partir de subjectListFollow
+    component.idPlaylist = '1';
+    userDataStore.setFollows([{ id_playlist: '1', titre: 'titre' }] as FollowItem[]);
 
-    fixture.detectChanges(); // Initialise le composant
+    fixture.detectChanges();
 
-    playerService.subjectListFollow.next(listFollow);
+    expect(component.isFollower()).toBe(true);
 
-    expect(component.isFollower).toBe(true);
+    // Reset
+    userDataStore.reset();
+  });
+
+  it('should return false for isFollower when playlist not followed', () => {
+    const userDataStore = TestBed.inject(UserDataStore);
+    const fixture = TestBed.createComponent(PlaylistComponent);
+    const component = fixture.componentInstance;
+
+    component.idPlaylist = '1';
+    userDataStore.setFollows([{ id_playlist: '2', titre: 'autre' }] as FollowItem[]);
+
+    fixture.detectChanges();
+
+    expect(component.isFollower()).toBe(false);
+
+    // Reset
+    userDataStore.reset();
   });
 
   it('should call loadLike when url path is "like"', () => {
@@ -209,18 +207,15 @@ describe('PlaylistComponent', () => {
     expect(loadPlaylistSpy).toHaveBeenCalledWith('');
   });
 
-  it('should return immediately when listFollow is null or undefined', () => {
-    const listFollow = undefined as FollowItem[];
+  it('should return false for isFollower when idPlaylist is null', () => {
     const fixture = TestBed.createComponent(PlaylistComponent);
     const component = fixture.componentInstance;
 
-    component.idPlaylist = '1'; // Initialisez idPlaylist avant d'émettre une nouvelle valeur à partir de subjectListFollow
+    component.idPlaylist = null;
 
-    fixture.detectChanges(); // Initialise le composant
+    fixture.detectChanges();
 
-    playerService.subjectListFollow.next(listFollow);
-
-    expect(component.isFollower).toBe(false);
+    expect(component.isFollower()).toBe(false);
   });
 
   it('should call httpClient.get with the correct url and update properties when loadPlaylist is called', () => {
@@ -315,10 +310,6 @@ describe('PlaylistComponent', () => {
   it('should initialize properties and call services with correct arguments when loadLike is called', () => {
     const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
     const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
-    const subjectListLikeVideoSubscribeSpy = vi.spyOn(
-      playerService.subjectListLikeVideo,
-      'subscribe'
-    );
 
     // Mock ActivatedRoute
     const activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
@@ -327,8 +318,8 @@ describe('PlaylistComponent', () => {
 
     expect(component.isPrivate).toBe(false);
     expect(component.idPlaylist).toEqual('');
-    // Check other properties in the same way
-    expect(subjectListLikeVideoSubscribeSpy).toHaveBeenCalled();
+    expect(component.isLikePage).toBe(true);
+    // L'effect likedVideosEffect chargera les vidéos likées automatiquement
     expect(titleServiceSpy).toHaveBeenCalledWith(
       translocoService.translate('mes_likes') + ' - Zeffyr Music'
     );
@@ -336,7 +327,16 @@ describe('PlaylistComponent', () => {
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
   });
 
-  it('should update playlist when subjectListLikeVideo emits', () => {
+  it('should set isLikePage to true when loadLike is called', () => {
+    component.loadLike();
+    fixture.detectChanges();
+
+    expect(component.isLikePage).toBe(true);
+    expect(component.idPlaylist).toEqual('');
+  });
+
+  it('should populate playlist from likedVideos when loadLike is called', () => {
+    const userDataStore = TestBed.inject(UserDataStore);
     const mockListLikeVideo = [
       {
         id: '1',
@@ -354,12 +354,19 @@ describe('PlaylistComponent', () => {
       },
     ] as UserVideo[];
 
-    component.loadLike();
-    playerService.subjectListLikeVideo.next(mockListLikeVideo);
-    expect(component.playlist.length).toEqual(2);
+    // Set liked videos BEFORE calling loadLike
+    userDataStore.setLikedVideos(mockListLikeVideo);
 
-    playerService.subjectListLikeVideo.next(null);
+    // Then call loadLike - it should load from the store
+    component.loadLike();
+    fixture.detectChanges();
+
+    expect(component.isLikePage).toBe(true);
     expect(component.playlist.length).toEqual(2);
+    expect(component.playlist[0].artists[0].label).toEqual('Artist 1');
+
+    // Reset
+    userDataStore.reset();
   });
 
   it('should call playerService.switchFollow with correct arguments when switchFollow is called', () => {
@@ -780,7 +787,8 @@ describe('PlaylistComponent', () => {
       },
     ] as Video[];
 
-    component.currentKey = videoKey;
+    // Mock le queueStore.currentKey() pour retourner videoKey
+    vi.spyOn(component.queueStore, 'currentKey').mockReturnValue(videoKey);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const detectChangesSpy = vi.spyOn((component as any).ref, 'detectChanges');
@@ -823,7 +831,8 @@ describe('PlaylistComponent', () => {
       },
     ] as Video[];
 
-    component.currentKey = 'non-existent-key';
+    // Mock le queueStore.currentKey() pour retourner une clé inexistante
+    vi.spyOn(component.queueStore, 'currentKey').mockReturnValue('non-existent-key');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const detectChangesSpy = vi.spyOn((component as any).ref, 'detectChanges');
@@ -844,7 +853,6 @@ describe('PlaylistComponent (Server context)', () => {
   let titleService: Title;
   let translocoService: TranslocoService;
   let googleAnalyticsService: GoogleAnalyticsService;
-  let playerService: PlayerService;
   let metaService: Meta;
   let activatedRouteMock: MockedObject<ActivatedRoute>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -858,7 +866,6 @@ describe('PlaylistComponent (Server context)', () => {
     metaServiceMock = { updateTag: vi.fn() };
     initServiceMock = { init: vi.fn() };
     playerServiceMock = {
-      launchYTApi: vi.fn(),
       lecture: vi.fn(),
       removeToPlaylist: vi.fn(),
       switchFollow: vi.fn(),
@@ -869,22 +876,7 @@ describe('PlaylistComponent (Server context)', () => {
       addVideoAfterCurrentInList: vi.fn(),
       onPlayPause: vi.fn(),
     };
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: 'test-pseudo',
-      idPerso: 'test-idPerso',
-      mail: 'test-mail',
-    });
-    playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
-      currentKey: 'test-key',
-      currentTitle: 'test-title',
-      currentArtist: 'test-artist',
-    });
-    playerServiceMock.subjectListFollow = new BehaviorSubject([]);
-    playerServiceMock.subjectListLikeVideo = new BehaviorSubject([]);
-    playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
-    playerServiceMock.subjectPlayerRunningChange = new BehaviorSubject([]);
+    // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
       snapshot: {
         paramMap: { get: () => '1' },
@@ -936,7 +928,6 @@ describe('PlaylistComponent (Server context)', () => {
     titleService = TestBed.inject(Title);
     translocoService = TestBed.inject(TranslocoService);
     googleAnalyticsService = TestBed.inject(GoogleAnalyticsService);
-    playerService = TestBed.inject(PlayerService);
     metaService = TestBed.inject(Meta);
     fixture.detectChanges();
   });
@@ -983,8 +974,7 @@ describe('PlaylistComponent (Server context)', () => {
 
     expect(component.isPrivate).toBe(false);
     expect(component.idPlaylist).toEqual('');
-
-    expect(playerService.subjectListLikeVideo.value).toEqual([]);
+    expect(component.isLikePage).toBe(true);
   });
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context', () => {

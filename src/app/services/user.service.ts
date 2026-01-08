@@ -17,6 +17,11 @@ import {
   UserReponse,
 } from '../models/user.model';
 
+/**
+ * UserService - User account and playlist HTTP operations
+ *
+ * Handles authentication, registration and playlist CRUD operations.
+ */
 @Injectable({
   providedIn: 'root',
 })

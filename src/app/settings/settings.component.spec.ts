@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgForm } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgbActiveModal, NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { UserService } from '../services/user.service';
 import { getTranslocoTestingProviders } from '../transloco-testing';
@@ -49,14 +49,6 @@ describe('SettingsComponent', () => {
     const activeModalSpyObj = { dismiss: vi.fn() } as MockedObject<NgbActiveModal>;
     const authGuardMock = { canActivate: vi.fn() } as MockedObject<AuthGuard>;
 
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: '',
-      idPerso: '',
-      mail: '',
-      darkModeEnabled: false,
-      language: 'fr',
-    });
     initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
@@ -127,7 +119,7 @@ describe('SettingsComponent', () => {
 
       await vi.advanceTimersByTimeAsync(10000);
 
-      expect(component.successPass).toBe(false);
+      expect(component.successPass()).toBe(false);
 
       userServiceMock.editPass.mockReturnValue(of(errorResponse));
       // Act
@@ -135,7 +127,7 @@ describe('SettingsComponent', () => {
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
-      expect(component.error).toBe('Invalid credentials');
+      expect(component.error()).toBe('Invalid credentials');
 
       vi.useRealTimers();
     });
@@ -157,7 +149,7 @@ describe('SettingsComponent', () => {
       component.onSubmitEditPass(form);
 
       // Assert
-      expect(component.error).toBe('Confirmation password is incorrect');
+      expect(component.error()).toBe('Confirmation password is incorrect');
     });
 
     it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
@@ -179,7 +171,6 @@ describe('SettingsComponent', () => {
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalled();
-      expect(component.isConnected).toBe(false);
       expect(initService.onMessageUnlog).toHaveBeenCalled();
     });
   });
@@ -209,7 +200,7 @@ describe('SettingsComponent', () => {
 
       await vi.advanceTimersByTimeAsync(10000);
 
-      expect(component.successMail).toBe(false);
+      expect(component.successMail()).toBe(false);
 
       userServiceMock.editMail.mockReturnValue(of(errorResponse));
       // Act
@@ -217,7 +208,7 @@ describe('SettingsComponent', () => {
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
-      expect(component.error).toBe('Invalid email');
+      expect(component.error()).toBe('Invalid email');
 
       vi.useRealTimers();
     });
@@ -240,7 +231,6 @@ describe('SettingsComponent', () => {
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith(form.form.value);
-      expect(component.isConnected).toBe(false);
       expect(initService.onMessageUnlog).toHaveBeenCalled();
     });
   });
@@ -255,10 +245,11 @@ describe('SettingsComponent', () => {
     const mockResponse = { success: true } as UserReponse;
     userServiceMock.editDarkMode.mockReturnValue(of(mockResponse));
 
+    // darkModeEnabled is false initially, so it should send true (the inverted value)
     component.onSwitchDarkMode();
 
     expect(userServiceMock.editDarkMode).toHaveBeenCalledWith({
-      dark_mode_enabled: component.darkModeEnabled,
+      dark_mode_enabled: true,
     });
   });
 
@@ -269,9 +260,9 @@ describe('SettingsComponent', () => {
     component.onSwitchDarkMode();
 
     expect(userServiceMock.editDarkMode).toHaveBeenCalledWith({
-      dark_mode_enabled: component.darkModeEnabled,
+      dark_mode_enabled: true,
     });
-    expect(component.error).toBe('some_error');
+    expect(component.error()).toBe('some_error');
   });
 
   it('should handle error response', () => {
@@ -280,9 +271,8 @@ describe('SettingsComponent', () => {
     component.onSwitchDarkMode();
 
     expect(userServiceMock.editDarkMode).toHaveBeenCalledWith({
-      dark_mode_enabled: component.darkModeEnabled,
+      dark_mode_enabled: true,
     });
-    expect(component.isConnected).toBe(false);
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
@@ -301,11 +291,11 @@ describe('SettingsComponent', () => {
     component.onSubmitEditLanguage(mockForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
-    expect(component.successLanguage).toBe(true);
+    expect(component.successLanguage()).toBe(true);
 
     vi.advanceTimersByTime(10000);
 
-    expect(component.successLanguage).toBe(false);
+    expect(component.successLanguage()).toBe(false);
   });
 
   it('should handle error response correctly', () => {
@@ -322,7 +312,7 @@ describe('SettingsComponent', () => {
     component.onSubmitEditLanguage(mockForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
-    expect(component.error).toBe('Some error');
+    expect(component.error()).toBe('Some error');
   });
 
   it('should handle HTTP error correctly', () => {
@@ -338,7 +328,6 @@ describe('SettingsComponent', () => {
     component.onSubmitEditLanguage(mockForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith(mockForm.form.value);
-    expect(component.isConnected).toBe(false);
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
@@ -360,11 +349,11 @@ describe('SettingsComponent', () => {
     component.onSubmitDeleteAccount(form);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
-    expect(component.successDelete).toBe(true);
+    expect(component.successDelete()).toBe(true);
 
     vi.advanceTimersByTime(10000);
 
-    expect(component.successDelete).toBe(false);
+    expect(component.successDelete()).toBe(false);
     expect(initServiceMock.logOut).toHaveBeenCalled();
   });
 
@@ -384,8 +373,8 @@ describe('SettingsComponent', () => {
     component.onSubmitDeleteAccount(form);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
-    expect(component.successDelete).toBe(false);
-    expect(component.error).toBe('error_message');
+    expect(component.successDelete()).toBe(false);
+    expect(component.error()).toBe('error_message');
   });
 
   it('should handle network error during account deletion', () => {
@@ -403,7 +392,6 @@ describe('SettingsComponent', () => {
     component.onSubmitDeleteAccount(form);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith(form.form.value);
-    expect(component.isConnected).toBe(false);
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
@@ -444,7 +432,11 @@ describe('SettingsComponent', () => {
 
     component.renderGoogleSignInButton();
 
-    expect(googleMock.accounts.id.renderButton).toHaveBeenCalledWith(buttonElement, {});
+    expect(googleMock.accounts.id.renderButton).toHaveBeenCalledWith(buttonElement, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+    });
 
     document.body.removeChild(buttonElement);
   });
@@ -529,10 +521,10 @@ describe('SettingsComponent', () => {
     expect(userServiceMock.associateGoogleAccount).toHaveBeenCalledWith({
       id_token: response.credential,
     });
-    expect(component.successGoogleAccount).toBe(true);
+    expect(component.successGoogleAccount()).toBe(true);
 
     vi.advanceTimersByTime(10000);
-    expect(component.successGoogleAccount).toBe(false);
+    expect(component.successGoogleAccount()).toBe(false);
   });
 
   it('should handle network error during Google account association', () => {
@@ -542,6 +534,6 @@ describe('SettingsComponent', () => {
 
     component.handleCredentialResponse({ credential: 'test_credential' });
 
-    expect(component.successGoogleAccount).toBe(false);
+    expect(component.successGoogleAccount()).toBe(false);
   });
 });

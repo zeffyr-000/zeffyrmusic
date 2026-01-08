@@ -1,14 +1,14 @@
 <table class="table table-hover">
   <thead></thead>
   <tbody>
-    @for (video of list; track video.key; let index = $index) {
+    @for (video of queueStore.items(); track video.key; let index = $index) {
     <tr
       role="button"
       tabindex="0"
       (click)="play(index, true)"
       (keydown.enter)="play(index, true)"
       (keydown.space)="play(index, true); $event.preventDefault()"
-      [class.active]="video.key === currentKey"
+      [class.active]="video.key === queueStore.currentKey()"
     >
       <td>
         <img
@@ -44,7 +44,7 @@
                 {{ 'supprimer_liste_lecture' | transloco }}
               </button>
             </li>
-            @if(isConnected){
+            @if(authStore.isAuthenticated()){
             <li ngbDropdownItem>
               <button
                 (click)="

@@ -1,46 +1,30 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
-import { BehaviorSubject } from 'rxjs';
-import { Video } from '../models/video.model';
 import { PlayerComponent } from './player.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { QueueStore, AuthStore } from '../store';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 
 describe('PlayerComponent', () => {
   let component: PlayerComponent;
   let fixture: ComponentFixture<PlayerComponent>;
-  let initService: InitService;
-  let playerService: PlayerService;
+  let playerServiceMock: {
+    lecture: ReturnType<typeof vi.fn>;
+    removeToPlaylist: ReturnType<typeof vi.fn>;
+  };
+  let queueStore: InstanceType<typeof QueueStore>;
+  let authStore: InstanceType<typeof AuthStore>;
 
   beforeEach(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const initServiceMock: any = { init: vi.fn() };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const playerServiceMock: any = {
-      launchYTApi: vi.fn(),
+    playerServiceMock = {
       lecture: vi.fn(),
       removeToPlaylist: vi.fn(),
     };
-    playerServiceMock.subjectCurrentPlaylistChange = new BehaviorSubject([]);
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject({
-      currentKey: 'test-key',
-      currentTitle: 'test-title',
-      currentArtist: 'test-artist',
-    });
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: 'test-pseudo',
-      idPerso: 'test-idPerso',
-      mail: 'test-mail',
-    });
 
     await TestBed.configureTestingModule({
       imports: [PlayerComponent],
       providers: [
-        {
-          provide: InitService,
-          useValue: initServiceMock,
-        },
+        getTranslocoTestingProviders(),
         {
           provide: PlayerService,
           useValue: playerServiceMock,
@@ -48,87 +32,107 @@ describe('PlayerComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
+
+    queueStore = TestBed.inject(QueueStore);
+    authStore = TestBed.inject(AuthStore);
+
+    queueStore.clear();
+    authStore.logout();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PlayerComponent);
     component = fixture.componentInstance;
-    initService = TestBed.inject(InitService);
-    playerService = TestBed.inject(PlayerService);
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    component.ngOnDestroy();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set list on playlist change', () => {
-    const list: Video[] = [
-      {
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [{ id_artist: '1', label: 'Artiste 1' }],
-        duree: '100',
-        id_playlist: '1',
-        key: 'XXX-XXX',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Titre album 1',
-      },
-    ];
-    playerService.subjectCurrentPlaylistChange.next(list);
-    expect(component.list).toEqual(list);
-  });
+  describe('Store integration', () => {
+    it('should have access to queueStore', () => {
+      expect(component.queueStore).toBeDefined();
+    });
 
-  it('should set currentKey on current key change', () => {
-    const data = {
-      currentKey: 'test-key',
-      currentTitle: 'test-title',
-      currentArtist: 'test-artist',
-    };
-    playerService.subjectCurrentKeyChange.next(data);
-    expect(component.currentKey).toEqual(data.currentKey);
-  });
+    it('should have access to authStore', () => {
+      expect(component.authStore).toBeDefined();
+    });
 
-  it('should set isConnected on connected change', () => {
-    const data = {
-      isConnected: true,
-      pseudo: 'test-pseudo',
-      idPerso: 'test-idPerso',
-      mail: 'test-mail',
-      darkModeEnabled: false,
-      language: 'en',
-    };
-    initService.subjectConnectedChange.next(data);
-    expect(component.isConnected).toEqual(data.isConnected);
-  });
+    it('should reflect queue items from store', () => {
+      expect(component.queueStore.items()).toEqual([]);
 
-  it('should call launchYTApi on init', () => {
-    component.ngAfterViewInit();
-    expect(playerService.launchYTApi).toHaveBeenCalled();
+      queueStore.setQueue(
+        [
+          {
+            id_video: '1',
+            key: 'key1',
+            titre: 'Video 1',
+            artiste: 'Artist 1',
+            duree: '3:00',
+            artists: [],
+            id_playlist: '1',
+            ordre: '1',
+            titre_album: 'Album 1',
+          },
+          {
+            id_video: '2',
+            key: 'key2',
+            titre: 'Video 2',
+            artiste: 'Artist 2',
+            duree: '4:00',
+            artists: [],
+            id_playlist: '1',
+            ordre: '2',
+            titre_album: 'Album 2',
+          },
+        ],
+        null
+      );
+
+      expect(component.queueStore.items().length).toBe(2);
+    });
+
+    it('should reflect current key from store', () => {
+      queueStore.setQueue(
+        [
+          {
+            id_video: '1',
+            key: 'key1',
+            titre: 'Video 1',
+            artiste: 'Artist 1',
+            duree: '3:00',
+            artists: [],
+            id_playlist: '1',
+            ordre: '1',
+            titre_album: 'Album 1',
+          },
+        ],
+        null
+      );
+
+      expect(component.queueStore.currentKey()).toBe('key1');
+    });
+
+    it('should reflect authentication state from store', () => {
+      expect(component.authStore.isAuthenticated()).toBe(false);
+
+      authStore.login(
+        { pseudo: 'test', mail: 'test@test.com', idPerso: '123' },
+        { darkModeEnabled: false, language: 'fr' }
+      );
+
+      expect(component.authStore.isAuthenticated()).toBe(true);
+    });
   });
 
   it('should call lecture on play', () => {
     component.play(0, true);
-    expect(playerService.lecture).toHaveBeenCalledWith(0, true);
+    expect(playerServiceMock.lecture).toHaveBeenCalledWith(0, true);
   });
 
   it('should call removeToPlaylist on removeToPlaylist', () => {
     component.removeToPlaylist(0);
-    expect(playerService.removeToPlaylist).toHaveBeenCalledWith(0);
-  });
-
-  it('should unsubscribe on destroy', () => {
-    vi.spyOn(component.subscription, 'unsubscribe');
-    vi.spyOn(component.subscriptionChangeKey, 'unsubscribe');
-    vi.spyOn(component.subscriptionConnected, 'unsubscribe');
-    component.ngOnDestroy();
-    expect(component.subscription.unsubscribe).toHaveBeenCalled();
-    expect(component.subscriptionChangeKey.unsubscribe).toHaveBeenCalled();
-    expect(component.subscriptionConnected.unsubscribe).toHaveBeenCalled();
+    expect(playerServiceMock.removeToPlaylist).toHaveBeenCalledWith(0);
   });
 });

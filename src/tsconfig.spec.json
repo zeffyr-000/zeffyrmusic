@@ -2,7 +2,8 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
-    "types": ["vitest/globals", "node"]
+    "types": ["vitest/globals", "node", "youtube"]
   },
-  "include": ["**/*.spec.ts", "**/*.d.ts", "setup-vitest.ts", "vitest.d.ts"]
+  "include": ["**/*.ts", "**/*.d.ts"],
+  "exclude": ["../dist/**/*", "../node_modules/**/*"]
 }

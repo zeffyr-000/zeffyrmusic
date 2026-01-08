@@ -37,7 +37,7 @@
     </tr>
   </thead>
   <tbody>
-    @for (playlist of listPlaylist; track playlist.id_playlist) {
+    @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
     <tr>
       <td>
         <a [routerLink]="['/playlist', playlist.id_playlist]">{{ playlist.titre }}</a>

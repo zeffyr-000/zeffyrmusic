@@ -10,7 +10,7 @@ import { UserPlaylist } from '../models/playlist.model';
 import { PlayerService } from '../services/player.service';
 import { HeaderComponent } from './header.component';
 import { NgForm } from '@angular/forms';
-import { BehaviorSubject, of } from 'rxjs';
+import { of } from 'rxjs';
 import { InitService } from '../services/init.service';
 import { UserVideo, VideoItem } from '../models/video.model';
 import { Component, NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
@@ -22,6 +22,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MockTestComponent } from '../mock-test.component';
 import { Directive, EventEmitter, Input, Output, ElementRef } from '@angular/core';
 import { AngularDraggableModule } from 'angular2-draggable';
+import { UiStore } from '../store/ui/ui.store';
+import type { MockPlayerService, MockInitService } from '../models/test-mocks.model';
 
 import { SearchService } from '../services/search.service';
 import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
@@ -34,9 +36,9 @@ import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search
 })
 class MockSearchBarComponent {}
 
-// Mock complet de la directive ngDraggable d'angular2-draggable
-// Ce mock remplace la directive réelle pour éviter les incompatibilités avec jsdom
-// qui ne supporte pas certaines opérations DOM utilisées par angular2-draggable
+// Mock for angular2-draggable ngDraggable directive
+// Replaces the real directive to avoid jsdom incompatibilities
+// with DOM operations used by angular2-draggable
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[ngDraggable]',
@@ -61,10 +63,8 @@ describe('HeaderComponent', () => {
   let googleAnalyticsServiceSpy: MockedObject<GoogleAnalyticsService>;
   let translocoService: TranslocoService;
   let activeModalSpy: MockedObject<NgbActiveModal>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let onUpdateSliderPlayerSpy: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let onUpdateVolumeSpy: any;
+  let onUpdateSliderPlayerSpy: ReturnType<typeof vi.spyOn>;
+  let onUpdateVolumeSpy: ReturnType<typeof vi.spyOn>;
   let modalService: NgbModal;
   let routerSpyObj: MockedObject<Router>;
   let routeSpyObj: MockedObject<ActivatedRoute>;
@@ -72,9 +72,8 @@ describe('HeaderComponent', () => {
   let modalServiceSpyObj: MockedObject<NgbModal>;
   let googleAnalyticsServiceSpyObj: MockedObject<GoogleAnalyticsService>;
   let activeModalSpyObj: MockedObject<NgbActiveModal>;
-  let initServiceMock: MockedObject<InitService>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let playerServiceMock: any;
+  let initServiceMock: Partial<MockInitService>;
+  let playerServiceMock: Partial<MockPlayerService>;
   let searchServiceMock: Partial<SearchService>;
 
   const searchResults1: SearchResults1 = {
@@ -112,7 +111,7 @@ describe('HeaderComponent', () => {
   };
 
   beforeEach(async () => {
-    // Création des mocks de services
+    // Create service mocks
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     initServiceMock = { loginSuccess: vi.fn(), logOut: vi.fn(), onMessageUnlog: vi.fn() } as any;
     playerServiceMock = {
@@ -140,54 +139,27 @@ describe('HeaderComponent', () => {
       createPlaylist: vi.fn(),
       logout: vi.fn(),
       editTitlePlaylist: vi.fn(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
+    } as MockedObject<UserService>;
 
     googleAnalyticsServiceSpyObj = { pageView: vi.fn() } as MockedObject<GoogleAnalyticsService>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    modalServiceSpyObj = { open: vi.fn(), dismissAll: vi.fn() } as any;
+    modalServiceSpyObj = { open: vi.fn(), dismissAll: vi.fn() } as MockedObject<NgbModal>;
     activeModalSpyObj = { dismiss: vi.fn() } as MockedObject<NgbActiveModal>;
 
-    // Initialiser les BehaviorSubjects
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: false,
-      pseudo: '',
-      idPerso: '',
-      mail: '',
-      darkModeEnabled: false,
-      language: 'en',
-    });
     initServiceMock.logOut = vi.fn();
-    playerServiceMock.subjectRepeatChange = new BehaviorSubject(false);
-    playerServiceMock.subjectRandomChange = new BehaviorSubject(false);
-    playerServiceMock.subjectIsPlayingChange = new BehaviorSubject(false);
-    playerServiceMock.subjectVolumeChange = new BehaviorSubject(0);
-    playerServiceMock.subjectPlayerRunningChange = new BehaviorSubject(false);
-    playerServiceMock.subjectListPlaylist = new BehaviorSubject([]);
-    playerServiceMock.subjectListFollow = new BehaviorSubject([]);
-    playerServiceMock.subjectAddVideo = new BehaviorSubject(null);
-    playerServiceMock.subjectCurrentKeyChange = new BehaviorSubject('XXXX-XXX');
-    playerServiceMock.player = { setVolume: vi.fn() };
   });
 
   beforeEach(async () => {
-    // Toujours initialiser les routes et autres objets
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    routerSpyObj = { navigate: vi.fn() } as any;
+    routerSpyObj = { navigate: vi.fn() } as MockedObject<Router>;
     routeSpyObj = {
       snapshot: {
         paramMap: {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          get: (key: string) => '123',
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          has: (key: string) => true,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          getAll: (key: string) => ['123'],
+          get: () => '123',
+          has: () => true,
+          getAll: () => ['123'],
           keys: ['id'],
         },
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
+    } as unknown as MockedObject<ActivatedRoute>;
 
     searchServiceMock = {
       fullSearch1: vi.fn().mockReturnValue(of(searchResults1)),
@@ -222,7 +194,7 @@ describe('HeaderComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    // Override le HeaderComponent pour remplacer AngularDraggableModule par le mock
+    // Override HeaderComponent to replace AngularDraggableModule with mock
     TestBed.overrideComponent(HeaderComponent, {
       remove: {
         imports: [AngularDraggableModule],
@@ -243,19 +215,15 @@ describe('HeaderComponent', () => {
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
 
-    // Créer le composant pour chaque test (isolation complète)
+    // Create component for each test (complete isolation)
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     onUpdateSliderPlayerSpy = vi.spyOn(component, 'onUpdateSliderPlayer');
     onUpdateVolumeSpy = vi.spyOn(component, 'onUpdateVolume');
     fixture.detectChanges();
 
-    // Réinitialiser les propriétés du composant à leur état initial
+    // Reset component properties to initial state
     component.onDragingPlayer = false;
-    component.valueSliderPlayer = 0;
-    component.currentTimeStr = '0:00';
-    component.totalTimeStr = '0:00';
-    component.loadVideo = 0;
     component.isRegistered = false;
     component.error = '';
     component.isSuccess = false;
@@ -266,8 +234,8 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should update values when subjectAddVideo emits', () => {
-    // Préparez les données de test
+  it('should update values when uiStore.addVideoData changes', () => {
+    // Prepare test data
     const data = {
       key: 'XXXX-XXX',
       artist: 'testArtist',
@@ -275,40 +243,44 @@ describe('HeaderComponent', () => {
       duration: 100,
     } as VideoItem;
 
-    // Créez un espion pour openModal
+    // Create spy for openModal
     const openModalSpy = vi.spyOn(component, 'openModal');
 
-    // Simulez l'émission d'une valeur par subjectAddVideo
-    component.playerService.subjectAddVideo.next(data);
+    // Simulate modal opening via UiStore
+    const uiStore = TestBed.inject(UiStore);
+    uiStore.openAddVideoModal(data);
 
-    // Vérifiez si les valeurs ont été mises à jour correctement
+    // Trigger effect detection
+    fixture.detectChanges();
+
+    // Verify values were updated correctly
     expect(component.addKey).toBe(data.key);
     expect(component.addArtist).toBe(data.artist);
     expect(component.addTitle).toBe(data.title);
     expect(component.addDuration).toBe(data.duration);
 
-    // Vérifiez si openModal a été appelé
+    // Verify openModal was called
     expect(openModalSpy).toHaveBeenCalled();
   });
 
   it('should call requestFullscreen when goFullscreen is called', () => {
-    // Créez un faux HTMLElement avec une méthode requestFullscreen espionnée
+    // Create fake HTMLElement with spied requestFullscreen method
     const element = { requestFullscreen: vi.fn() };
 
-    // Remplacez document.getElementById par une fonction qui renvoie le faux HTMLElement
+    // Replace document.getElementById with function returning fake HTMLElement
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getElementByIdSpy = vi.spyOn(document, 'getElementById').mockReturnValue(element as any);
 
-    // Appeler goFullscreen
+    // Call goFullscreen
     component.goFullscreen('testId');
 
-    // Vérifiez si getElementById a été appelé avec le bon argument
+    // Verify getElementById was called with correct argument
     expect(document.getElementById).toHaveBeenCalledWith('testId');
 
-    // Vérifiez si requestFullscreen a été appelé sur l'élément
+    // Verify requestFullscreen was called on element
     expect(element.requestFullscreen).toHaveBeenCalled();
 
-    // Restaurer le spy pour ne pas affecter les tests suivants
+    // Restore spy to not affect following tests
     getElementByIdSpy.mockRestore();
   });
 
@@ -408,9 +380,9 @@ describe('HeaderComponent', () => {
       expect(playerService.updatePositionSlider).not.toHaveBeenCalled();
     });
 
-    it('should call onUpdateVolume when onDragMovingVolume is called', () => {
+    it('should call updateVolume when onDragMovingVolume is called', () => {
       component.onDragMovingVolume({ x: 50 });
-      expect(playerService.player.setVolume).toHaveBeenCalledWith(50);
+      expect(playerService.updateVolume).toHaveBeenCalledWith(50);
     });
 
     it('should call onUpdateVolume when onDragEndVolume is called', () => {
@@ -521,7 +493,7 @@ describe('HeaderComponent', () => {
       component.onLogIn(form, activeModalSpy, null);
 
       expect(userService.login).toHaveBeenCalledWith(form.form.value, null);
-      expect(component.isConnected).toBe(true);
+      expect(component.authStore.isAuthenticated()).toBe(true);
       expect(initService.loginSuccess).toHaveBeenCalledWith(
         pseudo,
         id_perso,
@@ -529,7 +501,7 @@ describe('HeaderComponent', () => {
         darkModeEnabled,
         language
       );
-      expect(component.mail).toBe(mail);
+      expect(component.authStore.mail()).toBe(mail);
       expect(playerService.onLoadListLogin).toHaveBeenCalledWith(
         liste_playlist,
         liste_suivi,
@@ -619,7 +591,11 @@ describe('HeaderComponent', () => {
       client_id: environment.GOOGLE_CLIENT_ID,
       callback: expect.any(Function),
     });
-    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(mockElement, {});
+    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(mockElement, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+    });
 
     document.body.removeChild(mockElement);
   });
@@ -646,7 +622,11 @@ describe('HeaderComponent', () => {
       client_id: environment.GOOGLE_CLIENT_ID,
       callback: expect.any(Function),
     });
-    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(mockElement, {});
+    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(mockElement, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+    });
 
     document.body.removeChild(mockElement);
   });

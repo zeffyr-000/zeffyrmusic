@@ -3,45 +3,32 @@ import { TestBed } from '@angular/core/testing';
 
 import { AuthGuard } from './auth-guard.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { InitService } from './init.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { AuthStore } from '../store';
+import { getTranslocoTestingProviders } from '../transloco-testing';
 
 describe('AuthGuardService', () => {
   let authGuard: AuthGuard;
-
-  let initService: InitService;
+  let authStore: InstanceType<typeof AuthStore>;
   let router: MockedObject<Router>;
 
   beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const initServiceMock: any = { init: vi.fn() };
-    initServiceMock.getIsConnected = vi.fn().mockReturnValue(true);
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: 'test-pseudo',
-      idPerso: 'test-idPerso',
-      mail: 'test-mail',
-    });
     const routerSpy = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [
+        getTranslocoTestingProviders(),
         provideHttpClient(),
         withInterceptorsFromDi(),
         AuthGuard,
-        {
-          provide: InitService,
-          useValue: initServiceMock,
-        },
         { provide: Router, useValue: routerSpy },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     authGuard = TestBed.inject(AuthGuard);
-    initService = TestBed.inject(InitService);
+    authStore = TestBed.inject(AuthStore);
     router = TestBed.inject(Router) as MockedObject<Router>;
   });
 
@@ -50,13 +37,16 @@ describe('AuthGuardService', () => {
   });
 
   it('should allow the authenticated user to access app', () => {
-    initService.getIsConnected = vi.fn().mockReturnValue(true);
+    authStore.login(
+      { pseudo: 'test', idPerso: '123', mail: 'test@test.com' },
+      { darkModeEnabled: false, language: 'fr' }
+    );
 
     expect(authGuard.canActivate()).toBe(true);
   });
 
   it('should redirect the unauthenticated user to home page', () => {
-    initService.getIsConnected = vi.fn().mockReturnValue(false);
+    authStore.logout();
 
     const result = authGuard.canActivate();
 

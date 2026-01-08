@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, TemplateRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, TemplateRef, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -6,26 +6,25 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreatePlaylistResponse, UserReponse } from '../models/user.model';
 import { PlayerService } from '../services/player.service';
 import { UserService } from '../services/user.service';
-import { Subscription } from 'rxjs';
-import { UserPlaylist } from '../models/playlist.model';
 import { RouterLink } from '@angular/router';
+import { UserDataStore } from '../store/user-data/user-data.store';
 
 @Component({
   selector: 'app-my-playlists',
   templateUrl: './my-playlists.component.html',
   styleUrl: './my-playlists.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, RouterLink, TranslocoPipe],
 })
-export class MyPlaylistsComponent implements OnInit, OnDestroy {
+export class MyPlaylistsComponent implements OnInit {
   playerService = inject(PlayerService);
   private titleService = inject(Title);
   private readonly translocoService = inject(TranslocoService);
+  readonly userDataStore = inject(UserDataStore);
   userService = inject(UserService);
   modalService = inject(NgbModal);
 
   error: string;
-  listPlaylist: UserPlaylist[];
-  subscriptionListPlaylist: Subscription;
 
   currentIdPlaylistEdit: string;
   playlistTitle: string;
@@ -34,10 +33,6 @@ export class MyPlaylistsComponent implements OnInit, OnDestroy {
     this.titleService.setTitle(
       this.translocoService.translate('mes_playlists') + ' - Zeffyr Music'
     );
-
-    this.subscriptionListPlaylist = this.playerService.subjectListPlaylist.subscribe(data => {
-      this.listPlaylist = data;
-    });
   }
 
   onCreatePlaylist(form: NgForm) {
@@ -102,9 +97,5 @@ export class MyPlaylistsComponent implements OnInit, OnDestroy {
   onDeletePlaylist(modal: NgbActiveModal) {
     this.playerService.deletePlaylist(this.currentIdPlaylistEdit);
     modal.dismiss();
-  }
-
-  ngOnDestroy() {
-    this.subscriptionListPlaylist.unsubscribe();
   }
 }

@@ -8,13 +8,17 @@ import {
   inject,
 } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, catchError, map, Observable, of, Subject, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 import { UserPlaylist } from '../models/playlist.model';
 import { UserVideo, Video } from '../models/video.model';
 import { FollowItem } from '../models/follow.model';
 import { HomeAlbum } from '../models/album.model';
+import { AuthStore } from '../store';
+import { UserDataStore } from '../store/user-data/user-data.store';
+import { QueueStore } from '../store/queue/queue.store';
+import { UiStore } from '../store/ui/ui.store';
 
 export interface PingResponse {
   est_connecte: boolean;
@@ -34,6 +38,11 @@ export interface PingResponse {
 const HOME_KEY = makeStateKey<{ top: HomeAlbum[]; top_albums: HomeAlbum[] }>('homeData');
 const PING_KEY = makeStateKey<PingResponse>('pingData');
 
+/**
+ * InitService - Application initialization and session management
+ *
+ * Handles bootstrap, authentication state and SSR TransferState.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -43,53 +52,12 @@ export class InitService {
   private readonly httpClient = inject(HttpClient);
   private transferState = inject(TransferState);
   private readonly translocoService = inject(TranslocoService);
+  private readonly authStore = inject(AuthStore);
+  private readonly userDataStore = inject(UserDataStore);
+  private readonly queueStore = inject(QueueStore);
+  private readonly uiStore = inject(UiStore);
 
-  private isConnected = false;
-  private pseudo = '';
-  private idPerso = '';
-  private mail = '';
-  private darkModeEnabled = false;
-  private language = 'fr';
-  private changeIsConnectedCalled = false;
   private isBrowser: boolean;
-
-  subjectConnectedChange: BehaviorSubject<{
-    isConnected: boolean;
-    pseudo: string;
-    idPerso: string;
-    mail: string;
-    darkModeEnabled: boolean;
-    language: string;
-  }> = new BehaviorSubject<{
-    isConnected: boolean;
-    pseudo: string;
-    idPerso: string;
-    mail: string;
-    darkModeEnabled: boolean;
-    language: string;
-  }>({
-    isConnected: this.isConnected,
-    pseudo: this.pseudo,
-    idPerso: this.idPerso,
-    mail: this.mail,
-    darkModeEnabled: this.darkModeEnabled,
-    language: this.language,
-  });
-
-  subjectMessageUnlog: Subject<boolean> = new Subject<boolean>();
-  subjectInitializePlaylist: Subject<{
-    listPlaylist: UserPlaylist[];
-    listFollow: FollowItem[];
-    listVideo: Video[];
-    tabIndex: number[];
-    listLikeVideo: UserVideo[];
-  }> = new Subject<{
-    listPlaylist: UserPlaylist[];
-    listFollow: FollowItem[];
-    listVideo: Video[];
-    tabIndex: number[];
-    listLikeVideo: UserVideo[];
-  }>();
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -121,49 +89,37 @@ export class InitService {
   }
 
   private handlePingResponse(data: PingResponse): void {
-    this.isConnected = data.est_connecte;
     let listPlaylist: UserPlaylist[] = [];
     let listFollow: FollowItem[] = [];
     let listLikeVideo: UserVideo[] = [];
 
-    if (this.isConnected) {
-      this.pseudo = data.pseudo;
-      this.idPerso = data.id_perso;
-      this.mail = data.mail;
-      this.darkModeEnabled = data.dark_mode_enabled;
-      this.language = data.language;
-
+    if (data.est_connecte) {
       listPlaylist = data.liste_playlist;
       listFollow = data.liste_suivi;
       listLikeVideo = data.like_video;
+
+      this.authStore.login(
+        { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail },
+        {
+          darkModeEnabled: data.dark_mode_enabled,
+          language: data.language as 'fr' | 'en',
+        }
+      );
     } else {
-      this.pseudo = '';
-      this.idPerso = '';
-      this.mail = '';
+      this.authStore.initializeAnonymous();
     }
 
-    this.onChangeIsConnected();
-
-    this.subjectInitializePlaylist.next({
-      listPlaylist,
-      listFollow,
-      listVideo: data.liste_video,
-      tabIndex: data.tab_index,
-      listLikeVideo,
+    this.userDataStore.initialize({
+      playlists: listPlaylist,
+      follows: listFollow,
+      likedVideos: listLikeVideo,
+      initialVideos: data.liste_video,
+      initialTabIndex: data.tab_index,
     });
-  }
 
-  onChangeIsConnected() {
-    this.changeIsConnectedCalled = true;
-
-    this.subjectConnectedChange.next({
-      isConnected: this.isConnected,
-      pseudo: this.pseudo,
-      idPerso: this.idPerso,
-      mail: this.mail,
-      darkModeEnabled: this.darkModeEnabled,
-      language: this.language,
-    });
+    if (data.liste_video && data.liste_video.length > 0) {
+      this.queueStore.setQueue(data.liste_video, data.liste_video[0]?.id_playlist ?? null, null);
+    }
   }
 
   loginSuccess(
@@ -173,36 +129,23 @@ export class InitService {
     darkModeEnabled: boolean,
     language: string
   ) {
-    this.isConnected = true;
-    this.idPerso = idPerso;
-    this.pseudo = pseudo;
-    this.mail = mail;
-    this.darkModeEnabled = darkModeEnabled;
-    this.language = language;
-
-    this.onChangeIsConnected();
+    this.authStore.login(
+      { pseudo, idPerso, mail },
+      { darkModeEnabled, language: language as 'fr' | 'en' }
+    );
   }
 
   logOut() {
-    this.isConnected = false;
-    this.idPerso = '';
-    this.pseudo = '';
-    this.mail = '';
-    this.darkModeEnabled = false;
-    this.language = 'fr';
+    this.authStore.logout();
 
     if (this.isBrowser) {
       document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
     }
-
-    this.onChangeIsConnected();
   }
 
   onMessageUnlog() {
-    this.subjectMessageUnlog.next(true);
-
-    this.isConnected = false;
-    this.onChangeIsConnected();
+    this.uiStore.showSessionExpired();
+    this.authStore.logout();
   }
 
   getHomeInit(): Observable<{ top: HomeAlbum[]; top_albums: HomeAlbum[] }> {
@@ -221,17 +164,5 @@ export class InitService {
           }
         })
       );
-  }
-
-  getIsConnected(): boolean | Observable<boolean> {
-    if (this.changeIsConnectedCalled) {
-      return this.isConnected;
-    } else {
-      return this.subjectConnectedChange.asObservable().pipe(
-        map(data => {
-          return data.isConnected;
-        })
-      );
-    }
   }
 }

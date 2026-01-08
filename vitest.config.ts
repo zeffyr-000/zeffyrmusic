@@ -14,11 +14,22 @@ export default defineConfig({
       src: path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    fs: {
+      allow: ['src'],
+    },
+    watch: {
+      ignored: ['**/dist/**'],
+    },
+  },
+  optimizeDeps: {
+    exclude: ['dist'],
+    entries: ['src/**/*.ts', '!src/**/*.spec.ts'],
+  },
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/setup-vitest.ts'],
-    include: ['src/**/*.spec.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],

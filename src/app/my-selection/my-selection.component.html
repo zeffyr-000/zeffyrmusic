@@ -1,12 +1,12 @@
 <h1 class="h3">{{ 'ma_selection' | transloco }}</h1>
 
-@if(listFollow.length===0){
+@if(userDataStore.follows().length===0){
 <p class="bg-info p-2 rounded">{{ 'selection_empty' | transloco }}</p>
 }
 
 <div class="card card-body mt-3 border-0">
   <div class="row row-cols-md-3 row-cols-sm-2 row-cols-2 row-cols-xl-5">
-    @for (playlist of listFollow; track playlist.id_playlist) {
+    @for (playlist of userDataStore.follows(); track playlist.id_playlist) {
     <div class="col m-0 mt-1 mb-1">
       <div class="card h-100">
         <a

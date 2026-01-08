@@ -45,6 +45,7 @@
   "mot_de_passe_repeter": "Répéter nouveau mot de passe",
   "mot_de_passe_confirmer_invalide": "La confirmation du mot de passe est incorrecte",
   "mot_de_passe_modifie_succes": "Votre mot de passe a été modifié",
+  "mail_modifie_succes": "Votre adresse e-mail a été modifiée",
   "ancien_passe_incorrect": "Ancien mot de passe incorrect",
   "mot_de_passe_invalide": "Ce mot de passe est invalide (minimum 4 caractères)",
   "settings": "Paramètres",

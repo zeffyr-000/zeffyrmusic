@@ -1,4 +1,13 @@
-import { Component, makeStateKey, OnInit, PLATFORM_ID, TransferState, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  makeStateKey,
+  OnInit,
+  PLATFORM_ID,
+  TransferState,
+  inject,
+} from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -16,6 +25,7 @@ const RANDOM_TOP_KEY = makeStateKey<HomeAlbum[]>('randomTop');
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, DefaultImageDirective, TranslocoPipe],
 })
 export class HomeComponent implements OnInit {
@@ -28,6 +38,7 @@ export class HomeComponent implements OnInit {
   private readonly translocoService = inject(TranslocoService);
   private transferState = inject(TransferState);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   isLoading = false;
 
@@ -88,9 +99,12 @@ export class HomeComponent implements OnInit {
         if (!isPlatformServer(this.platformId)) {
           this.googleAnalyticsService.pageView('/');
         }
+
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }

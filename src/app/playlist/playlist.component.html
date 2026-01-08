@@ -37,20 +37,21 @@
         }
 
         <div>
-          @if(idPlaylist !== currentIdPlaylistPlaying || !isPlaying) {
+          @if(idPlaylist !== currentIdPlaylistPlaying() || !playerStore.isPlaying()) {
           <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
             <span class="material-icons">play_circle_outline</span>
             {{ 'lire' | transloco }}
           </button>
-          } @if(idPlaylist === currentIdPlaylistPlaying && isPlaying) {
+          } @if(idPlaylist === currentIdPlaylistPlaying() && playerStore.isPlaying()) {
           <button class="btn btn-primary btn-lg" (click)="pausePlaylist()">
             <span class="material-icons">pause_circle_outline</span>
             {{ 'pause' | transloco }}
           </button>
-          } @if(isConnected && idPersoOwner!==idPerso && idPlaylist !=='') {
+          } @if(authStore.isAuthenticated() && idPersoOwner!==authStore.idPerso() && idPlaylist
+          !=='') {
           <button
             class="btn btn-secondary btn-lg"
-            [class.active]="isFollower"
+            [class.active]="isFollower()"
             (click)="switchFollow()"
           >
             {{ 'suivre' | transloco }}
@@ -102,7 +103,7 @@
         <tr
           [attr.data-id-video]="video.key"
           (click)="runPlaylist(i)"
-          [class.active]="video.key === currentKey"
+          [class.active]="video.key === queueStore.currentKey()"
           itemprop="track"
           itemscope
           itemtype="http://schema.org/MusicRecording"
@@ -129,19 +130,23 @@
           </td>
           <td>
             <div class="d-flex">
-              @if(isConnected && playerService.isLiked(video.key)) {
+              @if(authStore.isAuthenticated() && userLibraryService.isLiked(video.key)) {
               <button
                 type="button"
                 class="btn btn-sm btn-link text-decoration-none"
-                (click)="$event.stopPropagation(); playerService.removeLike(video.key)"
+                (click)="
+                  $event.stopPropagation(); userLibraryService.removeLike(video.key).subscribe()
+                "
               >
                 <span class="material-icons">favorite</span>
               </button>
-              } @if(isConnected && !playerService.isLiked(video.key)) {
+              } @if(authStore.isAuthenticated() && !userLibraryService.isLiked(video.key)) {
               <button
                 type="button"
                 class="btn btn-sm btn-link text-decoration-none text-body"
-                (click)="$event.stopPropagation(); playerService.addLike(video.key)"
+                (click)="
+                  $event.stopPropagation(); userLibraryService.addLike(video.key).subscribe()
+                "
               >
                 <span class="material-icons">favorite_border</span>
               </button>
@@ -174,7 +179,7 @@
                       {{ 'ajouter_liste_en_cours' | transloco }}
                     </button>
                   </li>
-                  @if(isConnected) {
+                  @if(authStore.isAuthenticated()) {
                   <li ngbDropdownItem>
                     <button
                       (click)="addVideo(video.key, video.artiste, video.titre, video.duree)"
@@ -184,7 +189,7 @@
                       {{ 'ajouter_a_une_playlist' | transloco }}
                     </button>
                   </li>
-                  } @if(isConnected && idPersoOwner===idPerso) {
+                  } @if(authStore.isAuthenticated() && idPersoOwner===authStore.idPerso()) {
                   <li ngbDropdownItem>
                     <button
                       (click)="removeVideo(video.id_video)"

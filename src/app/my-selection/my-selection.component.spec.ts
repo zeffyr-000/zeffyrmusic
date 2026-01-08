@@ -2,12 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MySelectionComponent } from './my-selection.component';
 import { PlayerService } from '../services/player.service';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, Subscription } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
-import { InitService } from '../services/init.service';
 import { AuthGuard } from '../services/auth-guard.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { FollowItem } from '../models/follow.model';
+import { UserDataStore } from '../store/user-data/user-data.store';
 
 describe('MySelectionComponent', () => {
   let component: MySelectionComponent;
@@ -15,45 +13,30 @@ describe('MySelectionComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let playerServiceMock: any;
   let translocoService: TranslocoService;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let initServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let initService: InitService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let playerService: PlayerService;
+  let userDataStore: InstanceType<typeof UserDataStore>;
 
   beforeEach(async () => {
     playerServiceMock = { deleteFollow: vi.fn() };
-    initServiceMock = { loginSuccess: vi.fn(), logOut: vi.fn(), onMessageUnlog: vi.fn() };
 
     const authGuardMock = { canActivate: vi.fn() };
-    playerServiceMock.subjectListFollow = new BehaviorSubject([]);
-
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: '',
-      idPerso: '',
-      mail: '',
-      darkModeEnabled: false,
-      language: 'fr',
-    });
-    initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [MySelectionComponent],
       providers: [
         getTranslocoTestingProviders(),
-        { provide: InitService, useValue: initServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: AuthGuard, useValue: authGuardMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    initService = TestBed.inject(InitService);
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
     playerService = TestBed.inject(PlayerService);
+    userDataStore = TestBed.inject(UserDataStore);
+    userDataStore.reset();
   });
 
   beforeEach(() => {
@@ -71,11 +54,12 @@ describe('MySelectionComponent', () => {
     expect(component['titleService'].getTitle()).toBe('My lightbox - Zeffyr Music');
   });
 
-  it('should subscribe to playerService.subjectListFollow on init', () => {
-    const followItems = [{ id_playlist: '1', titre: 'Test Follow Item' }];
-    playerServiceMock.subjectListFollow.next(followItems);
-    component.ngOnInit();
-    expect(component.listFollow).toEqual(followItems);
+  it('should get follows from userDataStore', () => {
+    const followItems = [
+      { id_playlist: '1', titre: 'Test Follow Item', artiste: '', url_image: '', id_top: '' },
+    ];
+    userDataStore.setFollows(followItems);
+    expect(component.userDataStore.follows()).toEqual(followItems);
   });
 
   it('should call deleteFollow on playerService when onDeleteFollow is called', () => {
@@ -84,33 +68,23 @@ describe('MySelectionComponent', () => {
     expect(playerServiceMock.deleteFollow).toHaveBeenCalledWith(idPlaylist);
   });
 
-  it('should unsubscribe from playerService.subjectListFollow on destroy', () => {
-    component.subscriptionListFollow = new Subscription();
-    vi.spyOn(component.subscriptionListFollow, 'unsubscribe');
-    component.ngOnDestroy();
-    expect(component.subscriptionListFollow.unsubscribe).toHaveBeenCalled();
-  });
-
   it('should translate title correctly on init', () => {
     vi.spyOn(translocoService, 'translate').mockReturnValue('Ma sélection');
     component.ngOnInit();
     expect(component['titleService'].getTitle()).toBe('Ma sélection - Zeffyr Music');
   });
 
-  it('should handle empty follow list on init', () => {
-    const followItems: FollowItem[] = [];
-    playerServiceMock.subjectListFollow.next(followItems);
-    component.ngOnInit();
-    expect(component.listFollow).toEqual(followItems);
+  it('should handle empty follow list', () => {
+    userDataStore.reset();
+    expect(component.userDataStore.follows()).toEqual([]);
   });
 
-  it('should handle multiple follow items on init', () => {
+  it('should handle multiple follow items', () => {
     const followItems = [
-      { id_playlist: '1', titre: 'Test Follow Item 1' },
-      { id_playlist: '2', titre: 'Test Follow Item 2' },
+      { id_playlist: '1', titre: 'Test Follow Item 1', artiste: '', url_image: '', id_top: '' },
+      { id_playlist: '2', titre: 'Test Follow Item 2', artiste: '', url_image: '', id_top: '' },
     ];
-    playerServiceMock.subjectListFollow.next(followItems);
-    component.ngOnInit();
-    expect(component.listFollow).toEqual(followItems);
+    userDataStore.setFollows(followItems);
+    expect(component.userDataStore.follows()).toEqual(followItems);
   });
 });

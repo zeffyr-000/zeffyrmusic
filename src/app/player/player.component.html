@@ -1,18 +1,18 @@
 <div id="container_player">
-  <youtube-player #youtubePlayer id="player" loadApi="false" disablePlaceholder></youtube-player>
+  <div id="player"></div>
 </div>
 <div id="liste_en_cours_content" class="card panel-content border-0">
   <table id="liste_en_cours" class="table table-hover table-sm">
     <thead></thead>
     <tbody>
-      @for (video of list; track video.id_video; let index = $index) {
+      @for (video of queueStore.items(); track video.id_video; let index = $index) {
       <tr
         role="button"
         tabindex="0"
         (click)="play(index, true)"
         (keydown.enter)="play(index, true)"
         (keydown.space)="play(index, true); $event.preventDefault()"
-        [class.active]="video.key === currentKey"
+        [class.active]="video.key === queueStore.currentKey()"
       >
         <td>
           <img
@@ -48,7 +48,7 @@
                   {{ 'supprimer_liste_lecture' | transloco }}
                 </button>
               </li>
-              @if(isConnected) {
+              @if(authStore.isAuthenticated()) {
               <li ngbDropdownItem>
                 <button
                   (click)="

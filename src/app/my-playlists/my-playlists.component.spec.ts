@@ -2,15 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MyPlaylistsComponent } from './my-playlists.component';
 import { PlayerService } from '../services/player.service';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject, of } from 'rxjs';
+import { of } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
-import { InitService } from '../services/init.service';
 import { AuthGuard } from '../services/auth-guard.service';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CreatePlaylistResponse } from '../models/user.model';
+import { UserDataStore } from '../store/user-data/user-data.store';
 
 describe('MyPlaylistsComponent', () => {
   let component: MyPlaylistsComponent;
@@ -18,10 +18,6 @@ describe('MyPlaylistsComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let playerServiceMock: any;
   let translocoService: TranslocoService;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let initServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let initService: InitService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let playerService: PlayerService;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,6 +26,7 @@ describe('MyPlaylistsComponent', () => {
   let modalServiceMock: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let activeModalSpyObj: any;
+  let userDataStore: InstanceType<typeof UserDataStore>;
 
   beforeEach(async () => {
     playerServiceMock = {
@@ -38,29 +35,16 @@ describe('MyPlaylistsComponent', () => {
       deletePlaylist: vi.fn(),
       editPlaylistTitle: vi.fn(),
     };
-    initServiceMock = { loginSuccess: vi.fn(), logOut: vi.fn(), onMessageUnlog: vi.fn() };
     userServiceMock = { createPlaylist: vi.fn(), editTitlePlaylist: vi.fn() };
     modalServiceMock = { open: vi.fn() };
 
     const authGuardMock = { canActivate: vi.fn() };
     activeModalSpyObj = { dismiss: vi.fn() };
-    playerServiceMock.subjectListPlaylist = new BehaviorSubject([]);
-
-    initServiceMock.subjectConnectedChange = new BehaviorSubject({
-      isConnected: true,
-      pseudo: '',
-      idPerso: '',
-      mail: '',
-      darkModeEnabled: false,
-      language: 'fr',
-    });
-    initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [FormsModule, MyPlaylistsComponent],
       providers: [
         getTranslocoTestingProviders(),
-        { provide: InitService, useValue: initServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
@@ -70,10 +54,11 @@ describe('MyPlaylistsComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    initService = TestBed.inject(InitService);
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
     playerService = TestBed.inject(PlayerService);
+    userDataStore = TestBed.inject(UserDataStore);
+    userDataStore.reset();
   });
 
   beforeEach(() => {
