@@ -9,7 +9,7 @@ import {
   effect,
   signal,
 } from '@angular/core';
-import { form, Field, required, minLength, email } from '@angular/forms/signals';
+import { form, FormField, required, minLength, email } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import {
   NgbActiveModal,
@@ -50,7 +50,7 @@ import '../models/google-identity.model';
     SearchBarComponent,
     SwipeDownDirective,
     NgbTooltip,
-    Field,
+    FormField,
     TranslocoPipe,
     AngularDraggableModule,
   ],
@@ -96,15 +96,15 @@ export class HeaderComponent {
   readonly registerForm = form(this.registerModel, schemaPath => {
     required(schemaPath.pseudo);
     minLength(schemaPath.pseudo, 4, {
-      message: this.translocoService.translate('validation_minlength', { min: 4 }),
+      message: () => this.translocoService.translate('validation_minlength', { min: 4 }),
     });
     required(schemaPath.mail);
     email(schemaPath.mail, {
-      message: this.translocoService.translate('validation_email_invalid'),
+      message: () => this.translocoService.translate('validation_email_invalid'),
     });
     required(schemaPath.password);
     minLength(schemaPath.password, 4, {
-      message: this.translocoService.translate('validation_password_minlength', { min: 4 }),
+      message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
     });
   });
 
@@ -112,11 +112,11 @@ export class HeaderComponent {
   readonly loginForm = form(this.loginModel, schemaPath => {
     required(schemaPath.pseudo);
     minLength(schemaPath.pseudo, 4, {
-      message: this.translocoService.translate('validation_minlength', { min: 4 }),
+      message: () => this.translocoService.translate('validation_minlength', { min: 4 }),
     });
     required(schemaPath.password);
     minLength(schemaPath.password, 4, {
-      message: this.translocoService.translate('validation_password_minlength', { min: 4 }),
+      message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
     });
   });
 
@@ -124,7 +124,7 @@ export class HeaderComponent {
   readonly resetPassForm = form(this.resetPassModel, schemaPath => {
     required(schemaPath.mail);
     email(schemaPath.mail, {
-      message: this.translocoService.translate('validation_email_invalid'),
+      message: () => this.translocoService.translate('validation_email_invalid'),
     });
   });
 

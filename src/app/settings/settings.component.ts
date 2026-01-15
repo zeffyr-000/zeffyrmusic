@@ -8,7 +8,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { form, Field, required, email, minLength, validate } from '@angular/forms/signals';
+import { form, FormField, required, email, minLength, validate } from '@angular/forms/signals';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UserReponse } from '../models/user.model';
 import { UserService } from '../services/user.service';
@@ -24,7 +24,7 @@ import '../models/google-identity.model';
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Field, TranslocoPipe],
+  imports: [FormField, TranslocoPipe],
 })
 export class SettingsComponent implements OnInit, AfterViewInit {
   activeModal = inject(NgbActiveModal);
@@ -53,7 +53,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     required(schemaPath.passwordold);
     required(schemaPath.password1);
     minLength(schemaPath.password1, 4, {
-      message: this.translocoService.translate('validation_password_minlength', { min: 4 }),
+      message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
     });
     required(schemaPath.password2);
     validate(schemaPath.password2, ({ value, valueOf }) => {
@@ -71,7 +71,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   readonly editMailForm = form(this.editMailModel, schemaPath => {
     required(schemaPath.mail);
     email(schemaPath.mail, {
-      message: this.translocoService.translate('validation_email_invalid'),
+      message: () => this.translocoService.translate('validation_email_invalid'),
     });
   });
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 
-import { form, Field, required, minLength, validate } from '@angular/forms/signals';
+import { form, FormField, required, minLength, validate } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { UserService } from '../services/user.service';
@@ -8,7 +8,7 @@ import { UserService } from '../services/user.service';
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [Field, TranslocoPipe],
+  imports: [FormField, TranslocoPipe],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +26,7 @@ export class ResetPasswordComponent implements OnInit {
   readonly resetForm = form(this.formModel, schemaPath => {
     required(schemaPath.password);
     minLength(schemaPath.password, 6, {
-      message: this.transloco.translate('validation_password_minlength', { min: 6 }),
+      message: () => this.transloco.translate('validation_password_minlength', { min: 6 }),
     });
     required(schemaPath.confirmPassword);
     validate(schemaPath.confirmPassword, ({ value, valueOf }) => {

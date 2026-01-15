@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { form, Field, required } from '@angular/forms/signals';
+import { form, FormField, required } from '@angular/forms/signals';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,7 +21,7 @@ import { UserDataStore } from '../store/user-data/user-data.store';
   templateUrl: './my-playlists.component.html',
   styleUrl: './my-playlists.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Field, RouterLink, TranslocoPipe],
+  imports: [FormField, RouterLink, TranslocoPipe],
 })
 export class MyPlaylistsComponent implements OnInit {
   playerService = inject(PlayerService);

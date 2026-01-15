@@ -154,22 +154,16 @@ npm run cypress:open
 
 ## 📦 Building
 
+### Development Build
+
+```bash
+ng build
+```
+
 ### Production Build
 
 ```bash
-npm run build
-```
-
-### Production Build without SSR
-
-```bash
-npm run build:no-ssr
-```
-
-### Staging Build
-
-```bash
-npm run build:staging
+ng build --configuration production
 ```
 
 Build artifacts are stored in the `dist/` directory.
@@ -263,22 +257,13 @@ Translation files are in `src/assets/i18n/`.
 
 ---
 
-## 🤝 Contributing
+## 🛠️ Built With
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## Acknowledgments
-
-- [Angular Team](https://angular.dev/) for the amazing framework
-- [NgRx Team](https://ngrx.io/) for signal stores
-- [ng-bootstrap Team](https://ng-bootstrap.github.io/) for Angular Bootstrap components
-- [RxJS Team](https://rxjs.dev/) for reactive programming
-- [YouTube API](https://developers.google.com/youtube) for music playback
+- [Angular](https://angular.dev/) - Web application framework
+- [NgRx Signal Store](https://ngrx.io/) - State management with signals
+- [ng-bootstrap](https://ng-bootstrap.github.io/) - Bootstrap components for Angular
+- [RxJS](https://rxjs.dev/) - Reactive programming
+- [Transloco](https://jsverse.github.io/transloco/) - Internationalization
+- [YouTube API](https://developers.google.com/youtube) - Music playback
 
 ---

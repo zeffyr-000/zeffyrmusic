@@ -222,7 +222,7 @@ provideClientHydration(withEventReplay());
 **Implementation with Transloco i18n**:
 
 ```typescript
-import { form, Field, required, minLength } from '@angular/forms/signals';
+import { form, FormField, required, minLength } from '@angular/forms/signals';
 import { TranslocoService } from '@jsverse/transloco';
 
 private transloco = inject(TranslocoService);
@@ -236,12 +236,18 @@ readonly myForm = form(this.formModel, schemaPath => {
   // required() without message - submit button is disabled when form is invalid
   required(schemaPath.email);
   required(schemaPath.password);
-  // minLength with message - shown when user enters invalid value
+  // minLength with message - use arrow function for lazy evaluation
   minLength(schemaPath.password, 6, {
-    message: this.transloco.translate('validation_password_minlength', { min: 6 })
+    message: () => this.transloco.translate('validation_password_minlength', { min: 6 })
   });
 });
 ```
+
+> ⚠️ **IMPORTANT**: Always use arrow functions (`message: () => ...`) for validation messages
+> with Transloco. The form schema is evaluated synchronously during component construction,
+> **before** translation files are loaded. Using a direct call like `message: this.transloco.translate(...)`
+> will result in "Missing translation" warnings. Arrow functions defer the translation lookup
+> until the error message is actually displayed.
 
 Translation files use Transloco interpolation for dynamic values:
 
@@ -254,7 +260,7 @@ Translation files use Transloco interpolation for dynamic values:
 Templates display the pre-translated message directly:
 
 ```html
-<input type="password" [field]="myForm.password" />
+<input type="password" [formField]="myForm.password" />
 @for (error of myForm.password().errors(); track error.kind) {
 <div>{{ error.message }}</div>
 }

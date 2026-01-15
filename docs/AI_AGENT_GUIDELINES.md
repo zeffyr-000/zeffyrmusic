@@ -76,7 +76,32 @@ readonly authStore = inject(AuthStore);
 constructor(private userService: UserService) {}
 ```
 
-### 4. Comments & Documentation
+### 4. Transloco + Signal Forms
+
+**DO:**
+
+```typescript
+// Use arrow functions for validation messages (lazy evaluation)
+minLength(schemaPath.password, 4, {
+  message: () => this.translocoService.translate('validation_minlength', { min: 4 }),
+});
+```
+
+**DON'T:**
+
+```typescript
+// ❌ Direct translate call - evaluated before translations are loaded!
+minLength(schemaPath.password, 4, {
+  message: this.translocoService.translate('validation_minlength', { min: 4 }),
+});
+// Results in: "Missing translation for 'validation_minlength'" warnings
+```
+
+> **Why?** Signal Forms schemas are evaluated synchronously during component construction,
+> before Transloco has loaded the translation files. Arrow functions defer the translation
+> lookup until the error message needs to be displayed.
+
+### 5. Comments & Documentation
 
 **DO:**
 

@@ -118,7 +118,9 @@ export class InitService {
     });
 
     if (data.liste_video && data.liste_video.length > 0) {
-      this.queueStore.setQueue(data.liste_video, data.liste_video[0]?.id_playlist ?? null, null);
+      // Don't set source on initial load - link "Back to current playlist" should only
+      // appear after user explicitly starts playback via runPlaylist()
+      this.queueStore.setQueue(data.liste_video, null, null);
     }
   }
 

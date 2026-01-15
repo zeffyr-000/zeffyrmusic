@@ -10,7 +10,7 @@
             class="form-control"
             placeholder="{{ 'creer_nouvelle_playlist' | transloco }}"
             ngbAutofocus
-            [field]="createPlaylistForm.titre"
+            [formField]="createPlaylistForm.titre"
           />
           <input
             class="btn btn-primary"
@@ -128,7 +128,7 @@
   <div class="modal-body">
     <form (submit)="onEditTitlePlaylist($event, modal)">
       <div class="input-group">
-        <input type="text" class="form-control" [field]="editTitleForm.playlist_titre" />
+        <input type="text" class="form-control" [formField]="editTitleForm.playlist_titre" />
         <input
           class="btn btn-primary"
           type="submit"

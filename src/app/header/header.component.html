@@ -418,16 +418,21 @@
           id="pseudo"
           class="form-control"
           ngbAutofocus
-          [field]="registerForm.pseudo"
+          [formField]="registerForm.pseudo"
         />
       </p>
       <p class="form-group">
         <label class="control-label" for="mailLogin">{{ 'mail' | transloco }}</label>
-        <input type="text" id="mailLogin" class="form-control" [field]="registerForm.mail" />
+        <input type="text" id="mailLogin" class="form-control" [formField]="registerForm.mail" />
       </p>
       <p class="form-group">
         <label class="control-label" for="password">{{ 'mot_de_passe' | transloco }}</label>
-        <input type="password" id="password" class="form-control" [field]="registerForm.password" />
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          [formField]="registerForm.password"
+        />
       </p>
       <p>
         <input
@@ -485,7 +490,7 @@
           id="pseudoLogin"
           class="form-control"
           ngbAutofocus
-          [field]="loginForm.pseudo"
+          [formField]="loginForm.pseudo"
         />
       </p>
       <p class="form-group">
@@ -494,7 +499,7 @@
           type="password"
           id="passwordLogin"
           class="form-control"
-          [field]="loginForm.password"
+          [formField]="loginForm.password"
         />
       </p>
       <p>
@@ -542,7 +547,7 @@
           id="mailReset"
           class="form-control"
           ngbAutofocus
-          [field]="resetPassForm.mail"
+          [formField]="resetPassForm.mail"
         />
       </p>
       <p>
