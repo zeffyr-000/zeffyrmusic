@@ -1,66 +1,79 @@
 <div id="header_top" class="row g-0 justify-content-between">
+  <!-- Mobile menu (dropdown) -->
   <div id="header_burger" class="nav col-3 d-flex d-lg-none justify-content-center" ngbDropdown>
-    <button class="btn" ngbDropdownToggle>
+    <button type="button" class="btn" ngbDropdownToggle aria-label="Open menu">
       <span class="material-icons">menu</span>
     </button>
     <ul ngbDropdownMenu>
       <li ngbDropdownItem>
-        <a routerLink="/current" class="btn p-0">
+        <a
+          routerLink="/current"
+          routerLinkActive="active"
+          class="btn text-body text-decoration-none p-0"
+        >
           <span class="material-icons">playlist_play</span>{{ 'play_list' | transloco }}
         </a>
       </li>
       <li class="dropdown-divider"></li>
-      @if(!authStore.isAuthenticated()) {
+      @if (!authStore.isAuthenticated()) {
       <li ngbDropdownItem>
-        <a
+        <button
+          type="button"
+          class="btn btn-link text-body text-decoration-none p-0"
           (click)="openModalRegister()"
-          role="button"
-          tabindex="0"
-          (keydown.enter)="openModalRegister()"
-          (keydown.space)="openModalRegister(); $event.preventDefault()"
         >
           <span class="material-icons">create_new_folder</span>{{ 'inscription' | transloco }}
-        </a>
+        </button>
       </li>
       <li ngbDropdownItem>
-        <a
+        <button
+          type="button"
+          class="btn btn-link text-body text-decoration-none p-0"
           (click)="openModalLogin()"
-          role="button"
-          tabindex="0"
-          (keydown.enter)="openModalLogin()"
-          (keydown.space)="openModalLogin(); $event.preventDefault()"
         >
           <span class="material-icons">login</span>{{ 'connexion' | transloco }}
-        </a>
+        </button>
       </li>
       }
       <li ngbDropdownItem>
-        <a routerLink="/help" class="btn p-0">
+        <a
+          routerLink="/help"
+          routerLinkActive="active"
+          class="btn text-body text-decoration-none p-0"
+        >
           <span class="material-icons">help</span>{{ 'help_title' | transloco }}
         </a>
       </li>
-      @if(authStore.isAuthenticated()) {
+      @if (authStore.isAuthenticated()) {
       <li class="dropdown-divider"></li>
       <li ngbDropdownItem class="bg-primary text-white">
         {{ authStore.pseudo() }}
       </li>
       <li ngbDropdownItem>
-        <a class="text-decoration-none text-body" routerLink="/like">
+        <a routerLink="/like" routerLinkActive="active" class="text-body text-decoration-none">
           <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
         </a>
       </li>
       <li ngbDropdownItem>
-        <a class="text-decoration-none text-body" routerLink="/my-playlists">
+        <a
+          routerLink="/my-playlists"
+          routerLinkActive="active"
+          class="text-body text-decoration-none"
+        >
           <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
         </a>
       </li>
       <li ngbDropdownItem>
-        <a class="text-decoration-none text-body" routerLink="/my-selection">
+        <a
+          routerLink="/my-selection"
+          routerLinkActive="active"
+          class="text-body text-decoration-none"
+        >
           <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
         </a>
       </li>
       <li ngbDropdownItem>
-        <a class="text-decoration-none text-body" routerLink="/settings">
+        <a routerLink="/settings" routerLinkActive="active" class="text-body text-decoration-none">
           <span class="material-icons">settings</span>{{ 'settings' | transloco }}
         </a>
       </li>
@@ -107,22 +120,34 @@
       </a>
       <ul ngbDropdownMenu>
         <li ngbDropdownItem>
-          <a class="text-decoration-none text-body" routerLink="/like">
+          <a routerLink="/like" routerLinkActive="active" class="text-body text-decoration-none">
             <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
           </a>
         </li>
         <li ngbDropdownItem>
-          <a class="text-decoration-none text-body" routerLink="/my-playlists">
+          <a
+            routerLink="/my-playlists"
+            routerLinkActive="active"
+            class="text-body text-decoration-none"
+          >
             <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
           </a>
         </li>
         <li ngbDropdownItem>
-          <a class="text-decoration-none text-body" routerLink="/my-selection">
+          <a
+            routerLink="/my-selection"
+            routerLinkActive="active"
+            class="text-body text-decoration-none"
+          >
             <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
           </a>
         </li>
         <li ngbDropdownItem>
-          <a class="text-decoration-none text-body" routerLink="/settings">
+          <a
+            routerLink="/settings"
+            routerLinkActive="active"
+            class="text-body text-decoration-none"
+          >
             <span class="material-icons">settings</span>{{ 'settings' | transloco }}
           </a>
         </li>
@@ -136,28 +161,18 @@
     </li>
     } @else{
     <li id="header_li_inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
-      <a
+      <button
+        type="button"
         class="btn btn-warning btn-outline-warning text-light"
         (click)="openModalRegister()"
-        role="button"
-        tabindex="0"
-        (keydown.enter)="openModalRegister()"
-        (keydown.space)="openModalRegister(); $event.preventDefault()"
       >
         {{ 'inscription' | transloco }}
-      </a>
+      </button>
     </li>
     <li id="header_li_connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
-      <a
-        class="btn btn-primary text-light"
-        (click)="openModalLogin()"
-        role="button"
-        tabindex="0"
-        (keydown.enter)="openModalLogin()"
-        (keydown.space)="openModalLogin(); $event.preventDefault()"
-      >
+      <button type="button" class="btn btn-primary text-light" (click)="openModalLogin()">
         {{ 'connexion' | transloco }}
-      </a>
+      </button>
     </li>
     }
 
@@ -220,24 +235,22 @@
 
   <div id="header_player_centre" class="col-md-6">
     <div class="pl-lg-5 pr-lg-5 ml-lg-5 mr-lg-5">
-      <a
+      <button
+        type="button"
         id="header_player_centre_title"
         class="btn btn-light d-inline-block d-md-none"
-        tabindex="0"
         (click)="expandPlayer()"
-        (keydown.enter)="expandPlayer()"
-        (keydown.space)="expandPlayer(); $event.preventDefault()"
       >
         <div>
           <b>{{ queueStore.currentVideo()?.titre }}</b>
         </div>
         <div>{{ queueStore.currentVideo()?.artiste }}</div>
-      </a>
+      </button>
 
       <div class="btn-group btn-group-sm">
-        <a
+        <button
+          type="button"
           class="btn text-light w-100 d-none d-md-block"
-          tabindex="0"
           [class.disabled]="
             !queueStore.hasPrevious() && playerStore.currentTimeFormatted() === '0:00'
           "
@@ -245,79 +258,62 @@
             !queueStore.hasPrevious() && playerStore.currentTimeFormatted() === '0:00'
           "
           (click)="onBefore()"
-          (keydown.enter)="onBefore()"
-          (keydown.space)="onBefore(); $event.preventDefault()"
         >
           <span class="material-icons">skip_previous</span>
-        </a>
-        <a
-          id="play_button"
-          class="btn text-light"
-          tabindex="0"
-          (click)="onPlayPause()"
-          (keydown.enter)="onPlayPause()"
-          (keydown.space)="onPlayPause(); $event.preventDefault()"
-        >
+        </button>
+        <button type="button" id="play_button" class="btn text-light" (click)="onPlayPause()">
           @if(playerStore.isPlaying()){
           <span class="material-icons">pause</span>
           }@else{
           <span class="material-icons">play_arrow</span>
           }
-        </a>
-        <a
+        </button>
+        <button
+          type="button"
           class="btn text-light w-100 d-none d-md-block"
-          tabindex="0"
           [class.disabled]="!queueStore.hasNext()"
           [class.border-0]="!queueStore.hasNext()"
           (click)="onAfter()"
-          (keydown.enter)="onAfter()"
-          (keydown.space)="onAfter(); $event.preventDefault()"
         >
           <span class="material-icons">skip_next</span>
-        </a>
+        </button>
       </div>
 
       <div
         id="header_player_centre_more_actions"
         class="btn-group btn-group-sm float-end d-none d-md-block"
       >
-        <a
-          (click)="goFullscreen('player')"
+        <button
+          type="button"
           class="btn text-light"
-          tabindex="0"
+          (click)="goFullscreen('player')"
           placement="top"
           ngbTooltip="{{ 'video_plein_ecran' | transloco }}"
-          (keydown.enter)="goFullscreen('player')"
-          (keydown.space)="goFullscreen('player'); $event.preventDefault()"
         >
           <span class="material-icons">fullscreen</span>
-        </a>
-        <a
+        </button>
+        <button
+          type="button"
           id="repeat"
           class="btn text-light"
           [class.active]="playerStore.isRepeat()"
-          tabindex="0"
           (click)="repeat()"
           placement="top"
           ngbTooltip="{{ 'repetition' | transloco }}"
-          (keydown.enter)="repeat()"
-          (keydown.space)="repeat(); $event.preventDefault()"
         >
           <span class="material-icons">repeat</span>
-        </a>
-        <a
+        </button>
+        <button
+          type="button"
           id="random"
           class="btn text-light"
           [class.active]="queueStore.isShuffled()"
-          tabindex="0"
           (click)="random()"
           placement="top"
           ngbTooltip="{{ 'lecture_aleatoire' | transloco }}"
-          (keydown.enter)="random()"
-          (keydown.space)="random(); $event.preventDefault()"
         >
           <span class="material-icons">shuffle</span>
-        </a>
+        </button>
       </div>
     </div>
 
@@ -411,29 +407,37 @@
     </div>
     @if(!isRegistered()){
     <form (submit)="onSubmitRegister($event)">
-      <p class="form-group">
-        <label class="control-label" for="pseudo">{{ 'pseudo' | transloco }}</label>
+      <div class="form-floating mb-3">
         <input
           type="text"
           id="pseudo"
           class="form-control"
+          [placeholder]="'pseudo' | transloco"
           ngbAutofocus
           [formField]="registerForm.pseudo"
         />
-      </p>
-      <p class="form-group">
-        <label class="control-label" for="mailLogin">{{ 'mail' | transloco }}</label>
-        <input type="text" id="mailLogin" class="form-control" [formField]="registerForm.mail" />
-      </p>
-      <p class="form-group">
-        <label class="control-label" for="password">{{ 'mot_de_passe' | transloco }}</label>
+        <label for="pseudo">{{ 'pseudo' | transloco }}</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input
+          type="email"
+          id="mailLogin"
+          class="form-control"
+          [placeholder]="'mail' | transloco"
+          [formField]="registerForm.mail"
+        />
+        <label for="mailLogin">{{ 'mail' | transloco }}</label>
+      </div>
+      <div class="form-floating mb-3">
         <input
           type="password"
           id="password"
           class="form-control"
+          [placeholder]="'mot_de_passe' | transloco"
           [formField]="registerForm.password"
         />
-      </p>
+        <label for="password">{{ 'mot_de_passe' | transloco }}</label>
+      </div>
       <p>
         <input
           type="submit"
@@ -483,25 +487,27 @@
       <hr class="flex-grow-1" />
     </div>
     <form (submit)="onLogIn($event, modal, '')">
-      <p class="form-group">
-        <label class="control-label" for="pseudoLogin">{{ 'pseudo_ou_mail' | transloco }}</label>
+      <div class="form-floating mb-3">
         <input
           type="text"
           id="pseudoLogin"
           class="form-control"
+          [placeholder]="'pseudo_ou_mail' | transloco"
           ngbAutofocus
           [formField]="loginForm.pseudo"
         />
-      </p>
-      <p class="form-group">
-        <label class="control-label" for="passwordLogin">{{ 'mot_de_passe' | transloco }}</label>
+        <label for="pseudoLogin">{{ 'pseudo_ou_mail' | transloco }}</label>
+      </div>
+      <div class="form-floating mb-3">
         <input
           type="password"
           id="passwordLogin"
           class="form-control"
+          [placeholder]="'mot_de_passe' | transloco"
           [formField]="loginForm.password"
         />
-      </p>
+        <label for="passwordLogin">{{ 'mot_de_passe' | transloco }}</label>
+      </div>
       <p>
         <input
           type="submit"
@@ -540,16 +546,17 @@
   <div class="modal-body">
     @if(!isSuccess()){
     <form (submit)="onSubmitResetPass($event)">
-      <p class="form-group">
-        <label class="control-label" for="mailReset">{{ 'mail' | transloco }}</label>
+      <div class="form-floating mb-3">
         <input
-          type="text"
+          type="email"
           id="mailReset"
           class="form-control"
+          [placeholder]="'mail' | transloco"
           ngbAutofocus
           [formField]="resetPassForm.mail"
         />
-      </p>
+        <label for="mailReset">{{ 'mail' | transloco }}</label>
+      </div>
       <p>
         <input
           type="submit"
@@ -598,5 +605,116 @@
       </tr>
       }
     </table>
+  </div>
+</ng-template>
+
+<!-- Mobile Offcanvas Menu -->
+<ng-template #contentMobileMenu>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvas-mobile-menu-title">{{ 'menu' | transloco }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeMobileMenu()"></button>
+  </div>
+  <div class="offcanvas-body">
+    <nav class="nav flex-column gap-2">
+      <a
+        class="nav-link d-flex align-items-center gap-2"
+        routerLink="/current"
+        (click)="closeMobileMenu()"
+      >
+        <span class="material-icons">playlist_play</span>
+        {{ 'play_list' | transloco }}
+      </a>
+
+      <hr class="my-2" />
+
+      @if (!authStore.isAuthenticated()) {
+      <button
+        type="button"
+        class="nav-link d-flex align-items-center gap-2 btn btn-link text-start p-0"
+        (click)="closeMobileMenu(); openModalRegister()"
+      >
+        <span class="material-icons">create_new_folder</span>
+        {{ 'inscription' | transloco }}
+      </button>
+      <button
+        type="button"
+        class="nav-link d-flex align-items-center gap-2 btn btn-link text-start p-0"
+        (click)="closeMobileMenu(); openModalLogin()"
+      >
+        <span class="material-icons">login</span>
+        {{ 'connexion' | transloco }}
+      </button>
+      }
+
+      <a
+        class="nav-link d-flex align-items-center gap-2"
+        routerLink="/help"
+        (click)="closeMobileMenu()"
+      >
+        <span class="material-icons">help</span>
+        {{ 'help_title' | transloco }}
+      </a>
+
+      @if (authStore.isAuthenticated()) {
+      <hr class="my-2" />
+
+      <div class="nav-link bg-primary text-white rounded px-3 py-2 fw-bold">
+        {{ authStore.pseudo() }}
+      </div>
+
+      <a
+        class="nav-link d-flex align-items-center gap-2"
+        routerLink="/like"
+        (click)="closeMobileMenu()"
+      >
+        <span class="material-icons">favorite</span>
+        {{ 'mes_likes' | transloco }}
+        @if (userDataStore.likedVideoCount() > 0) {
+        <span class="badge bg-secondary ms-auto">{{ userDataStore.likedVideoCount() }}</span>
+        }
+      </a>
+      <a
+        class="nav-link d-flex align-items-center gap-2"
+        routerLink="/my-playlists"
+        (click)="closeMobileMenu()"
+      >
+        <span class="material-icons">library_music</span>
+        {{ 'mes_playlists' | transloco }}
+        @if (userDataStore.playlistCount() > 0) {
+        <span class="badge bg-secondary ms-auto">{{ userDataStore.playlistCount() }}</span>
+        }
+      </a>
+      <a
+        class="nav-link d-flex align-items-center gap-2"
+        routerLink="/my-selection"
+        (click)="closeMobileMenu()"
+      >
+        <span class="material-icons">favorite</span>
+        {{ 'ma_selection' | transloco }}
+        @if (userDataStore.followCount() > 0) {
+        <span class="badge bg-secondary ms-auto">{{ userDataStore.followCount() }}</span>
+        }
+      </a>
+      <a
+        class="nav-link d-flex align-items-center gap-2"
+        routerLink="/settings"
+        (click)="closeMobileMenu()"
+      >
+        <span class="material-icons">settings</span>
+        {{ 'settings' | transloco }}
+      </a>
+
+      <hr class="my-2" />
+
+      <button
+        type="button"
+        class="nav-link d-flex align-items-center gap-2 btn btn-link text-start text-danger p-0"
+        (click)="closeMobileMenu(); onLogout()"
+      >
+        <span class="material-icons">power_settings_new</span>
+        {{ 'deconnexion' | transloco }}
+      </button>
+      }
+    </nav>
   </div>
 </ng-template>

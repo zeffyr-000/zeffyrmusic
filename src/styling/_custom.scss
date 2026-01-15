@@ -1,38 +1,119 @@
-$blue: #1ac8e5;
-$secondary: #e8e7e7;
-$mushroom: #9f9a9a;
+// =============================================================================
+// ZEFFYR MUSIC - Bootstrap 5.3 Custom Variables
+// =============================================================================
+// This file MUST be imported BEFORE Bootstrap to properly override defaults.
+// All Bootstrap variables use `!default` flag, so our values take precedence.
+//
+// Reference: https://getbootstrap.com/docs/5.3/customize/sass/
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// 1. BRAND COLORS
+// -----------------------------------------------------------------------------
+// Primary brand colors used throughout the application
+
+$blue: #1ac8e5; // Primary brand color (Zeffyr cyan)
+$secondary: #e8e7e7; // Secondary/muted color
+$mushroom: #9f9a9a; // Neutral gray
 $white: #ffffff;
 $white-two: #ffffff;
-$yellow: #fc7e12;
-$orange: #fc7e12;
-$greyish-brown-two: #4d4d4d;
+$black: #000000;
+$yellow: #fc7e12; // Accent color
+$orange: #fc7e12; // Alias for yellow (used interchangeably)
+$greyish-brown-two: #4d4d4d; // Main text color
+
+// UI gray shades (for backgrounds, borders, sliders)
+$gray-light: #e6e6e6; // Slider handles, table active rows
+$gray-lighter: #eeeeee; // Album cards background
+$gray-lightest: #f5f5f5; // Album cards hover
+$gray-medium: #536570; // Slider handles, muted text
+
+// Derived colors
 $aqua-20: rgba(26, 200, 229, 0.2);
 $cyan: $aqua-20;
 
-$body-bg: #f8f8f8;
+// -----------------------------------------------------------------------------
+// 2. BOOTSTRAP THEME COLORS OVERRIDE
+// -----------------------------------------------------------------------------
+// These override Bootstrap's default theme colors
+
+$primary: $blue;
+// $secondary: already defined above
+// $success: use Bootstrap default
+// $info: use Bootstrap default
+// $warning: use Bootstrap default
+// $danger: use Bootstrap default
+
+// -----------------------------------------------------------------------------
+// 3. BODY & TYPOGRAPHY
+// -----------------------------------------------------------------------------
+
+$body-bg: #f8f8f8; // Light gray background
 $body-color: $greyish-brown-two;
 
-$border-radius: 10px;
+// Custom font family (Nunito)
+$font-family-base: 'Nunito', sans-serif;
+
+// -----------------------------------------------------------------------------
+// 4. BORDER RADIUS
+// -----------------------------------------------------------------------------
+
+$border-radius: 0.5rem;
+$border-radius-sm: 0.4rem;
+$border-radius-lg: 0.6rem;
 $rounded-pill: 2.5rem;
+
+// -----------------------------------------------------------------------------
+// 5. SPACING & GRID
+// -----------------------------------------------------------------------------
+
+$grid-gutter-width: 20px;
+
+// -----------------------------------------------------------------------------
+// 6. CARDS
+// -----------------------------------------------------------------------------
 
 $card-height: 100%;
 $card-spacer-x: 0.75rem;
+// $card-bg: use Bootstrap default (inherits from body)
+
+// -----------------------------------------------------------------------------
+// 7. NAVBAR
+// -----------------------------------------------------------------------------
+
 $navbar-padding-y: 0;
 $navbar-padding-x: 0;
 
-$grid-gutter-width: 20px;
-$border-radius: 0.5rem;
-$border-radius-lg: 0.6rem;
-$border-radius-sm: 0.4rem;
+// -----------------------------------------------------------------------------
+// 8. MODALS
+// -----------------------------------------------------------------------------
 
-$dropdown-link-color: $greyish-brown-two;
-$modal-header-border-color: transparent;
 $modal-inner-padding: 2rem;
 $modal-header-padding-x: $modal-inner-padding;
+$modal-header-border-color: transparent;
+
+// -----------------------------------------------------------------------------
+// 9. DROPDOWNS
+// -----------------------------------------------------------------------------
+
+$dropdown-link-color: $greyish-brown-two;
+
+// -----------------------------------------------------------------------------
+// 10. TABLES
+// -----------------------------------------------------------------------------
 
 $table-cell-padding: 0.5rem;
 
+// -----------------------------------------------------------------------------
+// 11. TOOLTIPS
+// -----------------------------------------------------------------------------
+
 $tooltip-bg: $mushroom;
+
+// -----------------------------------------------------------------------------
+// 12. CUSTOM FONTS
+// -----------------------------------------------------------------------------
+// Nunito font family with multiple weights
 
 @font-face {
   font-family: 'Nunito';
@@ -71,5 +152,3 @@ $tooltip-bg: $mushroom;
   font-style: normal;
   font-display: swap;
 }
-
-$font-family-base: 'Nunito', sans-serif;

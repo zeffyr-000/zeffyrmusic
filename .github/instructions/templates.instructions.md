@@ -61,3 +61,60 @@ Always call signals as functions:
 - Use semantic HTML elements
 - Add accessibility attributes (aria-\*, role)
 - Use Bootstrap 5 classes for styling
+
+## ng-bootstrap Accessibility
+
+**CRITICAL: ng-bootstrap directives handle keyboard accessibility automatically.**
+
+```html
+<!-- ❌ INCORRECT: Redundant attributes -->
+<button
+  ngbDropdownToggle
+  tabindex="0"
+  role="button"
+  (keydown.enter)="handleEnter()"
+  (keydown.space)="handleSpace()"
+>
+  <!-- ✅ CORRECT: ng-bootstrap handles it -->
+  <button ngbDropdownToggle>Menu</button>
+</button>
+```
+
+Directives that auto-handle accessibility:
+
+- `ngbDropdownToggle`
+- `ngbTooltip`
+- `ngbPopover`
+- `ngbModal`
+- `ngbCollapse`
+
+## Interactive Elements
+
+Use native interactive elements for actions:
+
+```html
+<!-- ✅ CORRECT: Native button -->
+<button type="button" class="btn btn-primary" (click)="doAction()">Action</button>
+
+<!-- ❌ INCORRECT: Link used as button -->
+<a
+  class="btn btn-primary"
+  role="button"
+  tabindex="0"
+  (click)="doAction()"
+  (keydown.enter)="doAction()"
+  (keydown.space)="doAction(); $event.preventDefault()"
+>
+  Action
+</a>
+```
+
+## Required ARIA Attributes
+
+| Element         | Required                       |
+| --------------- | ------------------------------ |
+| Close button    | `aria-label="Close"`           |
+| Loading spinner | `role="status"`                |
+| Alert messages  | `role="alert"`                 |
+| Images          | `alt="description"`            |
+| Navigation      | `aria-label="Navigation name"` |

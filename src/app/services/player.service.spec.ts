@@ -45,6 +45,7 @@ describe('PlayerService', () => {
     let translocoService: TranslocoService;
     let mockYoutubePlayer: ReturnType<typeof createMockYoutubePlayerService>;
     let playerStore: InstanceType<typeof PlayerStore>;
+    let queueStore: InstanceType<typeof QueueStore>;
 
     beforeEach(async () => {
       mockYoutubePlayer = createMockYoutubePlayerService();
@@ -91,6 +92,7 @@ describe('PlayerService', () => {
       translocoService = TestBed.inject(TranslocoService);
       translocoService.setDefaultLang('en');
       playerStore = TestBed.inject(PlayerStore);
+      queueStore = TestBed.inject(QueueStore);
     });
 
     it('should be created', () => {
@@ -692,6 +694,28 @@ describe('PlayerService', () => {
       expect(service.tabIndex).toEqual([]);
       expect(spyAddInCurrentList).toHaveBeenCalledWith(playlist, '');
       expect(spyLecture).toHaveBeenCalledWith(index, true);
+    });
+
+    it('should pass playlistId to queueStore.setQueue when provided', () => {
+      service.listVideo = [{ key: '1' }] as Video[];
+      service.tabIndexInitial = [1];
+      service.tabIndex = [1];
+
+      vi.spyOn(service, 'addInCurrentList').mockImplementation(() => {
+        // Mock implementation to prevent actual execution
+      });
+      vi.spyOn(service, 'lecture').mockImplementation(() => {
+        // Mock implementation to prevent actual execution
+      });
+      const spySetQueue = vi.spyOn(queueStore, 'setQueue');
+
+      const playlist = [{ key: '2', id_playlist: 'default123' }, { key: '3' }] as Video[];
+      const index = 0;
+      const idTopCharts = 'top123';
+      const playlistId = 'playlist456';
+      service.runPlaylist(playlist, index, idTopCharts, playlistId);
+
+      expect(spySetQueue).toHaveBeenCalledWith(playlist, playlistId, idTopCharts);
     });
 
     it('should set error in PlayerStore when YoutubePlayerService emits error$', () => {

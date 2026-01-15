@@ -35,14 +35,6 @@
   border-radius: 5px;
 }
 
-#slider_1 {
-  width: 10px;
-  height: 6px;
-  background-color: #e6e6e6;
-  cursor: pointer;
-  position: absolute;
-}
-
 #load_video,
 #load_video_current {
   position: absolute;
@@ -80,14 +72,6 @@
   position: absolute;
 }
 
-#slider_2 {
-  width: 10px;
-  height: 16px;
-  background-color: #e6e6e6;
-  cursor: pointer;
-  position: absolute;
-}
-
 #load_volume_current {
   background-color: $white;
   position: absolute;
@@ -107,10 +91,12 @@
   z-index: 2;
   width: 22px;
   height: 22px;
-  cursor: default;
   margin-top: -8px;
   border-radius: 50%;
   background-color: $blue;
+  box-shadow: 0 1px 3px grey;
+  border: solid grey 1px;
+  cursor: pointer;
 }
 
 .ui-slider .ui-slider-range {
@@ -141,12 +127,7 @@
 }
 
 .ui-slider-handle {
-  background-color: #536570;
-  border-radius: 50%;
-  margin-left: -8px !important;
-  box-shadow: 0px 1px 3px grey;
-  border: solid grey 1px;
-  cursor: pointer !important;
+  margin-left: -8px; // Override jQuery UI default
 }
 
 .ui-slider-handle:focus {
@@ -231,8 +212,8 @@
   width: 25%;
 }
 
-#header_li_connexion > a,
-#header_li_inscription > a {
+#header_li_connexion > button,
+#header_li_inscription > button {
   border-radius: 20px;
   padding: 2px 28px;
   margin: 4px;
@@ -240,7 +221,7 @@
 
 #header_player_centre_title {
   width: calc(100% - 64px);
-  transition: none !important;
+  transition: none; // Disable transition for immediate feedback
   background-color: transparent;
   border: none;
   padding: 0;
@@ -263,8 +244,8 @@
     margin: 0;
   }
 
-  #header_li_connexion > a,
-  #header_li_inscription > a {
+  #header_li_connexion > button,
+  #header_li_inscription > button {
     padding: 2px;
   }
 }
@@ -307,8 +288,8 @@
     margin-top: 0;
     border: 0;
     box-shadow: none;
-    background-color: #fff !important;
-    color: #536570 !important;
+    background-color: $white !important;
+    color: $gray-medium !important;
     position: absolute !important;
     float: none !important;
   }
@@ -323,8 +304,8 @@
     overflow: hidden;
     float: left;
   }
-  #header_li_connexion > a,
-  #header_li_inscription > a {
+  #header_li_connexion > button,
+  #header_li_inscription > button {
     overflow: hidden;
     text-align: center;
   }
@@ -407,4 +388,9 @@
       }
     }
   }
+}
+
+// Active navigation link styling
+li[ngbDropdownItem]:has(a.active) {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
 }

@@ -410,10 +410,16 @@ describe('PlaylistComponent', () => {
       },
     ] as Video[];
     component.playlist.set(playlistData);
+    component.idPlaylist.set('test-playlist-id');
 
     component.runPlaylist(0);
 
-    expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0, null);
+    expect(playerService.runPlaylist).toHaveBeenCalledWith(
+      playlistData,
+      0,
+      null,
+      'test-playlist-id'
+    );
   });
 
   it('should call playerService.runPlaylist without arguments', () => {
@@ -431,9 +437,15 @@ describe('PlaylistComponent', () => {
       },
     ] as Video[];
     component.playlist.set(playlistData);
+    component.idPlaylist.set('test-playlist-id');
     component.runPlaylist();
 
-    expect(playerService.runPlaylist).toHaveBeenCalledWith(playlistData, 0, null);
+    expect(playerService.runPlaylist).toHaveBeenCalledWith(
+      playlistData,
+      0,
+      null,
+      'test-playlist-id'
+    );
   });
 
   it('should call playerService.addInCurrentList with correct arguments when addInCurrentList is called', () => {

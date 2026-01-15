@@ -34,13 +34,22 @@ import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlayerStore } from './store/player/player.store';
 import { QueueStore } from './store/queue/queue.store';
 import { UiStore } from './store/ui/ui.store';
+import { ToastContainerComponent } from './toast-container/toast-container.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HeaderComponent, PlayerComponent, RouterLink, RouterOutlet, NgbAlert, TranslocoPipe],
+  imports: [
+    HeaderComponent,
+    PlayerComponent,
+    RouterLink,
+    RouterOutlet,
+    NgbAlert,
+    TranslocoPipe,
+    ToastContainerComponent,
+  ],
 })
 export class AppComponent implements OnInit, OnDestroy {
   private readonly document = inject<Document>(DOCUMENT);
