@@ -41,8 +41,7 @@ src/app/store/
 │   └── ui.models.ts
 └── features/                   # Reusable features
     ├── with-ssr-safety.ts
-    ├── with-local-storage.ts
-    └── with-logger.ts
+    └── with-local-storage.ts
 ```
 
 ## Migration Phases
@@ -64,7 +63,6 @@ src/app/store/
 - [x] Create reusable features:
   - `with-ssr-safety.ts`: Helpers for SSR compatibility
   - `with-local-storage.ts`: Automatic localStorage persistence
-  - `with-logger.ts`: Development logging
 - [x] Create barrel export `index.ts`
 - [x] Verify build and tests (369 tests passed)
 
@@ -78,7 +76,6 @@ src/app/store/
 - `/src/app/store/ui/ui.models.ts`
 - `/src/app/store/features/with-ssr-safety.ts`
 - `/src/app/store/features/with-local-storage.ts`
-- `/src/app/store/features/with-logger.ts`
 
 ---
 
@@ -314,14 +311,12 @@ npm run lint
 
 ```typescript
 import { signalStore, withState, withMethods, withComputed } from '@ngrx/signals';
-import { withSsrSafety, withLocalStorage, withLogger } from '../features';
+import { withSsrSafety } from '../features';
 
 export const MyStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withSsrSafety(),
-  withLocalStorage({ key: 'my-store', keys: ['prop1', 'prop2'] }),
-  withLogger({ name: 'MyStore' }),
   withComputed((state) => ({ ... })),
   withMethods((store) => ({ ... }))
 );

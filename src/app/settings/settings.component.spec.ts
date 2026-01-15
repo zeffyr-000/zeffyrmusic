@@ -25,8 +25,6 @@ describe('SettingsComponent', () => {
 
   beforeEach(async () => {
     initServiceMock = {
-      loginSuccess: vi.fn(),
-      logOut: vi.fn(),
       onMessageUnlog: vi.fn(),
     } as MockedObject<InitService>;
 
@@ -47,8 +45,6 @@ describe('SettingsComponent', () => {
     modalServiceSpyObj = { open: vi.fn() } as MockedObject<NgbModal>;
     const activeModalSpyObj = { dismiss: vi.fn() } as MockedObject<NgbActiveModal>;
     const authGuardMock = { canActivate: vi.fn() } as MockedObject<AuthGuard>;
-
-    initServiceMock.logOut = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [NgbModalModule, SettingsComponent],
@@ -301,6 +297,7 @@ describe('SettingsComponent', () => {
 
     const response = { success: true } as UserReponse;
     userServiceMock.deleteAccount.mockReturnValue(of(response));
+    const logoutSpy = vi.spyOn(component.authStore, 'logout');
 
     component.onSubmitDeleteAccount(mockEvent);
 
@@ -310,7 +307,7 @@ describe('SettingsComponent', () => {
     vi.advanceTimersByTime(10000);
 
     expect(component.successDelete()).toBe(false);
-    expect(initServiceMock.logOut).toHaveBeenCalled();
+    expect(logoutSpy).toHaveBeenCalled();
   });
 
   it('should handle account deletion error from server', () => {

@@ -19,7 +19,7 @@ export interface MockPlayerService {
   removeToPlaylist: MockedFunction<(index: number) => void>;
   switchRepeat: MockedFunction<() => void>;
   switchRandom: MockedFunction<() => void>;
-  removeVideo: MockedFunction<(idVideo: string, callbackSuccess: () => void) => void>;
+  removeVideoFromQueue: MockedFunction<(idVideo: string) => void>;
   onLoadListLogin: MockedFunction<
     (listPlaylist: UserPlaylist[], listFollow: FollowItem[], listLike: UserVideo[]) => void
   >;
@@ -34,21 +34,11 @@ export interface MockPlayerService {
   addVideoInPlaylist: MockedFunction<
     (key: string, artist: string, title: string, duration: number) => void
   >;
-  addVideoInPlaylistRequest: MockedFunction<
-    (
-      idPlaylist: string,
-      addKey: string,
-      addTitle: string,
-      addArtist: string,
-      addDuration: number
-    ) => void
-  >;
   addInCurrentList: MockedFunction<(playlist: Video[], idTopCharts?: string | null) => void>;
   addVideoAfterCurrentInList: MockedFunction<(video: Video) => void>;
   runPlaylist: MockedFunction<
     (playlist: Video[], index: number, idTopCharts?: string | null) => void
   >;
-  clearErrorMessage: MockedFunction<() => void>;
 
   // Properties
   tabIndexInitial: number[];
@@ -59,22 +49,11 @@ export interface MockPlayerService {
   currentTitle: string;
   currentArtist: string;
   currentKey: string;
-  errorMessage$: Observable<string | null>;
 }
 
 /** Mock for InitService */
 export interface MockInitService {
   getPing: MockedFunction<() => Observable<boolean>>;
-  loginSuccess: MockedFunction<
-    (
-      pseudo: string,
-      idPerso: string,
-      mail: string,
-      darkModeEnabled: boolean,
-      language: string
-    ) => void
-  >;
-  logOut: MockedFunction<() => void>;
   onMessageUnlog: MockedFunction<() => void>;
   getHomeInit: MockedFunction<() => Observable<{ top: unknown[]; top_albums: unknown[] }>>;
 }

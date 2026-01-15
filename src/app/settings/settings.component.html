@@ -86,7 +86,7 @@
           id="passwordold"
           class="form-control"
           ngbAutofocus
-          [field]="editPassForm.passwordold"
+          [formField]="editPassForm.passwordold"
         />
       </p>
       <p class="form-group">
@@ -97,7 +97,7 @@
           type="password"
           id="password1"
           class="form-control"
-          [field]="editPassForm.password1"
+          [formField]="editPassForm.password1"
         />
       </p>
       <p class="form-group">
@@ -108,7 +108,7 @@
           type="password"
           id="password2"
           class="form-control"
-          [field]="editPassForm.password2"
+          [formField]="editPassForm.password2"
         />
       </p>
 
@@ -148,7 +148,7 @@
           id="mail"
           class="form-control"
           ngbAutofocus
-          [field]="editMailForm.mail"
+          [formField]="editMailForm.mail"
         />
       </p>
 
@@ -183,7 +183,12 @@
     <form (submit)="onSubmitEditLanguage($event)">
       <p class="form-group">
         <label class="control-label" for="language">{{ 'language' | transloco }}</label>
-        <select id="language" class="form-control" ngbAutofocus [field]="editLanguageForm.language">
+        <select
+          id="language"
+          class="form-control"
+          ngbAutofocus
+          [formField]="editLanguageForm.language"
+        >
           @for (lang of availableLanguages(); track lang) {
           <option [value]="lang">{{ 'langue_' + lang | transloco }}</option>
           }
@@ -227,7 +232,7 @@
           id="passwordDelete"
           class="form-control"
           ngbAutofocus
-          [field]="deleteAccountForm.password"
+          [formField]="deleteAccountForm.password"
         />
       </p>
 

@@ -8,6 +8,7 @@ import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testi
 import { FollowItem } from '../models/follow.model';
 import { UserPlaylist } from '../models/playlist.model';
 import { PlayerService } from '../services/player.service';
+import { UserLibraryService } from '../services/user-library.service';
 import { HeaderComponent } from './header.component';
 import { of } from 'rxjs';
 import { InitService } from '../services/init.service';
@@ -56,8 +57,10 @@ class MockNgDraggableDirective {
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let initService: InitService;
   let playerService: PlayerService;
+  let userLibraryService: UserLibraryService;
   let userService: UserService;
   let googleAnalyticsServiceSpy: MockedObject<GoogleAnalyticsService>;
   let translocoService: TranslocoService;
@@ -73,6 +76,8 @@ describe('HeaderComponent', () => {
   let activeModalSpyObj: MockedObject<NgbActiveModal>;
   let initServiceMock: Partial<MockInitService>;
   let playerServiceMock: Partial<MockPlayerService>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let userLibraryServiceMock: any;
   let searchServiceMock: Partial<SearchService>;
   const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
@@ -113,7 +118,7 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     // Create service mocks
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initServiceMock = { loginSuccess: vi.fn(), logOut: vi.fn(), onMessageUnlog: vi.fn() } as any;
+    initServiceMock = { onMessageUnlog: vi.fn() } as any;
     playerServiceMock = {
       switchRepeat: vi.fn(),
       switchRandom: vi.fn(),
@@ -122,13 +127,10 @@ describe('HeaderComponent', () => {
       onPlayPause: vi.fn(),
       before: vi.fn(),
       after: vi.fn(),
-      onLoadListLogin: vi.fn(),
-      addNewPlaylist: vi.fn(),
-      switchVisibilityPlaylist: vi.fn(),
-      editPlaylistTitle: vi.fn(),
-      deleteFollow: vi.fn(),
-      deletePlaylist: vi.fn(),
-      addVideoInPlaylistRequest: vi.fn(),
+    };
+    userLibraryServiceMock = {
+      initializeFromLogin: vi.fn(),
+      addVideoToPlaylist: vi.fn().mockReturnValue(of(true)),
     };
     userServiceMock = {
       register: vi.fn(),
@@ -144,8 +146,6 @@ describe('HeaderComponent', () => {
     googleAnalyticsServiceSpyObj = { pageView: vi.fn() } as MockedObject<GoogleAnalyticsService>;
     modalServiceSpyObj = { open: vi.fn(), dismissAll: vi.fn() } as MockedObject<NgbModal>;
     activeModalSpyObj = { dismiss: vi.fn() } as MockedObject<NgbActiveModal>;
-
-    initServiceMock.logOut = vi.fn();
   });
 
   beforeEach(async () => {
@@ -180,6 +180,7 @@ describe('HeaderComponent', () => {
         getTranslocoTestingProviders(),
         { provide: InitService, useValue: initServiceMock },
         { provide: PlayerService, useValue: playerServiceMock },
+        { provide: UserLibraryService, useValue: userLibraryServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: RouterTestingModule, useValue: routerSpyObj },
         { provide: ActivatedRoute, useValue: routeSpyObj },
@@ -206,6 +207,7 @@ describe('HeaderComponent', () => {
 
     initService = TestBed.inject(InitService);
     playerService = TestBed.inject(PlayerService);
+    userLibraryService = TestBed.inject(UserLibraryService);
     userService = TestBed.inject(UserService);
     googleAnalyticsServiceSpy = TestBed.inject(
       GoogleAnalyticsService
@@ -325,7 +327,7 @@ describe('HeaderComponent', () => {
     expect(modalService.open).toHaveBeenCalledWith(content, { size: 'lg' });
   });
 
-  it('should call playerService.addVideoInPlaylistRequest and modal.dismiss when onAddVideo is called', () => {
+  it('should call userLibraryService.addVideoToPlaylist and modal.dismiss when onAddVideo is called', () => {
     const idPlaylist = '123';
     const modal = { dismiss: vi.fn(), update: vi.fn(), close: vi.fn() };
     component.addKey = 'key';
@@ -335,7 +337,7 @@ describe('HeaderComponent', () => {
 
     component.onAddVideo(idPlaylist, modal);
 
-    expect(playerService.addVideoInPlaylistRequest).toHaveBeenCalledWith(
+    expect(userLibraryService.addVideoToPlaylist).toHaveBeenCalledWith(
       idPlaylist,
       'key',
       'title',
@@ -455,8 +457,8 @@ describe('HeaderComponent', () => {
         mail: 'test@example.com',
         password: 'password',
       });
-      // Le composant utilise translocoService.translate pour afficher l'erreur
-      // mais stocke le résultat de translate, donc on doit vérifier que translate a été appelé
+      // The component uses translocoService.translate to display the error
+      // but stores the result of translate, so we must verify that translate was called
       expect(component.error()).toBeTruthy();
     });
   });
@@ -496,15 +498,8 @@ describe('HeaderComponent', () => {
         ''
       );
       expect(component.authStore.isAuthenticated()).toBe(true);
-      expect(initService.loginSuccess).toHaveBeenCalledWith(
-        pseudo,
-        id_perso,
-        mail,
-        darkModeEnabled,
-        language
-      );
       expect(component.authStore.mail()).toBe(mail);
-      expect(playerService.onLoadListLogin).toHaveBeenCalledWith(
+      expect(userLibraryService.initializeFromLogin).toHaveBeenCalledWith(
         liste_playlist,
         liste_suivi,
         like_video
@@ -562,14 +557,15 @@ describe('HeaderComponent', () => {
   });
 
   describe('onLogout', () => {
-    it('should call userService.logout and initService.logOut', () => {
+    it('should call userService.logout and authStore.logout', () => {
       const successResponse = { success: true, error: '' };
       vi.spyOn(userService, 'logout').mockReturnValue(of(successResponse));
+      const logoutSpy = vi.spyOn(component.authStore, 'logout');
 
       component.onLogout();
 
       expect(userService.logout).toHaveBeenCalled();
-      expect(initService.logOut).toHaveBeenCalled();
+      expect(logoutSpy).toHaveBeenCalled();
     });
   });
 

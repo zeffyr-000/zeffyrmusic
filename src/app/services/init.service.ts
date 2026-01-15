@@ -118,28 +118,9 @@ export class InitService {
     });
 
     if (data.liste_video && data.liste_video.length > 0) {
-      this.queueStore.setQueue(data.liste_video, data.liste_video[0]?.id_playlist ?? null, null);
-    }
-  }
-
-  loginSuccess(
-    pseudo: string,
-    idPerso: string,
-    mail: string,
-    darkModeEnabled: boolean,
-    language: string
-  ) {
-    this.authStore.login(
-      { pseudo, idPerso, mail },
-      { darkModeEnabled, language: language as 'fr' | 'en' }
-    );
-  }
-
-  logOut() {
-    this.authStore.logout();
-
-    if (this.isBrowser) {
-      document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
+      // Don't set source on initial load - link "Back to current playlist" should only
+      // appear after user explicitly starts playback via runPlaylist()
+      this.queueStore.setQueue(data.liste_video, null, null);
     }
   }
 

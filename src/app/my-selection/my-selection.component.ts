@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { PlayerService } from '../services/player.service';
+import { UserLibraryService } from '../services/user-library.service';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { RouterLink } from '@angular/router';
@@ -14,8 +14,8 @@ import { UserDataStore } from '../store/user-data/user-data.store';
   imports: [RouterLink, DefaultImageDirective, TranslocoPipe],
 })
 export class MySelectionComponent implements OnInit {
-  playerService = inject(PlayerService);
-  private titleService = inject(Title);
+  private readonly userLibraryService = inject(UserLibraryService);
+  private readonly titleService = inject(Title);
   private readonly translocoService = inject(TranslocoService);
   readonly userDataStore = inject(UserDataStore);
 
@@ -24,6 +24,6 @@ export class MySelectionComponent implements OnInit {
   }
 
   onDeleteFollow(idPlaylist: string) {
-    this.playerService.deleteFollow(idPlaylist);
+    this.userLibraryService.removeFollow(idPlaylist).subscribe();
   }
 }

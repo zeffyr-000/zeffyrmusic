@@ -1,18 +1,12 @@
-import { HttpClient } from '@angular/common/http';
 import { effect, Injectable, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Subject, Subscription } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { InitService } from './init.service';
-import { UserVideo, Video } from '../models/video.model';
+import { Subscription } from 'rxjs';
+import { Video } from '../models/video.model';
 import { isPlatformBrowser } from '@angular/common';
-import { UserDataStore } from '../store/user-data/user-data.store';
 import { PlayerStore } from '../store/player/player.store';
 import { QueueStore } from '../store/queue/queue.store';
 import { UiStore } from '../store/ui/ui.store';
 import { YoutubePlayerService } from './youtube-player.service';
-import { FollowItem } from '../models/follow.model';
-import { UserPlaylist } from '../models/playlist.model';
 
 /**
  * PlayerService - Playback orchestration and playlist management
@@ -24,10 +18,7 @@ import { UserPlaylist } from '../models/playlist.model';
 })
 export class PlayerService implements OnDestroy {
   private readonly titleService = inject(Title);
-  private readonly httpClient = inject(HttpClient);
-  private readonly initService = inject(InitService);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly userDataStore = inject(UserDataStore);
   private readonly playerStore = inject(PlayerStore);
   private readonly queueStore = inject(QueueStore);
   private readonly uiStore = inject(UiStore);
@@ -46,9 +37,6 @@ export class PlayerService implements OnDestroy {
   private stateChangeSubscription!: Subscription;
   private queueInitialized = false;
 
-  private errorMessageSubject = new Subject<string | null>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
-
   private isBrowser: boolean;
 
   constructor() {
@@ -63,7 +51,7 @@ export class PlayerService implements OnDestroy {
 
       this.youtubePlayer.error$.subscribe(error => {
         if (error) {
-          this.errorMessageSubject.next(error);
+          this.playerStore.setError(error);
         }
       });
 
@@ -178,7 +166,7 @@ export class PlayerService implements OnDestroy {
   onPlayPause() {
     const isNowPlaying = this.youtubePlayer.togglePlayPause();
     this.isPlaying = isNowPlaying;
-    // PlayerStore est mis à jour via handleStateChange quand YouTube émet l'état
+    // PlayerStore is updated via handleStateChange when YouTube emits the state
   }
 
   updateVolume(volume: number) {
@@ -242,114 +230,15 @@ export class PlayerService implements OnDestroy {
     this.playerStore.updateProgress(currentTime, totalTime, loadVideo / 100);
   }
 
-  removeVideo(idVideo: string, callbackSuccess: () => void) {
-    this.httpClient
-      .get<{ success: boolean }>(environment.URL_SERVER + 'supprimer/' + idVideo)
-      .subscribe({
-        next: (data: { success: boolean }) => {
-          if (data.success !== undefined && data.success) {
-            for (let i = 0; i < this.listVideo.length; i++) {
-              if (this.listVideo[i].id_video === idVideo) {
-                this.listVideo.splice(i, 1);
-              }
-            }
-
-            callbackSuccess();
-          }
-        },
-        error: () => {
-          this.initService.onMessageUnlog();
-        },
-      });
-  }
-
-  onLoadListLogin(listPlaylist: UserPlaylist[], listFollow: FollowItem[], listLike: UserVideo[]) {
-    this.userDataStore.setPlaylists(listPlaylist);
-    this.userDataStore.setFollows(listFollow);
-    this.userDataStore.setLikedVideos(listLike);
-  }
-
-  addNewPlaylist(idPlaylist: string, title: string) {
-    const playlist: UserPlaylist = {
-      id_playlist: idPlaylist,
-      titre: title,
-      prive: false,
-    };
-    this.userDataStore.addPlaylist(playlist);
-  }
-
-  editPlaylistTitle(idPlaylist: string, title: string) {
-    this.userDataStore.updatePlaylistTitle(idPlaylist, title);
-  }
-
-  switchVisibilityPlaylist(idPlaylist: string, isPrivate: boolean) {
-    let status: string;
-
-    if (isPrivate) {
-      status = 'prive';
-    } else {
-      status = 'public';
+  /** Removes a video from the current playback queue by its id_video */
+  removeVideoFromQueue(idVideo: string): void {
+    for (let i = 0; i < this.listVideo.length; i++) {
+      if (this.listVideo[i].id_video === idVideo) {
+        // Use removeToPlaylist logic to properly update indices
+        this.removeToPlaylist(i);
+        break;
+      }
     }
-
-    this.httpClient
-      .get<{ success: boolean }>(
-        environment.URL_SERVER + 'switch_publique?id_playlist=' + idPlaylist + '&statut=' + status
-      )
-      .subscribe({
-        next: (data: { success: boolean }) => {
-          if (data.success !== undefined && data.success) {
-            this.userDataStore.togglePlaylistVisibility(idPlaylist, isPrivate);
-          }
-        },
-        error: () => {
-          this.initService.onMessageUnlog();
-        },
-      });
-  }
-
-  deletePlaylist(idPlaylist: string) {
-    this.httpClient
-      .get<{ success: boolean }>(environment.URL_SERVER + 'playlist-supprimer/' + idPlaylist)
-      .subscribe({
-        next: (data: { success: boolean }) => {
-          if (data.success !== undefined && data.success) {
-            this.userDataStore.removePlaylist(idPlaylist);
-          }
-        },
-        error: () => {
-          this.initService.onMessageUnlog();
-        },
-      });
-  }
-
-  deleteFollow(idPlaylist: string) {
-    this.switchFollow(idPlaylist);
-  }
-
-  switchFollow(idPlaylist: string, title = '', artist = '', urlImage = '') {
-    this.httpClient
-      .get<{ success: boolean; est_suivi: boolean }>(
-        environment.URL_SERVER + 'switch_suivi/' + idPlaylist
-      )
-      .subscribe({
-        next: (data: { success: boolean; est_suivi: boolean }) => {
-          if (data.success !== undefined && data.success) {
-            if (data.est_suivi) {
-              this.userDataStore.addFollow({
-                id_playlist: idPlaylist,
-                titre: title,
-                artiste: artist,
-                url_image: urlImage,
-              });
-            } else {
-              this.userDataStore.removeFollow(idPlaylist);
-            }
-          }
-        },
-        error: () => {
-          this.initService.onMessageUnlog();
-        },
-      });
   }
 
   addVideoInPlaylist(key: string, artist: string, title: string, duration: string | number) {
@@ -357,35 +246,13 @@ export class PlayerService implements OnDestroy {
     this.uiStore.openAddVideoModal({ key, artist, title, duration: durationNum });
   }
 
-  addVideoInPlaylistRequest(
-    idPlaylist: string,
-    addKey: string,
-    addTitle: string,
-    addArtist: string,
-    addDuration: number
-  ) {
-    this.httpClient
-      .post(environment.URL_SERVER + 'insert_video', {
-        id_playlist: idPlaylist,
-        key: addKey,
-        titre: addTitle,
-        artiste: addArtist,
-        duree: addDuration,
-      })
-      .subscribe({
-        error: () => {
-          this.initService.onMessageUnlog();
-        },
-      });
-  }
-
   addInCurrentList(playlist: Video[], idTopCharts: string | null = '') {
     if (this.listVideo.length === 0) {
-      // Source sera définie via queueStore.setQueue dans runPlaylist
-      // ou directement ici si appelé directement
+      // Source will be set via queueStore.setQueue in runPlaylist
+      // or directly here if called directly
       this.queueStore.setSource(playlist[0]?.id_playlist ?? null, idTopCharts);
     } else {
-      // Si on ajoute à une liste existante, on ne peut plus identifier une source unique
+      // If adding to an existing list, we can no longer identify a single source
       this.queueStore.setSource(null, null);
     }
     this.listVideo = this.listVideo.concat(playlist);
@@ -433,7 +300,7 @@ export class PlayerService implements OnDestroy {
 
   clearErrorMessage() {
     this.youtubePlayer.clearError();
-    this.errorMessageSubject.next(null);
+    this.playerStore.clearError();
   }
 
   ngOnDestroy() {

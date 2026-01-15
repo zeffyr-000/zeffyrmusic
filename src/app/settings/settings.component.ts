@@ -3,12 +3,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  PLATFORM_ID,
   TemplateRef,
   ViewChild,
   inject,
   signal,
 } from '@angular/core';
-import { form, Field, required, email, minLength, validate } from '@angular/forms/signals';
+import { isPlatformBrowser } from '@angular/common';
+import { form, FormField, required, email, minLength, validate } from '@angular/forms/signals';
 import { NgbActiveModal, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UserReponse } from '../models/user.model';
 import { UserService } from '../services/user.service';
@@ -24,7 +26,7 @@ import '../models/google-identity.model';
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Field, TranslocoPipe],
+  imports: [FormField, TranslocoPipe],
 })
 export class SettingsComponent implements OnInit, AfterViewInit {
   activeModal = inject(NgbActiveModal);
@@ -34,6 +36,8 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   private readonly titleService = inject(Title);
   private readonly initService = inject(InitService);
   readonly authStore = inject(AuthStore);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   @ViewChild('contentModalAssociateGoogleAccount')
   contentModalAssociateGoogleAccount!: TemplateRef<unknown>;
@@ -53,7 +57,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     required(schemaPath.passwordold);
     required(schemaPath.password1);
     minLength(schemaPath.password1, 4, {
-      message: this.translocoService.translate('validation_password_minlength', { min: 4 }),
+      message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
     });
     required(schemaPath.password2);
     validate(schemaPath.password2, ({ value, valueOf }) => {
@@ -71,7 +75,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   readonly editMailForm = form(this.editMailModel, schemaPath => {
     required(schemaPath.mail);
     email(schemaPath.mail, {
-      message: this.translocoService.translate('validation_email_invalid'),
+      message: () => this.translocoService.translate('validation_email_invalid'),
     });
   });
 
@@ -191,7 +195,6 @@ export class SettingsComponent implements OnInit, AfterViewInit {
             this.successDelete.set(true);
             setTimeout(() => this.successDelete.set(false), 10000);
             this.authStore.logout();
-            this.initService.logOut();
           } else {
             this.error.set(this.translocoService.translate(data.error));
           }
@@ -211,6 +214,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   }
 
   renderGoogleSignInButton() {
+    if (!this.isBrowser) return;
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
       google.accounts.id.renderButton(document.getElementById('google-signin-button')!, {
         type: 'standard',

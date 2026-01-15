@@ -71,7 +71,7 @@ describe('SearchComponent', () => {
       runPlaylist: vi.fn(),
       addInCurrentList: vi.fn(),
       addVideoInPlaylist: vi.fn(),
-      removeVideo: vi.fn(),
+      removeVideoFromQueue: vi.fn(),
       addVideoAfterCurrentInList: vi.fn(),
     };
     searchServiceMock = {

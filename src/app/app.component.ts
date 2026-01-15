@@ -24,12 +24,14 @@ import {
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
+import { PageLifecycleService } from './services/page-lifecycle.service';
 import { filter, Subscription } from 'rxjs';
 import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 import { HeaderComponent } from './header/header.component';
 import { PlayerComponent } from './player/player.component';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { PlayerStore } from './store/player/player.store';
 import { QueueStore } from './store/queue/queue.store';
 import { UiStore } from './store/ui/ui.store';
 
@@ -46,20 +48,21 @@ export class AppComponent implements OnInit, OnDestroy {
   private rendererFactory = inject(RendererFactory2);
   private readonly initService = inject(InitService);
   protected readonly playerService = inject(PlayerService);
+  protected readonly playerStore = inject(PlayerStore);
   protected readonly queueStore = inject(QueueStore);
   protected readonly uiStore = inject(UiStore);
   private readonly router = inject(Router);
   private readonly metaService = inject(Meta);
   private readonly translocoService = inject(TranslocoService);
   private readonly modalService = inject(NgbModal);
+  private readonly pageLifecycleService = inject(PageLifecycleService);
 
   title = 'zeffyrmusic';
   readonly isOnline = signal(true);
   currentUrl = '';
 
   renderer: Renderer2;
-  readonly errorMessage = signal<string | null>(null);
-  private errorMessageSubscription!: Subscription;
+  private pageLifecycleSubscription!: Subscription;
   private isBrowser: boolean;
 
   @ViewChild('contentModalReload') contentModalReload!: TemplateRef<unknown>;
@@ -92,6 +95,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
       window.addEventListener('online', () => {
         this.isOnline.set(true);
+      });
+
+      // Handle PWA resume events - refresh data when app is restored
+      this.pageLifecycleSubscription = this.pageLifecycleService.resumed$.subscribe(event => {
+        console.debug('[AppComponent] App resumed, refreshing data...', event);
+        // Re-fetch session/user data to ensure fresh state
+        this.initService.getPing().subscribe();
       });
     }
   }
@@ -142,10 +152,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.renderer.setAttribute(link, 'as', 'image');
     this.renderer.setAttribute(link, 'href', `${environment.URL_ASSETS}assets/img/default.jpg`);
     this.renderer.appendChild(document.head, link);
-
-    this.errorMessageSubscription = this.playerService.errorMessage$.subscribe(message => {
-      this.errorMessage.set(message);
-    });
   }
 
   isRedirectingToCurrentUrl(): boolean {
@@ -156,7 +162,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clearErrorMessage() {
-    this.playerService.clearErrorMessage();
+    this.playerStore.clearError();
   }
 
   reload() {
@@ -164,6 +170,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.errorMessageSubscription?.unsubscribe();
+    this.pageLifecycleSubscription?.unsubscribe();
   }
 }
