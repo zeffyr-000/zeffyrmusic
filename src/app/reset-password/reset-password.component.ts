@@ -7,7 +7,6 @@ import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-reset-password',
-  standalone: true,
   imports: [FormField, TranslocoPipe],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css'],

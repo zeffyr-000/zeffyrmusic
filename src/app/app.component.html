@@ -31,9 +31,9 @@
 <ngb-alert id="alert_deconnexion" (close)="uiStore.hideSessionExpired()" type="danger">
   {{ 'veuillez_vous_reconnecter' | transloco }}
 </ngb-alert>
-} @if(errorMessage()){
+} @if(playerStore.errorMessage()){
 <ngb-alert id="alert_erreur" class="d-lg-none" (close)="clearErrorMessage()" type="danger">
-  {{ errorMessage() | transloco }}
+  {{ playerStore.errorMessage() | transloco }}
 </ngb-alert>
 }
 <ng-template #contentModalReload let-modal>

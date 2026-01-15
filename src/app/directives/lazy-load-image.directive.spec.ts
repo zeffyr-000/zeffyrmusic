@@ -80,7 +80,7 @@ describe('LazyLoadImageDirective', () => {
 
       directive.ngOnInit();
 
-      // Attendre que l'observer soit initialisé
+      // Wait for the observer to be initialized
       await new Promise(resolve => setTimeout(resolve, 0));
 
       mockObserver.triggerObserverCallback([

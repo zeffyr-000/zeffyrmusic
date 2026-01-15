@@ -9,6 +9,7 @@ import { PlaylistComponent } from './playlist.component';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
+import { UserLibraryService } from '../services/user-library.service';
 import { FollowItem } from '../models/follow.model';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { UserVideo, Video } from '../models/video.model';
@@ -35,6 +36,8 @@ describe('PlaylistComponent', () => {
   let initServiceMock: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let playerServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let userLibraryServiceMock: any;
   const mockPlaylistData = {
     id_playlist: '1',
     title: 'title',
@@ -66,13 +69,16 @@ describe('PlaylistComponent', () => {
     playerServiceMock = {
       lecture: vi.fn(),
       removeToPlaylist: vi.fn(),
-      switchFollow: vi.fn(),
       runPlaylist: vi.fn(),
       addInCurrentList: vi.fn(),
       addVideoInPlaylist: vi.fn(),
-      removeVideo: vi.fn(),
+      removeVideoFromQueue: vi.fn(),
       addVideoAfterCurrentInList: vi.fn(),
       onPlayPause: vi.fn(),
+    };
+    userLibraryServiceMock = {
+      toggleFollow: vi.fn().mockReturnValue(of({ success: true, isFollowing: true })),
+      removeVideoFromPlaylist: vi.fn().mockReturnValue(of(true)),
     };
     // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
@@ -106,6 +112,10 @@ describe('PlaylistComponent', () => {
         {
           provide: PlayerService,
           useValue: playerServiceMock,
+        },
+        {
+          provide: UserLibraryService,
+          useValue: userLibraryServiceMock,
         },
         {
           provide: Meta,
@@ -319,7 +329,7 @@ describe('PlaylistComponent', () => {
     expect(component.isPrivate()).toBe(false);
     expect(component.idPlaylist()).toEqual('');
     expect(component.isLikePage()).toBe(true);
-    // L'effect likedVideosEffect chargera les vidéos likées automatiquement
+    // The likedVideosEffect will load liked videos automatically
     expect(titleServiceSpy).toHaveBeenCalledWith(
       translocoService.translate('mes_likes') + ' - Zeffyr Music'
     );
@@ -369,7 +379,7 @@ describe('PlaylistComponent', () => {
     userDataStore.reset();
   });
 
-  it('should call playerService.switchFollow with correct arguments when switchFollow is called', () => {
+  it('should call userLibraryService.toggleFollow with correct arguments when switchFollow is called', () => {
     component.idPlaylist.set('testId');
     component.titre.set('testTitle');
     component.artist.set('testArtist');
@@ -377,7 +387,7 @@ describe('PlaylistComponent', () => {
 
     component.switchFollow();
 
-    expect(playerService.switchFollow).toHaveBeenCalledWith(
+    expect(userLibraryServiceMock.toggleFollow).toHaveBeenCalledWith(
       'testId',
       'testTitle',
       'testArtist',
@@ -458,10 +468,11 @@ describe('PlaylistComponent', () => {
     );
   });
 
-  it('should call playerService.removeVideo with correct arguments when removeVideo is called', () => {
+  it('should call userLibraryService.removeVideoFromPlaylist and playerService.removeVideoFromQueue when removeVideo is called', () => {
     component.removeVideo('testIdVideo');
 
-    expect(playerService.removeVideo).toHaveBeenCalledWith('testIdVideo', expect.any(Function));
+    expect(userLibraryServiceMock.removeVideoFromPlaylist).toHaveBeenCalledWith('testIdVideo');
+    expect(playerService.removeVideoFromQueue).toHaveBeenCalledWith('testIdVideo');
   });
 
   it('should call playerService.addVideoAfterCurrentInList with correct arguments when addVideoAfterCurrentInList is called', () => {
@@ -790,7 +801,7 @@ describe('PlaylistComponent', () => {
       },
     ] as Video[]);
 
-    // Mock le queueStore.currentKey() pour retourner videoKey
+    // Mock queueStore.currentKey() to return videoKey
     vi.spyOn(component.queueStore, 'currentKey').mockReturnValue(videoKey);
 
     component.adjustPlaylistDuration(newDuration);
@@ -829,7 +840,7 @@ describe('PlaylistComponent', () => {
       },
     ] as Video[]);
 
-    // Mock le queueStore.currentKey() pour retourner une clé inexistante
+    // Mock queueStore.currentKey() to return a non-existent key
     vi.spyOn(component.queueStore, 'currentKey').mockReturnValue('non-existent-key');
 
     component.adjustPlaylistDuration(newDuration);
@@ -839,7 +850,7 @@ describe('PlaylistComponent', () => {
   });
 });
 
-// Tests pour le contexte serveur - à ajouter dans un nouveau describe
+// Tests for server context - to be added in a new describe block
 describe('PlaylistComponent (Server context)', () => {
   let component: PlaylistComponent;
   let fixture: ComponentFixture<PlaylistComponent>;
@@ -854,6 +865,8 @@ describe('PlaylistComponent (Server context)', () => {
   let initServiceMock: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let playerServiceMock: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let userLibraryServiceMock: any;
 
   beforeEach(async () => {
     metaServiceMock = { updateTag: vi.fn() };
@@ -861,13 +874,16 @@ describe('PlaylistComponent (Server context)', () => {
     playerServiceMock = {
       lecture: vi.fn(),
       removeToPlaylist: vi.fn(),
-      switchFollow: vi.fn(),
       runPlaylist: vi.fn(),
       addInCurrentList: vi.fn(),
       addVideoInPlaylist: vi.fn(),
-      removeVideo: vi.fn(),
+      removeVideoFromQueue: vi.fn(),
       addVideoAfterCurrentInList: vi.fn(),
       onPlayPause: vi.fn(),
+    };
+    userLibraryServiceMock = {
+      toggleFollow: vi.fn().mockReturnValue(of({ success: true, isFollowing: true })),
+      removeVideoFromPlaylist: vi.fn().mockReturnValue(of(true)),
     };
     // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
@@ -901,6 +917,10 @@ describe('PlaylistComponent (Server context)', () => {
         {
           provide: PlayerService,
           useValue: playerServiceMock,
+        },
+        {
+          provide: UserLibraryService,
+          useValue: userLibraryServiceMock,
         },
         {
           provide: Meta,

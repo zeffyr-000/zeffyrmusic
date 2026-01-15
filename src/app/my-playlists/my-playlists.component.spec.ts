@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MyPlaylistsComponent } from './my-playlists.component';
-import { PlayerService } from '../services/player.service';
+import { UserLibraryService } from '../services/user-library.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { of } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
@@ -15,10 +15,10 @@ describe('MyPlaylistsComponent', () => {
   let component: MyPlaylistsComponent;
   let fixture: ComponentFixture<MyPlaylistsComponent>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let playerServiceMock: any;
+  let userLibraryServiceMock: any;
   let translocoService: TranslocoService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let playerService: PlayerService;
+  let userLibraryService: UserLibraryService;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let userServiceMock: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,11 +29,11 @@ describe('MyPlaylistsComponent', () => {
   const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
   beforeEach(async () => {
-    playerServiceMock = {
-      addNewPlaylist: vi.fn(),
-      switchVisibilityPlaylist: vi.fn(),
-      deletePlaylist: vi.fn(),
-      editPlaylistTitle: vi.fn(),
+    userLibraryServiceMock = {
+      addPlaylist: vi.fn(),
+      togglePlaylistVisibility: vi.fn().mockReturnValue(of(true)),
+      deletePlaylist: vi.fn().mockReturnValue(of(true)),
+      updatePlaylistTitle: vi.fn(),
     };
     userServiceMock = { createPlaylist: vi.fn(), editTitlePlaylist: vi.fn() };
     modalServiceMock = { open: vi.fn() };
@@ -46,7 +46,7 @@ describe('MyPlaylistsComponent', () => {
       providers: [
         getTranslocoTestingProviders(),
         { provide: UserService, useValue: userServiceMock },
-        { provide: PlayerService, useValue: playerServiceMock },
+        { provide: UserLibraryService, useValue: userLibraryServiceMock },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: AuthGuard, useValue: authGuardMock },
         { provide: NgbModal, useValue: modalServiceMock },
@@ -56,7 +56,7 @@ describe('MyPlaylistsComponent', () => {
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
-    playerService = TestBed.inject(PlayerService);
+    userLibraryService = TestBed.inject(UserLibraryService);
     userDataStore = TestBed.inject(UserDataStore);
     userDataStore.reset();
   });
@@ -76,7 +76,7 @@ describe('MyPlaylistsComponent', () => {
     expect(component['titleService'].getTitle()).toBe('My playlists - Zeffyr Music');
   });
 
-  it('should call createPlaylist and addNewPlaylist on valid form submission', () => {
+  it('should call createPlaylist and addPlaylist on valid form submission', () => {
     // Signal Forms: set model values directly
     component.createPlaylistModel.set({ titre: 'New Playlist' });
 
@@ -86,7 +86,7 @@ describe('MyPlaylistsComponent', () => {
     component.onCreatePlaylist(mockEvent);
 
     expect(userServiceMock.createPlaylist).toHaveBeenCalledWith({ titre: 'New Playlist' });
-    expect(playerServiceMock.addNewPlaylist).toHaveBeenCalledWith('1', 'New Playlist');
+    expect(userLibraryServiceMock.addPlaylist).toHaveBeenCalledWith('1', 'New Playlist');
   });
 
   it('should set error message on failed playlist creation', () => {
@@ -114,22 +114,22 @@ describe('MyPlaylistsComponent', () => {
     expect(userServiceMock.createPlaylist).toHaveBeenCalledWith({ titre: 'New Playlist' });
   });
 
-  it('should call switchVisibilityPlaylist on playerService with correct parameters', () => {
+  it('should call togglePlaylistVisibility on userLibraryService with correct parameters', () => {
     const idPlaylist = '1';
     const isPrivate = 'prive';
 
     component.onSwitchVisibility(idPlaylist, isPrivate);
 
-    expect(playerServiceMock.switchVisibilityPlaylist).toHaveBeenCalledWith(idPlaylist, true);
+    expect(userLibraryServiceMock.togglePlaylistVisibility).toHaveBeenCalledWith(idPlaylist, true);
   });
 
-  it('should call switchVisibilityPlaylist on playerService with correct parameters when not private', () => {
+  it('should call togglePlaylistVisibility on userLibraryService with correct parameters when not private', () => {
     const idPlaylist = '1';
     const isPrivate = 'public';
 
     component.onSwitchVisibility(idPlaylist, isPrivate);
 
-    expect(playerServiceMock.switchVisibilityPlaylist).toHaveBeenCalledWith(idPlaylist, false);
+    expect(userLibraryServiceMock.togglePlaylistVisibility).toHaveBeenCalledWith(idPlaylist, false);
   });
 
   it('should open modal and set currentIdPlaylistEdit and editTitleModel', () => {
@@ -139,7 +139,7 @@ describe('MyPlaylistsComponent', () => {
 
     component.onConfirmEditTitlePlaylist(idPlaylist, title, contentModalConfirmEditTitle);
 
-    expect(component.modalService.open).toHaveBeenCalledWith(contentModalConfirmEditTitle);
+    expect(modalServiceMock.open).toHaveBeenCalledWith(contentModalConfirmEditTitle);
     expect(component.currentIdPlaylistEdit).toBe(idPlaylist);
     // Signal Forms: editTitleModel is set instead of playlistTitle
     expect(component.editTitleModel().playlist_titre).toBe(title);
@@ -151,20 +151,20 @@ describe('MyPlaylistsComponent', () => {
 
     component.onConfirmDeletePlaylist(idPlaylist, contentModalConfirmDeletePlaylist);
 
-    expect(component.modalService.open).toHaveBeenCalledWith(contentModalConfirmDeletePlaylist);
+    expect(modalServiceMock.open).toHaveBeenCalledWith(contentModalConfirmDeletePlaylist);
     expect(component.currentIdPlaylistEdit).toBe(idPlaylist);
   });
 
-  it('should call deletePlaylist on playerService and dismiss the modal', () => {
+  it('should call deletePlaylist on userLibraryService and dismiss the modal', () => {
     component.currentIdPlaylistEdit = '1';
 
     component.onDeletePlaylist(activeModalSpyObj);
 
-    expect(playerServiceMock.deletePlaylist).toHaveBeenCalledWith('1');
+    expect(userLibraryServiceMock.deletePlaylist).toHaveBeenCalledWith('1');
     expect(activeModalSpyObj.dismiss).toHaveBeenCalled();
   });
 
-  it('should call editTitlePlaylist on userService and editPlaylistTitle on playerService, then dismiss the modal on success', () => {
+  it('should call editTitlePlaylist on userService and updatePlaylistTitle on userLibraryService, then dismiss the modal on success', () => {
     // Signal Forms: set model values directly
     component.editTitleModel.set({ playlist_titre: 'Updated Playlist Title' });
     component.currentIdPlaylistEdit = '1';
@@ -184,7 +184,10 @@ describe('MyPlaylistsComponent', () => {
       id_playlist: '1',
       titre: 'Updated Playlist Title',
     });
-    expect(playerServiceMock.editPlaylistTitle).toHaveBeenCalledWith('1', 'Updated Playlist Title');
+    expect(userLibraryServiceMock.updatePlaylistTitle).toHaveBeenCalledWith(
+      '1',
+      'Updated Playlist Title'
+    );
     expect(activeModalSpyObj.dismiss).toHaveBeenCalled();
   });
 

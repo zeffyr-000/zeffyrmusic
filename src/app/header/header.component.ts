@@ -24,7 +24,6 @@ import {
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
-import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { AuthStore, UserDataStore, PlayerStore, QueueStore, UiStore } from '../store';
@@ -58,7 +57,7 @@ import '../models/google-identity.model';
 export class HeaderComponent {
   activeModal = inject(NgbActiveModal);
   private readonly modalService = inject(NgbModal);
-  private readonly initService = inject(InitService);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly authStore = inject(AuthStore);
   readonly userDataStore = inject(UserDataStore);
   readonly playerStore = inject(PlayerStore);
@@ -71,6 +70,8 @@ export class HeaderComponent {
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
   private readonly translocoService = inject(TranslocoService);
 
+  readonly isBrowser = isPlatformBrowser(this.platformId);
+
   @ViewChild('contentModalLogin') contentModalLogin!: TemplateRef<unknown>;
   @ViewChild('contentModalRegister') contentModalRegister!: TemplateRef<unknown>;
   @ViewChild('sliderPlayer', {}) sliderPlayerRef!: ElementRef;
@@ -82,8 +83,6 @@ export class HeaderComponent {
   readonly isRegistered = signal(false);
   readonly error = signal('');
   readonly isSuccess = signal(false);
-  currentIdPlaylistEdit = '';
-  playlistTitle = '';
   addKey = '';
   addArtist = '';
   addTitle = '';
@@ -128,12 +127,7 @@ export class HeaderComponent {
     });
   });
 
-  public isBrowser: boolean;
-
   constructor() {
-    const platformId = inject(PLATFORM_ID);
-
-    this.isBrowser = isPlatformBrowser(platformId);
     this.URL_ASSETS = environment.URL_ASSETS;
 
     effect(() => {
@@ -150,6 +144,7 @@ export class HeaderComponent {
   }
 
   goFullscreen(id: string) {
+    if (!this.isBrowser) return;
     const el = document.getElementById(id);
     el?.requestFullscreen();
   }
@@ -307,16 +302,7 @@ export class HeaderComponent {
             }
           );
 
-          // Keep InitService.loginSuccess for compatibility
-          this.initService.loginSuccess(
-            data.pseudo,
-            data.id_perso,
-            data.mail,
-            data.dark_mode_enabled,
-            data.language
-          );
-
-          this.playerService.onLoadListLogin(
+          this.userLibraryService.initializeFromLogin(
             data.liste_playlist,
             data.liste_suivi,
             data.like_video
@@ -337,11 +323,8 @@ export class HeaderComponent {
   onLogout() {
     this.userService.logout().subscribe((data: UserReponse) => {
       if (data.success !== undefined && data.success) {
-        // Logout via AuthStore
+        // Logout via AuthStore (also clears cookie)
         this.authStore.logout();
-
-        // Keep InitService.logOut for compatibility
-        this.initService.logOut();
 
         const url = this.router.url;
         const urlProtected = this.router.config
@@ -368,13 +351,9 @@ export class HeaderComponent {
   }
 
   onAddVideo(idPlaylist: string, modal: NgbActiveModal) {
-    this.playerService.addVideoInPlaylistRequest(
-      idPlaylist,
-      this.addKey,
-      this.addTitle,
-      this.addArtist,
-      this.addDuration
-    );
+    this.userLibraryService
+      .addVideoToPlaylist(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration)
+      .subscribe();
     modal.dismiss();
   }
 
@@ -391,6 +370,7 @@ export class HeaderComponent {
   }
 
   renderGoogleSignInButton() {
+    if (!this.isBrowser) return;
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
       google.accounts.id.initialize({
         client_id: environment.GOOGLE_CLIENT_ID,
@@ -409,6 +389,7 @@ export class HeaderComponent {
   }
 
   renderGoogleRegisterButton() {
+    if (!this.isBrowser) return;
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
       google.accounts.id.initialize({
         client_id: environment.GOOGLE_CLIENT_ID,

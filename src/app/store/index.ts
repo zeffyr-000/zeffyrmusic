@@ -20,7 +20,6 @@ export * from './ui/ui.models';
 // ============================================================================
 
 export { withSsrSafety } from './features/with-ssr-safety';
-export { withLocalStorage, type LocalStorageConfig } from './features/with-local-storage';
 
 // ============================================================================
 // Stores

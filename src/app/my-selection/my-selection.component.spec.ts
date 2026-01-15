@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MySelectionComponent } from './my-selection.component';
-import { PlayerService } from '../services/player.service';
+import { UserLibraryService } from '../services/user-library.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { of } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { AuthGuard } from '../services/auth-guard.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -11,14 +12,16 @@ describe('MySelectionComponent', () => {
   let component: MySelectionComponent;
   let fixture: ComponentFixture<MySelectionComponent>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let playerServiceMock: any;
+  let userLibraryServiceMock: any;
   let translocoService: TranslocoService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let playerService: PlayerService;
+  let userLibraryService: UserLibraryService;
   let userDataStore: InstanceType<typeof UserDataStore>;
 
   beforeEach(async () => {
-    playerServiceMock = { deleteFollow: vi.fn() };
+    userLibraryServiceMock = {
+      removeFollow: vi.fn().mockReturnValue(of({ success: true, isFollowing: false })),
+    };
 
     const authGuardMock = { canActivate: vi.fn() };
 
@@ -26,7 +29,7 @@ describe('MySelectionComponent', () => {
       imports: [MySelectionComponent],
       providers: [
         getTranslocoTestingProviders(),
-        { provide: PlayerService, useValue: playerServiceMock },
+        { provide: UserLibraryService, useValue: userLibraryServiceMock },
         { provide: AuthGuard, useValue: authGuardMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -34,7 +37,7 @@ describe('MySelectionComponent', () => {
 
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
-    playerService = TestBed.inject(PlayerService);
+    userLibraryService = TestBed.inject(UserLibraryService);
     userDataStore = TestBed.inject(UserDataStore);
     userDataStore.reset();
   });
@@ -62,10 +65,10 @@ describe('MySelectionComponent', () => {
     expect(component.userDataStore.follows()).toEqual(followItems);
   });
 
-  it('should call deleteFollow on playerService when onDeleteFollow is called', () => {
+  it('should call removeFollow on userLibraryService when onDeleteFollow is called', () => {
     const idPlaylist = '1';
     component.onDeleteFollow(idPlaylist);
-    expect(playerServiceMock.deleteFollow).toHaveBeenCalledWith(idPlaylist);
+    expect(userLibraryServiceMock.removeFollow).toHaveBeenCalledWith(idPlaylist);
   });
 
   it('should translate title correctly on init', () => {

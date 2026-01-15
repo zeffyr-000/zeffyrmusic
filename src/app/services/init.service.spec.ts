@@ -231,38 +231,6 @@ describe('InitService', () => {
       });
     });
 
-    describe('loginSuccess', () => {
-      it('should call authStore.login with correct parameters', () => {
-        const loginSpy = vi.spyOn(authStore, 'login');
-
-        service.loginSuccess('test_pseudo', 'test_id_perso', 'test_mail', true, 'en');
-
-        expect(loginSpy).toHaveBeenCalledWith(
-          { pseudo: 'test_pseudo', idPerso: 'test_id_perso', mail: 'test_mail' },
-          { darkModeEnabled: true, language: 'en' }
-        );
-        expect(authStore.isAuthenticated()).toBe(true);
-      });
-    });
-
-    describe('logOut', () => {
-      it('should call authStore.logout', () => {
-        // First login
-        authStore.login(
-          { pseudo: 'test', idPerso: '123', mail: 'test@test.com' },
-          { darkModeEnabled: false, language: 'fr' }
-        );
-        expect(authStore.isAuthenticated()).toBe(true);
-
-        const logoutSpy = vi.spyOn(authStore, 'logout');
-
-        service.logOut();
-
-        expect(logoutSpy).toHaveBeenCalled();
-        expect(authStore.isAuthenticated()).toBe(false);
-      });
-    });
-
     describe('onMessageUnlog', () => {
       it('should call uiStore.showSessionExpired and authStore.logout', () => {
         const uiStore = TestBed.inject(UiStore);

@@ -239,8 +239,7 @@ export class PlaylistComponent {
   }
 
   loadPlaylist(url: string) {
-    this.lastAdjustedKey = null;
-    this.lastAdjustedDuration = 0;
+    this.resetAdjustmentState();
 
     this.playlistService
       .getPlaylist(url, this.idPlaylist() ?? undefined)
@@ -248,105 +247,19 @@ export class PlaylistComponent {
         this.isLoading.set(false);
 
         if (data.est_prive === undefined) {
-          this.isPrivate.set(false);
-          this.idPlaylist.set(data.id_playlist);
-          this.playlist.set(data.tab_video);
-          this.imgBig.set(data.img_big || `${environment.URL_ASSETS}assets/img/default.jpg`);
-          this.idTopCharts.set(data.id_top || null);
-          this.title.set(data.title);
-          this.titre.set(data.titre || '');
-          this.description.set(data.description || '');
-          if (data.est_suivi && !this.userDataStore.isFollowing(data.id_playlist)) {
-            this.userDataStore.addFollow({
-              id_playlist: data.id_playlist,
-              titre: data.titre || data.title,
-              artiste: data.artiste,
-              url_image: data.img_big,
-            });
-          }
-          this.artist.set(data.artiste || '');
-          this.idArtist.set(data.id_artiste ?? null);
-          this.idPersoOwner.set(data.id_perso);
-
-          this.titleService.setTitle(this.getMetaTitle(data));
-          this.metaService.updateTag({ name: 'og:title', content: this.getMetaTitle(data) });
-          this.metaService.updateTag({
-            name: 'description',
-            content: this.getMetaDescription(data),
-          });
-
-          if (data.artiste !== undefined && data.titre !== undefined) {
-            this.metaService.updateTag({
-              name: 'og:description',
-              content:
-                this.translocoService.translate('description_partage', {
-                  artiste: data.artiste,
-                  album: data.titre,
-                }) || '',
-            });
-          } else {
-            this.metaService.updateTag({
-              name: 'og:description',
-              content:
-                this.translocoService.translate('description_partage_playlist', {
-                  playlist: data.title,
-                }) || '',
-            });
-          }
-
-          if (data.og_image !== undefined || data.img_big !== undefined) {
-            this.metaService.updateTag({
-              name: 'og:image',
-              content: data.og_image || data.img_big,
-            });
-          }
-
-          if (this.isBrowser) {
-            this.metaService.updateTag({ name: 'og:url', content: document.location.href });
-            this.seoService.updateCanonicalUrl(document.location.href);
-          } else {
-            if (data.id_top !== undefined) {
-              this.metaService.updateTag({
-                name: 'og:url',
-                content: `${environment.URL_BASE}top/${data.id_top}`,
-              });
-              this.seoService.updateCanonicalUrl(`${environment.URL_BASE}top/${data.id_top}`);
-            } else {
-              this.metaService.updateTag({
-                name: 'og:url',
-                content: `${environment.URL_BASE}playlist/${this.idPlaylist()}`,
-              });
-              this.seoService.updateCanonicalUrl(
-                `${environment.URL_BASE}playlist/${this.idPlaylist()}`
-              );
-            }
-          }
+          this.updatePlaylistState(data);
+          this.updateSeoMetadata(data);
         } else {
           this.isPrivate.set(true);
         }
 
-        if (this.isBrowser) {
-          this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
-        }
+        this.trackPageView();
       });
   }
 
   loadLike() {
-    this.lastAdjustedKey = null;
-    this.lastAdjustedDuration = 0;
-
-    this.isLoading.set(false);
-    this.isPrivate.set(false);
-    this.idPlaylist.set('');
-    this.playlist.set([]);
-    this.imgBig.set(`${environment.URL_ASSETS}assets/img/default.jpg`);
-    this.idTopCharts.set(null);
-    this.title.set('');
-    this.titre.set('');
-    this.description.set('');
-    this.artist.set(null);
-    this.idArtist.set(null);
-    this.idPersoOwner.set('');
+    this.resetAdjustmentState();
+    this.resetToDefaultState();
     this.isLikePage.set(true);
 
     const likedVideos = this.userDataStore.likedVideos();
@@ -361,20 +274,117 @@ export class PlaylistComponent {
     }
 
     this.titleService.setTitle(this.translocoService.translate('mes_likes') + ' - Zeffyr Music');
+    this.clearOgMetaTags();
+    this.updateCanonicalUrl();
+    this.trackPageView();
+  }
+
+  /** Resets duration adjustment tracking state */
+  private resetAdjustmentState(): void {
+    this.lastAdjustedKey = null;
+    this.lastAdjustedDuration = 0;
+  }
+
+  /** Resets playlist signals to default values */
+  private resetToDefaultState(): void {
+    this.isLoading.set(false);
+    this.isPrivate.set(false);
+    this.idPlaylist.set('');
+    this.playlist.set([]);
+    this.imgBig.set(`${environment.URL_ASSETS}assets/img/default.jpg`);
+    this.idTopCharts.set(null);
+    this.title.set('');
+    this.titre.set('');
+    this.description.set('');
+    this.artist.set(null);
+    this.idArtist.set(null);
+    this.idPersoOwner.set('');
+  }
+
+  /** Updates component state from playlist data */
+  private updatePlaylistState(data: Playlist): void {
+    this.isPrivate.set(false);
+    this.idPlaylist.set(data.id_playlist);
+    this.playlist.set(data.tab_video);
+    this.imgBig.set(data.img_big || `${environment.URL_ASSETS}assets/img/default.jpg`);
+    this.idTopCharts.set(data.id_top || null);
+    this.title.set(data.title);
+    this.titre.set(data.titre || '');
+    this.description.set(data.description || '');
+    this.artist.set(data.artiste || '');
+    this.idArtist.set(data.id_artiste ?? null);
+    this.idPersoOwner.set(data.id_perso);
+
+    if (data.est_suivi && !this.userDataStore.isFollowing(data.id_playlist)) {
+      this.userDataStore.addFollow({
+        id_playlist: data.id_playlist,
+        titre: data.titre || data.title,
+        artiste: data.artiste,
+        url_image: data.img_big,
+      });
+    }
+  }
+
+  /** Updates SEO metadata for the playlist */
+  private updateSeoMetadata(data: Playlist): void {
+    this.titleService.setTitle(this.getMetaTitle(data));
+    this.metaService.updateTag({ name: 'og:title', content: this.getMetaTitle(data) });
+    this.metaService.updateTag({ name: 'description', content: this.getMetaDescription(data) });
+
+    const ogDescription = this.getOgDescription(data);
+    this.metaService.updateTag({ name: 'og:description', content: ogDescription });
+
+    if (data.og_image || data.img_big) {
+      this.metaService.updateTag({ name: 'og:image', content: data.og_image || data.img_big });
+    }
+
+    this.updateCanonicalUrl(data);
+  }
+
+  /** Generates OpenGraph description based on playlist type */
+  private getOgDescription(data: Playlist): string {
+    if (data.artiste !== undefined && data.titre !== undefined) {
+      return (
+        this.translocoService.translate('description_partage', {
+          artiste: data.artiste,
+          album: data.titre,
+        }) || ''
+      );
+    }
+    return (
+      this.translocoService.translate('description_partage_playlist', {
+        playlist: data.title,
+      }) || ''
+    );
+  }
+
+  /** Clears OpenGraph meta tags */
+  private clearOgMetaTags(): void {
     this.metaService.updateTag({ name: 'og:title', content: '' });
     this.metaService.updateTag({ name: 'og:description', content: '' });
     this.metaService.updateTag({ name: 'og:image', content: '' });
+  }
+
+  /** Updates canonical URL for SEO */
+  private updateCanonicalUrl(data?: Playlist): void {
     if (this.isBrowser) {
       this.metaService.updateTag({ name: 'og:url', content: document.location.href });
       this.seoService.updateCanonicalUrl(document.location.href);
+    } else if (data) {
+      const url = data.id_top
+        ? `${environment.URL_BASE}top/${data.id_top}`
+        : `${environment.URL_BASE}playlist/${this.idPlaylist()}`;
+      this.metaService.updateTag({ name: 'og:url', content: url });
+      this.seoService.updateCanonicalUrl(url);
     } else {
-      this.metaService.updateTag({
-        name: 'og:url',
-        content: `https://www.${this.baseHref}/${this.router.url}`,
-      });
-      this.seoService.updateCanonicalUrl(`https://www.${this.baseHref}/${this.router.url}`);
+      const url = `https://www.${this.baseHref}/${this.router.url}`;
+      this.metaService.updateTag({ name: 'og:url', content: url });
+      this.seoService.updateCanonicalUrl(url);
     }
+  }
 
+  /** Tracks page view in Google Analytics */
+  private trackPageView(): void {
     if (this.isBrowser) {
       this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
     }
@@ -383,7 +393,9 @@ export class PlaylistComponent {
   switchFollow() {
     const id = this.idPlaylist();
     if (id) {
-      this.playerService.switchFollow(id, this.titre(), this.artist() ?? '', this.imgBig());
+      this.userLibraryService
+        .toggleFollow(id, this.titre(), this.artist() ?? '', this.imgBig())
+        .subscribe();
     }
   }
 
@@ -404,7 +416,12 @@ export class PlaylistComponent {
   }
 
   removeVideo(idVideo: string) {
-    this.playerService.removeVideo(idVideo, () => this.loadPlaylist(''));
+    this.userLibraryService.removeVideoFromPlaylist(idVideo).subscribe(success => {
+      if (success) {
+        this.playerService.removeVideoFromQueue(idVideo);
+        this.loadPlaylist('');
+      }
+    });
   }
 
   addVideoAfterCurrentInList(video: Video) {

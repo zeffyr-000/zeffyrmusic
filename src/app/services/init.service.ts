@@ -124,27 +124,6 @@ export class InitService {
     }
   }
 
-  loginSuccess(
-    pseudo: string,
-    idPerso: string,
-    mail: string,
-    darkModeEnabled: boolean,
-    language: string
-  ) {
-    this.authStore.login(
-      { pseudo, idPerso, mail },
-      { darkModeEnabled, language: language as 'fr' | 'en' }
-    );
-  }
-
-  logOut() {
-    this.authStore.logout();
-
-    if (this.isBrowser) {
-      document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
-    }
-  }
-
   onMessageUnlog() {
     this.uiStore.showSessionExpired();
     this.authStore.logout();
