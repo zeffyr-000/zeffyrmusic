@@ -24,6 +24,23 @@ a {
   text-decoration: none;
 }
 
+// Card hover effects for interactive cards
+a.card,
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  text-decoration: none;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $box-shadow-lg;
+  }
+
+  &:focus {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+}
+
 .navbar-inverse {
   background-color: $white-two;
 }
@@ -146,7 +163,7 @@ a.card {
 .table > thead > tr.active > td,
 .table > tbody > tr.active > td,
 .table > tfoot > tr.active > td {
-  background-color: #e6e6e6;
+  background-color: $gray-light;
 }
 
 td[onclick],

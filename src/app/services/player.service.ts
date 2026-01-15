@@ -288,12 +288,18 @@ export class PlayerService implements OnDestroy {
     this.queueStore.addAfterCurrent(video);
   }
 
-  runPlaylist(playlist: Video[], index: number, idTopCharts: string | null = '') {
+  runPlaylist(
+    playlist: Video[],
+    index: number,
+    idTopCharts: string | null = '',
+    playlistId: string | null = null
+  ) {
     this.listVideo = [];
     this.tabIndexInitial = [];
     this.tabIndex = [];
+    const sourcePlaylistId = playlistId ?? playlist[0]?.id_playlist ?? null;
     this.addInCurrentList(playlist, idTopCharts);
-    this.queueStore.setQueue(playlist, playlist[0]?.id_playlist ?? null, idTopCharts);
+    this.queueStore.setQueue(playlist, sourcePlaylistId, idTopCharts);
 
     this.lecture(index, true);
   }

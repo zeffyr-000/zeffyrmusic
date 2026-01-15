@@ -23,6 +23,9 @@
   </div>
 </div>
 
+<!-- Toast notifications container -->
+<app-toast-container></app-toast-container>
+
 @if(!isOnline()){
 <ngb-alert id="alert_perte_connexion" (close)="isOnline.set(true)" type="danger">
   {{ 'perte_connexion' | transloco }}

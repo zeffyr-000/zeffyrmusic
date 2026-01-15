@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { form, FormField, required, minLength, email } from '@angular/forms/signals';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   NgbActiveModal,
   NgbModal,
@@ -20,6 +20,7 @@ import {
   NgbDropdownMenu,
   NgbDropdownItem,
   NgbTooltip,
+  NgbOffcanvas,
 } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -46,6 +47,7 @@ import '../models/google-identity.model';
     NgbDropdownMenu,
     NgbDropdownItem,
     RouterLink,
+    RouterLinkActive,
     SearchBarComponent,
     SwipeDownDirective,
     NgbTooltip,
@@ -74,10 +76,13 @@ export class HeaderComponent {
 
   @ViewChild('contentModalLogin') contentModalLogin!: TemplateRef<unknown>;
   @ViewChild('contentModalRegister') contentModalRegister!: TemplateRef<unknown>;
+  @ViewChild('contentMobileMenu', { static: true }) contentMobileMenu!: TemplateRef<unknown>;
   @ViewChild('sliderPlayer', {}) sliderPlayerRef!: ElementRef;
   @ViewChild('sliderVolume', {}) sliderVolumeRef!: ElementRef;
   @ViewChild('contentModalAddVideo', {})
   private readonly contentModalAddVideo!: TemplateRef<unknown>;
+
+  private readonly offcanvasService = inject(NgbOffcanvas);
 
   onDragingPlayer = false;
   readonly isRegistered = signal(false);
@@ -259,6 +264,12 @@ export class HeaderComponent {
   }
 
   openModal(content: TemplateRef<unknown>) {
+    // Blur the currently focused element so focus is not trapped on an element
+    // that will be hidden via aria-hidden when the modal opens (prevents screen
+    // readers from focusing on hidden content).
+    if (this.isBrowser && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     this.modalService.open(content, { size: 'lg' });
   }
 
@@ -357,7 +368,22 @@ export class HeaderComponent {
     modal.dismiss();
   }
 
+  openMobileMenu(): void {
+    this.offcanvasService.open(this.contentMobileMenu, {
+      position: 'start',
+      ariaLabelledBy: 'offcanvas-mobile-menu-title',
+    });
+  }
+
+  closeMobileMenu(): void {
+    this.offcanvasService.dismiss();
+  }
+
   openModalLogin() {
+    // Blur the active element to prevent aria-hidden conflict
+    if (this.isBrowser && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     const modalRef: NgbModalRef = this.modalService.open(this.contentModalLogin, { size: 'lg' });
     modalRef.result.then(
       () => this.renderGoogleSignInButton(),
@@ -404,6 +430,10 @@ export class HeaderComponent {
   }
 
   openModalRegister() {
+    // Blur the active element to prevent aria-hidden conflict
+    if (this.isBrowser && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     const modalRef: NgbModalRef = this.modalService.open(this.contentModalRegister, { size: 'lg' });
     modalRef.result.then(
       () => this.renderGoogleRegisterButton(),

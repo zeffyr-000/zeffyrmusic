@@ -400,7 +400,7 @@ export class PlaylistComponent {
   }
 
   runPlaylist(index = 0) {
-    this.playerService.runPlaylist(this.playlist(), index, this.idTopCharts());
+    this.playerService.runPlaylist(this.playlist(), index, this.idTopCharts(), this.idPlaylist());
   }
 
   pausePlaylist() {
