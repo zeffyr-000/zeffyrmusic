@@ -2,7 +2,6 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  OnDestroy,
   OnInit,
   PLATFORM_ID,
   Renderer2,
@@ -24,8 +23,7 @@ import {
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
-import { PageLifecycleService } from './services/page-lifecycle.service';
-import { filter, Subscription } from 'rxjs';
+import { filter } from 'rxjs';
 import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 import { HeaderComponent } from './header/header.component';
@@ -51,7 +49,7 @@ import { ToastContainerComponent } from './toast-container/toast-container.compo
     ToastContainerComponent,
   ],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   private readonly document = inject<Document>(DOCUMENT);
   private platformId = inject(PLATFORM_ID);
   private rendererFactory = inject(RendererFactory2);
@@ -64,14 +62,12 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly metaService = inject(Meta);
   private readonly translocoService = inject(TranslocoService);
   private readonly modalService = inject(NgbModal);
-  private readonly pageLifecycleService = inject(PageLifecycleService);
 
   title = 'zeffyrmusic';
   readonly isOnline = signal(true);
   currentUrl = '';
 
   renderer: Renderer2;
-  private pageLifecycleSubscription!: Subscription;
   private isBrowser: boolean;
 
   @ViewChild('contentModalReload') contentModalReload!: TemplateRef<unknown>;
@@ -104,13 +100,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
       window.addEventListener('online', () => {
         this.isOnline.set(true);
-      });
-
-      // Handle PWA resume events - refresh data when app is restored
-      this.pageLifecycleSubscription = this.pageLifecycleService.resumed$.subscribe(event => {
-        console.debug('[AppComponent] App resumed, refreshing data...', event);
-        // Re-fetch session/user data to ensure fresh state
-        this.initService.getPing().subscribe();
       });
     }
   }
@@ -176,9 +165,5 @@ export class AppComponent implements OnInit, OnDestroy {
 
   reload() {
     window.location.reload();
-  }
-
-  ngOnDestroy() {
-    this.pageLifecycleSubscription?.unsubscribe();
   }
 }
