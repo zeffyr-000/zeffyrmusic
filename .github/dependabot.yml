@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    # Group minor/patch updates to reduce PR noise
+    groups:
+      angular:
+        patterns:
+          - '@angular/*'
+          - '@angular-eslint/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+      dependencies:
+        patterns:
+          - '*'
+        exclude-patterns:
+          - '@angular/*'
+          - '@angular-eslint/*'
+        update-types:
+          - 'patch'
+    # Ensure lock file is always updated
+    versioning-strategy: increase
