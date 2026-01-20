@@ -2,21 +2,21 @@
   width: 80%;
 }
 
-#liste_resultat_recherche {
+#liste-resultat-recherche {
   width: 74%;
   position: absolute;
   z-index: 10;
 }
 
-#liste_resultat_recherche .list-group-item {
+#liste-resultat-recherche .list-group-item {
   padding: 4px;
 }
 
-#liste_resultat_recherche .list-group-item.all_results {
+#liste-resultat-recherche .list-group-item.all_results {
   min-height: 60px;
 }
 
-#liste_resultat_recherche h4 {
+#liste-resultat-recherche h4 {
   margin: 0px;
   line-height: 60px;
 }
@@ -31,7 +31,7 @@
   #header_recherche > input {
     width: 99%;
   }
-  #liste_resultat_recherche {
+  #liste-resultat-recherche {
     position: absolute;
     right: 0;
     width: 100%;

@@ -1,0 +1,84 @@
+// =============================================================================
+// UTILITIES - Reusable helper classes
+// =============================================================================
+
+// Loading spinner container
+.content-loading {
+  height: 20px;
+  width: 20px;
+  margin: 0 auto;
+}
+
+// Content indication badge
+.content-indication {
+  background-color: rgba(var(--bs-body-bg-rgb), 0.5);
+  border-radius: 15px;
+  padding: 2px 6px;
+}
+
+// Panel head content
+.panel-head-content {
+  position: relative;
+}
+
+// Spinning animation utility
+.spin {
+  animation: spin 600ms infinite linear;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Card hover effects for interactive cards
+a.card,
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1rem rgba(var(--bs-body-color-rgb), 0.15);
+  }
+
+  &:focus {
+    outline: 2px solid rgb(var(--bs-primary-rgb));
+    outline-offset: 2px;
+  }
+
+  &[ng-reflect-router-link]:hover,
+  &[href]:hover {
+    cursor: pointer;
+    border-color: var(--bs-border-color);
+  }
+}
+
+.card-header {
+  background-color: var(--bs-card-bg);
+}
+
+.card-img-top {
+  min-height: 13.3vw;
+}
+
+// Thumbnail utilities
+.thumbnail {
+  max-height: 34px;
+}
+
+.thumbnail-big {
+  max-height: 60px;
+}
+
+// Material Icons alignment
+.material-icons {
+  display: inline-flex;
+  vertical-align: top;
+}

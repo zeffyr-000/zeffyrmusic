@@ -1,46 +1,87 @@
-#container_player {
+// =============================================================================
+// PLAYER COMPONENT - YouTube player and queue styles
+// =============================================================================
+
+// YouTube player container (aspect ratio 16:9 on desktop)
+#container-player {
   position: relative;
-  padding-bottom: 56.25%;
+  padding-bottom: 56.25%; // 16:9 aspect ratio (9/16 = 0.5625)
   height: 0;
 }
 
-#liste_en_cours_content {
+// ⚠️ NOTE: #player styles are in global styles.scss because the YouTube iframe
+// is created externally and doesn't have Angular's view encapsulation attributes
+// See docs/CSS_ARCHITECTURE.md section "YouTube Player Critical Rules"
+
+// Queue list
+#queue-content {
   padding-bottom: 56.25%;
+  height: 100%;
+  overflow: auto;
 }
 
-#liste_en_cours {
+#queue-list {
   table-layout: fixed;
-}
 
-#liste_en_cours tr:hover {
-  cursor: pointer;
-}
+  tr {
+    &:hover {
+      cursor: pointer;
+    }
 
-#liste_en_cours td > a:hover {
-  text-decoration: none;
-}
+    &.active {
+      background-color: var(--bs-table-hover-bg, #e6e6e6);
+    }
+  }
 
-#liste_en_cours td:first-child {
-  width: 70px;
-}
+  td {
+    > a:hover {
+      text-decoration: none;
+    }
 
-#liste_en_cours td:last-child {
-  width: 50px;
-}
+    &:first-child {
+      width: 70px;
+    }
 
-#liste_en_cours td > p {
-  margin: 0;
-  padding: 0;
-  text-overflow: ellipsis;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-}
+    &:last-child {
+      width: 50px;
+    }
 
-#liste_en_cours td > p:hover {
-  cursor: pointer;
+    > p {
+      margin: 0;
+      padding: 0;
+      text-overflow: ellipsis;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .dropdown-toggle::after {
   display: none;
+}
+
+// Responsive behavior for mobile
+// ⚠️ CRITICAL: All three elements must be 1px for proper mobile layout
+// - #player-sidebar: hide left sidebar
+// - #container-player: hide player container + remove aspect ratio
+// - #player: see styles.scss (must be in global CSS)
+@media screen and (max-width: 640px) {
+  #container-player {
+    z-index: -1; // Send behind content
+    padding-bottom: 0; // ⚠️ CRITICAL: Remove aspect ratio padding
+  }
+
+  #player-sidebar,
+  #container-player {
+    height: 1px; // Visually hide but keep in DOM
+  }
+
+  #queue-content {
+    display: none; // Hide queue list on mobile
+  }
 }

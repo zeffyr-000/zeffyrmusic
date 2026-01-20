@@ -7,7 +7,7 @@ import { AuthStore } from '../store';
 })
 export class AuthGuard implements CanActivate {
   private readonly authStore = inject(AuthStore);
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
   canActivate(): boolean {
     if (this.authStore.isAuthenticated()) {

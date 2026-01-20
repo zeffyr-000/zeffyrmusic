@@ -78,7 +78,15 @@
 - 🖼️ **Image Optimization**: Lazy loading directives
 - ⚡ **Fine-grained Reactivity**: Signal-based updates
 
+### CSS Architecture (Refactored January 2026)
+
+- 🎨 **Component-Scoped CSS**: 67% reduction in global CSS
+- 📝 **English Naming**: Consistent kebab-case conventions
+- 🏗️ **Documented Architecture**: Comprehensive CSS documentation
+- ⚠️ **Critical Rules**: YouTube player integration guidelines
+
 > 📖 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture documentation.
+> 🎨 See [docs/CSS_ARCHITECTURE.md](docs/CSS_ARCHITECTURE.md) for CSS/SCSS guidelines.
 
 ---
 

@@ -1,8 +1,8 @@
-<div id="container_player">
+<div id="container-player">
   <div id="player"></div>
 </div>
-<div id="liste_en_cours_content" class="card panel-content border-0">
-  <table id="liste_en_cours" class="table table-hover table-sm">
+<div id="queue-content" class="card panel-content border-0">
+  <table id="queue-list" class="table table-hover table-sm">
     <thead></thead>
     <tbody>
       @for (video of queueStore.items(); track video.id_video; let index = $index) {
