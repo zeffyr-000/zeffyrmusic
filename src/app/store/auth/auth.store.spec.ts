@@ -187,6 +187,28 @@ describe('AuthStore', () => {
 
       expect(translocoServiceMock.setActiveLang).toHaveBeenCalledWith('en');
     });
+
+    it('should update HTML lang attribute', () => {
+      store.setLanguage('en');
+
+      expect(document.documentElement.lang).toBe('en');
+    });
+
+    it('should not throw error on SSR when updating HTML lang attribute', () => {
+      // Reconfigure with server platform
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          AuthStore,
+          { provide: PLATFORM_ID, useValue: 'server' },
+          { provide: TranslocoService, useValue: translocoServiceMock },
+        ],
+      });
+      const serverStore = TestBed.inject(AuthStore);
+
+      // Should not throw error on server
+      expect(() => serverStore.setLanguage('en')).not.toThrow();
+    });
   });
 
   describe('updateUser', () => {

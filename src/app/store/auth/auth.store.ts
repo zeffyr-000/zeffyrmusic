@@ -122,6 +122,12 @@ export const AuthStore = signalStore(
 
       _applyLanguage(lang: Language): void {
         transloco.setActiveLang(lang);
+        // Update HTML lang attribute for accessibility and SEO
+        store.runInBrowser(() => {
+          if (document?.documentElement) {
+            document.documentElement.lang = lang;
+          }
+        });
       },
     };
   })

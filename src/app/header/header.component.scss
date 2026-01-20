@@ -1,10 +1,14 @@
+// =============================================================================
+// HEADER COMPONENT - Navigation, player controls, and responsive behavior
+// =============================================================================
+
 @import '../../styling/custom';
 
-#header_logo {
+#header-logo {
   width: 25%;
 }
 
-#header_logo_lien {
+#header-logo-link {
   display: block;
   width: 100%;
   height: 50px;
@@ -12,22 +16,22 @@
   text-align: center;
 }
 
-#header_logo_lien > img {
+#header-logo-link > img {
   max-width: 100%;
   max-height: 100%;
 }
 
-#header_burger {
+#header-burger {
   width: 16.666%;
 }
 
-#slider_1_main {
+#slider-1-main {
   width: 70%;
   position: relative;
   margin-top: 8px;
 }
 
-#slider_1_content {
+#slider-1-content {
   width: 100%;
   height: 6px;
   background-color: $greyish-brown-two;
@@ -35,8 +39,8 @@
   border-radius: 5px;
 }
 
-#load_video,
-#load_video_current {
+#load-video,
+#load-video-current {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -47,15 +51,15 @@
   pointer-events: none;
 }
 
-#load_video {
+#load-video {
   background-color: rgba($white, 0.8);
 }
 
-#load_video_current {
+#load-video-current {
   background-color: $white;
 }
 
-#slider_2_main {
+#slider-2-main {
   position: relative;
   float: right;
   margin: 8px 10px 0 0;
@@ -66,13 +70,13 @@
   width: calc(100% - 34px);
 }
 
-#slider_2_content {
+#slider-2-content {
   width: 100%;
   height: 16px;
   position: absolute;
 }
 
-#load_volume_current {
+#load-volume-current {
   background-color: $white;
   position: absolute;
   height: 6px;
@@ -134,29 +138,29 @@
   outline: 0;
 }
 
-#header_burger .dropdown-toggle::after {
+#header-burger .dropdown-toggle::after {
   display: none;
 }
 
-#header_top {
+#header-top {
   width: 100%;
   height: 50%;
 }
 
-#header_nav {
+#header-nav {
   width: 41.66666667%;
   max-height: 50px;
 }
 
-#header_recherche {
+#header-recherche {
   width: 33.33333333%;
 }
 
-#header_toggle_big {
+#header-toggle-big {
   display: block;
 }
 
-#header_player {
+#header-player {
   width: 100%;
   position: fixed;
   bottom: 0;
@@ -165,33 +169,33 @@
   z-index: 100;
 }
 
-#header_player_volume_content {
+#header-player-volume-content {
   width: 50%;
   max-width: 150px;
   border-radius: 3px;
 }
 
-#header_player_center_load {
+#header-player-center-load {
   height: 30px;
 }
 
-#header_player_center_load > div {
+#header-player-center-load > div {
   display: inline-block;
   height: 30px;
   text-align: center;
   vertical-align: top;
 }
 
-#chrono_en_cours,
-#chrono_total {
+#current-time,
+#chrono-total {
   width: 15%;
 }
 
-#header_player_gauche {
+#player-info-left {
   width: 25%;
 }
 
-#header_player_gauche > div {
+#player-info-left > div {
   box-sizing: border-box;
   width: calc(100% - 130px);
   overflow: hidden;
@@ -199,27 +203,27 @@
   text-overflow: ellipsis;
 }
 
-#header_player_gauche > img {
+#player-info-left > img {
   max-height: 50px;
   padding: 4px;
 }
 
-#header_player_centre {
+#player-info-center {
   width: 50%;
 }
 
-#header_player_droite {
+#player-info-right {
   width: 25%;
 }
 
-#header_li_connexion > button,
-#header_li_inscription > button {
+#header-li-connexion > button,
+#header-li-inscription > button {
   border-radius: 20px;
   padding: 2px 28px;
   margin: 4px;
 }
 
-#header_player_centre_title {
+#player-info-center-title {
   width: calc(100% - 64px);
   transition: none; // Disable transition for immediate feedback
   background-color: transparent;
@@ -235,55 +239,56 @@
   }
 }
 
-#header_player_collapse {
+#header-player-collapse {
   display: none;
 }
 
-@media screen and (max-device-width: 1199px), screen and (max-width: 1199px) {
-  #header_player_volume_content {
+// Responsive styles - use Bootstrap breakpoints
+@media screen and (max-width: 1199px) {
+  #header-player-volume-content {
     margin: 0;
   }
 
-  #header_li_connexion > button,
-  #header_li_inscription > button {
+  #header-li-connexion > button,
+  #header-li-inscription > button {
     padding: 2px;
   }
 }
 
 @media (max-width: 750px) {
-  #header_toggle_big {
+  #header-toggle-big {
     display: none;
   }
-  #header_player {
+  #header-player {
     height: 100px;
   }
-  #header_player_gauche {
+  #player-info-left {
     display: none;
   }
-  #header_player_centre {
+  #player-info-center {
     float: none;
     width: 100%;
   }
 
-  #header_player_centre .material-icons {
+  #player-info-center .material-icons {
     font-size: 40px;
   }
 
-  #header_player_droite {
+  #player-info-right {
     display: none;
   }
-  #header_logo {
+  #header-logo {
     width: 16.666%;
   }
-  #header_nav {
+  #header-nav {
     width: 33.333%;
   }
-  #header_nav > li,
-  #header_nav > li > a {
+  #header-nav > li,
+  #header-nav > li > a {
     padding-left: 0;
     padding-right: 2px;
   }
-  #header_nav .dropdown-menu {
+  #header-nav .dropdown-menu {
     width: 100% !important;
     margin-top: 0;
     border: 0;
@@ -293,24 +298,24 @@
     position: absolute !important;
     float: none !important;
   }
-  #header_recherche {
+  #header-recherche {
     width: 50%;
     margin: 0;
     padding: 0;
   }
-  #header_li_connexion,
-  #header_li_inscription {
+  #header-li-connexion,
+  #header-li-inscription {
     width: 45%;
     overflow: hidden;
     float: left;
   }
-  #header_li_connexion > button,
-  #header_li_inscription > button {
+  #header-li-connexion > button,
+  #header-li-inscription > button {
     overflow: hidden;
     text-align: center;
   }
 
-  #header_player {
+  #header-player {
     transition: height 0.25s ease-out;
 
     &.expanded {
@@ -318,11 +323,11 @@
       display: flex;
       flex-direction: column;
 
-      #header_toggle_big {
+      #header-toggle-big {
         display: block;
       }
 
-      #header_player_gauche {
+      #player-info-left {
         width: 100%;
         height: calc(100% - 280px);
         display: flex;
@@ -347,20 +352,20 @@
         }
       }
 
-      #header_player_centre_title {
+      #player-info-center-title {
         display: none !important;
       }
 
-      #header_player_centre {
+      #player-info-center {
         order: 2;
 
-        a:not(#header_player_centre_title),
-        #header_player_centre_more_actions {
+        a:not(#player-info-center-title),
+        #player-info-center-more-actions {
           display: inline-block !important;
         }
       }
 
-      #header_player_collapse {
+      #header-player-collapse {
         display: block;
         width: 25%;
         color: $white;
@@ -369,17 +374,17 @@
         }
       }
 
-      #header_player_center_load {
+      #header-player-center-load {
         height: 40px;
         padding-top: 10px;
       }
 
-      #header_player_gauche_liked,
-      #header_player_gauche_like {
+      #player-info-left-liked,
+      #player-info-left-like {
         margin-top: 0px;
       }
 
-      #header_player_droite {
+      #player-info-right {
         display: block;
         order: 1;
         width: 100%;

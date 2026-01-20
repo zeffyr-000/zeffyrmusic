@@ -2,13 +2,13 @@
   class="form-control"
   type="search"
   placeholder="{{ 'rechercher' | transloco }}"
-  id="input_search_header"
+  id="input-search-header"
   [ngModel]="query()"
   (ngModelChange)="query.set($event)"
   (input)="search()"
 />
 
-<ul class="list-group list-unstyled" id="liste_resultat_recherche">
+<ul class="list-group list-unstyled" id="liste-resultat-recherche">
   @if(query() && query().length>0) {
   <li>
     <a

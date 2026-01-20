@@ -1,6 +1,6 @@
-<div id="header_top" class="row g-0 justify-content-between">
+<div id="header-top" class="row g-0 justify-content-between">
   <!-- Mobile menu (dropdown) -->
-  <div id="header_burger" class="nav col-3 d-flex d-lg-none justify-content-center" ngbDropdown>
+  <div id="header-burger" class="nav col-3 d-flex d-lg-none justify-content-center" ngbDropdown>
     <button type="button" class="btn" ngbDropdownToggle aria-label="Open menu">
       <span class="material-icons">menu</span>
     </button>
@@ -87,8 +87,8 @@
     </ul>
   </div>
 
-  <div id="header_logo" class="nav col-3">
-    <a class="navbar-brand nav-item p-0" id="header_logo_lien" alt="" routerLink="">
+  <div id="header-logo" class="nav col-3">
+    <a class="navbar-brand nav-item p-0" id="header-logo-link" alt="" routerLink="">
       <img
         [src]="
           authStore.isDarkMode()
@@ -112,10 +112,10 @@
     </a>
   </div>
 
-  <ul class="nav col-5 d-none d-lg-flex" id="header_nav">
+  <ul class="nav col-5 d-none d-lg-flex" id="header-nav">
     @if(authStore.isAuthenticated()) {
     <li class="nav-item align-self-center d-flex" ngbDropdown>
-      <a id="header_toggle_big" class="btn btn-light" ngbDropdownToggle>
+      <a id="header-toggle-big" class="btn btn-light" ngbDropdownToggle>
         {{ authStore.pseudo() }} <span class="caret"></span>
       </a>
       <ul ngbDropdownMenu>
@@ -160,7 +160,7 @@
       </ul>
     </li>
     } @else{
-    <li id="header_li_inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
+    <li id="header-li-inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
       <button
         type="button"
         class="btn btn-warning btn-outline-warning text-light"
@@ -169,40 +169,40 @@
         {{ 'inscription' | transloco }}
       </button>
     </li>
-    <li id="header_li_connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
+    <li id="header-li-connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
       <button type="button" class="btn btn-primary text-light" (click)="openModalLogin()">
         {{ 'connexion' | transloco }}
       </button>
     </li>
     }
 
-    <li id="header_li_help" class="nav-item align-self-center d-flex">
+    <li id="header-li-help" class="nav-item align-self-center d-flex">
       <a class="btn btn-light" routerLink="/help">
         <span class="material-icons">help</span>
       </a>
     </li>
   </ul>
 
-  <div id="header_recherche" class="navbar-form navbar-right col-4 my-auto">
+  <div id="header-recherche" class="navbar-form navbar-right col-4 my-auto">
     <app-search-bar></app-search-bar>
   </div>
 </div>
 
 <div
-  id="header_player"
+  id="header-player"
   class="row g-0"
   [class.expanded]="isPlayerExpanded()"
   appSwipeDown
   (swipeDown)="collapsePlayer()"
 >
-  <button id="header_player_collapse" class="btn btn-link" (click)="collapsePlayer()">
+  <button id="header-player-collapse" class="btn btn-link" (click)="collapsePlayer()">
     <span class="material-icons">keyboard_arrow_down</span>
   </button>
 
-  <div id="header_player_gauche" class="col-md-3 pl-2 pt-2">
+  <div id="player-info-left" class="col-md-3 pl-2 pt-2">
     @if(authStore.isAuthenticated() && userLibraryService.isLiked(queueStore.currentKey())){
     <button
-      id="header_player_gauche_liked"
+      id="player-info-left-liked"
       class="btn btn-sm btn-link text-decoration-none float-end"
       (click)="
         $event.stopPropagation(); userLibraryService.removeLike(queueStore.currentKey()).subscribe()
@@ -212,7 +212,7 @@
     </button>
     } @if(authStore.isAuthenticated() && !userLibraryService.isLiked(queueStore.currentKey())){
     <button
-      id="header_player_gauche_like"
+      id="player-info-left-like"
       class="btn btn-sm btn-link text-decoration-none text-body float-end"
       (click)="
         $event.stopPropagation(); userLibraryService.addLike(queueStore.currentKey()).subscribe()
@@ -233,11 +233,11 @@
     <div>{{ queueStore.currentVideo()?.artiste }}</div>
   </div>
 
-  <div id="header_player_centre" class="col-md-6">
+  <div id="player-info-center" class="col-md-6">
     <div class="pl-lg-5 pr-lg-5 ml-lg-5 mr-lg-5">
       <button
         type="button"
-        id="header_player_centre_title"
+        id="player-info-center-title"
         class="btn btn-light d-inline-block d-md-none"
         (click)="expandPlayer()"
       >
@@ -261,7 +261,7 @@
         >
           <span class="material-icons">skip_previous</span>
         </button>
-        <button type="button" id="play_button" class="btn text-light" (click)="onPlayPause()">
+        <button type="button" id="play-button" class="btn text-light" (click)="onPlayPause()">
           @if(playerStore.isPlaying()){
           <span class="material-icons">pause</span>
           }@else{
@@ -280,7 +280,7 @@
       </div>
 
       <div
-        id="header_player_centre_more_actions"
+        id="player-info-center-more-actions"
         class="btn-group btn-group-sm float-end d-none d-md-block"
       >
         <button
@@ -317,11 +317,11 @@
       </div>
     </div>
 
-    <div id="header_player_center_load">
-      <div id="chrono_en_cours">{{ playerStore.currentTimeFormatted() }}</div>
-      <div id="slider_1_main">
+    <div id="header-player-center-load">
+      <div id="current-time">{{ playerStore.currentTimeFormatted() }}</div>
+      <div id="slider-1-main">
         <div
-          id="slider_1_content"
+          id="slider-1-content"
           class="ui-slider"
           tabindex="0"
           (click)="onClickSliderPlayer($event)"
@@ -344,19 +344,19 @@
           ></span>
           }
         </div>
-        <div id="load_video" [style.width.%]="playerStore.loadedProgress()"></div>
-        <div id="load_video_current" [style.width.%]="playerStore.progress()"></div>
+        <div id="load-video" [style.width.%]="playerStore.loadedProgress()"></div>
+        <div id="load-video-current" [style.width.%]="playerStore.progress()"></div>
       </div>
-      <div id="chrono_total">{{ playerStore.durationFormatted() }}</div>
+      <div id="chrono-total">{{ playerStore.durationFormatted() }}</div>
     </div>
   </div>
 
-  <div id="header_player_droite" class="col-md-3 my-auto">
-    <div id="header_player_volume_content" class="mx-auto">
+  <div id="player-info-right" class="col-md-3 my-auto">
+    <div id="header-player-volume-content" class="mx-auto">
       <span class="material-icons text-light">volume_up</span>
-      <div id="slider_2_main">
+      <div id="slider-2-main">
         <div
-          id="slider_2_content"
+          id="slider-2-content"
           class="ui-slider"
           tabindex="0"
           (click)="onClickSliderVolume($event)"
@@ -379,7 +379,7 @@
           ></span>
           }
         </div>
-        <div id="load_volume_current" [style.width.%]="playerStore.volume()"></div>
+        <div id="load-volume-current" [style.width.%]="playerStore.volume()"></div>
       </div>
     </div>
   </div>

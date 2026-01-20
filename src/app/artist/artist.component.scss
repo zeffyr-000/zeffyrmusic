@@ -1,58 +1,44 @@
 @import '../../styling/custom';
 
-#artist_haut {
+// =============================================================================
+// ARTIST COMPONENT - Artist profile and albums
+// =============================================================================
+
+#artist-header {
   min-height: 120px;
   height: auto;
   position: relative;
   overflow: auto;
 }
 
-#artist_img_content {
+#artist-image-wrapper {
   width: 190px;
 }
 
-#artist_img_big {
+#artist-image {
   width: 170px;
   height: 170px;
 }
 
-.artist_list_album {
-  float: left;
-  margin: 10px;
-  padding: 10px;
-  height: 240px;
-  width: 190px;
-  cursor: pointer;
-  background-color: $gray-lighter;
-}
+@media screen and (max-width: 899px) {
+  #artist-content {
+    width: 100%;
+  }
 
-.artist_list_album:hover {
-  background-color: $gray-lightest;
-}
-
-.artist_list_album > a {
-  display: block;
-  width: 100%;
-  height: 100%;
-  color: $gray-medium;
-  text-decoration: none;
-}
-
-@media screen and (max-device-width: 899px), screen and (max-width: 899px) {
-  #artist_img_content {
+  #artist-image-wrapper {
     width: 100%;
 
-    > #artist_img_big {
+    > #artist-image {
       margin: 0 auto;
       display: block;
     }
   }
 
-  .panel_head_content {
+  .panel-head-content {
     width: 100%;
   }
 
-  #artist_haut_titre {
+  #artist-header-title {
     text-align: center;
   }
 }
