@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-help',
   templateUrl: './help.component.html',
-  styleUrl: './help.component.css',
+  styleUrl: './help.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe],
 })

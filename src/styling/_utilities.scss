@@ -36,36 +36,98 @@
   }
 }
 
-// Card hover effects for interactive cards
+// Mobile hidden player utility
+// Used to hide player elements on mobile while keeping them in DOM for YouTube API
+.mobile-hidden-player {
+  @media screen and (max-width: 640px) {
+    height: 1px;
+    overflow: hidden;
+  }
+}
+
+// =============================================================================
+// CARDS - Modern card components with hover effects
+// =============================================================================
+
+// Base card styles (applies to all cards)
+.card {
+  border: 1px solid var(--bs-border-color);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-base);
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
 a.card,
 .card-hover {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 0.5rem 1rem rgba(var(--bs-body-color-rgb), 0.15);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(var(--bs-primary-rgb), 0.3);
   }
 
-  &:focus {
+  &:active {
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
     outline: 2px solid rgb(var(--bs-primary-rgb));
     outline-offset: 2px;
-  }
-
-  &[ng-reflect-router-link]:hover,
-  &[href]:hover {
-    cursor: pointer;
-    border-color: var(--bs-border-color);
+    box-shadow: var(--shadow-card-hover), 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
   }
 }
 
+// Card header (clean background)
 .card-header {
-  background-color: var(--bs-card-bg);
+  background-color: transparent;
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: var(--spacing-md);
+  font-weight: 600;
 }
 
+// Card body spacing
+.card-body {
+  padding: var(--spacing-md);
+}
+
+// Card image (responsive with aspect ratio)
 .card-img-top {
   min-height: 13.3vw;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+
+  a.card:hover &,
+  .card-hover:hover & {
+    transform: scale(1.05);
+  }
+}
+
+// Card title styling
+.card-title {
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--bs-body-color);
+}
+
+// Card text
+.card-text {
+  color: rgba(var(--bs-body-color-rgb), 0.75);
+  font-size: var(--text-sm);
+}
+
+// Card footer
+.card-footer {
+  background-color: transparent;
+  border-top: 1px solid var(--bs-border-color);
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 // Thumbnail utilities
@@ -81,4 +143,343 @@ a.card,
 .material-icons {
   display: inline-flex;
   vertical-align: top;
+}
+
+// =============================================================================
+// MODALS - Modern modal forms and alerts (reusable across app)
+// =============================================================================
+
+// Modal header styling
+.modal-header {
+  border-bottom: 2px solid var(--bs-border-color);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: linear-gradient(180deg, rgba(var(--bs-primary-rgb), 0.02) 0%, transparent 100%);
+
+  .modal-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--bs-body-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    .material-icons {
+      font-size: 28px;
+      color: rgb(var(--bs-primary-rgb));
+    }
+  }
+
+  .btn-close {
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+
+    &:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+}
+
+// Modal body styling
+.modal-body {
+  padding: var(--spacing-xl);
+}
+
+// Modal form layout
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+// Form group (label + input pair)
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+// Form label
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--bs-body-color);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  .material-icons {
+    font-size: 18px;
+    color: rgba(var(--bs-body-color-rgb), 0.6);
+  }
+}
+
+// Form controls enhanced styling
+.form-control,
+.form-select {
+  font-size: var(--text-base);
+  padding: var(--spacing-md);
+  height: 48px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  background-color: var(--bs-body-bg);
+
+  &:hover:not(:disabled) {
+    border-color: rgba(var(--bs-primary-rgb), 0.3);
+  }
+
+  &:focus {
+    border-color: rgb(var(--bs-primary-rgb));
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background-color: var(--bs-secondary-bg);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &::placeholder {
+    color: rgba(var(--bs-body-color-rgb), 0.4);
+  }
+}
+
+.form-select {
+  cursor: pointer;
+  padding: var(--spacing-sm) calc(var(--spacing-2xl) + var(--spacing-sm)) var(--spacing-sm)
+    var(--spacing-md);
+  appearance: none;
+  // Note: SVG data URIs can't use CSS variables - colors are fixed for all themes
+  // Using neutral grays that work reasonably well in both light and dark modes
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%236c757d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-md) center;
+  background-size: 16px 12px;
+
+  &:hover:not(:disabled) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23212529' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  &:disabled {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");
+  }
+}
+
+// Modal actions footer
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  border-top: 2px solid var(--bs-border-color);
+
+  button {
+    min-width: 120px;
+    height: 44px;
+    padding: var(--spacing-sm) var(--spacing-xl);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+
+    .material-icons {
+      font-size: 20px;
+    }
+
+    &:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    &:not(:disabled):active {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  // Secondary button styling
+  .btn-secondary {
+    background-color: var(--bs-secondary-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+
+    &:hover:not(:disabled) {
+      background-color: rgba(var(--bs-secondary-bg-rgb), 0.8);
+      border-color: rgba(var(--bs-primary-rgb), 0.3);
+    }
+  }
+}
+
+// Custom alerts with Material Icons
+.modal-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  box-shadow: var(--shadow-sm);
+  animation: slideIn 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  .material-icons {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  span:last-child {
+    flex: 1;
+  }
+
+  // Close button for dismissible alerts
+  .alert-close {
+    margin-left: auto;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .material-icons {
+      font-size: 18px;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-alert-danger {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-danger-rgb), 0.12) 0%,
+    rgba(var(--bs-danger-rgb), 0.06) 100%
+  );
+  border-color: rgb(var(--bs-danger-rgb));
+  color: rgb(var(--bs-danger-rgb));
+}
+
+.modal-alert-success {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-success-rgb), 0.12) 0%,
+    rgba(var(--bs-success-rgb), 0.06) 100%
+  );
+  border-color: rgb(var(--bs-success-rgb));
+  color: rgb(var(--bs-success-rgb));
+}
+
+.modal-alert-warning {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-warning-rgb), 0.12) 0%,
+    rgba(var(--bs-warning-rgb), 0.06) 100%
+  );
+  border-color: rgb(var(--bs-warning-rgb));
+  color: rgb(var(--bs-warning-rgb));
+}
+
+.modal-alert-info {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-primary-rgb), 0.08) 0%,
+    rgba(var(--bs-primary-rgb), 0.02) 100%
+  );
+  border-color: rgb(var(--bs-primary-rgb));
+  color: var(--bs-body-color);
+
+  .material-icons {
+    color: rgb(var(--bs-primary-rgb));
+  }
+}
+
+// Modal backdrop enhancement
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+@supports ((-webkit-backdrop-filter: blur(4px)) or (backdrop-filter: blur(4px))) {
+  .modal-backdrop {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+}
+
+// Modal dialog enhancements
+.modal-dialog {
+  .modal-content {
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    animation: modalFadeIn 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Responsive adjustments
+@media screen and (max-width: 768px) {
+  .modal-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+
+    .modal-title {
+      font-size: var(--text-xl);
+    }
+  }
+
+  .modal-body {
+    padding: var(--spacing-lg);
+    max-width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .form-control,
+  .form-select {
+    height: 44px;
+    font-size: var(--text-sm);
+  }
 }

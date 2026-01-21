@@ -102,22 +102,11 @@
 </table>
 
 <ng-template #contentModalConfirmDeletePlaylist let-modal>
-  <div class="modal-body">
-    {{ 'supprimer_playlist_confirmer' | transloco }}
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">
-      {{ 'annuler' | transloco }}
-    </button>
-    <button type="button" class="btn btn-primary" (click)="onDeletePlaylist(modal)">
-      {{ 'confirmer' | transloco }}
-    </button>
-  </div>
-</ng-template>
-
-<ng-template #contentModalConfirmEditTitle let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'playlist_modifier_titre' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">delete_forever</span>
+      {{ 'supprimer_playlist' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -126,19 +115,64 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onEditTitlePlaylist($event, modal)">
-      <div class="input-group">
-        <input type="text" class="form-control" [formField]="editTitleForm.playlist_titre" />
+    <div class="modal-alert modal-alert-warning">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      <span>{{ 'supprimer_playlist_confirmer' | transloco }}</span>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">
+        {{ 'annuler' | transloco }}
+      </button>
+      <button type="button" class="btn btn-danger" (click)="onDeletePlaylist(modal)">
+        <span class="material-icons" aria-hidden="true">delete_forever</span>
+        {{ 'confirmer' | transloco }}
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #contentModalConfirmEditTitle let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">edit</span>
+      {{ 'playlist_modifier_titre' | transloco }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form (submit)="onEditTitlePlaylist($event, modal)" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="playlist-title">
+          <span class="material-icons" aria-hidden="true">title</span>
+          {{ 'titre' | transloco }}
+        </label>
         <input
-          class="btn btn-primary"
-          type="submit"
-          [disabled]="editTitleForm().invalid()"
-          value="{{ 'modifier' | transloco }}"
+          type="text"
+          id="playlist-title"
+          class="form-control"
+          [formField]="editTitleForm.playlist_titre"
         />
       </div>
+
       @if(editTitleForm().dirty() && error()!=='') {
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       }
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="editTitleForm().invalid()">
+          <span class="material-icons" aria-hidden="true">save</span>
+          {{ 'modifier' | transloco }}
+        </button>
+      </div>
     </form>
   </div>
 </ng-template>

@@ -40,10 +40,29 @@
 </ngb-alert>
 }
 <ng-template #contentModalReload let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">error_outline</span>
+      {{ 'erreur' | transloco }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
   <div class="modal-body">
-    <p class="alert alert-danger">{{ 'reload_label' | transloco }}</p>
-    <p>
-      <button class="btn btn-primary" (click)="reload()">{{ 'reload_button' | transloco }}</button>
-    </p>
+    <div class="modal-alert modal-alert-danger">
+      <span class="material-icons" aria-hidden="true">cloud_off</span>
+      <span>{{ 'reload_label' | transloco }}</span>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" (click)="reload()">
+        <span class="material-icons" aria-hidden="true">refresh</span>
+        {{ 'reload_button' | transloco }}
+      </button>
+    </div>
   </div>
 </ng-template>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { SeoService } from 'src/app/services/seo.service';
 import { environment } from 'src/environments/environment';
@@ -8,9 +8,9 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-help-page',
   templateUrl: './help-page.component.html',
-  styleUrl: './help-page.component.css',
+  styleUrl: './help-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe],
+  imports: [TranslocoPipe, RouterLink],
 })
 export class HelpPageComponent implements OnInit {
   private route = inject(ActivatedRoute);

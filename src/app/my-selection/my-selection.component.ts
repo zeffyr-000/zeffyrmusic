@@ -9,7 +9,7 @@ import { UserDataStore } from '../store/user-data/user-data.store';
 @Component({
   selector: 'app-my-selection',
   templateUrl: './my-selection.component.html',
-  styleUrl: './my-selection.component.css',
+  styleUrl: './my-selection.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, DefaultImageDirective, TranslocoPipe],
 })
