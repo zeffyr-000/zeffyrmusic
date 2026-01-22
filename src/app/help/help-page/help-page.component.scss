@@ -1,0 +1,215 @@
+// =============================================================================
+// HELP PAGE COMPONENT - Individual help article pages
+// =============================================================================
+
+.help-article {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+// Breadcrumb navigation
+.help-breadcrumb {
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--text-sm);
+
+  a {
+    color: rgb(var(--bs-primary-rgb));
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: color var(--transition-base);
+
+    &:hover {
+      color: rgba(var(--bs-primary-rgb), 0.7);
+      text-decoration: underline;
+    }
+
+    .material-icons {
+      font-size: 18px;
+    }
+  }
+}
+
+// Header
+.help-article-header {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--bs-border-color);
+
+  h1 {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--bs-body-color);
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    color: rgb(var(--bs-primary-rgb));
+    margin-top: 0;
+  }
+}
+
+// Content sections
+.help-article-content {
+  line-height: 1.8;
+  font-size: var(--text-base);
+
+  h3 {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-md);
+    color: var(--bs-body-color);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 20px;
+      background: linear-gradient(
+        180deg,
+        rgb(var(--bs-primary-rgb)) 0%,
+        rgba(var(--bs-primary-rgb), 0.4) 100%
+      );
+      border-radius: var(--radius-full);
+    }
+  }
+
+  p {
+    margin-bottom: var(--spacing-lg);
+    color: rgba(var(--bs-body-color-rgb), 0.85);
+  }
+
+  ul,
+  ol {
+    margin-bottom: var(--spacing-lg);
+    padding-left: var(--spacing-xl);
+
+    li {
+      margin-bottom: var(--spacing-sm);
+      color: rgba(var(--bs-body-color-rgb), 0.85);
+      line-height: 1.7;
+
+      &::marker {
+        color: rgb(var(--bs-primary-rgb));
+      }
+    }
+  }
+}
+
+// Images gallery
+.help-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin: var(--spacing-xl) 0;
+
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-lg);
+    }
+  }
+
+  // Single image: limit width to match other images
+  &.help-images-single {
+    grid-template-columns: minmax(200px, 300px);
+    justify-content: start;
+  }
+}
+
+// Tips/Info boxes
+.help-tip {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-warning-rgb), 0.1) 0%,
+    rgba(var(--bs-warning-rgb), 0.05) 100%
+  );
+  border-left: 4px solid rgb(var(--bs-warning-rgb));
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-xl) 0;
+  box-shadow: var(--shadow-sm);
+
+  p {
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+// Steps with numbers
+.help-steps {
+  counter-reset: step-counter;
+
+  h3 {
+    counter-increment: step-counter;
+    position: relative;
+    padding-left: var(--spacing-2xl);
+
+    &::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--step-counter-size);
+      height: var(--step-counter-size);
+      background: linear-gradient(
+        135deg,
+        rgb(var(--bs-primary-rgb)) 0%,
+        rgba(var(--bs-primary-rgb), 0.7) 100%
+      );
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+  }
+}
+
+// Responsive
+@media screen and (max-width: 640px) {
+  .help-article {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .help-article-header {
+    h1 {
+      font-size: var(--text-2xl);
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+    }
+  }
+
+  .help-images {
+    grid-template-columns: 1fr;
+  }
+
+  .help-steps h3 {
+    padding-left: var(--spacing-xl);
+
+    &::before {
+      width: 28px;
+      height: 28px;
+      font-size: var(--text-xs);
+    }
+  }
+}

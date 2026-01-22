@@ -387,7 +387,10 @@
 
 <ng-template #contentModalRegister let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'inscription' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">person_add</span>
+      {{ 'inscription' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -396,72 +399,85 @@
     ></button>
   </div>
   <div class="modal-body">
-    <p class="bg-info p-2 rounded">{{ 'inscription_description' | transloco }}</p>
+    <div class="modal-alert modal-alert-info">
+      <span class="material-icons" aria-hidden="true">info</span>
+      <span>{{ 'inscription_description' | transloco }}</span>
+    </div>
+
     <div id="google-register-button-header" class="my-3"></div>
+
     <div class="d-flex align-items-center my-3">
       <hr class="flex-grow-1" />
-      <span class="mx-2">
-        {{ 'or' | transloco }}
-      </span>
+      <span class="mx-2">{{ 'or' | transloco }}</span>
       <hr class="flex-grow-1" />
     </div>
+
     @if(!isRegistered()){
-    <form (submit)="onSubmitRegister($event)">
-      <div class="form-floating mb-3">
+    <form (submit)="onSubmitRegister($event)" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="pseudo">
+          <span class="material-icons" aria-hidden="true">badge</span>
+          {{ 'pseudo' | transloco }}
+        </label>
         <input
           type="text"
           id="pseudo"
           class="form-control"
-          [placeholder]="'pseudo' | transloco"
           ngbAutofocus
           [formField]="registerForm.pseudo"
         />
-        <label for="pseudo">{{ 'pseudo' | transloco }}</label>
       </div>
-      <div class="form-floating mb-3">
-        <input
-          type="email"
-          id="mailLogin"
-          class="form-control"
-          [placeholder]="'mail' | transloco"
-          [formField]="registerForm.mail"
-        />
-        <label for="mailLogin">{{ 'mail' | transloco }}</label>
+      <div class="form-group">
+        <label class="form-label" for="mailLogin">
+          <span class="material-icons" aria-hidden="true">alternate_email</span>
+          {{ 'mail' | transloco }}
+        </label>
+        <input type="email" id="mailLogin" class="form-control" [formField]="registerForm.mail" />
       </div>
-      <div class="form-floating mb-3">
+      <div class="form-group">
+        <label class="form-label" for="password">
+          <span class="material-icons" aria-hidden="true">lock</span>
+          {{ 'mot_de_passe' | transloco }}
+        </label>
         <input
           type="password"
           id="password"
           class="form-control"
-          [placeholder]="'mot_de_passe' | transloco"
           [formField]="registerForm.password"
         />
-        <label for="password">{{ 'mot_de_passe' | transloco }}</label>
       </div>
-      <p>
-        <input
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="registerForm().invalid()"
-          value="{{ 'je_m_inscris' | transloco }}"
-        />
-      </p>
+
       @if(registerForm().dirty() && error()!=='') {
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       }
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="registerForm().invalid()">
+          <span class="material-icons" aria-hidden="true">person_add</span>
+          {{ 'je_m_inscris' | transloco }}
+        </button>
+      </div>
     </form>
     } @else {
     <div>
-      <p class="alert alert-success">{{ 'inscription_succes' | transloco }}</p>
-      <p>
+      <div class="modal-alert modal-alert-success">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        <span>{{ 'inscription_succes' | transloco }}</span>
+      </div>
+      <div class="modal-actions">
         <button
           type="button"
           (click)="dismissAndOpenLogin(modal)"
-          class="btn btn-link text-decoration-underline p-0"
+          class="btn btn-primary"
+          aria-haspopup="dialog"
         >
+          <span class="material-icons" aria-hidden="true">login</span>
           {{ 'connexion' | transloco }}
         </button>
-      </p>
+      </div>
     </div>
     }
   </div>
@@ -469,7 +485,10 @@
 
 <ng-template #contentModalLogin let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'connexion' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">login</span>
+      {{ 'connexion' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -479,48 +498,55 @@
   </div>
   <div class="modal-body">
     <div id="google-signin-button-header" class="my-3"></div>
+
     <div class="d-flex align-items-center my-3">
       <hr class="flex-grow-1" />
-      <span class="mx-2">
-        {{ 'or' | transloco }}
-      </span>
+      <span class="mx-2">{{ 'or' | transloco }}</span>
       <hr class="flex-grow-1" />
     </div>
-    <form (submit)="onLogIn($event, modal, '')">
-      <div class="form-floating mb-3">
+
+    <form (submit)="onLogIn($event, modal, '')" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="pseudoLogin">
+          <span class="material-icons" aria-hidden="true">person</span>
+          {{ 'pseudo_ou_mail' | transloco }}
+        </label>
         <input
           type="text"
           id="pseudoLogin"
           class="form-control"
-          [placeholder]="'pseudo_ou_mail' | transloco"
           ngbAutofocus
           [formField]="loginForm.pseudo"
         />
-        <label for="pseudoLogin">{{ 'pseudo_ou_mail' | transloco }}</label>
       </div>
-      <div class="form-floating mb-3">
+      <div class="form-group">
+        <label class="form-label" for="passwordLogin">
+          <span class="material-icons" aria-hidden="true">vpn_key</span>
+          {{ 'mot_de_passe' | transloco }}
+        </label>
         <input
           type="password"
           id="passwordLogin"
           class="form-control"
-          [placeholder]="'mot_de_passe' | transloco"
           [formField]="loginForm.password"
         />
-        <label for="passwordLogin">{{ 'mot_de_passe' | transloco }}</label>
       </div>
-      <p>
-        <input
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="loginForm().invalid()"
-          value="{{ 'connexion' | transloco }}"
-        />
-      </p>
+
       @if(loginForm().dirty() && error()!==''){
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       }
 
-      <p>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="loginForm().invalid()">
+          <span class="material-icons" aria-hidden="true">login</span>
+          {{ 'connexion' | transloco }}
+        </button>
+      </div>
+
+      <div class="mt-3 text-center">
         <button
           type="button"
           (click)="dismissAndOpenModal(modal, contentModalNewPass)"
@@ -528,14 +554,17 @@
         >
           {{ 'mot_de_passe_oublie' | transloco }}
         </button>
-      </p>
+      </div>
     </form>
   </div>
 </ng-template>
 
 <ng-template #contentModalNewPass let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'mot_de_passe_oublie' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">lock_reset</span>
+      {{ 'mot_de_passe_oublie' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -545,39 +574,50 @@
   </div>
   <div class="modal-body">
     @if(!isSuccess()){
-    <form (submit)="onSubmitResetPass($event)">
-      <div class="form-floating mb-3">
+    <form (submit)="onSubmitResetPass($event)" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="mailReset">
+          <span class="material-icons" aria-hidden="true">alternate_email</span>
+          {{ 'mail' | transloco }}
+        </label>
         <input
           type="email"
           id="mailReset"
           class="form-control"
-          [placeholder]="'mail' | transloco"
           ngbAutofocus
           [formField]="resetPassForm.mail"
         />
-        <label for="mailReset">{{ 'mail' | transloco }}</label>
       </div>
-      <p>
-        <input
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="resetPassForm().invalid()"
-          value="{{ 'envoyer' | transloco }}"
-        />
-      </p>
+
       @if(resetPassForm().dirty() && error()!=='') {
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       }
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="resetPassForm().invalid()">
+          <span class="material-icons" aria-hidden="true">send</span>
+          {{ 'envoyer' | transloco }}
+        </button>
+      </div>
     </form>
     } @else {
-    <p class="alert alert-success">{{ 'mail_pass_envoye_succes' | transloco }}</p>
+    <div class="modal-alert modal-alert-success">
+      <span class="material-icons" aria-hidden="true">check_circle</span>
+      <span>{{ 'mail_pass_envoye_succes' | transloco }}</span>
+    </div>
     }
   </div>
 </ng-template>
 
 <ng-template #contentModalAddVideo let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'ajouter_musique_playlist' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">playlist_add</span>
+      {{ 'ajouter_musique_playlist' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -586,19 +626,33 @@
     ></button>
   </div>
   <div class="modal-body">
-    <p>{{ 'ajouter' | transloco }}: {{ addTitle }} {{ addArtist }}</p>
+    <div class="mb-3">
+      <strong>{{ 'ajouter' | transloco }}:</strong> {{ addTitle }}
+      <span class="text-muted">{{ addArtist }}</span>
+    </div>
+
     @if(error()!==''){
-    <p class="alert alert-danger">{{ error() }}</p>
+    <div class="modal-alert modal-alert-danger">
+      <span class="material-icons" aria-hidden="true">error</span>
+      <span>{{ error() }}</span>
+    </div>
     } @if (userDataStore.playlists().length===0) {
-    <div class="bg-info p-2 rounded">
-      {{ 'ajouter_musique_playlist_empty' | transloco }}
+    <div class="modal-alert modal-alert-info">
+      <span class="material-icons" aria-hidden="true">info</span>
+      <span>{{ 'ajouter_musique_playlist_empty' | transloco }}</span>
     </div>
     }
-    <table class="table">
+
+    <table class="table table-hover">
       @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
       <tr>
         <td>
-          <button class="btn btn-link" (click)="onAddVideo(playlist.id_playlist, modal)">
+          <button
+            class="btn btn-link text-start w-100 d-flex align-items-center gap-2"
+            (click)="onAddVideo(playlist.id_playlist, modal)"
+            [attr.aria-label]="('ajouter_a_une_playlist' | transloco) + ' - ' + playlist.titre"
+          >
+            <span class="material-icons" aria-hidden="true">queue_music</span>
             {{ playlist.titre }}
           </button>
         </td>

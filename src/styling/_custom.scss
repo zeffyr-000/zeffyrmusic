@@ -111,7 +111,73 @@ $table-cell-padding: 0.5rem;
 $tooltip-bg: $mushroom;
 
 // -----------------------------------------------------------------------------
-// 12. CUSTOM FONTS
+// 12. DESIGN SYSTEM - CSS CUSTOM PROPERTIES
+// -----------------------------------------------------------------------------
+// Custom properties for consistent design tokens across the app
+
+:root {
+  // Spacing scale (based on 8px base unit)
+  --spacing-xs: 0.25rem; // 4px
+  --spacing-sm: 0.5rem; // 8px
+  --spacing-md: 1rem; // 16px
+  --spacing-lg: 1.5rem; // 24px
+  --spacing-xl: 2rem; // 32px
+  --spacing-2xl: 3rem; // 48px
+
+  // Shadows (layered depth)
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  // Card specific shadows
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.12);
+
+  // Transitions (consistent timing)
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Border radius scale
+  --radius-sm: 0.25rem; // 4px
+  --radius-md: 0.5rem; // 8px
+  --radius-lg: 0.75rem; // 12px
+  --radius-xl: 1rem; // 16px
+  --radius-full: 9999px; // Pill shape
+
+  // Typography scale
+  --text-xs: 0.75rem; // 12px
+  --text-sm: 0.875rem; // 14px
+  --text-base: 1rem; // 16px
+  --text-lg: 1.125rem; // 18px
+  --text-xl: 1.25rem; // 20px
+  --text-2xl: 1.5rem; // 24px
+  --text-3xl: 1.875rem; // 30px
+
+  // Z-index layers (aligned with Bootstrap 5.3 defaults)
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1050;
+  --z-modal: 1055;
+  --z-popover: 1070;
+  --z-tooltip: 1080;
+
+  // Component-specific dimensions (global design tokens consumed by components)
+  // Player component: fixed height for bottom padding calculations
+  --player-height: 120px;
+  // Switch toggle component: dimensions for dark mode and other toggles
+  --switch-width: 56px;
+  --switch-height: 32px;
+  --switch-thumb-size: 26px;
+  --switch-thumb-offset: 24px;
+  // Step counter component: numbered list badges size
+  --step-counter-size: 32px;
+}
+
+// -----------------------------------------------------------------------------
+// 13. CUSTOM FONTS
 // -----------------------------------------------------------------------------
 // Nunito font family with multiple weights
 

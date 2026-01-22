@@ -1,41 +1,101 @@
-<div class="p-3">
-  <h1 class="h3">{{ 'help_title_directory' | transloco }}</h1>
+<div class="help-container">
+  <header class="help-header">
+    <h1>{{ 'help_title_directory' | transloco }}</h1>
+  </header>
 
-  <p class="bg-info p-2 rounded">{{ 'help_description_directory' | transloco }}</p>
+  <div class="help-intro">
+    <p>{{ 'help_description_directory' | transloco }}</p>
+  </div>
 
-  <h2 class="h4">{{ 'help_category_1' | transloco }}</h2>
-  <ul>
-    <li>
-      <a [routerLink]="['/help', 'listen']">{{ 'help_listen_title' | transloco }}</a>
-    </li>
+  <section class="help-category">
+    <h2>{{ 'help_category_1' | transloco }}</h2>
+    <div class="help-cards">
+      <a
+        [routerLink]="['/help', 'listen']"
+        class="help-card"
+        [attr.aria-label]="'help_listen_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">headphones</span>
+        </div>
+        <p class="help-card-title">{{ 'help_listen_title' | transloco }}</p>
+      </a>
 
-    <li>
-      <a [routerLink]="['/help', 'locked-screen']">{{ 'help_screen_locked_title' | transloco }}</a>
-    </li>
-  </ul>
+      <a
+        [routerLink]="['/help', 'locked-screen']"
+        class="help-card"
+        [attr.aria-label]="'help_screen_locked_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">phonelink_lock</span>
+        </div>
+        <p class="help-card-title">{{ 'help_screen_locked_title' | transloco }}</p>
+      </a>
+    </div>
+  </section>
 
-  <h2 class="h4">{{ 'help_category_2' | transloco }}</h2>
-  <ul>
-    <li>
-      <a [routerLink]="['/help', 'install-android']">{{
-        'help_install_android_title' | transloco
-      }}</a>
-    </li>
-    <li>
-      <a [routerLink]="['/help', 'install-ios']">{{ 'help_install_ios_title' | transloco }}</a>
-    </li>
-  </ul>
+  <section class="help-category">
+    <h2>{{ 'help_category_2' | transloco }}</h2>
+    <div class="help-cards">
+      <a
+        [routerLink]="['/help', 'install-android']"
+        class="help-card"
+        [attr.aria-label]="'help_install_android_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">android</span>
+        </div>
+        <p class="help-card-title">{{ 'help_install_android_title' | transloco }}</p>
+      </a>
 
-  <h2 class="h4">{{ 'help_category_3' | transloco }}</h2>
-  <ul>
-    <li>
-      <a [routerLink]="['/help', 'legal']">{{ 'help_legal_title' | transloco }}</a>
-    </li>
-    <li>
-      <a [routerLink]="['/help', 'download']">{{ 'help_download_title' | transloco }}</a>
-    </li>
-    <li>
-      <a [routerLink]="['/help', 'issues']">{{ 'help_issues_title' | transloco }}</a>
-    </li>
-  </ul>
+      <a
+        [routerLink]="['/help', 'install-ios']"
+        class="help-card"
+        [attr.aria-label]="'help_install_ios_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">apple</span>
+        </div>
+        <p class="help-card-title">{{ 'help_install_ios_title' | transloco }}</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="help-category">
+    <h2>{{ 'help_category_3' | transloco }}</h2>
+    <div class="help-cards">
+      <a
+        [routerLink]="['/help', 'legal']"
+        class="help-card"
+        [attr.aria-label]="'help_legal_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">gavel</span>
+        </div>
+        <p class="help-card-title">{{ 'help_legal_title' | transloco }}</p>
+      </a>
+
+      <a
+        [routerLink]="['/help', 'download']"
+        class="help-card"
+        [attr.aria-label]="'help_download_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">download</span>
+        </div>
+        <p class="help-card-title">{{ 'help_download_title' | transloco }}</p>
+      </a>
+
+      <a
+        [routerLink]="['/help', 'issues']"
+        class="help-card"
+        [attr.aria-label]="'help_issues_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">report_problem</span>
+        </div>
+        <p class="help-card-title">{{ 'help_issues_title' | transloco }}</p>
+      </a>
+    </div>
+  </section>
 </div>

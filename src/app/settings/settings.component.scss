@@ -1,28 +1,186 @@
-.list-group-item {
-  min-height: 4rem;
+// =============================================================================
+// SETTINGS COMPONENT - Modern card-based settings page
+// =============================================================================
 
-  button {
-    height: 3rem;
-    min-width: 14rem;
+.settings-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.settings-header {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--bs-border-color);
+
+  h1 {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--bs-body-color);
+    margin: 0;
+  }
+}
+
+.settings-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.settings-card {
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(var(--bs-primary-rgb), 0.2);
+
+    .settings-card-icon {
+      transform: scale(1.05);
+    }
   }
 
-  .form-check-input {
-    width: 4rem;
-    height: 2rem;
-    border-radius: 1rem;
+  // Danger variant for delete account
+  &.settings-card-danger {
+    border-color: rgba(var(--bs-danger-rgb), 0.2);
+
+    &:hover {
+      border-color: rgba(var(--bs-danger-rgb), 0.4);
+      box-shadow: var(--shadow-md), 0 0 0 1px rgba(var(--bs-danger-rgb), 0.1);
+    }
+
+    .settings-card-icon {
+      background: linear-gradient(
+        135deg,
+        rgba(var(--bs-danger-rgb), 0.1) 0%,
+        rgba(var(--bs-danger-rgb), 0.05) 100%
+      );
+      color: rgb(var(--bs-danger-rgb));
+    }
+  }
+}
+
+.settings-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1;
+  min-width: 0; // Allow text truncation
+}
+
+.settings-card-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-primary-rgb), 0.1) 0%,
+    rgba(var(--bs-primary-rgb), 0.05) 100%
+  );
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-base);
+  font-size: 24px;
+  color: rgb(var(--bs-primary-rgb));
+}
+
+.settings-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-card-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--bs-body-color);
+}
+
+.settings-card-value {
+  font-size: var(--text-sm);
+  color: rgba(var(--bs-body-color-rgb), 0.7);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Button styling
+.settings-card button {
+  min-width: 180px;
+  height: 40px;
+  white-space: nowrap;
+}
+
+// Dark mode switch
+.settings-card .form-check-input {
+  width: var(--switch-width);
+  height: var(--switch-height);
+  border-radius: calc(var(--switch-height) / 2);
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:checked::before {
+    transform: translateX(var(--switch-thumb-offset));
   }
 
-  .form-check-input:checked::before {
-    transform: translateX(2rem);
-  }
-
-  .form-check-input::before {
-    width: 1.675rem;
-    height: 1.675rem;
+  &::before {
+    width: var(--switch-thumb-size);
+    height: var(--switch-thumb-size);
     border-radius: 50%;
+    transition: transform var(--transition-base);
+  }
+}
+
+// Responsive
+@media screen and (max-width: 768px) {
+  .settings-container {
+    padding: var(--spacing-lg) var(--spacing-md);
   }
 
-  .form-check.form-switch {
-    margin-right: 4.5rem;
+  .settings-header h1 {
+    font-size: var(--text-2xl);
   }
+
+  .settings-card {
+    flex-direction: column;
+    align-items: flex-start;
+
+    button {
+      width: 100%;
+      min-width: unset;
+    }
+
+    .form-check-input {
+      align-self: flex-end;
+    }
+  }
+
+  .settings-card-header {
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// SETTINGS-SPECIFIC OVERRIDES
+// =============================================================================
+
+// Note: Global modal styles are defined in _utilities.scss
+// We use aliases here for backwards compatibility with existing templates
+
+// Google Sign-in button container
+.google-signin-container {
+  display: flex;
+  justify-content: center;
+  margin: var(--spacing-xl) 0;
 }

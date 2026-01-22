@@ -1,8 +1,33 @@
+// =============================================================================
+// HOME COMPONENT - Landing page cards and layouts
+// =============================================================================
+
 .card {
   height: auto;
+  border-radius: var(--radius-lg);
+
+  // Enhanced hover effect for home cards
+  &:hover {
+    .card-body {
+      background-color: rgba(var(--bs-primary-rgb), 0.02);
+    }
+  }
 }
 
-#content-top-home .card-img-top,
-#content-album-home .card-img-top {
-  min-height: 10vw;
+// Top content & album cards container
+#content-top-home,
+#content-album-home {
+  .card-img-top {
+    min-height: 10vw;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .card-body {
+    transition: background-color var(--transition-base);
+  }
+
+  // Grid layout with consistent spacing
+  .row {
+    row-gap: var(--spacing-lg);
+  }
 }

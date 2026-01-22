@@ -1,28 +1,50 @@
-<h1 class="h3">{{ 'settings' | transloco }}</h1>
+<div class="settings-container">
+  <header class="settings-header">
+    <h1>{{ 'settings' | transloco }}</h1>
+  </header>
 
-<div class="list-group">
-  <div class="list-group-item">
-    <div class="d-flex w-100 justify-content-between">
-      <h5>{{ 'mot_de_passe' | transloco }}</h5>
+  <div class="settings-cards">
+    <!-- Password Card -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <div class="settings-card-icon" aria-hidden="true">
+          <span class="material-icons">lock</span>
+        </div>
+        <div class="settings-card-info">
+          <p class="settings-card-title">{{ 'mot_de_passe' | transloco }}</p>
+        </div>
+      </div>
       <button class="btn btn-primary" (click)="openModal(contentModalEditPass)">
         {{ 'modifier_mot_de_passe' | transloco }}
       </button>
     </div>
-  </div>
-  <div class="list-group-item">
-    <div class="d-flex w-100 justify-content-between">
-      <div class="d-flex flex-column align-items-start">
-        <h5>{{ 'mail' | transloco }}</h5>
-        <small>{{ mail() }}</small>
+
+    <!-- Email Card -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <div class="settings-card-icon" aria-hidden="true">
+          <span class="material-icons">email</span>
+        </div>
+        <div class="settings-card-info">
+          <p class="settings-card-title">{{ 'mail' | transloco }}</p>
+          <p class="settings-card-value">{{ mail() }}</p>
+        </div>
       </div>
       <button class="btn btn-primary" (click)="openModal(contentModalEditMail)">
         {{ 'modifier_mail' | transloco }}
       </button>
     </div>
-  </div>
-  <div class="list-group-item">
-    <div class="d-flex w-100 justify-content-between">
-      <h5>{{ 'enable_dark_mode' | transloco }}</h5>
+
+    <!-- Dark Mode Card -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <div class="settings-card-icon" aria-hidden="true">
+          <span class="material-icons">dark_mode</span>
+        </div>
+        <div class="settings-card-info">
+          <p class="settings-card-title">{{ 'enable_dark_mode' | transloco }}</p>
+        </div>
+      </div>
       <div class="form-check form-switch">
         <input
           class="form-check-input"
@@ -31,33 +53,55 @@
           (change)="onSwitchDarkMode()"
           [checked]="darkModeEnabled()"
         />
+        <label class="form-check-label visually-hidden" for="darkModeSwitch">
+          {{ 'enable_dark_mode' | transloco }}
+        </label>
       </div>
     </div>
-  </div>
-  <div class="list-group-item">
-    <div class="d-flex w-100 justify-content-between">
-      <div class="d-flex flex-column align-items-start">
-        <h5>{{ 'language' | transloco }}</h5>
-        <small
-          >{{ 'selected_language' | transloco }} : {{ 'langue_' + language() | transloco }}</small
-        >
+
+    <!-- Language Card -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <div class="settings-card-icon" aria-hidden="true">
+          <span class="material-icons">language</span>
+        </div>
+        <div class="settings-card-info">
+          <p class="settings-card-title">{{ 'language' | transloco }}</p>
+          <p class="settings-card-value">
+            {{ 'selected_language' | transloco }} : {{ 'langue_' + language() | transloco }}
+          </p>
+        </div>
       </div>
       <button class="btn btn-primary" (click)="openModal(contentModalEditLanguage)">
         {{ 'change_language' | transloco }}
       </button>
     </div>
-  </div>
-  <div class="list-group-item">
-    <div class="d-flex w-100 justify-content-between">
-      <h5>{{ 'associate_google_account' | transloco }}</h5>
+
+    <!-- Google Account Card -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <div class="settings-card-icon" aria-hidden="true">
+          <span class="material-icons">account_circle</span>
+        </div>
+        <div class="settings-card-info">
+          <p class="settings-card-title">{{ 'associate_google_account' | transloco }}</p>
+        </div>
+      </div>
       <button class="btn btn-primary" (click)="openGoogleAccountModal()">
         {{ 'associate' | transloco }}
       </button>
     </div>
-  </div>
-  <div class="list-group-item">
-    <div class="d-flex w-100 justify-content-between">
-      <h5>{{ 'delete_account' | transloco }}</h5>
+
+    <!-- Delete Account Card -->
+    <div class="settings-card settings-card-danger">
+      <div class="settings-card-header">
+        <div class="settings-card-icon" aria-hidden="true">
+          <span class="material-icons">delete_forever</span>
+        </div>
+        <div class="settings-card-info">
+          <p class="settings-card-title">{{ 'delete_account' | transloco }}</p>
+        </div>
+      </div>
       <button class="btn btn-danger" (click)="openModal(contentModalDelete)">
         {{ 'delete_account' | transloco }}
       </button>
@@ -67,7 +111,10 @@
 
 <ng-template #contentModalEditPass let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'modifier_mot_de_passe' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">lock</span>
+      {{ 'modifier_mot_de_passe' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -76,11 +123,12 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onSubmitEditPass($event)">
-      <p class="form-group">
-        <label class="control-label" for="passwordold">{{
-          'mot_de_passe_actuel' | transloco
-        }}</label>
+    <form (submit)="onSubmitEditPass($event)" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="passwordold">
+          <span class="material-icons" aria-hidden="true">vpn_key</span>
+          {{ 'mot_de_passe_actuel' | transloco }}
+        </label>
         <input
           type="password"
           id="passwordold"
@@ -88,50 +136,60 @@
           ngbAutofocus
           [formField]="editPassForm.passwordold"
         />
-      </p>
-      <p class="form-group">
-        <label class="control-label" for="password1">{{
-          'mot_de_passe_nouveau' | transloco
-        }}</label>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password1">
+          <span class="material-icons" aria-hidden="true">lock_open</span>
+          {{ 'mot_de_passe_nouveau' | transloco }}
+        </label>
         <input
           type="password"
           id="password1"
           class="form-control"
           [formField]="editPassForm.password1"
         />
-      </p>
-      <p class="form-group">
-        <label class="control-label" for="password2">{{
-          'mot_de_passe_repeter' | transloco
-        }}</label>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password2">
+          <span class="material-icons" aria-hidden="true">check_circle</span>
+          {{ 'mot_de_passe_repeter' | transloco }}
+        </label>
         <input
           type="password"
           id="password2"
           class="form-control"
           [formField]="editPassForm.password2"
         />
-      </p>
+      </div>
 
-      <p>
-        <input
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="editPassForm().invalid()"
-          value="{{ 'envoyer' | transloco }}"
-        />
-      </p>
       @if(editPassForm().dirty() && error()!=='') {
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       } @if(successPass()) {
-      <p class="alert alert-success">{{ 'mot_de_passe_modifie_succes' | transloco }}</p>
+      <div class="modal-alert modal-alert-success">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        <span>{{ 'mot_de_passe_modifie_succes' | transloco }}</span>
+      </div>
       }
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="editPassForm().invalid()">
+          <span class="material-icons" aria-hidden="true">save</span>
+          {{ 'envoyer' | transloco }}
+        </button>
+      </div>
     </form>
   </div>
 </ng-template>
 
 <ng-template #contentModalEditMail let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'modifier_mail' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">email</span>
+      {{ 'modifier_mail' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -140,9 +198,12 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onSubmitEditMail($event)">
-      <p class="form-group">
-        <label class="control-label" for="mail">{{ 'mail' | transloco }}</label>
+    <form (submit)="onSubmitEditMail($event)" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="mail">
+          <span class="material-icons" aria-hidden="true">alternate_email</span>
+          {{ 'mail' | transloco }}
+        </label>
         <input
           type="text"
           id="mail"
@@ -150,28 +211,36 @@
           ngbAutofocus
           [formField]="editMailForm.mail"
         />
-      </p>
+      </div>
 
-      <p>
-        <input
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="editMailForm().invalid()"
-          value="{{ 'envoyer' | transloco }}"
-        />
-      </p>
       @if(editMailForm().dirty() && error()!=='') {
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       } @if(successMail()) {
-      <p class="alert alert-success">{{ 'mail_modifie_succes' | transloco }}</p>
+      <div class="modal-alert modal-alert-success">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        <span>{{ 'mail_modifie_succes' | transloco }}</span>
+      </div>
       }
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="editMailForm().invalid()">
+          <span class="material-icons" aria-hidden="true">save</span>
+          {{ 'envoyer' | transloco }}
+        </button>
+      </div>
     </form>
   </div>
 </ng-template>
 
 <ng-template #contentModalEditLanguage let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'language' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">language</span>
+      {{ 'language' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -180,12 +249,15 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onSubmitEditLanguage($event)">
-      <p class="form-group">
-        <label class="control-label" for="language">{{ 'language' | transloco }}</label>
+    <form (submit)="onSubmitEditLanguage($event)" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="language">
+          <span class="material-icons" aria-hidden="true">translate</span>
+          {{ 'language' | transloco }}
+        </label>
         <select
           id="language"
-          class="form-control"
+          class="form-select"
           ngbAutofocus
           [formField]="editLanguageForm.language"
         >
@@ -193,28 +265,36 @@
           <option [value]="lang">{{ 'langue_' + lang | transloco }}</option>
           }
         </select>
-      </p>
+      </div>
 
-      <p>
-        <input
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="editLanguageForm().invalid()"
-          value="{{ 'envoyer' | transloco }}"
-        />
-      </p>
       @if(editLanguageForm().dirty() && error()!=='') {
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       } @if(successLanguage()){
-      <p class="alert alert-success">{{ 'language_updated_succesfully' | transloco }}</p>
+      <div class="modal-alert modal-alert-success">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        <span>{{ 'language_updated_succesfully' | transloco }}</span>
+      </div>
       }
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="editLanguageForm().invalid()">
+          <span class="material-icons" aria-hidden="true">save</span>
+          {{ 'envoyer' | transloco }}
+        </button>
+      </div>
     </form>
   </div>
 </ng-template>
 
 <ng-template #contentModalDelete let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'delete_account' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">delete_forever</span>
+      {{ 'delete_account' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -223,10 +303,17 @@
     ></button>
   </div>
   <div class="modal-body">
-    <div class="alert alert-danger">{{ 'delete_account_warning' | transloco }}</div>
-    <form (submit)="onSubmitDeleteAccount($event)">
-      <p class="form-group">
-        <label class="control-label" for="passwordDelete">{{ 'mot_de_passe' | transloco }}</label>
+    <div class="modal-alert modal-alert-warning">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      <span>{{ 'delete_account_warning' | transloco }}</span>
+    </div>
+
+    <form (submit)="onSubmitDeleteAccount($event)" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="passwordDelete">
+          <span class="material-icons" aria-hidden="true">vpn_key</span>
+          {{ 'mot_de_passe' | transloco }}
+        </label>
         <input
           type="password"
           id="passwordDelete"
@@ -234,28 +321,36 @@
           ngbAutofocus
           [formField]="deleteAccountForm.password"
         />
-      </p>
+      </div>
 
-      <p>
-        <input
-          type="submit"
-          class="btn btn-danger"
-          [disabled]="deleteAccountForm().invalid()"
-          value="{{ 'envoyer' | transloco }}"
-        />
-      </p>
       @if(deleteAccountForm().dirty() && error()!=='') {
-      <p class="alert alert-danger">{{ error() }}</p>
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
       } @if(successDelete()){
-      <p class="alert alert-success">{{ 'account_deleted_succesfully' | transloco }}</p>
+      <div class="modal-alert modal-alert-success">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        <span>{{ 'account_deleted_succesfully' | transloco }}</span>
+      </div>
       }
+
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-danger" [disabled]="deleteAccountForm().invalid()">
+          <span class="material-icons" aria-hidden="true">delete_forever</span>
+          {{ 'delete_account' | transloco }}
+        </button>
+      </div>
     </form>
   </div>
 </ng-template>
 
 <ng-template #contentModalAssociateGoogleAccount let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">{{ 'associate_google_account' | transloco }}</h4>
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">account_circle</span>
+      {{ 'associate_google_account' | transloco }}
+    </h4>
     <button
       type="button"
       class="btn-close"
@@ -264,14 +359,23 @@
     ></button>
   </div>
   <div class="modal-body">
-    <p class="bg-info p-2 rounded">{{ 'associate_google_account_description' | transloco }}</p>
-    <div id="google-signin-button"></div>
+    <div class="modal-alert modal-alert-info">
+      <span class="material-icons" aria-hidden="true">info</span>
+      <span>{{ 'associate_google_account_description' | transloco }}</span>
+    </div>
+
+    <div id="google-signin-button" class="google-signin-container"></div>
+
     @if(error()!=='') {
-    <p class="alert alert-danger">{{ error() }}</p>
+    <div class="modal-alert modal-alert-danger">
+      <span class="material-icons" aria-hidden="true">error</span>
+      <span>{{ error() }}</span>
+    </div>
     } @if(successGoogleAccount()){
-    <p class="alert alert-success">
-      {{ 'associate_google_account_succesfully' | transloco }}
-    </p>
+    <div class="modal-alert modal-alert-success">
+      <span class="material-icons" aria-hidden="true">check_circle</span>
+      <span>{{ 'associate_google_account_succesfully' | transloco }}</span>
+    </div>
     }
   </div>
 </ng-template>

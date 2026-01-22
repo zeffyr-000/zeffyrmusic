@@ -11,23 +11,43 @@
   height: auto;
   position: relative;
   overflow: auto;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
-#playlist-header-title > h3 {
-  margin-top: 2px;
-}
+#playlist-header-title {
+  > h3 {
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+    font-weight: 700;
+    font-size: var(--text-3xl);
 
-#playlist-header-title > h3 > a {
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+    > a {
+      transition: color var(--transition-base);
+
+      &:hover {
+        color: rgb(var(--bs-primary-rgb));
+      }
+    }
+  }
 }
 
 #playlist-image-wrapper {
   width: 190px;
+  padding: var(--spacing-sm);
 }
 
 #playlist-image {
   width: 170px;
   height: 170px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-base);
+
+  &:hover {
+    transform: scale(1.02);
+  }
 }
 
 // Table specific styles
