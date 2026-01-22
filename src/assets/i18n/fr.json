@@ -135,8 +135,8 @@
   "description_artist": "Découvrez {artist}. Explorez {count, plural, =0 {aucun album disponible} =1 {l'album disponible} other {de # albums disponibles}}. Écoutez maintenant!",
   "description_search": "Découvrez les résultats pour votre recherche sur \"{query}\". Trouvez des albums, des artistes et des morceaux de musique en lien avec votre requête. Explorez maintenant!",
 
+  "track_count_label": "{count, plural, =1 {titre} other {titres}}",
   "titre": "titre",
-  "titres": "titres",
   "intitule_artiste": "Artiste",
   "intitule_titre": "Titre",
 
@@ -302,5 +302,6 @@
   "reset_password_pass_matching": "Les mots de passe ne correspondent pas",
   "reset_password_action": "Réinitialiser le mot de passe",
   "reset_password_invalid": "Votre mot de passe n'a pas pu être réinitialisé. Veuillez vérifier le lien de réinitialisation dans votre e-mail.",
-  "reset_password_success": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe."
+  "reset_password_success": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+  "partager": "Partager"
 }

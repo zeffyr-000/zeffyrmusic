@@ -36,45 +36,56 @@
         <p class="m-t-0" itemtype="description">{{ description() }}</p>
         }
 
-        <div>
+        <div class="playlist-actions">
           @if(idPlaylist() !== currentIdPlaylistPlaying() || !playerStore.isPlaying()) {
-          <button class="btn btn-primary btn-lg" (click)="runPlaylist()">
-            <span class="material-icons">play_circle_outline</span>
+          <button type="button" class="btn btn-primary btn-action" (click)="runPlaylist()">
+            <span class="material-icons" aria-hidden="true">play_circle_outline</span>
             {{ 'lire' | transloco }}
           </button>
-          } @if(idPlaylist() === currentIdPlaylistPlaying() && playerStore.isPlaying()) {
-          <button class="btn btn-primary btn-lg" (click)="pausePlaylist()">
-            <span class="material-icons">pause_circle_outline</span>
+          } @else {
+          <button type="button" class="btn btn-primary btn-action" (click)="pausePlaylist()">
+            <span class="material-icons" aria-hidden="true">pause_circle_outline</span>
             {{ 'pause' | transloco }}
           </button>
           } @if(authStore.isAuthenticated() && idPersoOwner()!==authStore.idPerso() && idPlaylist()
           !=='') {
           <button
-            class="btn btn-secondary btn-lg"
+            type="button"
+            class="btn btn-secondary btn-action"
             [class.active]="isFollower()"
+            [attr.aria-pressed]="isFollower()"
             (click)="switchFollow()"
           >
+            <span class="material-icons" aria-hidden="true">{{
+              isFollower() ? 'favorite' : 'favorite_border'
+            }}</span>
             {{ 'suivre' | transloco }}
           </button>
           }
 
-          <button class="btn btn-secondary btn-lg" (click)="addInCurrentList()">
+          <button type="button" class="btn btn-secondary btn-action" (click)="addInCurrentList()">
+            <span class="material-icons" aria-hidden="true">playlist_add</span>
             {{ 'ajouter_liste_en_cours' | transloco }}
           </button>
 
           @if(!isLikePage()) {
-          <share-buttons class="d-inline-block" show="2" showText="true"></share-buttons>
+          <button
+            type="button"
+            class="btn btn-secondary btn-action"
+            (click)="openShareModal(contentModalShare)"
+          >
+            <span class="material-icons" aria-hidden="true">share</span>
+            {{ 'partager' | transloco }}
+          </button>
           }
         </div>
 
         <div class="row m-t">
           <div id="playlist-info" class="col-md-6">
-            <span class="content-indication">
-              <b>{{ playlist() && playlist().length }}</b>
-              @if(playlist() && playlist().length<=1) { <span> {{ 'titre' | transloco }}</span>
-              } @if(playlist() && playlist().length>1) {
-              <span> {{ 'titres' | transloco }}</span>
-              }
+            <span class="badge rounded-pill bg-primary-subtle text-body-secondary">
+              <strong class="text-primary">{{ playlist().length }}</strong>
+              {{ 'track_count_label' | transloco : { count: playlist().length } }}
+              <span class="mx-1">•</span>
               {{ sumDurationPlaylist() }}
             </span>
           </div>
@@ -231,3 +242,26 @@
   </div>
 </div>
 }
+
+<!-- Share Modal -->
+<ng-template #contentModalShare let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">share</span>
+      {{ 'partager' | transloco }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <share-buttons
+      [include]="['facebook', 'x', 'whatsapp', 'telegram', 'email', 'copy']"
+      [showIcon]="true"
+      [showText]="true"
+    ></share-buttons>
+  </div>
+</ng-template>

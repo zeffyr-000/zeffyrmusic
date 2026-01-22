@@ -2,32 +2,45 @@
 // HOME COMPONENT - Landing page cards and layouts
 // =============================================================================
 
-.card {
-  height: auto;
-  border-radius: var(--radius-lg);
-
-  // Enhanced hover effect for home cards
-  &:hover {
-    .card-body {
-      background-color: rgba(var(--bs-primary-rgb), 0.02);
-    }
-  }
-}
-
-// Top content & album cards container
+// Section containers - prevent flex stretch from #content
 #content-top-home,
-#content-album-home {
+#content-top-top,
+#content-album-home,
+#content-album-albums {
+  height: auto;
+  flex: none;
+
   .card-img-top {
     min-height: 10vw;
+    aspect-ratio: 1;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
 
   .card-body {
+    padding: var(--spacing-sm) var(--spacing-md);
     transition: background-color var(--transition-base);
+  }
+
+  .card-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-footer {
+    padding: 0 var(--spacing-md) var(--spacing-sm);
+
+    small {
+      font-size: var(--text-sm);
+    }
   }
 
   // Grid layout with consistent spacing
   .row {
-    row-gap: var(--spacing-lg);
+    row-gap: var(--spacing-sm);
   }
 }

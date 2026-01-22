@@ -99,19 +99,28 @@ $modal-header-border-color: transparent;
 $dropdown-link-color: $greyish-brown-two;
 
 // -----------------------------------------------------------------------------
-// 10. TABLES
+// 10. BADGES
+// -----------------------------------------------------------------------------
+
+$badge-font-size: 0.9em;
+$badge-font-weight: 600;
+$badge-padding-y: 0.5em;
+$badge-padding-x: 0.8em;
+
+// -----------------------------------------------------------------------------
+// 11. TABLES
 // -----------------------------------------------------------------------------
 
 $table-cell-padding: 0.5rem;
 
 // -----------------------------------------------------------------------------
-// 11. TOOLTIPS
+// 12. TOOLTIPS
 // -----------------------------------------------------------------------------
 
 $tooltip-bg: $mushroom;
 
 // -----------------------------------------------------------------------------
-// 12. DESIGN SYSTEM - CSS CUSTOM PROPERTIES
+// 13. DESIGN SYSTEM - CSS CUSTOM PROPERTIES
 // -----------------------------------------------------------------------------
 // Custom properties for consistent design tokens across the app
 
@@ -174,10 +183,15 @@ $tooltip-bg: $mushroom;
   --switch-thumb-offset: 24px;
   // Step counter component: numbered list badges size
   --step-counter-size: 32px;
+  // Action button component: large buttons for hero actions
+  --btn-action-height: 48px;
+  --icon-size-sm: 20px;
+  --icon-size-lg: 24px;
+  --icon-size-xl: 2.5rem;
 }
 
 // -----------------------------------------------------------------------------
-// 13. CUSTOM FONTS
+// 14. CUSTOM FONTS
 // -----------------------------------------------------------------------------
 // Nunito font family with multiple weights
 

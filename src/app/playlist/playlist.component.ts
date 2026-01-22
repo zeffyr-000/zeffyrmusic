@@ -6,6 +6,7 @@ import {
   effect,
   computed,
   signal,
+  TemplateRef,
 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -26,6 +27,7 @@ import {
   NgbDropdownToggle,
   NgbDropdownMenu,
   NgbDropdownItem,
+  NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 import { SeoService } from '../services/seo.service';
@@ -58,6 +60,7 @@ export class PlaylistComponent {
   private readonly playlistService = inject(PlaylistService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly playerService = inject(PlayerService);
+  private readonly modalService = inject(NgbModal);
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
   private readonly seoService = inject(SeoService);
@@ -85,7 +88,6 @@ export class PlaylistComponent {
   readonly isLikePage = signal(false);
   isBrowser: boolean;
 
-  // Computed signal pour suivre si l'utilisateur suit cette playlist
   readonly isFollower = computed(() => {
     const id = this.idPlaylist();
     if (!id) {
@@ -94,7 +96,6 @@ export class PlaylistComponent {
     return this.userDataStore.isFollowing(id);
   });
 
-  // Computed signal pour la playlist en cours de lecture
   readonly currentIdPlaylistPlaying = computed(() => {
     return this.queueStore.sourcePlaylistId() || '';
   });
@@ -156,6 +157,13 @@ export class PlaylistComponent {
           return elementToPush;
         })
       );
+    });
+  }
+
+  openShareModal(content: TemplateRef<unknown>): void {
+    this.modalService.open(content, {
+      centered: true,
+      size: 'md',
     });
   }
 
