@@ -53,7 +53,7 @@
 .card {
   border: 1px solid var(--bs-border-color);
   box-shadow: var(--shadow-card);
-  transition: all var(--transition-base);
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
   overflow: hidden;
 
   &:hover {
@@ -66,22 +66,16 @@ a.card,
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
 
-  &:hover {
-    transform: translateY(-4px);
+  &:hover,
+  &:focus-within {
     box-shadow: var(--shadow-card-hover);
     border-color: rgba(var(--bs-primary-rgb), 0.3);
-  }
-
-  &:active {
-    transform: translateY(-2px);
   }
 
   &:focus-visible {
     outline: 2px solid rgb(var(--bs-primary-rgb));
     outline-offset: 2px;
-    box-shadow: var(--shadow-card-hover), 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
   }
 }
 
@@ -96,6 +90,65 @@ a.card,
 // Card body spacing
 .card-body {
   padding: var(--spacing-md);
+  background-color: var(--bs-card-bg, var(--bs-body-bg));
+}
+
+// =============================================================================
+// BUTTONS - Modern button styles with enhanced interactions
+// =============================================================================
+
+// Custom action button (avoids overriding Bootstrap's .btn-lg)
+.btn-action {
+  height: var(--btn-action-height);
+  font-size: var(--text-base);
+  font-weight: 500;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transition: all var(--transition-base);
+
+  .material-icons {
+    font-size: var(--icon-size-sm);
+  }
+}
+
+// Primary action button with enhanced hover
+.btn-primary.btn-action {
+  font-weight: 600;
+
+  .material-icons {
+    font-size: var(--icon-size-lg);
+  }
+}
+
+.btn-primary.btn-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary.btn-action:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+// Secondary action button with subtle style
+.btn-secondary.btn-action {
+  background: transparent;
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.btn-secondary.btn-action:hover:not(:disabled) {
+  background: rgba(var(--bs-primary-rgb), 0.05);
+  border-color: rgba(var(--bs-primary-rgb), 0.4);
+  color: rgb(var(--bs-primary-rgb));
+  transform: translateY(-1px);
+}
+
+.btn-secondary.btn-action.active {
+  background: rgba(var(--bs-success-rgb), 0.1);
+  border-color: rgb(var(--bs-success-rgb));
+  color: rgb(var(--bs-success-rgb));
 }
 
 // Card image (responsive with aspect ratio)
@@ -104,30 +157,86 @@ a.card,
   object-fit: cover;
   transition: transform var(--transition-slow);
 
+  // Subtle zoom effect on hover (contained within card overflow:hidden)
   a.card:hover &,
+  a.card:focus-within &,
   .card-hover:hover & {
-    transform: scale(1.05);
+    transform: scale(1.03);
+  }
+}
+
+// Respect user preference for reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  a.card,
+  .card-hover,
+  .card-img-top,
+  .card-see-all,
+  .btn-action {
+    transition: none;
+  }
+
+  .card-img-top,
+  .btn-action {
+    transform: none !important;
   }
 }
 
 // Card title styling
 .card-title {
   font-weight: 600;
-  margin-bottom: var(--spacing-sm);
+  font-size: var(--text-base);
+  margin-bottom: var(--spacing-xs);
   color: var(--bs-body-color);
+  line-height: 1.3;
 }
 
-// Card text
+// Card text (description)
 .card-text {
-  color: rgba(var(--bs-body-color-rgb), 0.75);
+  color: var(--bs-secondary-color);
   font-size: var(--text-sm);
+  line-height: 1.5;
 }
 
-// Card footer
+// Card footer (seamless with body)
 .card-footer {
   background-color: transparent;
-  border-top: 1px solid var(--bs-border-color);
-  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: none;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+
+  small {
+    color: var(--bs-secondary-color);
+    font-size: var(--text-xs);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// "See all" card style
+.card-see-all {
+  border: 1px solid var(--bs-border-color);
+  background: transparent;
+  transition: all var(--transition-base);
+
+  &:hover {
+    border-color: rgb(var(--bs-primary-rgb));
+    background: rgba(var(--bs-primary-rgb), 0.02);
+
+    .material-icons,
+    span {
+      color: rgb(var(--bs-primary-rgb));
+    }
+  }
+
+  .material-icons {
+    font-size: var(--icon-size-xl);
+    margin-bottom: var(--spacing-sm);
+    transition: color var(--transition-base);
+  }
 }
 
 // Thumbnail utilities

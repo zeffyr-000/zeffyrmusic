@@ -13,11 +13,12 @@ import { UserLibraryService } from '../services/user-library.service';
 import { FollowItem } from '../models/follow.model';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { UserVideo, Video } from '../models/video.model';
-import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
+import { NO_ERRORS_SCHEMA, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { Playlist } from '../models/playlist.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('PlaylistComponent', () => {
   let component: PlaylistComponent;
@@ -120,6 +121,10 @@ describe('PlaylistComponent', () => {
         {
           provide: Meta,
           useValue: metaServiceMock,
+        },
+        {
+          provide: NgbModal,
+          useValue: { open: vi.fn() },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -860,6 +865,21 @@ describe('PlaylistComponent', () => {
     expect(component.playlist()[0].duree).toBe(initialDuration);
     expect(component.playlist()[1].duree).toBe(initialDuration);
   });
+
+  describe('openShareModal', () => {
+    it('should open modal with correct options', () => {
+      const modalService = TestBed.inject(NgbModal);
+      const openSpy = vi.spyOn(modalService, 'open');
+      const mockTemplate = {} as TemplateRef<unknown>;
+
+      component.openShareModal(mockTemplate);
+
+      expect(openSpy).toHaveBeenCalledWith(mockTemplate, {
+        centered: true,
+        size: 'md',
+      });
+    });
+  });
 });
 
 // Tests for server context - to be added in a new describe block
@@ -937,6 +957,10 @@ describe('PlaylistComponent (Server context)', () => {
         {
           provide: Meta,
           useValue: metaServiceMock,
+        },
+        {
+          provide: NgbModal,
+          useValue: { open: vi.fn() },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
