@@ -41,6 +41,12 @@ if (typeof Touch === 'undefined') {
   };
 }
 
+// Mock window.scrollTo for jsdom (not implemented)
+if (typeof window !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  window.scrollTo = () => {};
+}
+
 // Ensure there's at least one script tag in the document for player.service.ts
 if (typeof document !== 'undefined' && document.getElementsByTagName('script').length === 0) {
   const script = document.createElement('script');
