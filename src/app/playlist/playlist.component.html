@@ -95,136 +95,133 @@
   </div>
 
   <div class="card-body p-t-0">
-    <table id="table-playlist" class="table table-hover">
-      <thead>
-        <tr>
-          <th class="d-none d-md-table-cell"></th>
-          <th class="d-none d-md-table-cell"></th>
-          <th>
-            <span class="d-none d-md-inline">{{ 'intitule_artiste' | transloco }}</span>
-          </th>
-          <th class="d-none d-md-table-cell">{{ 'intitule_titre' | transloco }}</th>
-          <th class="d-none d-md-table-cell"></th>
-          <th></th>
-        </tr>
-      </thead>
+    <div class="tracks-header">
+      <span class="header-number">#</span>
+      <span class="header-title">{{ 'intitule_titre' | transloco }}</span>
+      <span class="header-duration">
+        <span class="material-icons" aria-hidden="true">schedule</span>
+      </span>
+    </div>
 
-      <tbody>
-        @for (video of playlist(); track video.id_video; let i = $index) {
-        <tr
-          [attr.data-id-video]="video.key"
-          (click)="runPlaylist(i)"
-          [class.active]="video.key === queueStore.currentKey()"
-          itemprop="track"
-          itemscope
-          itemtype="http://schema.org/MusicRecording"
-        >
-          <td class="d-none d-md-table-cell" itemprop="position">{{ i + 1 }}</td>
-          <td class="d-none d-md-table-cell">
-            <img
-              [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
-              class="thumbnail"
-              alt=""
-            />
-          </td>
-          <td>
-            <p class="d-block d-md-none" itemprop="name">
-              <strong>{{ video.titre }}</strong>
-            </p>
+    <div class="tracks-list">
+      @for (video of playlist(); track video.id_video; let i = $index) {
+      <div
+        class="track-item"
+        [attr.data-id-video]="video.key"
+        (click)="runPlaylist(i)"
+        [class.active]="video.key === queueStore.currentKey()"
+        itemprop="track"
+        itemscope
+        itemtype="http://schema.org/MusicRecording"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="runPlaylist(i)"
+        (keydown.space)="runPlaylist(i); $event.preventDefault()"
+      >
+        <span class="track-number" itemprop="position">
+          @if (video.key === queueStore.currentKey()) {
+          <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+          } @else {
+          {{ i + 1 }}
+          }
+        </span>
+        <img
+          [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+          class="track-thumbnail"
+          [attr.alt]="video.titre"
+        />
+        <div class="track-info">
+          <span class="track-title" itemprop="name">{{ video.titre }}</span>
+          <span
+            class="track-artist"
+            (click)="$event.stopPropagation()"
+            (keydown.enter)="$event.stopPropagation()"
+            (keydown.space)="$event.stopPropagation()"
+            tabindex="-1"
+          >
             <app-artist-list [artists]="video.artists"></app-artist-list>
-          </td>
-          <td class="d-none d-md-table-cell" itemprop="name">{{ video.titre }}</td>
-          <td class="d-none d-md-table-cell">
-            @if(video.duree && +video.duree>0) {
-            <span>{{ video.duree | toMMSS }}</span>
-            }
-          </td>
-          <td>
-            <div class="d-flex">
-              @if(authStore.isAuthenticated() && userLibraryService.isLiked(video.key)) {
-              <button
-                type="button"
-                class="btn btn-sm btn-link text-decoration-none"
-                (click)="
-                  $event.stopPropagation(); userLibraryService.removeLike(video.key).subscribe()
-                "
-              >
-                <span class="material-icons">favorite</span>
-              </button>
-              } @if(authStore.isAuthenticated() && !userLibraryService.isLiked(video.key)) {
-              <button
-                type="button"
-                class="btn btn-sm btn-link text-decoration-none text-body"
-                (click)="
-                  $event.stopPropagation(); userLibraryService.addLike(video.key).subscribe()
-                "
-              >
-                <span class="material-icons">favorite_border</span>
-              </button>
-              }
-              <span
-                class="btn btn-link btn-sm text-decoration-none text-body"
-                tabindex="-1"
-                (click)="$event.stopPropagation()"
-                (keydown.enter)="$event.stopPropagation()"
-                (keydown.space)="$event.stopPropagation()"
-                ngbDropdown
-              >
+          </span>
+        </div>
+        <span class="track-duration">
+          @if (video.duree && +video.duree > 0) {
+          {{ video.duree | toMMSS }}
+          }
+        </span>
+        <div class="track-actions">
+          @if (authStore.isAuthenticated() && userLibraryService.isLiked(video.key)) {
+          <button
+            type="button"
+            class="btn btn-sm btn-icon btn-like active"
+            (click)="$event.stopPropagation(); userLibraryService.removeLike(video.key).subscribe()"
+          >
+            <span class="material-icons">favorite</span>
+          </button>
+          } @else if (authStore.isAuthenticated()) {
+          <button
+            type="button"
+            class="btn btn-sm btn-icon btn-like"
+            (click)="$event.stopPropagation(); userLibraryService.addLike(video.key).subscribe()"
+          >
+            <span class="material-icons">favorite_border</span>
+          </button>
+          }
+          <span
+            class="btn-track-menu"
+            tabindex="-1"
+            (click)="$event.stopPropagation()"
+            (keydown.enter)="$event.stopPropagation()"
+            (keydown.space)="$event.stopPropagation()"
+            ngbDropdown
+          >
+            <button class="btn btn-sm btn-icon" ngbDropdownToggle aria-label="Menu actions">
+              <span class="material-icons">more_vert</span>
+            </button>
+            <ul ngbDropdownMenu>
+              <li ngbDropdownItem>
                 <button
-                  class="btn btn-link p-0 text-body"
-                  ngbDropdownToggle
-                  aria-label="Menu actions"
+                  (click)="addVideoAfterCurrentInList(video)"
+                  class="btn btn-link text-body text-decoration-none p-0"
                 >
-                  <span class="material-icons">more_vert</span>
+                  <span class="material-icons">queue_music</span>
+                  {{ 'ajouter_apres_courant' | transloco }}
                 </button>
-                <ul ngbDropdownMenu>
-                  <li ngbDropdownItem>
-                    <button
-                      (click)="addVideoAfterCurrentInList(video)"
-                      class="btn btn-link text-body text-decoration-none p-0"
-                    >
-                      <span class="material-icons">queue_music</span>
-                      {{ 'ajouter_apres_courant' | transloco }}
-                    </button>
-                  </li>
-                  <li ngbDropdownItem>
-                    <button
-                      (click)="addVideoInEndCurrentList(video)"
-                      class="btn btn-link text-body text-decoration-none p-0"
-                    >
-                      <span class="material-icons">playlist_add</span>
-                      {{ 'ajouter_liste_en_cours' | transloco }}
-                    </button>
-                  </li>
-                  @if(authStore.isAuthenticated()) {
-                  <li ngbDropdownItem>
-                    <button
-                      (click)="addVideo(video.key, video.artiste, video.titre, video.duree)"
-                      class="btn btn-link text-body text-decoration-none p-0"
-                    >
-                      <span class="material-icons">add</span>
-                      {{ 'ajouter_a_une_playlist' | transloco }}
-                    </button>
-                  </li>
-                  } @if(authStore.isAuthenticated() && idPersoOwner()===authStore.idPerso()) {
-                  <li ngbDropdownItem>
-                    <button
-                      (click)="removeVideo(video.id_video)"
-                      class="btn btn-link text-body text-decoration-none p-0"
-                    >
-                      <span class="material-icons">clear</span>
-                      {{ 'supprimer' | transloco }}
-                    </button>
-                  </li>
-                  }
-                </ul>
-              </span>
-            </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
+              </li>
+              <li ngbDropdownItem>
+                <button
+                  (click)="addVideoInEndCurrentList(video)"
+                  class="btn btn-link text-body text-decoration-none p-0"
+                >
+                  <span class="material-icons">playlist_add</span>
+                  {{ 'ajouter_liste_en_cours' | transloco }}
+                </button>
+              </li>
+              @if (authStore.isAuthenticated()) {
+              <li ngbDropdownItem>
+                <button
+                  (click)="addVideo(video.key, video.artiste, video.titre, video.duree)"
+                  class="btn btn-link text-body text-decoration-none p-0"
+                >
+                  <span class="material-icons">add</span>
+                  {{ 'ajouter_a_une_playlist' | transloco }}
+                </button>
+              </li>
+              } @if (authStore.isAuthenticated() && idPersoOwner() === authStore.idPerso()) {
+              <li ngbDropdownItem>
+                <button
+                  (click)="removeVideo(video.id_video)"
+                  class="btn btn-link text-body text-decoration-none p-0"
+                >
+                  <span class="material-icons">clear</span>
+                  {{ 'supprimer' | transloco }}
+                </button>
+              </li>
+              }
+            </ul>
+          </span>
+        </div>
+      </div>
+      }
+    </div>
   </div>
   } @if(isPrivate()) {
   <p class="bg-info p-2 rounded">{{ 'playlist_privee' | transloco }}</p>
@@ -243,7 +240,6 @@
 </div>
 }
 
-<!-- Share Modal -->
 <ng-template #contentModalShare let-modal>
   <div class="modal-header">
     <h4 class="modal-title">

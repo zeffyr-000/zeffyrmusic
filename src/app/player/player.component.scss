@@ -20,44 +20,98 @@
   overflow: auto;
 }
 
-#queue-list {
-  table-layout: fixed;
+// Track list (modern Spotify-style)
+.tracks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-  tr {
-    &:hover {
-      cursor: pointer;
-    }
+.track-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
 
-    &.active {
-      background-color: var(--bs-table-hover-bg, #e6e6e6);
-    }
+  &:hover {
+    background: rgba(var(--bs-primary-rgb), 0.05);
   }
 
-  td {
-    > a:hover {
-      text-decoration: none;
+  &.active {
+    background: rgba(var(--bs-primary-rgb), 0.08);
+    border-left: 3px solid var(--bs-primary);
+    padding-left: calc(var(--spacing-sm) - 3px);
+
+    .track-title {
+      font-weight: 600;
     }
 
-    &:first-child {
-      width: 70px;
+    .playing-icon {
+      color: var(--bs-primary);
+      font-size: 1.25rem;
     }
+  }
+}
 
-    &:last-child {
-      width: 50px;
-    }
+.track-thumbnail {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
 
-    > p {
-      margin: 0;
-      padding: 0;
-      text-overflow: ellipsis;
-      width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
+.track-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-      &:hover {
-        cursor: pointer;
-      }
-    }
+.track-title {
+  font-size: var(--text-base);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-artist {
+  font-size: var(--text-sm);
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-track-menu {
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--bs-secondary-color);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+
+  &:hover {
+    background: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
+  }
+
+  .material-icons {
+    font-size: 1.25rem;
   }
 }
 

@@ -2,77 +2,64 @@
   <div id="player"></div>
 </div>
 <div id="queue-content" class="card panel-content border-0">
-  <table id="queue-list" class="table table-hover table-sm">
-    <thead></thead>
-    <tbody>
-      @for (video of queueStore.items(); track video.id_video; let index = $index) {
-      <tr
-        role="button"
-        tabindex="0"
-        (click)="play(index, true)"
-        (keydown.enter)="play(index, true)"
-        (keydown.space)="play(index, true); $event.preventDefault()"
-        [class.active]="video.key === queueStore.currentKey()"
+  <div class="tracks-list">
+    @for (video of queueStore.items(); track video.id_video; let index = $index) {
+    <div
+      class="track-item"
+      role="button"
+      tabindex="0"
+      (click)="play(index, true)"
+      (keydown.enter)="play(index, true)"
+      (keydown.space)="play(index, true); $event.preventDefault()"
+      [class.active]="video.key === queueStore.currentKey()"
+    >
+      <img
+        [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+        class="track-thumbnail"
+        [attr.alt]="video.titre"
+      />
+      <div class="track-info">
+        <span class="track-title">{{ video.titre }}</span>
+        <span class="track-artist">{{ video.artiste }}</span>
+      </div>
+      <span
+        class="btn-track-menu"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown.enter)="$event.stopPropagation()"
+        (keydown.space)="$event.stopPropagation()"
+        ngbDropdown
+        placement="left-top"
       >
-        <td>
-          <img
-            [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
-            class="thumbnail"
-            alt=""
-          />
-        </td>
-        <td>
-          <p>
-            <strong>{{ video.titre }}</strong>
-          </p>
-          <p>{{ video.artiste }}</p>
-        </td>
-        <td>
-          <span
-            class="btn btn-link btn-sm text-decoration-none text-body"
-            tabindex="-1"
-            (click)="$event.stopPropagation()"
-            (keydown.enter)="$event.stopPropagation()"
-            (keydown.space)="$event.stopPropagation()"
-            ngbDropdown
-            placement="left-top"
-          >
-            <button class="btn btn-link p-0 text-body" ngbDropdownToggle aria-label="Menu actions">
-              <span class="material-icons">more_vert</span>
+        <button class="btn btn-sm btn-icon" ngbDropdownToggle aria-label="Menu actions">
+          <span class="material-icons">more_vert</span>
+        </button>
+        <ul ngbDropdownMenu>
+          <li ngbDropdownItem>
+            <button
+              (click)="removeToPlaylist(index)"
+              class="btn btn-link text-body text-decoration-none p-0"
+            >
+              <span class="material-icons">clear</span>
+              {{ 'supprimer_liste_lecture' | transloco }}
             </button>
-            <ul ngbDropdownMenu>
-              <li ngbDropdownItem>
-                <button
-                  (click)="removeToPlaylist(index)"
-                  class="btn btn-link text-body text-decoration-none p-0"
-                >
-                  <span class="material-icons">clear</span>
-                  {{ 'supprimer_liste_lecture' | transloco }}
-                </button>
-              </li>
-              @if(authStore.isAuthenticated()) {
-              <li ngbDropdownItem>
-                <button
-                  (click)="
-                    playerService.addVideoInPlaylist(
-                      video.key,
-                      video.artiste,
-                      video.titre,
-                      video.duree
-                    )
-                  "
-                  class="btn btn-link text-body text-decoration-none p-0"
-                >
-                  <span class="material-icons">add</span>
-                  {{ 'ajouter_a_une_playlist' | transloco }}
-                </button>
-              </li>
-              }
-            </ul>
-          </span>
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
+          </li>
+          @if (authStore.isAuthenticated()) {
+          <li ngbDropdownItem>
+            <button
+              (click)="
+                playerService.addVideoInPlaylist(video.key, video.artiste, video.titre, video.duree)
+              "
+              class="btn btn-link text-body text-decoration-none p-0"
+            >
+              <span class="material-icons">add</span>
+              {{ 'ajouter_a_une_playlist' | transloco }}
+            </button>
+          </li>
+          }
+        </ul>
+      </span>
+    </div>
+    }
+  </div>
 </div>

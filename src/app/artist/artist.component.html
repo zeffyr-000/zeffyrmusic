@@ -1,22 +1,72 @@
-<div id="artist-content" class="card panel-profile border-0 h-auto mt-2">
+@if (!isLoading()) {
+<div
+  id="artist-content"
+  class="card panel-profile border-0 h-auto mt-2"
+  itemscope
+  itemtype="https://schema.org/MusicGroup"
+>
   @if (isAvailable()) {
 
-  <div id="artist-header" class="card-header clearfix border-0 row">
-    <div id="artist-image-wrapper" class="col col-4 p-0">
-      <img id="artist-image" [src]="urlDeezer()" class="rounded" alt="" />
-    </div>
-    <div class="panel-head-content col col-8 p-0">
-      <div id="artist-header-title">
-        <h1 class="h3">{{ name() }}</h1>
-        <share-buttons show="2" showText="true"></share-buttons>
+  <div id="artist-header" class="card-header clearfix border-0">
+    <div class="panel-head-content row align-items-center">
+      <div id="artist-image-wrapper" class="col-auto p-0">
+        <img
+          id="artist-image"
+          [src]="urlDeezer()"
+          [alt]="name()"
+          appDefaultImage
+          itemprop="image"
+        />
+      </div>
+      <div id="artist-header-title" class="col p-0">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="artist-type-badge">{{ 'intitule_artiste' | transloco }}</span>
+        </div>
+        <h1 itemprop="name">{{ name() }}</h1>
+
+        @if (biography()) {
+        <p class="artist-bio" itemprop="description">
+          {{ biographyExpanded() ? biography() : biographyTruncated() }}
+          @if (biographyNeedsTruncation()) {
+          <button
+            type="button"
+            class="btn-bio-toggle"
+            (click)="toggleBiography()"
+            [attr.aria-label]="
+              biographyExpanded() ? ('see_less' | transloco) : ('see_more' | transloco)
+            "
+          >
+            {{ biographyExpanded() ? ('see_less' | transloco) : ('see_more' | transloco) }}
+          </button>
+          }
+        </p>
+        }
+
+        <div class="artist-meta">
+          <span class="badge rounded-pill bg-primary-subtle text-body-secondary">
+            <span class="material-icons" aria-hidden="true">album</span>
+            <strong class="text-primary">{{ listAlbums().length }}</strong>
+            {{ 'album_count_label' | transloco : { count: listAlbums().length } }}
+          </span>
+        </div>
+
+        <div class="artist-actions">
+          <button
+            type="button"
+            class="btn btn-secondary btn-action"
+            (click)="openShareModal(contentModalShare)"
+            [attr.aria-label]="'partager' | transloco"
+          >
+            <span class="material-icons" aria-hidden="true">share</span>
+            {{ 'partager' | transloco }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card-body">
-    <div>
-      <h3>{{ 'albums' | transloco }}</h3>
-    </div>
+  <div class="card-body albums-section">
+    <h3>{{ 'albums' | transloco }}</h3>
 
     <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
       @for (album of listAlbums(); track album.id_playlist) {
@@ -40,10 +90,65 @@
       }
     </div>
   </div>
-  } @else if (isAvailable() === false){
+
+  @if (relatedArtists().length > 0) {
+  <div class="card-body related-artists-section">
+    <h3>{{ 'related_artists' | transloco }}</h3>
+    <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+      @for (artist of relatedArtists(); track artist.id_artiste) {
+      <div class="col m-0 mt-1 mb-1">
+        <a
+          class="card h-100 related-artist-card"
+          [routerLink]="'/artist/' + artist.id_artiste"
+          [attr.aria-label]="'view_artist_profile' | transloco : { artist: artist.nom }"
+        >
+          <img
+            [src]="'https://api.deezer.com/artist/' + artist.id_artiste_deezer + '/image?size=big'"
+            class="card-img-top"
+            [alt]="artist.nom"
+            appDefaultImage
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ artist.nom }}</h5>
+          </div>
+        </a>
+      </div>
+      }
+    </div>
+  </div>
+  } } @else if (isAvailable() === false){
   <p class="bg-info p-2 rounded">{{ 'artist_not_available' | transloco }}</p>
   <p>
     <a routerLink="/">{{ 'back_home' | transloco }}</a>
   </p>
   }
 </div>
+} @else {
+<div class="d-flex justify-content-center align-items-center">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+}
+
+<ng-template #contentModalShare let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">share</span>
+      {{ 'partager' | transloco }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <share-buttons
+      [include]="['facebook', 'x', 'whatsapp', 'telegram', 'email', 'copy']"
+      [showIcon]="true"
+      [showText]="true"
+    ></share-buttons>
+  </div>
+</ng-template>

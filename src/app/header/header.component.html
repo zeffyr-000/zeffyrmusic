@@ -1,5 +1,4 @@
 <div id="header-top" class="row g-0 justify-content-between">
-  <!-- Mobile menu (dropdown) -->
   <div id="header-burger" class="nav col-3 d-flex d-lg-none justify-content-center" ngbDropdown>
     <button type="button" class="btn" ngbDropdownToggle aria-label="Open menu">
       <span class="material-icons">menu</span>
@@ -199,38 +198,41 @@
     <span class="material-icons">keyboard_arrow_down</span>
   </button>
 
-  <div id="player-info-left" class="col-md-3 pl-2 pt-2">
+  <div id="player-info-left">
+    @if(queueStore.currentKey()){
+    <img
+      [src]="'https://img.youtube.com/vi/' + queueStore.currentKey() + '/mqdefault.jpg'"
+      class="player-thumbnail"
+      [attr.alt]="queueStore.currentVideo()?.titre"
+    />
+    }
+    <div class="player-track-info">
+      <span class="player-track-title">{{ queueStore.currentVideo()?.titre }}</span>
+      <span class="player-track-artist">{{ queueStore.currentVideo()?.artiste }}</span>
+    </div>
     @if(authStore.isAuthenticated() && userLibraryService.isLiked(queueStore.currentKey())){
     <button
-      id="player-info-left-liked"
-      class="btn btn-sm btn-link text-decoration-none float-end"
+      type="button"
+      class="btn btn-icon btn-like active"
       (click)="
         $event.stopPropagation(); userLibraryService.removeLike(queueStore.currentKey()).subscribe()
       "
+      aria-label="Remove from favorites"
     >
       <span class="material-icons">favorite</span>
     </button>
-    } @if(authStore.isAuthenticated() && !userLibraryService.isLiked(queueStore.currentKey())){
+    } @else if(authStore.isAuthenticated() && queueStore.currentKey()){
     <button
-      id="player-info-left-like"
-      class="btn btn-sm btn-link text-decoration-none text-body float-end"
+      type="button"
+      class="btn btn-icon btn-like"
       (click)="
         $event.stopPropagation(); userLibraryService.addLike(queueStore.currentKey()).subscribe()
       "
+      aria-label="Add to favorites"
     >
       <span class="material-icons">favorite_border</span>
     </button>
-    } @if(queueStore.currentKey()){
-    <img
-      [src]="'https://img.youtube.com/vi/' + queueStore.currentKey() + '/mqdefault.jpg'"
-      class="float-start"
-      alt=""
-    />
     }
-    <div>
-      <b>{{ queueStore.currentVideo()?.titre }}</b>
-    </div>
-    <div>{{ queueStore.currentVideo()?.artiste }}</div>
   </div>
 
   <div id="player-info-center" class="col-md-6">
@@ -238,13 +240,11 @@
       <button
         type="button"
         id="player-info-center-title"
-        class="btn btn-light d-inline-block d-md-none"
+        class="btn d-inline-block d-md-none"
         (click)="expandPlayer()"
       >
-        <div>
-          <b>{{ queueStore.currentVideo()?.titre }}</b>
-        </div>
-        <div>{{ queueStore.currentVideo()?.artiste }}</div>
+        <span class="mobile-track-title">{{ queueStore.currentVideo()?.titre }}</span>
+        <span class="mobile-track-artist">{{ queueStore.currentVideo()?.artiste }}</span>
       </button>
 
       <div class="btn-group btn-group-sm">
@@ -662,7 +662,6 @@
   </div>
 </ng-template>
 
-<!-- Mobile Offcanvas Menu -->
 <ng-template #contentMobileMenu>
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="offcanvas-mobile-menu-title">{{ 'menu' | transloco }}</h5>

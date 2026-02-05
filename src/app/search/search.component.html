@@ -1,114 +1,156 @@
 <div id="search-content" class="card card-body border-0 h-auto mt-2">
-  <h1 class="m-t-0 h3">{{ 'resultats_recherche' | transloco : { query: query() } }}</h1>
+  <div class="search-header">
+    <span class="search-type-badge">{{ 'resultats_recherche_badge' | transloco }}</span>
+    <h1>{{ query() }}</h1>
+    <p class="search-summary">
+      @if (!isLoading1() && !isLoading2()) {
+      {{
+        'search_results_count'
+          | transloco
+            : {
+                artists: listArtists()?.length || 0,
+                albums: listAlbums()?.length || 0,
+                tracks: listTracks()?.length || 0
+              }
+      }}
+      }
+    </p>
+  </div>
 
-  <div class="d-flex justify-content-between align-items-center">
-    <h2 class="h4">{{ 'artistes' | transloco }}</h2>
-    @if(listArtists()?.length && listArtists()!.length>limitArtist()) {
-    <button class="btn btn-link" (click)="moreArtists()">{{ 'show_all' | transloco }}</button>
-    }
-  </div>
-  @if(!isLoading1()){
-  <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
-    @for (artist of listArtists() | slice:0:limitArtist() ; track artist.id_artiste) {
-    <div class="col m-0 mt-1 mb-1">
-      <a class="card h-100" routerLink="/artist/{{ artist.id_artiste }}">
-        <img
-          [src]="'https://api.deezer.com/artist/' + artist.id_artiste_deezer + '/image?size=big'"
-          class="card-img-top"
-          alt=""
-        />
-        <div class="card-body">
-          <h5 class="card-title">{{ artist.artiste }}</h5>
-        </div>
-      </a>
+  <section class="search-section">
+    <div class="section-header">
+      <h2>
+        <span class="material-icons section-icon" aria-hidden="true">person</span>
+        {{ 'artistes' | transloco }}
+      </h2>
+      @if (listArtists()?.length && listArtists()!.length > limitArtist()) {
+      <button
+        class="btn btn-sm btn-outline-primary"
+        (click)="moreArtists()"
+        [attr.aria-label]="'show_all_artists' | transloco"
+      >
+        {{ 'show_all' | transloco }}
+      </button>
+      }
     </div>
-    }
-  </div>
-  } @if(listArtists() && listArtists()!.length===0) {
-  <div class="col m-0 mt-1 mb-1">
-    <div class="card h-100">
-      <div class="card-body">
-        <h5 class="card-title">
-          <span class="material-icons">search_off</span>
-          {{ 'no_artist_found' | transloco }}
-        </h5>
+
+    @if (isLoading1()) {
+    <div class="section-loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-  </div>
-  } @if(isLoading1()){
-  <div class="content-loading">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+    } @else if (listArtists()?.length === 0) {
+    <div class="empty-state">
+      <span class="material-icons" aria-hidden="true">search_off</span>
+      <p>{{ 'no_artist_found' | transloco }}</p>
     </div>
-  </div>
-  }
+    } @else {
+    <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+      @for (artist of listArtists() | slice:0:limitArtist(); track artist.id_artiste) {
+      <div class="col mb-3">
+        <a class="card artist-card h-100" routerLink="/artist/{{ artist.id_artiste }}">
+          <img
+            [src]="'https://api.deezer.com/artist/' + artist.id_artiste_deezer + '/image?size=big'"
+            class="card-img-top"
+            [alt]="artist.artiste"
+            appDefaultImage
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ artist.artiste }}</h5>
+            <span class="card-subtitle">{{ 'artiste' | transloco }}</span>
+          </div>
+        </a>
+      </div>
+      }
+    </div>
+    }
+  </section>
 
-  <div class="d-flex justify-content-between align-items-center">
-    <h2 class="h4">{{ 'albums' | transloco }}</h2>
-    @if(listAlbums()?.length && listAlbums()!.length>limitAlbum()) {
-    <button class="btn btn-link" (click)="moreAlbums()">{{ 'show_all' | transloco }}</button>
-    }
-  </div>
-  @if(!isLoading1()){
-  <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
-    @for (album of listAlbums() | slice:0:limitAlbum() ; track album.id_playlist) {
-    <div class="col m-0 mt-1 mb-1">
-      <a class="card h-100" routerLink="/playlist/{{ album.id_playlist }}">
-        <img [src]="album.url_image" class="card-img-top" [alt]="album.titre" appDefaultImage />
-        <div class="card-body">
-          <h5 class="card-title">{{ album.titre }}</h5>
-        </div>
-        <div class="card-footer">
-          <small class="text-muted">{{ album.year_release }}</small>
-        </div>
-      </a>
+  <section class="search-section">
+    <div class="section-header">
+      <h2>
+        <span class="material-icons section-icon" aria-hidden="true">album</span>
+        {{ 'albums' | transloco }}
+      </h2>
+      @if (listAlbums()?.length && listAlbums()!.length > limitAlbum()) {
+      <button
+        class="btn btn-sm btn-outline-primary"
+        (click)="moreAlbums()"
+        [attr.aria-label]="'show_all_albums' | transloco"
+      >
+        {{ 'show_all' | transloco }}
+      </button>
+      }
     </div>
-    }
-  </div>
-  } @if(listAlbums() && listAlbums()!.length===0) {
-  <div class="col m-0 mt-1 mb-1">
-    <div class="card h-100">
-      <div class="card-body">
-        <h5 class="card-title">
-          <span class="material-icons">search_off</span>
-          {{ 'no_album_found' | transloco }}
-        </h5>
+
+    @if (isLoading1()) {
+    <div class="section-loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-  </div>
-  } @if(isLoading1()){
-  <div class="content-loading">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+    } @else if (listAlbums()?.length === 0) {
+    <div class="empty-state">
+      <span class="material-icons" aria-hidden="true">search_off</span>
+      <p>{{ 'no_album_found' | transloco }}</p>
     </div>
-  </div>
-  }
-
-  <div class="d-flex justify-content-between align-items-center">
-    <h2 class="h4">{{ 'morceaux' | transloco }}</h2>
-    @if(listTracks()?.length && listTracks()!.length>limitTrack()) {
-    <button class="btn btn-link" (click)="moreTracks()">{{ 'show_all' | transloco }}</button>
+    } @else {
+    <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+      @for (album of listAlbums() | slice:0:limitAlbum(); track album.id_playlist) {
+      <div class="col mb-3">
+        <a class="card album-card h-100" routerLink="/playlist/{{ album.id_playlist }}">
+          <img [src]="album.url_image" class="card-img-top" [alt]="album.titre" appDefaultImage />
+          <div class="card-body">
+            <h5 class="card-title">{{ album.titre }}</h5>
+            @if (album.artiste) {
+            <span class="card-subtitle">{{ album.artiste }}</span>
+            }
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">{{ album.year_release }}</small>
+          </div>
+        </a>
+      </div>
+      }
+    </div>
     }
-  </div>
-  @if(!isLoading2() && listTracks()?.length && listTracks()!.length>0){
-  <table id="table-playlist" class="table table-hover">
-    <thead>
-      <tr>
-        <th></th>
-        <th></th>
-        <th>{{ 'intitule_artiste' | transloco }}</th>
-        <th>{{ 'intitule_titre' | transloco }}</th>
-        <th>{{ 'album' | transloco }}</th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
+  </section>
 
-    <tbody>
-      @for (video of listTracks() | slice:0:limitTrack() ; track video.id_video; let index = $index)
+  <section class="search-section">
+    <div class="section-header">
+      <h2>
+        <span class="material-icons section-icon" aria-hidden="true">music_note</span>
+        {{ 'morceaux' | transloco }}
+      </h2>
+      @if (listTracks()?.length && listTracks()!.length > limitTrack()) {
+      <button
+        class="btn btn-sm btn-outline-primary"
+        (click)="moreTracks()"
+        [attr.aria-label]="'show_all_tracks' | transloco"
+      >
+        {{ 'show_all' | transloco }}
+      </button>
+      }
+    </div>
+
+    @if (isLoading2()) {
+    <div class="section-loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    } @else if (listTracks()?.length === 0) {
+    <div class="empty-state">
+      <span class="material-icons" aria-hidden="true">search_off</span>
+      <p>{{ 'no_track_found' | transloco }}</p>
+    </div>
+    } @else if (listTracks()?.length && listTracks()!.length > 0) {
+    <div class="tracks-list">
+      @for (video of listTracks() | slice:0:limitTrack(); track video.id_video; let index = $index)
       {
-      <tr
-        [attr.data-id-video]="video.key"
+      <div
+        class="track-item"
         [class.active]="video.key === queueStore.currentKey()"
         role="button"
         tabindex="0"
@@ -116,110 +158,105 @@
         (keydown.enter)="runPlaylistTrack(index)"
         (keydown.space)="runPlaylistTrack(index); $event.preventDefault()"
       >
-        <td>{{ index + 1 }}</td>
-        <td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
-          <img
-            [src]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
-            class="thumbnail"
-            alt=""
-          />
-        </td>
-        <td>
-          @if(video.id_artiste===undefined || video.id_artiste<=0) {
-          <p>{{ video.artiste }}</p>
-          } @if(video.id_artiste!==undefined && video.id_artiste>0){
-          <a (click)="$event.stopPropagation()" routerLink="/artist/{{ video.id_artiste }}">{{
-            video.artiste
-          }}</a>
+        <span class="track-number">
+          @if (video.key === queueStore.currentKey()) {
+          <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+          } @else {
+          {{ index + 1 }}
           }
-        </td>
-        <td>{{ video.titre }}</td>
-        <td>
-          @if(video.titre_album!==undefined){
-          <a (click)="$event.stopPropagation()" routerLink="/playlist/{{ video.id_playlist }}">{{
-            video.titre_album
-          }}</a>
-          }
-        </td>
-        <td>
-          @if(video.duree && +video.duree>0){
-          <span>{{ video.duree | toMMSS }}</span>
-          }
-        </td>
-        <td>
-          @if(authStore.isAuthenticated()){
-          <span
-            class="btn btn-default"
-            (click)="
-              $event.stopPropagation(); addVideo(video.key, video.artiste, video.titre, video.duree)
-            "
-            (keydown.enter)="
-              $event.stopPropagation(); addVideo(video.key, video.artiste, video.titre, video.duree)
-            "
-            (keydown.space)="
-              $event.stopPropagation();
-              addVideo(video.key, video.artiste, video.titre, video.duree);
-              $event.preventDefault()
-            "
-            placement="left"
-            ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
-            role="button"
-            tabindex="0"
-          >
-            <span class="material-icons">add</span>
+        </span>
+        <img
+          [src]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+          class="track-thumbnail"
+          [attr.alt]="video.titre"
+        />
+        <div class="track-info">
+          <span class="track-title">{{ video.titre }}</span>
+          <span class="track-artist">
+            @if (video.id_artiste !== undefined && video.id_artiste > 0) {
+            <a (click)="$event.stopPropagation()" routerLink="/artist/{{ video.id_artiste }}">
+              {{ video.artiste }}
+            </a>
+            } @else {
+            {{ video.artiste }}
+            } @if (video.titre_album !== undefined) {
+            <span class="track-separator">•</span>
+            <a (click)="$event.stopPropagation()" routerLink="/playlist/{{ video.id_playlist }}">
+              {{ video.titre_album }}
+            </a>
+            }
           </span>
+        </div>
+        <span class="track-duration">
+          @if (video.duree && +video.duree > 0) {
+          {{ video.duree | toMMSS }}
           }
-        </td>
-      </tr>
+        </span>
+        @if (authStore.isAuthenticated()) {
+        <button
+          class="btn btn-sm btn-icon"
+          (click)="
+            $event.stopPropagation(); addVideo(video.key, video.artiste, video.titre, video.duree)
+          "
+          (keydown.enter)="
+            $event.stopPropagation(); addVideo(video.key, video.artiste, video.titre, video.duree)
+          "
+          (keydown.space)="
+            $event.stopPropagation();
+            addVideo(video.key, video.artiste, video.titre, video.duree);
+            $event.preventDefault()
+          "
+          placement="left"
+          ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
+          [attr.aria-label]="'ajouter_a_une_playlist' | transloco"
+        >
+          <span class="material-icons">add</span>
+        </button>
+        }
+      </div>
       }
-    </tbody>
-  </table>
-  } @if(listTracks() && listTracks()!.length===0) {
-  <div class="col m-0 mt-1 mb-1">
-    <div class="card h-100">
-      <div class="card-body">
-        <h5 class="card-title">
-          <span class="material-icons">search_off</span>
-          {{ 'no_track_found' | transloco }}
-        </h5>
+    </div>
+    }
+  </section>
+
+  <section class="search-section">
+    <div class="section-header">
+      <h2>
+        <span class="material-icons section-icon" aria-hidden="true">video_library</span>
+        {{ 'extras' | transloco }}
+      </h2>
+      @if (listExtras()?.length && listExtras()!.length > limitExtra()) {
+      <button
+        class="btn btn-sm btn-outline-primary"
+        (click)="moreExtras()"
+        [attr.aria-label]="'show_more_extras' | transloco"
+      >
+        {{ 'more' | transloco }}
+      </button>
+      }
+    </div>
+
+    @if (!authStore.isAuthenticated()) {
+    <div class="info-banner">
+      <span class="material-icons" aria-hidden="true">info</span>
+      {{ 'extras_info' | transloco }}
+    </div>
+    } @else if (isLoading3()) {
+    <div class="section-loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-  </div>
-  } @if(isLoading2()){
-  <div class="content-loading">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+    } @else if (listExtras()?.length === 0) {
+    <div class="empty-state">
+      <span class="material-icons" aria-hidden="true">search_off</span>
+      <p>{{ 'no_extra_found' | transloco }}</p>
     </div>
-  </div>
-  }
-
-  <div class="d-flex justify-content-between align-items-center">
-    <h2 class="h4">{{ 'extras' | transloco }}</h2>
-    @if(listExtras()?.length && listExtras()!.length>limitExtra()) {
-    <button class="btn btn-link" (click)="moreExtras()">{{ 'more' | transloco }}</button>
-    }
-  </div>
-  @if (!authStore.isAuthenticated()) {
-  <div class="bg-info p-2 rounded">
-    {{ 'extras_info' | transloco }}
-  </div>
-  } @if(!isLoading3() && authStore.isAuthenticated() && listExtras()?.length &&
-  listExtras()!.length>0){
-  <table id="table-extra" class="table table-hover">
-    <thead>
-      <tr>
-        <th></th>
-        <th></th>
-        <th>{{ 'intitule_titre' | transloco }}</th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-
-    <tbody>
-      @for (extra of listExtras() | slice:0:limitExtra() ; track extra.key; let index = $index) {
-      <tr
-        [attr.data-id-video]="extra.key"
+    } @else if (listExtras()?.length && listExtras()!.length > 0) {
+    <div class="tracks-list">
+      @for (extra of listExtras() | slice:0:limitExtra(); track extra.key; let index = $index) {
+      <div
+        class="track-item"
         [class.active]="extra.key === queueStore.currentKey()"
         role="button"
         tabindex="0"
@@ -227,58 +264,48 @@
         (keydown.enter)="runPlaylistExtra(index)"
         (keydown.space)="runPlaylistExtra(index); $event.preventDefault()"
       >
-        <td>{{ index + 1 }}</td>
-        <td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">
-          <img
-            [src]="'https://img.youtube.com/vi/' + extra.key + '/mqdefault.jpg'"
-            class="thumbnail"
-            alt=""
-          />
-        </td>
-        <td>{{ extra.title }}</td>
-        <td>
-          @if(extra.duree>0){
-          <span>{{ extra.duree | toMMSS }}</span>
+        <span class="track-number">
+          @if (extra.key === queueStore.currentKey()) {
+          <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+          } @else {
+          {{ index + 1 }}
           }
-        </td>
-        <td>
-          @if(authStore.isAuthenticated()) {
-          <span
-            class="btn btn-default"
-            (click)="addVideo(extra.key, '', extra.title, extra.duree)"
-            (keydown.enter)="addVideo(extra.key, '', extra.title, extra.duree)"
-            (keydown.space)="
-              addVideo(extra.key, '', extra.title, extra.duree); $event.preventDefault()
-            "
-            placement="left"
-            ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
-            role="button"
-            tabindex="0"
-          >
-            <span class="material-icons">add</span>
-          </span>
+        </span>
+        <img
+          [src]="'https://img.youtube.com/vi/' + extra.key + '/mqdefault.jpg'"
+          class="track-thumbnail"
+          [attr.alt]="extra.title"
+        />
+        <div class="track-info">
+          <span class="track-title">{{ extra.title }}</span>
+        </div>
+        <span class="track-duration">
+          @if (extra.duree > 0) {
+          {{ extra.duree | toMMSS }}
           }
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
-  } @if(listExtras() && listExtras()!.length===0) {
-  <div class="col m-0 mt-1 mb-1">
-    <div class="card h-100">
-      <div class="card-body">
-        <h5 class="card-title">
-          <span class="material-icons">search_off</span>
-          {{ 'no_extra_found' | transloco }}
-        </h5>
+        </span>
+        @if (authStore.isAuthenticated()) {
+        <button
+          class="btn btn-sm btn-icon"
+          (click)="$event.stopPropagation(); addVideo(extra.key, '', extra.title, extra.duree)"
+          (keydown.enter)="
+            $event.stopPropagation(); addVideo(extra.key, '', extra.title, extra.duree)
+          "
+          (keydown.space)="
+            $event.stopPropagation();
+            addVideo(extra.key, '', extra.title, extra.duree);
+            $event.preventDefault()
+          "
+          placement="left"
+          ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
+          [attr.aria-label]="'ajouter_a_une_playlist' | transloco"
+        >
+          <span class="material-icons">add</span>
+        </button>
+        }
       </div>
+      }
     </div>
-  </div>
-  } @if(isLoading3()) {
-  <div class="content-loading">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-  }
+    }
+  </section>
 </div>

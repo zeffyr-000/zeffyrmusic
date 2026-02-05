@@ -5,13 +5,15 @@ import { TranslocoService } from '@jsverse/transloco';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { PLATFORM_ID } from '@angular/core';
-import { of } from 'rxjs';
-import { Album } from '../models/album.model';
+import { of, throwError } from 'rxjs';
 import { ArtistComponent } from './artist.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ArtistService } from '../services/artist.service';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { environment } from '../../environments/environment';
+import { ArtistData, RelatedArtist } from '../models/artist.model';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AuthStore } from '../store';
 
 describe('ArtistComponent', () => {
   let component: ArtistComponent;
@@ -23,14 +25,22 @@ describe('ArtistComponent', () => {
   let googleAnalyticsService: GoogleAnalyticsService;
   let translocoService: TranslocoService;
   let artistServiceMock: Partial<ArtistService>;
+  let modalServiceMock: Partial<NgbModal>;
 
-  const data: { nom: string; id_artiste_deezer: string; id_artist: string; list_albums: Album[] } =
-    {
-      nom: 'Test Artist',
-      id_artiste_deezer: '123',
-      id_artist: '1',
-      list_albums: [],
-    };
+  const relatedArtists: RelatedArtist[] = [
+    { id_artiste: 45, nom: 'Justice', id_artiste_deezer: 293 },
+    { id_artiste: 78, nom: 'Kavinsky', id_artiste_deezer: 456 },
+  ];
+
+  const data: ArtistData = {
+    nom: 'Test Artist',
+    id_artiste_deezer: '123',
+    id_artist: '1',
+    list_albums: [],
+    biography_fr: 'Biographie en français',
+    biography_en: 'Biography in English',
+    related_artists: relatedArtists,
+  };
 
   describe('In browser environment', () => {
     beforeEach(async () => {
@@ -38,11 +48,16 @@ describe('ArtistComponent', () => {
         getArtist: vi.fn().mockReturnValue(of(data)),
       };
 
+      modalServiceMock = {
+        open: vi.fn(),
+      };
+
       await TestBed.configureTestingModule({
         imports: [ArtistComponent, FontAwesomeTestingModule],
         providers: [
           getTranslocoTestingProviders(),
           { provide: ArtistService, useValue: artistServiceMock },
+          { provide: NgbModal, useValue: modalServiceMock },
           { provide: PLATFORM_ID, useValue: 'browser' },
           {
             provide: ActivatedRoute,
@@ -117,6 +132,193 @@ describe('ArtistComponent', () => {
 
       expect(component.isAvailable()).toBe(true);
     });
+
+    it('should populate biography signals from API data', () => {
+      component.initLoad();
+
+      expect(component.biographyFr()).toBe('Biographie en français');
+      expect(component.biographyEn()).toBe('Biography in English');
+    });
+
+    it('should populate related artists from API data', () => {
+      component.initLoad();
+
+      expect(component.relatedArtists()).toEqual(relatedArtists);
+      expect(component.relatedArtists().length).toBe(2);
+    });
+
+    it('should return English biography when language is en', () => {
+      const authStore = TestBed.inject(AuthStore);
+      authStore.setLanguage('en');
+      component.initLoad();
+
+      expect(component.biography()).toBe('Biography in English');
+    });
+
+    it('should return French biography when language is fr', () => {
+      const authStore = TestBed.inject(AuthStore);
+      authStore.setLanguage('fr');
+      component.initLoad();
+
+      expect(component.biography()).toBe('Biographie en français');
+    });
+
+    it('should return empty string when biography is not available for selected language', () => {
+      const dataWithoutBio: ArtistData = {
+        ...data,
+        biography_fr: '',
+        biography_en: '',
+      };
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(dataWithoutBio));
+
+      component.initLoad();
+
+      expect(component.biography()).toBe('');
+    });
+
+    it('should handle empty related_artists array', () => {
+      const dataWithoutRelated: ArtistData = {
+        ...data,
+        related_artists: [],
+      };
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(dataWithoutRelated));
+
+      component.initLoad();
+
+      expect(component.relatedArtists()).toEqual([]);
+    });
+
+    it('should open share modal when openShareModal is called', () => {
+      const mockTemplate = {} as unknown;
+
+      component.openShareModal(mockTemplate as never);
+
+      expect(modalServiceMock.open).toHaveBeenCalledWith(mockTemplate, {
+        centered: true,
+        size: 'md',
+      });
+    });
+
+    it('should truncate biography when longer than 120 characters', () => {
+      const longBio = 'A'.repeat(200);
+      const dataWithLongBio: ArtistData = {
+        ...data,
+        biography_en: longBio,
+      };
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(dataWithLongBio));
+      const authStore = TestBed.inject(AuthStore);
+      authStore.setLanguage('en');
+
+      component.initLoad();
+
+      expect(component.biographyNeedsTruncation()).toBe(true);
+      expect(component.biographyTruncated().length).toBeLessThan(longBio.length);
+      expect(component.biographyTruncated().endsWith('…')).toBe(true);
+    });
+
+    it('should truncate at word boundary when biography contains spaces', () => {
+      const longBio =
+        'This is a long biography that contains multiple words and should be truncated at a word boundary to avoid cutting words in half';
+      const dataWithLongBio: ArtistData = {
+        ...data,
+        biography_en: longBio,
+      };
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(dataWithLongBio));
+      const authStore = TestBed.inject(AuthStore);
+      authStore.setLanguage('en');
+
+      component.initLoad();
+
+      expect(component.biographyNeedsTruncation()).toBe(true);
+      const truncated = component.biographyTruncated();
+      // Should end with ellipsis and not cut a word in half
+      expect(truncated.endsWith('…')).toBe(true);
+      // The character before ellipsis should be a letter (end of word), not a space
+      const charBeforeEllipsis = truncated.charAt(truncated.length - 2);
+      expect(charBeforeEllipsis).not.toBe(' ');
+    });
+
+    it('should truncate at 120 characters when biography has no spaces', () => {
+      const longBioNoSpaces = 'A'.repeat(200);
+      const dataWithLongBio: ArtistData = {
+        ...data,
+        biography_en: longBioNoSpaces,
+      };
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(dataWithLongBio));
+      const authStore = TestBed.inject(AuthStore);
+      authStore.setLanguage('en');
+
+      component.initLoad();
+
+      expect(component.biographyNeedsTruncation()).toBe(true);
+      // Should be 120 chars + ellipsis = 121
+      expect(component.biographyTruncated().length).toBe(121);
+      expect(component.biographyTruncated()).toBe('A'.repeat(120) + '…');
+    });
+
+    it('should not truncate biography when shorter than 120 characters', () => {
+      const shortBio = 'Short biography';
+      const dataWithShortBio: ArtistData = {
+        ...data,
+        biography_en: shortBio,
+      };
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(dataWithShortBio));
+      const authStore = TestBed.inject(AuthStore);
+      authStore.setLanguage('en');
+
+      component.initLoad();
+
+      expect(component.biographyNeedsTruncation()).toBe(false);
+      expect(component.biographyTruncated()).toBe(shortBio);
+    });
+
+    it('should toggle biography expanded state', () => {
+      expect(component.biographyExpanded()).toBe(false);
+
+      component.toggleBiography();
+      expect(component.biographyExpanded()).toBe(true);
+
+      component.toggleBiography();
+      expect(component.biographyExpanded()).toBe(false);
+    });
+
+    it('should reset state and scroll to top when navigating to a different artist', () => {
+      // First, load an artist and expand biography
+      component.initLoad();
+      component.toggleBiography();
+      expect(component.biographyExpanded()).toBe(true);
+      expect(component.name()).toBe('Test Artist');
+
+      // Simulate navigation to a different artist
+      const newArtistData: ArtistData = {
+        nom: 'New Artist',
+        id_artiste_deezer: '456',
+        id_artist: '2',
+        list_albums: [],
+        biography_fr: 'Nouvelle bio',
+        biography_en: 'New bio',
+        related_artists: [],
+      };
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(of(newArtistData));
+
+      // Trigger params change (simulates navigation)
+      component.ngOnInit();
+
+      // State should be reset
+      expect(component.biographyExpanded()).toBe(false);
+      expect(component.name()).toBe('New Artist');
+    });
+
+    it('should handle API error and set loading/available states', () => {
+      artistServiceMock.getArtist = vi
+        .fn()
+        .mockReturnValue(throwError(() => new Error('API Error')));
+
+      component.initLoad();
+
+      expect(component.isLoading()).toBe(false);
+      expect(component.isAvailable()).toBe(false);
+    });
   });
 
   describe('In server environment', () => {
@@ -125,11 +327,16 @@ describe('ArtistComponent', () => {
         getArtist: vi.fn().mockReturnValue(of(data)),
       };
 
+      modalServiceMock = {
+        open: vi.fn(),
+      };
+
       await TestBed.configureTestingModule({
         imports: [ArtistComponent, FontAwesomeTestingModule],
         providers: [
           getTranslocoTestingProviders(),
           { provide: ArtistService, useValue: artistServiceMock },
+          { provide: NgbModal, useValue: modalServiceMock },
           { provide: PLATFORM_ID, useValue: 'server' },
           {
             provide: ActivatedRoute,
