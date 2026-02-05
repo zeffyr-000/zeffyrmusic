@@ -115,3 +115,8 @@ refactor: migrate SettingsComponent to signals
 test: add coverage for AuthStore
 docs: update documentation
 ```
+
+## CI/CD & GitHub Actions
+
+- Use POSIX-compliant shell syntax (not bash-specific)
+- See `/.github/instructions/workflows.instructions.md` for detailed guidelines

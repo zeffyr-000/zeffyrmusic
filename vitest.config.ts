@@ -39,7 +39,8 @@ export default defineConfig({
     },
     environmentOptions: {
       jsdom: {
-        resources: 'usable',
+        // Disable external resource loading to avoid undici compatibility issues with jsdom 27.4+
+        resources: undefined,
       },
     },
   },
