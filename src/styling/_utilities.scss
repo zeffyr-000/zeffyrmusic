@@ -111,6 +111,12 @@ a.card,
   .material-icons {
     font-size: var(--icon-size-sm);
   }
+
+  &:disabled {
+    pointer-events: auto;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 // Primary action button with enhanced hover

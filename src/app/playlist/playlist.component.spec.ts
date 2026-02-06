@@ -474,6 +474,57 @@ describe('PlaylistComponent', () => {
     expect(playerService.addInCurrentList).toHaveBeenCalledWith(playlistData, null);
   });
 
+  it('should disable play and add-to-list buttons when playlist is empty', () => {
+    component.isLoading.set(false);
+    component.isPrivate.set(false);
+    component.playlist.set([]);
+    fixture.detectChanges();
+
+    const buttons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll(
+      '.playlist-actions .btn-action'
+    );
+    const disabledButtons = Array.from(buttons).filter(btn => btn.disabled);
+
+    expect(disabledButtons.length).toBe(2);
+
+    // Verify click handlers are not invoked on disabled buttons
+    const spyRunPlaylist = vi.spyOn(playerService, 'runPlaylist');
+    const spyAddInCurrentList = vi.spyOn(playerService, 'addInCurrentList');
+    disabledButtons.forEach(btn => btn.click());
+
+    expect(spyRunPlaylist).not.toHaveBeenCalled();
+    expect(spyAddInCurrentList).not.toHaveBeenCalled();
+  });
+
+  it('should enable play and add-to-list buttons when playlist has items', () => {
+    component.isLoading.set(false);
+    component.isPrivate.set(false);
+    component.playlist.set([
+      {
+        id_video: '1',
+        artiste: 'Artiste 1',
+        artists: [{ id_artist: '1', label: 'Artiste 1' }],
+        duree: '100',
+        id_playlist: '1',
+        key: 'XXX-XXX',
+        ordre: '1',
+        titre: 'Titre 1',
+        titre_album: 'Titre album 1',
+      },
+    ] as Video[]);
+    fixture.detectChanges();
+
+    const playBtn: HTMLButtonElement = fixture.nativeElement.querySelector(
+      '.playlist-actions .btn-primary.btn-action'
+    );
+    const addBtn: HTMLButtonElement = fixture.nativeElement.querySelector(
+      '.playlist-actions .btn-action[disabled]'
+    );
+
+    expect(playBtn.disabled).toBe(false);
+    expect(addBtn).toBeNull();
+  });
+
   it('should call playerService.addVideoInPlaylist with correct arguments when addVideo is called', () => {
     component.addVideo('testKey', 'testArtist', 'testTitle', 100);
 
