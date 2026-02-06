@@ -38,7 +38,12 @@
 
         <div class="playlist-actions">
           @if(idPlaylist() !== currentIdPlaylistPlaying() || !playerStore.isPlaying()) {
-          <button type="button" class="btn btn-primary btn-action" (click)="runPlaylist()">
+          <button
+            type="button"
+            class="btn btn-primary btn-action"
+            (click)="runPlaylist()"
+            [disabled]="playlist().length === 0"
+          >
             <span class="material-icons" aria-hidden="true">play_circle_outline</span>
             {{ 'lire' | transloco }}
           </button>
@@ -63,7 +68,12 @@
           </button>
           }
 
-          <button type="button" class="btn btn-secondary btn-action" (click)="addInCurrentList()">
+          <button
+            type="button"
+            class="btn btn-secondary btn-action"
+            (click)="addInCurrentList()"
+            [disabled]="playlist().length === 0"
+          >
             <span class="material-icons" aria-hidden="true">playlist_add</span>
             {{ 'ajouter_liste_en_cours' | transloco }}
           </button>

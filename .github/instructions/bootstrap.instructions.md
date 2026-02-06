@@ -171,3 +171,28 @@ body[data-bs-theme='dark'] {
 4. **No hardcoded colors** (use variables or CSS custom properties)
 5. **No custom classes for basic layout** (use Bootstrap utilities)
 6. **No manual keyboard handling on ng-bootstrap components**
+
+## Known Bootstrap Pitfalls
+
+### Disabled Buttons and `cursor: not-allowed`
+
+Bootstrap sets `pointer-events: none` on `:disabled` buttons. This prevents **any** cursor style
+from being applied, making `cursor: not-allowed` invisible to the user.
+
+**Fix:** Override `pointer-events` to `auto`. The native HTML `disabled` attribute still prevents
+click events from firing, so this is safe.
+
+```scss
+// ✅ CORRECT: cursor is visible
+.btn:disabled {
+  pointer-events: auto;
+  cursor: not-allowed;
+}
+
+// ❌ INCORRECT: cursor will NOT appear (Bootstrap overrides with pointer-events: none)
+.btn:disabled {
+  cursor: not-allowed;
+}
+```
+
+> **Note:** This override is already applied globally on `.btn-action:disabled` in `_utilities.scss`.

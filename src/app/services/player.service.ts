@@ -294,6 +294,10 @@ export class PlayerService implements OnDestroy {
     idTopCharts: string | null = '',
     playlistId: string | null = null
   ) {
+    if (playlist.length === 0) {
+      return;
+    }
+
     this.listVideo = [];
     this.tabIndexInitial = [];
     this.tabIndex = [];

@@ -718,6 +718,25 @@ describe('PlayerService', () => {
       expect(spySetQueue).toHaveBeenCalledWith(playlist, playlistId, idTopCharts);
     });
 
+    it('should not call addInCurrentList, queueStore.setQueue or lecture when playlist is empty', () => {
+      service.listVideo = [{ key: '1' }] as Video[];
+      service.tabIndexInitial = [1];
+      service.tabIndex = [1];
+
+      const spyAddInCurrentList = vi.spyOn(service, 'addInCurrentList');
+      const spyLecture = vi.spyOn(service, 'lecture');
+      const spySetQueue = vi.spyOn(queueStore, 'setQueue');
+
+      service.runPlaylist([], 0);
+
+      expect(spyAddInCurrentList).not.toHaveBeenCalled();
+      expect(spyLecture).not.toHaveBeenCalled();
+      expect(spySetQueue).not.toHaveBeenCalled();
+      expect(service.listVideo).toEqual([{ key: '1' }]);
+      expect(service.tabIndexInitial).toEqual([1]);
+      expect(service.tabIndex).toEqual([1]);
+    });
+
     it('should set error in PlayerStore when YoutubePlayerService emits error$', () => {
       mockYoutubePlayer.error$.next('error_request_not_found');
 
