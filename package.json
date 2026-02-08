@@ -36,7 +36,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@jsverse/transloco": "^8.2.1",
     "@jsverse/transloco-messageformat": "^8.2.1",
-    "@jsverse/utils": "^1.0.0-beta.5",
+    "@jsverse/utils": "^1.0.0-beta.6",
     "@listr2/prompt-adapter-inquirer": "^3.0.5",
     "@ng-bootstrap/ng-bootstrap": "^20.0.0",
     "@ngrx/signals": "^21.0.1",
