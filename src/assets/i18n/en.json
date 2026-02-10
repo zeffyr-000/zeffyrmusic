@@ -317,6 +317,7 @@
   "help_issues_step_4_content": "If the issue continues, wait a moment and try again later.",
 
   "reset_password_title": "Password Reset",
+  "reset_password_hint": "Choose a new password for your account. It must be at least 6 characters long.",
   "reset_password_new_pass": "New Password",
   "reset_password_pass_required": "Password is required",
   "reset_password_pass_size": "Password must be at least 6 characters long",
@@ -326,5 +327,7 @@
   "reset_password_action": "Reset Password",
   "reset_password_invalid": "Your password could not be reset. Please check the reset link in your email.",
   "reset_password_success": "Your password has been successfully reset. You can now log in with your new password.",
+  "reset_password_success_title": "Password reset!",
+  "reset_password_back_home": "Back to home",
   "partager": "Share"
 }

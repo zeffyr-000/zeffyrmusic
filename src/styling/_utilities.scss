@@ -20,8 +20,8 @@
 
 // Page header with bottom border separator
 .page-header {
-  margin-bottom: var(--spacing-2xl);
-  padding-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
   border-bottom: 2px solid var(--bs-border-color);
 
   h1 {
