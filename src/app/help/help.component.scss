@@ -1,25 +1,7 @@
 // =============================================================================
 // HELP COMPONENT - Help directory page
+// Shared classes (.page-container, .page-header) from _utilities.scss
 // =============================================================================
-
-.help-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-md);
-}
-
-.help-header {
-  margin-bottom: var(--spacing-2xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 2px solid var(--bs-border-color);
-
-  h1 {
-    font-size: var(--text-3xl);
-    font-weight: 700;
-    color: var(--bs-body-color);
-    margin-bottom: var(--spacing-md);
-  }
-}
 
 .help-intro {
   background: linear-gradient(
@@ -137,15 +119,7 @@
 }
 
 // Responsive
-@media screen and (max-width: 640px) {
-  .help-container {
-    padding: var(--spacing-lg) var(--spacing-md);
-  }
-
-  .help-header h1 {
-    font-size: var(--text-2xl);
-  }
-
+@media screen and (max-width: 768px) {
   .help-intro {
     padding: var(--spacing-md);
   }

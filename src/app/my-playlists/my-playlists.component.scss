@@ -1,0 +1,171 @@
+// =============================================================================
+// MY PLAYLISTS - Component-specific styles only
+// Shared classes (.page-container, .page-header, .btn-icon, .empty-state)
+// are defined in src/styling/_utilities.scss
+// =============================================================================
+
+// Create section
+.create-section {
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.create-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--bs-body-color);
+  margin: 0 0 var(--spacing-lg) 0;
+
+  .material-icons {
+    font-size: 22px;
+    color: rgb(var(--bs-primary-rgb));
+  }
+}
+
+.create-form {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-md);
+
+  .form-group {
+    flex: 1;
+    margin: 0;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: 600;
+    white-space: nowrap;
+    height: 38px;
+
+    .material-icons {
+      font-size: 20px;
+    }
+  }
+}
+
+// Playlist list (lightweight, like tracks-list)
+.playlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.playlist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+
+  &:hover {
+    background: rgba(var(--bs-primary-rgb), 0.05);
+  }
+}
+
+.playlist-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.playlist-title {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Actions (visibility toggle + dropdown)
+.playlist-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+// Visibility toggle button (labeled pill)
+.btn-visibility {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full, 50px);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border: 1px solid var(--bs-border-color);
+  background: transparent;
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+
+  .material-icons {
+    font-size: 16px;
+  }
+
+  &:hover {
+    border-color: rgba(var(--bs-primary-rgb), 0.4);
+    color: rgb(var(--bs-primary-rgb));
+    background: rgba(var(--bs-primary-rgb), 0.05);
+  }
+
+  &.is-private {
+    color: rgba(var(--bs-warning-rgb), 0.9);
+    border-color: rgba(var(--bs-warning-rgb), 0.3);
+    background: rgba(var(--bs-warning-rgb), 0.06);
+
+    &:hover {
+      border-color: rgba(var(--bs-warning-rgb), 0.5);
+      background: rgba(var(--bs-warning-rgb), 0.1);
+    }
+  }
+}
+
+// Dropdown styles inherited from global _utilities.scss and _custom.scss
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media screen and (max-width: 768px) {
+  .create-form {
+    flex-direction: column;
+    align-items: stretch;
+
+    .btn-primary {
+      width: 100%;
+    }
+  }
+
+  .btn-visibility {
+    font-size: var(--text-xs);
+    padding: 2px var(--spacing-xs);
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .playlist-item {
+    transition: none;
+  }
+}

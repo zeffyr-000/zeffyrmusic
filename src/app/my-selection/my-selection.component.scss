@@ -1,30 +1,7 @@
 // =============================================================================
 // MY SELECTION COMPONENT - User followed playlists and albums
+// Shared classes (.page-container--wide, .page-header) from _utilities.scss
 // =============================================================================
-
-.selection-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-2xl) var(--spacing-md);
-
-  // On larger screens, align bottom padding with player height
-  @media (min-width: 768px) {
-    padding-bottom: var(--player-height);
-  }
-}
-
-.selection-header {
-  margin-bottom: var(--spacing-2xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 2px solid var(--bs-border-color);
-
-  h1 {
-    font-size: var(--text-3xl);
-    font-weight: 700;
-    color: var(--bs-body-color);
-    margin: 0;
-  }
-}
 
 .selection-intro {
   background: linear-gradient(
@@ -162,16 +139,23 @@
 
 // Responsive
 @media (max-width: 768px) {
-  .selection-container {
-    padding: var(--spacing-lg) var(--spacing-sm);
-  }
-
-  .selection-header h1 {
-    font-size: var(--text-2xl);
-  }
-
   .selection-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: var(--spacing-md);
   }
+}
+
+// Modal
+.modal-item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) 0 var(--spacing-sm);
+  font-size: var(--text-base);
+}
+
+.modal-item-artist {
+  color: rgba(var(--bs-body-color-rgb), 0.7);
+  font-size: var(--text-sm);
 }

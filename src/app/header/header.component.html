@@ -4,81 +4,57 @@
       <span class="material-icons">menu</span>
     </button>
     <ul ngbDropdownMenu>
-      <li ngbDropdownItem>
-        <a
-          routerLink="/current"
-          routerLinkActive="active"
-          class="btn text-body text-decoration-none p-0"
-        >
+      <li ngbDropdownItem routerLinkActive="active">
+        <a routerLink="/current">
           <span class="material-icons">playlist_play</span>{{ 'play_list' | transloco }}
         </a>
       </li>
       <li class="dropdown-divider"></li>
       @if (!authStore.isAuthenticated()) {
       <li ngbDropdownItem>
-        <button
-          type="button"
-          class="btn btn-link text-body text-decoration-none p-0"
-          (click)="openModalRegister()"
-        >
+        <button type="button" (click)="openModalRegister()">
           <span class="material-icons">create_new_folder</span>{{ 'inscription' | transloco }}
         </button>
       </li>
       <li ngbDropdownItem>
-        <button
-          type="button"
-          class="btn btn-link text-body text-decoration-none p-0"
-          (click)="openModalLogin()"
-        >
+        <button type="button" (click)="openModalLogin()">
           <span class="material-icons">login</span>{{ 'connexion' | transloco }}
         </button>
       </li>
       }
-      <li ngbDropdownItem>
-        <a
-          routerLink="/help"
-          routerLinkActive="active"
-          class="btn text-body text-decoration-none p-0"
-        >
+      <li ngbDropdownItem routerLinkActive="active">
+        <a routerLink="/help">
           <span class="material-icons">help</span>{{ 'help_title' | transloco }}
         </a>
       </li>
       @if (authStore.isAuthenticated()) {
       <li class="dropdown-divider"></li>
       <li ngbDropdownItem class="bg-primary text-white">
-        {{ authStore.pseudo() }}
+        <span class="d-block">{{ authStore.pseudo() }}</span>
       </li>
-      <li ngbDropdownItem>
-        <a routerLink="/like" routerLinkActive="active" class="text-body text-decoration-none">
+      <li ngbDropdownItem routerLinkActive="active">
+        <a routerLink="/like">
           <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
         </a>
       </li>
-      <li ngbDropdownItem>
-        <a
-          routerLink="/my-playlists"
-          routerLinkActive="active"
-          class="text-body text-decoration-none"
-        >
+      <li ngbDropdownItem routerLinkActive="active">
+        <a routerLink="/my-playlists">
           <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
         </a>
       </li>
-      <li ngbDropdownItem>
-        <a
-          routerLink="/my-selection"
-          routerLinkActive="active"
-          class="text-body text-decoration-none"
-        >
+      <li ngbDropdownItem routerLinkActive="active">
+        <a routerLink="/my-selection">
           <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
         </a>
       </li>
-      <li ngbDropdownItem>
-        <a routerLink="/settings" routerLinkActive="active" class="text-body text-decoration-none">
+      <li ngbDropdownItem routerLinkActive="active">
+        <a routerLink="/settings">
           <span class="material-icons">settings</span>{{ 'settings' | transloco }}
         </a>
       </li>
       <li class="dropdown-divider"></li>
       <li ngbDropdownItem>
-        <button (click)="onLogout()" class="btn btn-link text-body text-decoration-none p-0">
+        <button (click)="onLogout()">
           <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco }}
         </button>
       </li>
@@ -118,41 +94,29 @@
         {{ authStore.pseudo() }} <span class="caret"></span>
       </a>
       <ul ngbDropdownMenu>
-        <li ngbDropdownItem>
-          <a routerLink="/like" routerLinkActive="active" class="text-body text-decoration-none">
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/like">
             <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
           </a>
         </li>
-        <li ngbDropdownItem>
-          <a
-            routerLink="/my-playlists"
-            routerLinkActive="active"
-            class="text-body text-decoration-none"
-          >
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/my-playlists">
             <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
           </a>
         </li>
-        <li ngbDropdownItem>
-          <a
-            routerLink="/my-selection"
-            routerLinkActive="active"
-            class="text-body text-decoration-none"
-          >
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/my-selection">
             <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
           </a>
         </li>
-        <li ngbDropdownItem>
-          <a
-            routerLink="/settings"
-            routerLinkActive="active"
-            class="text-body text-decoration-none"
-          >
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/settings">
             <span class="material-icons">settings</span>{{ 'settings' | transloco }}
           </a>
         </li>
         <li class="dropdown-divider"></li>
         <li ngbDropdownItem>
-          <button (click)="onLogout()" class="btn btn-link text-body text-decoration-none p-0">
+          <button (click)="onLogout()">
             <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco }}
           </button>
         </li>

@@ -39,10 +39,7 @@
       </button>
       <ul ngbDropdownMenu>
         <li ngbDropdownItem>
-          <button
-            (click)="removeToPlaylist(index)"
-            class="btn btn-link text-body text-decoration-none p-0"
-          >
+          <button (click)="removeToPlaylist(index)">
             <span class="material-icons">clear</span>
             {{ 'supprimer_liste_lecture' | transloco }}
           </button>
@@ -53,7 +50,6 @@
             (click)="
               playerService.addVideoInPlaylist(video.key, video.artiste, video.titre, video.duree)
             "
-            class="btn btn-link text-body text-decoration-none p-0"
           >
             <span class="material-icons">add</span>
             {{ 'ajouter_a_une_playlist' | transloco }}
