@@ -317,6 +317,7 @@
   "help_issues_step_4_content": "Si le problème persiste, patientez quelques instants et réessayez plus tard.",
 
   "reset_password_title": "Réinitialisation du mot de passe",
+  "reset_password_hint": "Choisissez un nouveau mot de passe pour votre compte. Il doit contenir au moins 6 caractères.",
   "reset_password_new_pass": "Nouveau mot de passe",
   "reset_password_pass_required": "Le mot de passe est requis",
   "reset_password_pass_size": "Le mot de passe doit contenir au moins 6 caractères",
@@ -326,5 +327,7 @@
   "reset_password_action": "Réinitialiser le mot de passe",
   "reset_password_invalid": "Votre mot de passe n'a pas pu être réinitialisé. Veuillez vérifier le lien de réinitialisation dans votre e-mail.",
   "reset_password_success": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+  "reset_password_success_title": "Mot de passe réinitialisé !",
+  "reset_password_back_home": "Retour à l'accueil",
   "partager": "Partager"
 }

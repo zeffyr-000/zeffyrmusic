@@ -8,14 +8,27 @@
 ```
 src/styling/
 ├── styles.scss      # Global: #player, Bootstrap overrides
-├── _custom.scss     # Bootstrap variables
-└── _utilities.scss  # Reusable utilities
+├── _custom.scss     # Bootstrap variables (BEFORE Bootstrap import)
+└── _utilities.scss  # Reusable utilities (~984 lines, 9 sections)
 
 src/app/
 ├── app.component.scss        # Main layout
 ├── player/player.component.scss   # Queue, container (NOT #player)
 └── [feature]/[feature].component.scss
 ```
+
+### `_utilities.scss` Section Inventory
+
+| Section                | Purpose                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| **PAGE LAYOUT**        | `.page-container`, `.page-header` — shared page structure                        |
+| **TRACKS LIST**        | Spotify-style grid layout for track rows                                         |
+| **EMPTY STATE**        | Placeholder UI when no data                                                      |
+| **ORIGINAL UTILITIES** | Legacy helper classes                                                            |
+| **CARDS**              | Modern card components with hover effects                                        |
+| **BUTTONS**            | `.btn-icon` with `:hover`/`:focus-visible` styles                                |
+| **DROPDOWNS**          | Unified dropdown styling — animation, item padding, danger variant, active route |
+| **MODALS**             | `.modal-alert` system (base + 4 color variants: danger, success, warning, info)  |
 
 ## Critical Rules Summary
 
@@ -212,13 +225,14 @@ Desktop (>640px):          Mobile (≤640px):
 
 ## File Responsibility Matrix
 
-| File                       | Responsibility                       |
-| -------------------------- | ------------------------------------ |
-| `styles.scss`              | Global: #player, Bootstrap overrides |
-| `_utilities.scss`          | Reusable classes (cards, loading)    |
-| `app.component.scss`       | Main layout (#main, #container)      |
-| `player.component.scss`    | Queue list, container (NOT #player)  |
-| `[feature].component.scss` | Feature-specific only                |
+| File                       | Responsibility                                                           |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `styles.scss`              | Global: #player, Bootstrap overrides                                     |
+| `_custom.scss`             | Bootstrap variable overrides, dropdown border CSS var                    |
+| `_utilities.scss`          | Shared utilities: page layout, tracks, dropdowns, modals, cards, buttons |
+| `app.component.scss`       | Main layout (#main, #container)                                          |
+| `player.component.scss`    | Queue list, container (NOT #player)                                      |
+| `[feature].component.scss` | Feature-specific only (extend shared classes)                            |
 
 ## Related Documentation
 
@@ -228,4 +242,37 @@ Desktop (>640px):          Mobile (≤640px):
 
 ---
 
-Last reviewed: January 20, 2026
+## Dropdown Architecture Decisions
+
+### Animation: Opacity-Only
+
+Dropdown reveal uses `opacity` transition only (no `transform: scale` or `translateY`). **Reason:** Popper.js applies its own `transform` for positioning — combining with CSS transforms causes visual conflicts.
+
+### Item Padding: Negative Margin Technique
+
+Padding is on child `> a, > button` elements inside `<li ngbDropdownItem>`, not on the `<li>` itself. Child elements use `margin: -0.5rem -1rem` + `width: calc(100% + 2rem)` to extend the clickable area to the full dropdown width.
+
+### Danger Variant
+
+`.dropdown-item-danger` is applied to the `<li ngbDropdownItem>` parent, with `> a, > button { color: inherit; }` to propagate the red color to nested interactive elements.
+
+### Active Route Highlight
+
+`routerLinkActive="active"` is placed on `<li ngbDropdownItem>`, not on the inner `<a>`. The `.dropdown-item.active` class provides a subtle background highlight.
+
+## Modal Alert System
+
+`.modal-alert` is the base class providing flex layout, `border-left: 4px solid`, box-shadow, slideIn animation, and icon sizing. Four color variants extend it:
+
+| Variant                | Background Gradient | Border/Icon Color | Text Color |
+| ---------------------- | ------------------- | ----------------- | ---------- |
+| `.modal-alert-danger`  | danger 0.12→0.06    | danger            | danger     |
+| `.modal-alert-success` | success 0.12→0.06   | success           | success    |
+| `.modal-alert-warning` | warning 0.12→0.06   | warning           | warning    |
+| `.modal-alert-info`    | primary 0.08→0.02   | primary           | body-color |
+
+These classes can be used outside modals (e.g., `.modal-alert.modal-alert-info` on reset-password page as an info banner).
+
+---
+
+Last reviewed: February 10, 2026

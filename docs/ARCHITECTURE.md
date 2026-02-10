@@ -167,7 +167,7 @@ provideExperimentalZonelessChangeDetection();
 - `PlayerStore` - Player state (volume, playing, etc.)
 - `QueueStore` - Music queue management
 - `UserDataStore` - User playlists and preferences
-- `UiStore` - UI state (modals, alerts)
+- `UiStore` - UI state (modals, toasts, notifications, mobile detection)
 
 ### 3. OnPush Change Detection Everywhere
 
@@ -392,7 +392,7 @@ src/
 
 ### Unit Tests (Vitest)
 
-- **527 tests** covering all components and services
+- **541 tests** covering all components and services
 - Signal stores fully tested
 - Mock providers for external dependencies
 
@@ -412,4 +412,4 @@ src/
 
 ---
 
-_Last updated: January 2026_
+_Last updated: February 2026_

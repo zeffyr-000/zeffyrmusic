@@ -231,17 +231,68 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 ### Example: Dropdown
 
+Dropdowns use a centralized style system in `_utilities.scss`. Follow these conventions:
+
 ```html
-<div ngbDropdown class="d-inline-block">
-  <button class="btn btn-outline-primary" ngbDropdownToggle>Menu</button>
+<!-- Standard dropdown -->
+<div ngbDropdown class="d-inline-flex">
+  <button class="btn btn-icon" ngbDropdownToggle>
+    <span class="material-icons">more_vert</span>
+  </button>
   <div ngbDropdownMenu>
-    <button ngbDropdownItem>Action 1</button>
-    <button ngbDropdownItem>Action 2</button>
-    <div class="dropdown-divider"></div>
-    <button ngbDropdownItem>Action 3</button>
+    <!-- routerLinkActive goes on <li>, NOT on <a> -->
+    <li ngbDropdownItem routerLinkActive="active">
+      <a routerLink="/settings">
+        <span class="material-icons">settings</span>
+        Settings
+      </a>
+    </li>
+    <li ngbDropdownItem>
+      <button (click)="doAction()">Action</button>
+    </li>
+    <!-- Danger variant: class on <li>, child inherits color -->
+    <li ngbDropdownItem class="dropdown-item-danger">
+      <button (click)="delete()">
+        <span class="material-icons">delete</span>
+        Delete
+      </button>
+    </li>
   </div>
 </div>
 ```
+
+**Key conventions:**
+
+- Use `class="d-inline-flex"` on the `ngbDropdown` container (not `<span>`)
+- `routerLinkActive="active"` on `<li ngbDropdownItem>`, never on inner `<a>`
+- `.dropdown-item-danger` on `<li>`, children inherit color via `> a, > button { color: inherit }`
+- Animation is opacity-only (`dropdownReveal`) — never add `transform` (conflicts with Popper.js)
+- Caret is globally hidden (`.dropdown-toggle::after { display: none }`)
+
+### Example: Modal Alert
+
+The `.modal-alert` system provides styled alert banners with Material Icons:
+
+```html
+<!-- Inside a modal or standalone page -->
+<div class="modal-alert modal-alert-info">
+  <span class="material-icons" aria-hidden="true">info</span>
+  <span>This is an informational message.</span>
+</div>
+
+<div class="modal-alert modal-alert-danger">
+  <span class="material-icons" aria-hidden="true">error</span>
+  <span>Something went wrong.</span>
+</div>
+```
+
+**Variants:** `modal-alert-danger`, `modal-alert-success`, `modal-alert-warning`, `modal-alert-info`
+
+**Key conventions:**
+
+- Wrap text in `<span>` (the base class uses `span:last-child { flex: 1 }`)
+- Can be used outside modals (e.g., info banners on pages)
+- `slideIn` animation is built in
 
 ### Example: Modal
 
@@ -692,14 +743,14 @@ Add subtle hover effects to cards using Bootstrap utilities:
 
 ### Conformity Score
 
-**Current Score: 8.5/10** ⬆️ (+1.0)
+**Current Score: 9/10** ⬆️ (+0.5)
 
-| Category                   | Score | Notes                                     |
-| -------------------------- | ----- | ----------------------------------------- |
-| Bootstrap components usage | 9/10  | Cards, alerts, buttons, toasts, badges    |
-| Utility classes            | 9/10  | Excellent flexbox/grid usage              |
-| Accessibility (ARIA/roles) | 9/10  | Spinners fixed with role="status"         |
-| Modern patterns            | 8/10  | Floating labels, toasts, badges           |
-| Mobile UX                  | 8/10  | Dropdown with badges (offcanvas optional) |
+| Category                   | Score | Notes                                    |
+| -------------------------- | ----- | ---------------------------------------- |
+| Bootstrap components usage | 9/10  | Cards, alerts, buttons, toasts, badges   |
+| Utility classes            | 9/10  | Excellent flexbox/grid usage             |
+| Accessibility (ARIA/roles) | 9/10  | aria-pressed, focus-visible, role=status |
+| Modern patterns            | 9/10  | Unified dropdowns, modal-alert system    |
+| Mobile UX                  | 9/10  | Responsive page layouts, dropdown badges |
 
-**Target Score: 9/10** - Optional: Offcanvas for mobile (P4)
+**Target Score: 9.5/10** - Optional: Offcanvas for mobile (P4)

@@ -1,21 +1,25 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 
 import { form, FormField, required, minLength, validate } from '@angular/forms/signals';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { Title } from '@angular/platform-browser';
 import { UserService } from '../services/user.service';
+import { UiStore } from '../store/ui/ui.store';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [FormField, TranslocoPipe],
+  imports: [FormField, RouterLink, TranslocoPipe],
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css'],
+  styleUrl: './reset-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private userService = inject(UserService);
-  private transloco = inject(TranslocoService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly userService = inject(UserService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly titleService = inject(Title);
+  private readonly uiStore = inject(UiStore);
 
   readonly formModel = signal({
     password: '',
@@ -50,6 +54,9 @@ export class ResetPasswordComponent implements OnInit {
   private key = '';
 
   ngOnInit() {
+    this.titleService.setTitle(
+      this.transloco.translate('reset_password_title') + ' - Zeffyr Music'
+    );
     this.idPerso = this.route.snapshot.params['id_perso'];
     this.key = this.route.snapshot.params['key'];
   }
@@ -76,13 +83,17 @@ export class ResetPasswordComponent implements OnInit {
           if (data.success) {
             this.formSuccess.set(true);
             this.formInvalid.set(false);
+            this.uiStore.showSuccess(this.transloco.translate('reset_password_success'));
           } else {
             this.formInvalid.set(true);
             this.formSuccess.set(false);
+            this.uiStore.showError(this.transloco.translate('reset_password_invalid'));
           }
         },
         error: () => {
           this.loading.set(false);
+          this.formInvalid.set(true);
+          this.uiStore.showError(this.transloco.translate('generic_error'));
         },
       });
   }

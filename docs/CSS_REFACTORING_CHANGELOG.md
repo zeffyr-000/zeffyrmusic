@@ -1,5 +1,80 @@
 # CSS Refactoring Changelog
 
+## February 10, 2026 - UI Modernization & Shared Patterns
+
+### Objective
+
+Unify dropdown styling, centralize modal alert system, modernize page layouts, and factorize repeated CSS patterns into shared utility classes.
+
+### Key Changes
+
+#### Dropdown Centralization
+
+- **Unified dropdown styling** in `_utilities.scss` DROPDOWNS section
+- Animation: opacity-only `dropdownReveal` keyframe (no transform — avoids Popper.js conflict)
+- Hidden caret (`.dropdown-toggle::after { display: none }`)
+- Item padding via negative margin technique on child `> a, > button` elements
+- `.dropdown-item-danger` variant on `<li ngbDropdownItem>` with color inheritance
+- `.dropdown-item.active` route highlight via `routerLinkActive` on `<li>` (not inner `<a>`)
+- `dropdownReveal` animation applied to `.dropdown-menu.show`
+
+#### Modal Alert System (`.modal-alert`)
+
+- Base class: flex layout, `border-left: 4px solid`, `box-shadow`, `slideIn` animation
+- 4 color variants: `.modal-alert-danger`, `.modal-alert-success`, `.modal-alert-warning`, `.modal-alert-info`
+- `.modal-alert-info` reusable outside modals (e.g., reset-password info banner)
+
+#### Page Layout
+
+- `.page-container` / `.page-header` extracted to `_utilities.scss`
+- `.page-header` spacing tightened: `margin-bottom: --spacing-lg`, `padding-bottom: --spacing-md`
+
+#### Button Styles
+
+- `.btn-icon` with `:hover` and `:focus-visible` (box-shadow ring) in `_utilities.scss`
+
+#### ResetPasswordComponent Modernization
+
+- Full HTML rewrite: `.page-container` + `.page-header`, form card (`.reset-section`), success card (`.reset-success`)
+- Info banner uses `.modal-alert.modal-alert-info` (shared pattern — no duplicated styles)
+- Component SCSS reduced: `.reset-hint` only has `max-width` and `margin-bottom` overrides
+- TS: `inject()`, `readonly`, Title service, UiStore toasts, Signal Forms
+
+#### i18n Fixes
+
+- Fixed typo: `error_unkown` → `error_unknown` in both fr.json and en.json
+- Added missing keys: `erreur`, `ajouter_apres_courant`, `email_send_error`
+- Added reset-password keys: `reset_password_hint`, `reset_password_success_title`, `reset_password_back_home`
+
+### Design Decisions
+
+| Decision                                  | Rationale                                                   |
+| ----------------------------------------- | ----------------------------------------------------------- |
+| Opacity-only dropdown animation           | Popper.js owns `transform` for positioning                  |
+| Negative margin on dropdown children      | Extends clickable area without breaking `<li>` padding      |
+| `routerLinkActive` on `<li>` not `<a>`    | `ngbDropdownItem` is on the `<li>`, active class must match |
+| `.modal-alert-info` reused as info banner | Avoids duplicating flex/bg/border/icon patterns             |
+| No `:has()` selector                      | Browser compatibility (Safari < 15.4)                       |
+| `aria-pressed` on toggle buttons          | Semantically correct for on/off states (vs `aria-label`)    |
+
+### Files Modified
+
+- `src/styling/_utilities.scss` — Dropdowns, modals, page layout, buttons sections
+- `src/styling/_custom.scss` — `$dropdown-border-color: var(--bs-border-color)` for dark mode
+- `src/app/header/header.component.html` — Dropdown `routerLinkActive` moved to `<li>`
+- `src/app/my-playlists/` — HTML, SCSS, spec updated
+- `src/app/my-selection/` — Spec updated (NgbModal mocks, UiStore stubs)
+- `src/app/reset-password/` — Full rewrite (HTML, SCSS, TS, spec)
+- `src/assets/i18n/fr.json` / `en.json` — Missing/broken keys fixed
+
+### Testing
+
+- ✅ 541 tests passing across 35 files
+- ✅ `npm run build` — Success
+- ✅ `npm run lint` — Pass
+
+---
+
 ## January 20, 2026 - Major Architecture Refactoring
 
 ### Objective

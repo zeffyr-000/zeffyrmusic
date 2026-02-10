@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ResetPasswordComponent } from './reset-password.component';
 import { UserService } from '../services/user.service';
-import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTranslocoTestingProviders } from '../transloco-testing';
+import { UiStore } from '../store/ui/ui.store';
 
 describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
   let fixture: ComponentFixture<ResetPasswordComponent>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let userServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let routerMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let cdrMock: any;
+  let userServiceMock: {
+    sendResetPass: ReturnType<typeof vi.fn>;
+  };
+  let uiStore: InstanceType<typeof UiStore>;
   const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
   const mockIdPerso = 'test-user-123';
@@ -22,16 +21,12 @@ describe('ResetPasswordComponent', () => {
 
   beforeEach(async () => {
     userServiceMock = { sendResetPass: vi.fn() };
-    routerMock = { navigate: vi.fn() };
-    cdrMock = { detectChanges: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ResetPasswordComponent],
       providers: [
         getTranslocoTestingProviders(),
         { provide: UserService, useValue: userServiceMock },
-        { provide: Router, useValue: routerMock },
-        { provide: ChangeDetectorRef, useValue: cdrMock },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -47,6 +42,10 @@ describe('ResetPasswordComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
+    uiStore = TestBed.inject(UiStore);
+    vi.spyOn(uiStore, 'showSuccess').mockReturnValue('mock-id');
+    vi.spyOn(uiStore, 'showError').mockReturnValue('mock-id');
+
     fixture = TestBed.createComponent(ResetPasswordComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -58,10 +57,14 @@ describe('ResetPasswordComponent', () => {
 
   describe('ngOnInit', () => {
     it('should initialize form with empty fields', () => {
-      // Signal Forms: use formModel signal to check initial values
       expect(component.resetForm).toBeDefined();
       expect(component.formModel().password).toBe('');
       expect(component.formModel().confirmPassword).toBe('');
+    });
+
+    it('should set the page title on init', () => {
+      component.ngOnInit();
+      expect(component['titleService'].getTitle()).toContain('Zeffyr Music');
     });
   });
 
@@ -105,8 +108,7 @@ describe('ResetPasswordComponent', () => {
       expect(component.resetForm().valid()).toBe(true);
     });
 
-    it('should expose form controls via f getter', () => {
-      // Signal Forms: f getter is no longer available, test form instance instead
+    it('should expose form instance', () => {
       expect(component.resetForm).toBeDefined();
       expect(typeof component.resetForm).toBe('function');
     });
@@ -120,26 +122,22 @@ describe('ResetPasswordComponent', () => {
       expect(userServiceMock.sendResetPass).not.toHaveBeenCalled();
     });
 
-    it('should call userService.sendResetPass with correct parameters if form is valid', () => {
+    it('should call userService.sendResetPass and show success toast on success', () => {
       userServiceMock.sendResetPass.mockReturnValue(of({ success: true }));
 
-      cdrMock.detectChanges.mockClear();
-
-      // Signal Forms: set model values directly
       component.formModel.set({ password: 'password123', confirmPassword: 'password123' });
 
       component.onSubmit(mockEvent);
 
       expect(userServiceMock.sendResetPass).toHaveBeenCalled();
-
       expect(component.formSuccess()).toBe(true);
       expect(component.formInvalid()).toBe(false);
+      expect(uiStore.showSuccess).toHaveBeenCalled();
     });
 
-    it('should handle failed reset password', () => {
+    it('should show error toast on failed reset password', () => {
       userServiceMock.sendResetPass.mockReturnValue(of({ success: false }));
 
-      // Signal Forms: set model values directly
       component.formModel.set({ password: 'password123', confirmPassword: 'password123' });
 
       component.onSubmit(mockEvent);
@@ -147,31 +145,19 @@ describe('ResetPasswordComponent', () => {
       expect(component.loading()).toBe(false);
       expect(component.formSuccess()).toBe(false);
       expect(component.formInvalid()).toBe(true);
+      expect(uiStore.showError).toHaveBeenCalled();
     });
 
-    it('should set formInvalid to true and formSuccess to false when response has success=false', () => {
-      userServiceMock.sendResetPass.mockReturnValue(of({ success: false }));
-
-      cdrMock.detectChanges.mockClear();
-
-      // Signal Forms: set model values directly
-      component.formModel.set({ password: 'password123', confirmPassword: 'password123' });
-
-      component.onSubmit(mockEvent);
-
-      expect(component.formInvalid()).toBe(true);
-      expect(component.formSuccess()).toBe(false);
-    });
-
-    it('should handle error during reset password', () => {
+    it('should show error toast on network error', () => {
       userServiceMock.sendResetPass.mockReturnValue(throwError(() => new Error('Network error')));
 
-      // Signal Forms: set model values directly
       component.formModel.set({ password: 'password123', confirmPassword: 'password123' });
 
       component.onSubmit(mockEvent);
 
       expect(component.loading()).toBe(false);
+      expect(component.formInvalid()).toBe(true);
+      expect(uiStore.showError).toHaveBeenCalled();
     });
   });
 
