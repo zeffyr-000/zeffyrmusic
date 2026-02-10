@@ -96,7 +96,18 @@ $modal-header-border-color: transparent;
 // 9. DROPDOWNS
 // -----------------------------------------------------------------------------
 
+$dropdown-padding-y: 0.25rem;
+$dropdown-min-width: 12rem;
+$dropdown-border-color: var(--bs-border-color);
+$dropdown-border-radius: 0.75rem;
+$dropdown-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 $dropdown-link-color: $greyish-brown-two;
+$dropdown-link-hover-color: $blue;
+$dropdown-link-hover-bg: rgba($blue, 0.06);
+$dropdown-link-active-color: $blue;
+$dropdown-link-active-bg: rgba($blue, 0.1);
+$dropdown-item-padding-y: 0.5rem;
+$dropdown-item-padding-x: 1rem;
 
 // -----------------------------------------------------------------------------
 // 10. BADGES

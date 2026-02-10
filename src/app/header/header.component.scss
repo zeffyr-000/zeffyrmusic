@@ -138,9 +138,7 @@
   outline: 0;
 }
 
-#header-burger .dropdown-toggle::after {
-  display: none;
-}
+// Dropdown caret hidden globally in _utilities.scss
 
 #header-top {
   width: 100%;

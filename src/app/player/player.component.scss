@@ -115,9 +115,7 @@
   }
 }
 
-.dropdown-toggle::after {
-  display: none;
-}
+// Dropdown caret hidden globally in _utilities.scss
 
 // Responsive behavior for mobile
 // ⚠️ CRITICAL: All three elements must be 1px for proper mobile layout

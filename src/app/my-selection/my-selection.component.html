@@ -1,5 +1,5 @@
-<div class="selection-container">
-  <header class="selection-header">
+<div class="page-container page-container--wide">
+  <header class="page-header">
     <h1>{{ 'ma_selection' | transloco }}</h1>
   </header>
 
@@ -36,7 +36,14 @@
       <div class="selection-card-actions">
         <button
           class="btn-remove"
-          (click)="onDeleteFollow(playlist.id_playlist)"
+          (click)="
+            onConfirmDeleteFollow(
+              playlist.id_playlist,
+              playlist.titre,
+              playlist.artiste ?? '',
+              contentModalConfirmDelete
+            )
+          "
           [attr.aria-label]="'remove_from_selection' | transloco"
         >
           <span class="material-icons" aria-hidden="true">clear</span>
@@ -46,3 +53,45 @@
     }
   </div>
 </div>
+
+<ng-template #contentModalConfirmDelete let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">delete_forever</span>
+      {{ 'remove_from_selection' | transloco }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-alert modal-alert-warning" role="alert">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      <span>{{ 'remove_from_selection_confirm' | transloco }}</span>
+    </div>
+    <div class="modal-item-info">
+      <strong>{{ pendingDeleteTitle() }}</strong>
+      @if (pendingDeleteArtist()) {
+      <span class="modal-item-artist">{{ pendingDeleteArtist() }}</span>
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        ngbAutofocus
+        (click)="modal.dismiss('Cancel click')"
+      >
+        {{ 'annuler' | transloco }}
+      </button>
+      <button type="button" class="btn btn-danger" (click)="onDeleteFollow(modal)">
+        <span class="material-icons" aria-hidden="true">delete_forever</span>
+        {{ 'confirmer' | transloco }}
+      </button>
+    </div>
+  </div>
+</ng-template>

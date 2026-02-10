@@ -188,39 +188,27 @@
             </button>
             <ul ngbDropdownMenu>
               <li ngbDropdownItem>
-                <button
-                  (click)="addVideoAfterCurrentInList(video)"
-                  class="btn btn-link text-body text-decoration-none p-0"
-                >
+                <button (click)="addVideoAfterCurrentInList(video)">
                   <span class="material-icons">queue_music</span>
                   {{ 'ajouter_apres_courant' | transloco }}
                 </button>
               </li>
               <li ngbDropdownItem>
-                <button
-                  (click)="addVideoInEndCurrentList(video)"
-                  class="btn btn-link text-body text-decoration-none p-0"
-                >
+                <button (click)="addVideoInEndCurrentList(video)">
                   <span class="material-icons">playlist_add</span>
                   {{ 'ajouter_liste_en_cours' | transloco }}
                 </button>
               </li>
               @if (authStore.isAuthenticated()) {
               <li ngbDropdownItem>
-                <button
-                  (click)="addVideo(video.key, video.artiste, video.titre, video.duree)"
-                  class="btn btn-link text-body text-decoration-none p-0"
-                >
+                <button (click)="addVideo(video.key, video.artiste, video.titre, video.duree)">
                   <span class="material-icons">add</span>
                   {{ 'ajouter_a_une_playlist' | transloco }}
                 </button>
               </li>
               } @if (authStore.isAuthenticated() && idPersoOwner() === authStore.idPerso()) {
-              <li ngbDropdownItem>
-                <button
-                  (click)="removeVideo(video.id_video)"
-                  class="btn btn-link text-body text-decoration-none p-0"
-                >
+              <li ngbDropdownItem class="dropdown-item-danger">
+                <button (click)="removeVideo(video.id_video)">
                   <span class="material-icons">clear</span>
                   {{ 'supprimer' | transloco }}
                 </button>

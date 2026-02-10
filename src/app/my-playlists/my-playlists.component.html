@@ -1,105 +1,101 @@
-<h1 class="h3">{{ 'mes_playlists' | transloco }}</h1>
+<div class="page-container">
+  <header class="page-header">
+    <h1>{{ 'mes_playlists' | transloco }}</h1>
+  </header>
 
-<div class="container-fluid px-0 my-4">
-  <div class="row">
-    <div class="col-md-8 col-lg-6">
-      <form (submit)="onCreatePlaylist($event)">
-        <div class="input-group input-group-lg">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="{{ 'creer_nouvelle_playlist' | transloco }}"
-            ngbAutofocus
-            [formField]="createPlaylistForm.titre"
-          />
-          <input
-            class="btn btn-primary"
-            type="submit"
-            [disabled]="createPlaylistForm().invalid()"
-            value="{{ 'creer' | transloco }}"
-          />
+  <section class="create-section">
+    <h2 class="create-section-title">
+      <span class="material-icons" aria-hidden="true">add</span>
+      {{ 'creer_nouvelle_playlist' | transloco }}
+    </h2>
+    <form (submit)="onCreatePlaylist($event)" class="create-form">
+      <div class="form-group">
+        <label class="form-label" for="new-playlist-name">
+          <span class="material-icons" aria-hidden="true">title</span>
+          {{ 'nom_playlist' | transloco }}
+        </label>
+        <input
+          type="text"
+          id="new-playlist-name"
+          class="form-control"
+          [attr.placeholder]="'nom_playlist' | transloco"
+          ngbAutofocus
+          [formField]="createPlaylistForm.titre"
+        />
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="createPlaylistForm().invalid()">
+        <span class="material-icons" aria-hidden="true">playlist_add</span>
+        {{ 'creer' | transloco }}
+      </button>
+    </form>
+  </section>
+
+  <div class="playlist-list">
+    @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
+    <div class="playlist-item">
+      <div class="playlist-info">
+        <a class="playlist-title" [routerLink]="['/playlist', playlist.id_playlist]">
+          {{ playlist.titre }}
+        </a>
+      </div>
+      <div class="playlist-actions">
+        <button
+          class="btn btn-sm btn-visibility"
+          [class.is-private]="playlist.prive"
+          (click)="onSwitchVisibility(playlist.id_playlist, playlist.prive ? 'public' : 'prive')"
+          ngbTooltip="{{
+            (playlist.prive ? 'visibility_private_hint' : 'visibility_public_hint') | transloco
+          }}"
+          [attr.aria-pressed]="playlist.prive"
+        >
+          <span class="material-icons">{{ playlist.prive ? 'lock' : 'public' }}</span>
+          {{ (playlist.prive ? 'prive' : 'public') | transloco }}
+        </button>
+        <div class="d-inline-flex" ngbDropdown>
+          <button
+            class="btn btn-sm btn-icon"
+            ngbDropdownToggle
+            [attr.aria-label]="'actions' | transloco"
+          >
+            <span class="material-icons">more_vert</span>
+          </button>
+          <ul ngbDropdownMenu>
+            <li ngbDropdownItem>
+              <button
+                (click)="
+                  onConfirmEditTitlePlaylist(
+                    playlist.id_playlist,
+                    playlist.titre,
+                    contentModalConfirmEditTitle
+                  )
+                "
+              >
+                <span class="material-icons">edit</span>
+                {{ 'modifier_nom' | transloco }}
+              </button>
+            </li>
+            <li ngbDropdownItem class="dropdown-item-danger">
+              <button
+                (click)="
+                  onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)
+                "
+              >
+                <span class="material-icons">delete</span>
+                {{ 'supprimer' | transloco }}
+              </button>
+            </li>
+          </ul>
         </div>
-      </form>
+      </div>
     </div>
+    } @empty {
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon" aria-hidden="true">playlist_add</span>
+      <p class="empty-state-text">{{ 'aucune_playlist' | transloco }}</p>
+    </div>
+    }
   </div>
 </div>
-
-<hr />
-<table class="table">
-  <thead>
-    <tr>
-      <th>{{ 'intitule_titre' | transloco }}</th>
-      <th></th>
-      <th>{{ 'visibility' | transloco }}</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
-    <tr>
-      <td>
-        <a [routerLink]="['/playlist', playlist.id_playlist]">{{ playlist.titre }}</a>
-      </td>
-
-      <td>
-        <button
-          class="btn btn-secondary"
-          (click)="
-            onConfirmEditTitlePlaylist(
-              playlist.id_playlist,
-              playlist.titre,
-              contentModalConfirmEditTitle
-            )
-          "
-        >
-          <span class="material-icons">edit</span>
-          {{ 'modifier_nom' | transloco }}
-        </button>
-      </td>
-
-      <td>
-        <div class="btn-group">
-          <button
-            type="button"
-            class="btn btn-light"
-            [class.active]="!playlist.prive"
-            (click)="onSwitchVisibility(playlist.id_playlist, 'public')"
-          >
-            {{ 'public' | transloco }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-light"
-            [class.active]="playlist.prive"
-            (click)="onSwitchVisibility(playlist.id_playlist, 'prive')"
-          >
-            {{ 'prive' | transloco }}
-          </button>
-        </div>
-      </td>
-
-      <td>
-        <a
-          class="btn btn-secondary"
-          (click)="onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)"
-          role="button"
-          tabindex="0"
-          (keydown.enter)="
-            onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)
-          "
-          (keydown.space)="
-            onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist);
-            $event.preventDefault()
-          "
-        >
-          <span class="material-icons">clear</span>
-          {{ 'supprimer' | transloco }}
-        </a>
-      </td>
-    </tr>
-    }
-  </tbody>
-</table>
 
 <ng-template #contentModalConfirmDeletePlaylist let-modal>
   <div class="modal-header">
@@ -115,13 +111,18 @@
     ></button>
   </div>
   <div class="modal-body">
-    <div class="modal-alert modal-alert-warning">
+    <div class="modal-alert modal-alert-warning" role="alert">
       <span class="material-icons" aria-hidden="true">warning</span>
       <span>{{ 'supprimer_playlist_confirmer' | transloco }}</span>
     </div>
 
     <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        ngbAutofocus
+        (click)="modal.dismiss('Cancel click')"
+      >
         {{ 'annuler' | transloco }}
       </button>
       <button type="button" class="btn btn-danger" (click)="onDeletePlaylist(modal)">
@@ -156,16 +157,10 @@
           type="text"
           id="playlist-title"
           class="form-control"
+          ngbAutofocus
           [formField]="editTitleForm.playlist_titre"
         />
       </div>
-
-      @if(editTitleForm().dirty() && error()!=='') {
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
-      }
 
       <div class="modal-actions">
         <button type="submit" class="btn btn-primary" [disabled]="editTitleForm().invalid()">

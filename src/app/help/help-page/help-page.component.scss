@@ -1,12 +1,7 @@
 // =============================================================================
 // HELP PAGE COMPONENT - Individual help article pages
+// Shared class (.page-container) from _utilities.scss
 // =============================================================================
-
-.help-article {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-md);
-}
 
 // Breadcrumb navigation
 .help-breadcrumb {
@@ -184,11 +179,7 @@
 }
 
 // Responsive
-@media screen and (max-width: 640px) {
-  .help-article {
-    padding: var(--spacing-lg) var(--spacing-md);
-  }
-
+@media screen and (max-width: 768px) {
   .help-article-header {
     h1 {
       font-size: var(--text-2xl);
