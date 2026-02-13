@@ -314,6 +314,17 @@ describe('UserDataStore', () => {
 
       expect(store.likedVideos()).toHaveLength(2);
     });
+
+    it('should reorder liked videos', () => {
+      store.setLikedVideos([mockLikedVideo, mockLikedVideo2]);
+
+      const reversed = [mockLikedVideo2, mockLikedVideo];
+      store.reorderLikedVideos(reversed);
+
+      expect(store.likedVideos()).toHaveLength(2);
+      expect(store.likedVideos()[0].key).toBe('def456');
+      expect(store.likedVideos()[1].key).toBe('abc123');
+    });
   });
 
   describe('Initial Data', () => {

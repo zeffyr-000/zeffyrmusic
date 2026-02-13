@@ -105,18 +105,31 @@
   </div>
 
   <div class="card-body p-t-0">
-    <div class="tracks-header">
+    <div class="tracks-header" [class.tracks-header--reorderable]="isReorderable()">
       <span class="header-number">#</span>
       <span class="header-title">{{ 'intitule_titre' | transloco }}</span>
       <span class="header-duration">
         <span class="material-icons" aria-hidden="true">schedule</span>
       </span>
+      @if (isReorderable()) {
+      <span class="header-drag"></span>
+      }
     </div>
 
-    <div class="tracks-list">
-      @for (video of playlist(); track video.id_video; let i = $index) {
+    <div
+      class="tracks-list"
+      [class.tracks-list--reorderable]="isReorderable()"
+      cdkDropList
+      [cdkDropListData]="playlist()"
+      [cdkDropListDisabled]="!isReorderable()"
+      (cdkDropListDropped)="onTrackDrop($event)"
+      [attr.role]="isReorderable() ? 'list' : null"
+      [attr.aria-label]="isReorderable() ? ('drag_to_reorder' | transloco) : null"
+    >
+      @for (video of playlist(); track video.key; let i = $index) {
       <div
         class="track-item"
+        [class.track-item--reorderable]="isReorderable()"
         [attr.data-id-video]="video.key"
         (click)="runPlaylist(i)"
         [class.active]="video.key === queueStore.currentKey()"
@@ -127,6 +140,8 @@
         tabindex="0"
         (keydown.enter)="runPlaylist(i)"
         (keydown.space)="runPlaylist(i); $event.preventDefault()"
+        cdkDrag
+        [cdkDragData]="video"
       >
         <span class="track-number" itemprop="position">
           @if (video.key === queueStore.currentKey()) {
@@ -206,7 +221,7 @@
                   {{ 'ajouter_a_une_playlist' | transloco }}
                 </button>
               </li>
-              } @if (authStore.isAuthenticated() && idPersoOwner() === authStore.idPerso()) {
+              } @if (isOwner()) {
               <li ngbDropdownItem class="dropdown-item-danger">
                 <button (click)="removeVideo(video.id_video)">
                   <span class="material-icons">clear</span>
@@ -217,17 +232,31 @@
             </ul>
           </span>
         </div>
+        <button
+          type="button"
+          class="drag-handle"
+          [class.d-none]="!isReorderable()"
+          cdkDragHandle
+          (click)="$event.stopPropagation()"
+          [attr.aria-label]="'drag_to_reorder' | transloco"
+        >
+          <span class="material-icons" aria-hidden="true">drag_indicator</span>
+        </button>
       </div>
       }
     </div>
   </div>
   } @if(isPrivate()) {
-  <p class="bg-info p-2 rounded">{{ 'playlist_privee' | transloco }}</p>
-  <p>
-    <a routerLink="/">{{ 'back_home' | transloco }}</a>
-  </p>
+  <div class="empty-state">
+    <span class="material-icons empty-state-icon" aria-hidden="true">lock</span>
+    <p class="empty-state-text">{{ 'playlist_privee' | transloco }}</p>
+    <a class="btn btn-outline-primary mt-3" routerLink="/">{{ 'back_home' | transloco }}</a>
+  </div>
   } @if(isLikePage() && playlist().length===0) {
-  <p class="bg-info p-2 rounded">{{ 'likes_empty' | transloco }}</p>
+  <div class="empty-state">
+    <span class="material-icons empty-state-icon" aria-hidden="true">favorite_border</span>
+    <p class="empty-state-text">{{ 'likes_empty' | transloco }}</p>
+  </div>
   }
 </div>
 } @else {

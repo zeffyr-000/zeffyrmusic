@@ -170,4 +170,27 @@ export class UserLibraryService {
         catchError(() => of(false))
       );
   }
+
+  reorderPlaylistTracks(idPlaylist: string, orderedVideoIds: string[]): Observable<boolean> {
+    return this.http
+      .post<{ success: boolean }>(`${environment.URL_SERVER}reorder_playlist`, {
+        id_playlist: idPlaylist,
+        ordered_ids: orderedVideoIds,
+      })
+      .pipe(
+        map(response => response.success),
+        catchError(() => of(false))
+      );
+  }
+
+  reorderLikes(orderedKeys: string[]): Observable<boolean> {
+    return this.http
+      .post<{ success: boolean }>(`${environment.URL_SERVER}reorder_likes`, {
+        ordered_keys: orderedKeys,
+      })
+      .pipe(
+        map(response => response.success),
+        catchError(() => of(false))
+      );
+  }
 }

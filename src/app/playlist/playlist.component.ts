@@ -33,7 +33,15 @@ import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 import { SeoService } from '../services/seo.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { UserDataStore } from '../store/user-data/user-data.store';
-import { AuthStore, PlayerStore, QueueStore } from '../store';
+import { AuthStore, PlayerStore, QueueStore, UiStore } from '../store';
+import {
+  CdkDragDrop,
+  CdkDrag,
+  CdkDragHandle,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import { UserVideo } from '../models/video.model';
 
 @Component({
   selector: 'app-playlist',
@@ -52,6 +60,9 @@ import { AuthStore, PlayerStore, QueueStore } from '../store';
     NgbDropdownItem,
     TranslocoPipe,
     ToMMSSPipe,
+    CdkDropList,
+    CdkDrag,
+    CdkDragHandle,
   ],
 })
 export class PlaylistComponent {
@@ -72,6 +83,7 @@ export class PlaylistComponent {
   readonly playerStore = inject(PlayerStore);
   readonly queueStore = inject(QueueStore);
   readonly userLibraryService = inject(UserLibraryService);
+  private readonly uiStore = inject(UiStore);
 
   readonly isLoading = signal(true);
   readonly isPrivate = signal(false);
@@ -99,6 +111,12 @@ export class PlaylistComponent {
   readonly currentIdPlaylistPlaying = computed(() => {
     return this.queueStore.sourcePlaylistId() || '';
   });
+
+  readonly isOwner = computed(
+    () => this.authStore.isAuthenticated() && this.idPersoOwner() === this.authStore.idPerso()
+  );
+
+  readonly isReorderable = computed(() => this.isLikePage() || this.isOwner());
 
   private lastAdjustedKey: string | null = null;
   private lastAdjustedDuration = 0;
@@ -169,6 +187,10 @@ export class PlaylistComponent {
 
   initLoad() {
     if (this.activatedRoute.snapshot.url[0].path === 'like') {
+      // Skip loading likes on server — requires auth context
+      if (!this.isBrowser) {
+        return;
+      }
       this.loadLike();
     } else {
       const idPlaylist = this.activatedRoute.snapshot.paramMap.get('id_playlist');
@@ -258,6 +280,10 @@ export class PlaylistComponent {
           this.updatePlaylistState(data);
           this.updateSeoMetadata(data);
         } else {
+          // On server, don't show private message — defer to client
+          if (!this.isBrowser) {
+            return;
+          }
           this.isPrivate.set(true);
         }
 
@@ -438,6 +464,60 @@ export class PlaylistComponent {
 
   addVideoInEndCurrentList(video: Video) {
     this.playerService.addInCurrentList([video], this.idTopCharts());
+  }
+
+  /** Handles track reorder via drag-and-drop */
+  onTrackDrop(event: CdkDragDrop<Video[]>): void {
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+
+    const previousPlaylist = this.playlist();
+    const reordered = [...previousPlaylist];
+    moveItemInArray(reordered, event.previousIndex, event.currentIndex);
+
+    if (this.isLikePage()) {
+      const reorderedLikes: UserVideo[] = reordered.map(v => ({
+        id: (v as unknown as UserVideo).id ?? v.id_video,
+        key: v.key,
+        titre: v.titre,
+        duree: v.duree,
+        artiste: v.artiste,
+      }));
+      this.userDataStore.reorderLikedVideos(reorderedLikes);
+
+      this.userLibraryService.reorderLikes(reorderedLikes.map(v => v.key)).subscribe(success => {
+        if (!success) {
+          this.userDataStore.reorderLikedVideos(
+            previousPlaylist.map(v => ({
+              id: (v as unknown as UserVideo).id ?? v.id_video,
+              key: v.key,
+              titre: v.titre,
+              duree: v.duree,
+              artiste: v.artiste,
+            }))
+          );
+          this.uiStore.showError(this.translocoService.translate('reorder_error'));
+        }
+      });
+    } else {
+      const idPlaylist = this.idPlaylist();
+      if (!idPlaylist) {
+        return;
+      }
+      this.playlist.set(reordered);
+      this.userLibraryService
+        .reorderPlaylistTracks(
+          idPlaylist,
+          reordered.map(v => v.id_video)
+        )
+        .subscribe(success => {
+          if (!success) {
+            this.playlist.set(previousPlaylist);
+            this.uiStore.showError(this.translocoService.translate('reorder_error'));
+          }
+        });
+    }
   }
 
   sumDurationPlaylist() {

@@ -125,6 +125,10 @@ export const UserDataStore = signalStore(
       return store.likedVideos().find(v => v.key === key);
     },
 
+    reorderLikedVideos(reorderedVideos: UserVideo[]): void {
+      patchState(store, { likedVideos: reorderedVideos });
+    },
+
     setInitialData(videos: Video[], tabIndex: number[]): void {
       patchState(store, {
         initialVideos: videos,

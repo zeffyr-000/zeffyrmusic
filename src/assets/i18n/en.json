@@ -329,5 +329,8 @@
   "reset_password_success": "Your password has been successfully reset. You can now log in with your new password.",
   "reset_password_success_title": "Password reset!",
   "reset_password_back_home": "Back to home",
-  "partager": "Share"
+  "partager": "Share",
+  "drag_to_reorder": "Drag to reorder",
+  "reorder_success": "Order updated",
+  "reorder_error": "Error reordering tracks"
 }
