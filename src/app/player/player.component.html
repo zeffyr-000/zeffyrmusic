@@ -3,7 +3,7 @@
 </div>
 <div id="queue-content" class="card panel-content border-0">
   <div class="tracks-list">
-    @for (video of queueStore.items(); track video.id_video; let index = $index) {
+    @for (video of queueStore.items(); track video.key; let index = $index) {
     <div
       class="track-item"
       role="button"

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PlaylistService } from './playlist.service';
 import { Playlist } from '../models/playlist.model';
+import { Video } from '../models/video.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { environment } from 'src/environments/environment';
@@ -104,6 +105,49 @@ describe('PlaylistService', () => {
       expect(transferStateMock.get).toHaveBeenCalledWith('playlist-' + testUrl, null);
       expect(transferStateMock.remove).toHaveBeenCalledWith('playlist-' + testUrl);
       expect(transferStateMock.set).not.toHaveBeenCalled();
+    });
+
+    it('should bypass transferState cache and re-fetch when stored value has est_prive', () => {
+      const transferStateMock = { get: vi.fn(), set: vi.fn(), remove: vi.fn() };
+
+      const privatePlaylistData: Playlist = {
+        id_playlist: '123',
+        id_perso: '456',
+        title: 'Private Playlist',
+        description: 'Description',
+        est_suivi: false,
+        img_big: 'img',
+        liste_video: [],
+        str_index: [],
+        tab_video: [],
+        est_prive: true,
+        titre: 'Private',
+      };
+
+      transferStateMock.get.mockReturnValue(privatePlaylistData);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (service as any).transferState = transferStateMock;
+
+      const testUrl = 'test_private_url';
+      const authenticatedData: Playlist = {
+        ...privatePlaylistData,
+        est_prive: undefined as unknown as boolean,
+        tab_video: [{ key: 'k1', titre: 'Song' } as Video],
+      };
+
+      let result: Playlist | null = null;
+      service.getPlaylist(testUrl).subscribe(data => {
+        result = data;
+      });
+
+      // Should make HTTP request despite having cached value
+      const req = httpMock.expectOne(testUrl);
+      expect(req.request.method).toBe('GET');
+      req.flush(authenticatedData);
+
+      expect(result).toEqual(authenticatedData);
+      expect(transferStateMock.remove).toHaveBeenCalledWith('playlist-' + testUrl);
     });
   });
 

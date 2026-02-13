@@ -31,7 +31,10 @@ export class PlaylistService {
 
     if (storedValue && this.isBrowser) {
       this.transferState.remove(key);
-      return of(storedValue);
+      // Don't use cached value if playlist is private — browser must re-fetch with auth cookie
+      if (!storedValue.est_prive) {
+        return of(storedValue);
+      }
     }
 
     return this.httpClient.get<Playlist>(url).pipe(

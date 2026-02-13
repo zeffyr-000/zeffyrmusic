@@ -121,4 +121,55 @@ describe('UserLibraryService', () => {
       req.flush({ success: true });
     });
   });
+
+  describe('Reorder operations', () => {
+    it('should reorder playlist tracks', () => {
+      let result: boolean | null = null;
+      service.reorderPlaylistTracks('p1', ['key1', 'key2', 'key3']).subscribe(r => (result = r));
+
+      const req = httpMock.expectOne(`${environment.URL_SERVER}reorder_playlist`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({
+        id_playlist: 'p1',
+        ordered_ids: ['key1', 'key2', 'key3'],
+      });
+      req.flush({ success: true });
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false on reorder playlist error', () => {
+      let result: boolean | null = null;
+      service.reorderPlaylistTracks('p1', ['key1']).subscribe(r => (result = r));
+
+      const req = httpMock.expectOne(`${environment.URL_SERVER}reorder_playlist`);
+      req.error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
+    });
+
+    it('should reorder likes', () => {
+      let result: boolean | null = null;
+      service.reorderLikes(['key1', 'key2']).subscribe(r => (result = r));
+
+      const req = httpMock.expectOne(`${environment.URL_SERVER}reorder_likes`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({
+        ordered_keys: ['key1', 'key2'],
+      });
+      req.flush({ success: true });
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false on reorder likes error', () => {
+      let result: boolean | null = null;
+      service.reorderLikes(['key1']).subscribe(r => (result = r));
+
+      const req = httpMock.expectOne(`${environment.URL_SERVER}reorder_likes`);
+      req.error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
+    });
+  });
 });

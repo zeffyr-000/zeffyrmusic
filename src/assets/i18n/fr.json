@@ -329,5 +329,8 @@
   "reset_password_success": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
   "reset_password_success_title": "Mot de passe réinitialisé !",
   "reset_password_back_home": "Retour à l'accueil",
-  "partager": "Partager"
+  "partager": "Partager",
+  "drag_to_reorder": "Glisser pour réorganiser",
+  "reorder_success": "Ordre mis à jour",
+  "reorder_error": "Erreur lors de la réorganisation"
 }

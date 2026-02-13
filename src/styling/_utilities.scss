@@ -87,6 +87,56 @@
   gap: var(--spacing-xs);
 }
 
+// Reorderable variant: adds drag handle column at the end
+.tracks-list--reorderable .track-item,
+.track-item--reorderable {
+  grid-template-columns: 40px 56px 1fr 70px 120px 28px;
+}
+
+.tracks-header--reorderable {
+  grid-template-columns: 40px 56px 1fr 70px 120px 28px;
+}
+
+.header-drag {
+  width: 28px;
+}
+
+// Drag handle
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--bs-secondary-color);
+  opacity: 0;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+  touch-action: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  .material-icons {
+    font-size: 1.25rem;
+  }
+
+  &:hover {
+    color: var(--bs-body-color);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+.track-item:hover .drag-handle,
+.track-item:focus-within .drag-handle {
+  opacity: 1;
+}
+
 // Individual track row (grid, 5-column)
 .track-item {
   display: grid;
@@ -236,6 +286,15 @@
     }
   }
 
+  .tracks-list--reorderable .track-item,
+  .track-item--reorderable {
+    grid-template-columns: 40px 1fr auto 24px;
+  }
+
+  .drag-handle {
+    opacity: 1;
+  }
+
   .track-thumbnail {
     width: 40px;
     height: 40px;
@@ -254,6 +313,57 @@
 @media (prefers-reduced-motion: reduce) {
   .track-item,
   .btn-icon {
+    transition: none;
+  }
+}
+
+// =============================================================================
+// CDK DRAG-AND-DROP (global: preview renders at <body> level)
+// =============================================================================
+
+// Drag preview styles (no longer used, kept as reference)
+// .drag-preview { ... }
+
+// CDK drag preview (clone rendered at <body> level, needs own grid)
+.cdk-drag-preview.track-item--reorderable {
+  grid-template-columns: 40px 56px 1fr 70px 120px 28px;
+  background: var(--bs-body-bg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(var(--bs-primary-rgb), 0.2);
+
+  .drag-handle {
+    opacity: 1;
+    cursor: grabbing;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .cdk-drag-preview.track-item--reorderable {
+    grid-template-columns: 40px 1fr auto 24px;
+  }
+}
+
+// Placeholder shown in list during drag
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  background: rgba(var(--bs-primary-rgb), 0.05);
+  border: 2px dashed rgba(var(--bs-primary-rgb), 0.3);
+  border-radius: var(--radius-md);
+}
+
+// Smooth animation when items shift
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// Animate siblings when dragging
+.tracks-list.cdk-drop-list-dragging .track-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdk-drag-animating,
+  .tracks-list.cdk-drop-list-dragging .track-item:not(.cdk-drag-placeholder) {
     transition: none;
   }
 }

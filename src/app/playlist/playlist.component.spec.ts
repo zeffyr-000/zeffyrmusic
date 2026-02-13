@@ -18,6 +18,7 @@ import { getTranslocoTestingProviders } from '../transloco-testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { Playlist } from '../models/playlist.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
+import { UiStore } from '../store/ui/ui.store';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('PlaylistComponent', () => {
@@ -80,6 +81,11 @@ describe('PlaylistComponent', () => {
     userLibraryServiceMock = {
       toggleFollow: vi.fn().mockReturnValue(of({ success: true, isFollowing: true })),
       removeVideoFromPlaylist: vi.fn().mockReturnValue(of(true)),
+      reorderPlaylistTracks: vi.fn().mockReturnValue(of(true)),
+      reorderLikes: vi.fn().mockReturnValue(of(true)),
+      isLiked: vi.fn().mockReturnValue(false),
+      addLike: vi.fn().mockReturnValue(of(true)),
+      removeLike: vi.fn().mockReturnValue(of(true)),
     };
     // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
@@ -967,6 +973,11 @@ describe('PlaylistComponent (Server context)', () => {
     userLibraryServiceMock = {
       toggleFollow: vi.fn().mockReturnValue(of({ success: true, isFollowing: true })),
       removeVideoFromPlaylist: vi.fn().mockReturnValue(of(true)),
+      reorderPlaylistTracks: vi.fn().mockReturnValue(of(true)),
+      reorderLikes: vi.fn().mockReturnValue(of(true)),
+      isLiked: vi.fn().mockReturnValue(false),
+      addLike: vi.fn().mockReturnValue(of(true)),
+      removeLike: vi.fn().mockReturnValue(of(true)),
     };
     // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
@@ -1210,5 +1221,159 @@ describe('PlaylistComponent (Server context)', () => {
     );
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
+  });
+
+  describe('onTrackDrop', () => {
+    const mockVideos: Video[] = [
+      {
+        id_video: 'v1',
+        key: 'k1',
+        titre: 'Song 1',
+        duree: '180',
+        artiste: 'A1',
+        artists: [{ label: 'A1', id_artist: '' }],
+      } as Video,
+      {
+        id_video: 'v2',
+        key: 'k2',
+        titre: 'Song 2',
+        duree: '200',
+        artiste: 'A2',
+        artists: [{ label: 'A2', id_artist: '' }],
+      } as Video,
+      {
+        id_video: 'v3',
+        key: 'k3',
+        titre: 'Song 3',
+        duree: '220',
+        artiste: 'A3',
+        artists: [{ label: 'A3', id_artist: '' }],
+      } as Video,
+    ];
+
+    it('should do nothing when previousIndex equals currentIndex', () => {
+      component.playlist.set(mockVideos);
+      component.idPlaylist.set('p1');
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const event = { previousIndex: 1, currentIndex: 1, container: { data: mockVideos } } as any;
+      component.onTrackDrop(event);
+
+      expect(userLibraryServiceMock.reorderPlaylistTracks).not.toHaveBeenCalled();
+    });
+
+    it('should reorder playlist tracks and call API', () => {
+      component.playlist.set([...mockVideos]);
+      component.idPlaylist.set('p1');
+      component.isLikePage.set(false);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const event = { previousIndex: 0, currentIndex: 2, container: { data: mockVideos } } as any;
+      component.onTrackDrop(event);
+
+      expect(userLibraryServiceMock.reorderPlaylistTracks).toHaveBeenCalledWith(
+        'p1',
+        expect.any(Array)
+      );
+    });
+
+    it('should rollback and show error on playlist reorder failure', () => {
+      const uiStore = TestBed.inject(UiStore);
+      const showErrorSpy = vi.spyOn(uiStore, 'showError').mockReturnValue('mock-id');
+      userLibraryServiceMock.reorderPlaylistTracks.mockReturnValue(of(false));
+
+      component.playlist.set([...mockVideos]);
+      component.idPlaylist.set('p1');
+      component.isLikePage.set(false);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const event = { previousIndex: 0, currentIndex: 2, container: { data: mockVideos } } as any;
+      component.onTrackDrop(event);
+
+      expect(showErrorSpy).toHaveBeenCalled();
+      expect(component.playlist()[0].key).toBe('k1');
+    });
+
+    it('should not call API when idPlaylist is empty', () => {
+      component.playlist.set([...mockVideos]);
+      component.idPlaylist.set('');
+      component.isLikePage.set(false);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const event = { previousIndex: 0, currentIndex: 1, container: { data: mockVideos } } as any;
+      component.onTrackDrop(event);
+
+      expect(userLibraryServiceMock.reorderPlaylistTracks).not.toHaveBeenCalled();
+    });
+
+    it('should reorder likes and call API on like page', () => {
+      const userDataStore = TestBed.inject(UserDataStore);
+      const mockLikes: UserVideo[] = [
+        { id: '1', key: 'k1', titre: 'Song 1', duree: '180', artiste: 'A1' },
+        { id: '2', key: 'k2', titre: 'Song 2', duree: '200', artiste: 'A2' },
+      ];
+      userDataStore.setLikedVideos(mockLikes);
+
+      component.isLikePage.set(true);
+      component.playlist.set(
+        mockLikes.map(
+          l =>
+            ({
+              ...l,
+              id_video: l.id,
+              artists: [{ label: l.artiste, id_artist: '' }],
+            } as unknown as Video)
+        )
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const event = {
+        previousIndex: 0,
+        currentIndex: 1,
+        container: { data: component.playlist() },
+      } as any;
+      component.onTrackDrop(event);
+
+      expect(userLibraryServiceMock.reorderLikes).toHaveBeenCalledWith(['k2', 'k1']);
+
+      userDataStore.reset();
+    });
+
+    it('should rollback likes and show error on reorder failure', () => {
+      const uiStore = TestBed.inject(UiStore);
+      const userDataStore = TestBed.inject(UserDataStore);
+      const showErrorSpy = vi.spyOn(uiStore, 'showError').mockReturnValue('mock-id');
+      userLibraryServiceMock.reorderLikes.mockReturnValue(of(false));
+
+      const mockLikes: UserVideo[] = [
+        { id: '1', key: 'k1', titre: 'Song 1', duree: '180', artiste: 'A1' },
+        { id: '2', key: 'k2', titre: 'Song 2', duree: '200', artiste: 'A2' },
+      ];
+      userDataStore.setLikedVideos(mockLikes);
+
+      component.isLikePage.set(true);
+      component.playlist.set(
+        mockLikes.map(
+          l =>
+            ({
+              ...l,
+              id_video: l.id,
+              artists: [{ label: l.artiste, id_artist: '' }],
+            } as unknown as Video)
+        )
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const event = {
+        previousIndex: 0,
+        currentIndex: 1,
+        container: { data: component.playlist() },
+      } as any;
+      component.onTrackDrop(event);
+
+      expect(showErrorSpy).toHaveBeenCalled();
+
+      userDataStore.reset();
+    });
   });
 });
