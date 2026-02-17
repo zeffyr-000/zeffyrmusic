@@ -31,67 +31,67 @@
 
   <div class="playlist-list">
     @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
-    <div class="playlist-item">
-      <div class="playlist-info">
-        <a class="playlist-title" [routerLink]="['/playlist', playlist.id_playlist]">
-          {{ playlist.titre }}
-        </a>
-      </div>
-      <div class="playlist-actions">
-        <button
-          class="btn btn-sm btn-visibility"
-          [class.is-private]="playlist.prive"
-          (click)="onSwitchVisibility(playlist.id_playlist, playlist.prive ? 'public' : 'prive')"
-          ngbTooltip="{{
-            (playlist.prive ? 'visibility_private_hint' : 'visibility_public_hint') | transloco
-          }}"
-          [attr.aria-pressed]="playlist.prive"
-        >
-          <span class="material-icons">{{ playlist.prive ? 'lock' : 'public' }}</span>
-          {{ (playlist.prive ? 'prive' : 'public') | transloco }}
-        </button>
-        <div class="d-inline-flex" ngbDropdown>
+      <div class="playlist-item">
+        <div class="playlist-info">
+          <a class="playlist-title" [routerLink]="['/playlist', playlist.id_playlist]">
+            {{ playlist.titre }}
+          </a>
+        </div>
+        <div class="playlist-actions">
           <button
-            class="btn btn-sm btn-icon"
-            ngbDropdownToggle
-            [attr.aria-label]="'actions' | transloco"
+            class="btn btn-sm btn-visibility"
+            [class.is-private]="playlist.prive"
+            (click)="onSwitchVisibility(playlist.id_playlist, playlist.prive ? 'public' : 'prive')"
+            ngbTooltip="{{
+              (playlist.prive ? 'visibility_private_hint' : 'visibility_public_hint') | transloco
+            }}"
+            [attr.aria-pressed]="playlist.prive"
           >
-            <span class="material-icons">more_vert</span>
+            <span class="material-icons">{{ playlist.prive ? 'lock' : 'public' }}</span>
+            {{ (playlist.prive ? 'prive' : 'public') | transloco }}
           </button>
-          <ul ngbDropdownMenu>
-            <li ngbDropdownItem>
-              <button
-                (click)="
-                  onConfirmEditTitlePlaylist(
-                    playlist.id_playlist,
-                    playlist.titre,
-                    contentModalConfirmEditTitle
-                  )
-                "
-              >
-                <span class="material-icons">edit</span>
-                {{ 'modifier_nom' | transloco }}
-              </button>
-            </li>
-            <li ngbDropdownItem class="dropdown-item-danger">
-              <button
-                (click)="
-                  onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)
-                "
-              >
-                <span class="material-icons">delete</span>
-                {{ 'supprimer' | transloco }}
-              </button>
-            </li>
-          </ul>
+          <div class="d-inline-flex" ngbDropdown>
+            <button
+              class="btn btn-sm btn-icon"
+              ngbDropdownToggle
+              [attr.aria-label]="'actions' | transloco"
+            >
+              <span class="material-icons">more_vert</span>
+            </button>
+            <ul ngbDropdownMenu>
+              <li ngbDropdownItem>
+                <button
+                  (click)="
+                    onConfirmEditTitlePlaylist(
+                      playlist.id_playlist,
+                      playlist.titre,
+                      contentModalConfirmEditTitle
+                    )
+                  "
+                >
+                  <span class="material-icons">edit</span>
+                  {{ 'modifier_nom' | transloco }}
+                </button>
+              </li>
+              <li ngbDropdownItem class="dropdown-item-danger">
+                <button
+                  (click)="
+                    onConfirmDeletePlaylist(playlist.id_playlist, contentModalConfirmDeletePlaylist)
+                  "
+                >
+                  <span class="material-icons">delete</span>
+                  {{ 'supprimer' | transloco }}
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
     } @empty {
-    <div class="empty-state">
-      <span class="material-icons empty-state-icon" aria-hidden="true">playlist_add</span>
-      <p class="empty-state-text">{{ 'aucune_playlist' | transloco }}</p>
-    </div>
+      <div class="empty-state">
+        <span class="material-icons empty-state-icon" aria-hidden="true">playlist_add</span>
+        <p class="empty-state-text">{{ 'aucune_playlist' | transloco }}</p>
+      </div>
     }
   </div>
 </div>

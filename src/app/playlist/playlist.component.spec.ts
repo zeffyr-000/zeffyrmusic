@@ -1322,7 +1322,7 @@ describe('PlaylistComponent (Server context)', () => {
               ...l,
               id_video: l.id,
               artists: [{ label: l.artiste, id_artist: '' }],
-            } as unknown as Video)
+            }) as unknown as Video
         )
       );
 
@@ -1359,7 +1359,7 @@ describe('PlaylistComponent (Server context)', () => {
               ...l,
               id_video: l.id,
               artists: [{ label: l.artiste, id_artist: '' }],
-            } as unknown as Video)
+            }) as unknown as Video
         )
       );
 

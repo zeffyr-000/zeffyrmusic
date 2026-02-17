@@ -3,53 +3,53 @@
     <h1>{{ 'ma_selection' | transloco }}</h1>
   </header>
 
-  @if(userDataStore.follows().length===0){
-  <div class="selection-intro">
-    <p>{{ 'selection_empty' | transloco }}</p>
-  </div>
+  @if (userDataStore.follows().length === 0) {
+    <div class="selection-intro">
+      <p>{{ 'selection_empty' | transloco }}</p>
+    </div>
   }
 
   <div class="selection-grid">
     @for (playlist of userDataStore.follows(); track playlist.id_playlist) {
-    <div class="selection-card">
-      <a
-        class="selection-card-link"
-        [routerLink]="
-          playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]
-        "
-      >
-        <div class="selection-card-image">
-          <img
-            src="{{ playlist.url_image }}"
-            alt="{{ playlist.titre }}"
-            itemprop="image"
-            appDefaultImage
-          />
-        </div>
-        <div class="selection-card-content">
-          <p class="selection-card-title">{{ playlist.titre }}</p>
-          @if(playlist.artiste!==''){
-          <p class="selection-card-artist">{{ playlist.artiste }}</p>
-          }
-        </div>
-      </a>
-      <div class="selection-card-actions">
-        <button
-          class="btn-remove"
-          (click)="
-            onConfirmDeleteFollow(
-              playlist.id_playlist,
-              playlist.titre,
-              playlist.artiste ?? '',
-              contentModalConfirmDelete
-            )
+      <div class="selection-card">
+        <a
+          class="selection-card-link"
+          [routerLink]="
+            playlist.id_top ? ['/top', playlist.id_top] : ['/playlist', playlist.id_playlist]
           "
-          [attr.aria-label]="'remove_from_selection' | transloco"
         >
-          <span class="material-icons" aria-hidden="true">clear</span>
-        </button>
+          <div class="selection-card-image">
+            <img
+              src="{{ playlist.url_image }}"
+              alt="{{ playlist.titre }}"
+              itemprop="image"
+              appDefaultImage
+            />
+          </div>
+          <div class="selection-card-content">
+            <p class="selection-card-title">{{ playlist.titre }}</p>
+            @if (playlist.artiste !== '') {
+              <p class="selection-card-artist">{{ playlist.artiste }}</p>
+            }
+          </div>
+        </a>
+        <div class="selection-card-actions">
+          <button
+            class="btn-remove"
+            (click)="
+              onConfirmDeleteFollow(
+                playlist.id_playlist,
+                playlist.titre,
+                playlist.artiste ?? '',
+                contentModalConfirmDelete
+              )
+            "
+            [attr.aria-label]="'remove_from_selection' | transloco"
+          >
+            <span class="material-icons" aria-hidden="true">clear</span>
+          </button>
+        </div>
       </div>
-    </div>
     }
   </div>
 </div>
@@ -75,7 +75,7 @@
     <div class="modal-item-info">
       <strong>{{ pendingDeleteTitle() }}</strong>
       @if (pendingDeleteArtist()) {
-      <span class="modal-item-artist">{{ pendingDeleteArtist() }}</span>
+        <span class="modal-item-artist">{{ pendingDeleteArtist() }}</span>
       }
     </div>
 

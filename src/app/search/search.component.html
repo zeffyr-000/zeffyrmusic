@@ -4,15 +4,15 @@
     <h1>{{ query() }}</h1>
     <p class="search-summary">
       @if (!isLoading1() && !isLoading2()) {
-      {{
-        'search_results_count'
-          | transloco
-            : {
-                artists: listArtists()?.length || 0,
-                albums: listAlbums()?.length || 0,
-                tracks: listTracks()?.length || 0
-              }
-      }}
+        {{
+          'search_results_count'
+            | transloco
+              : {
+                  artists: listArtists()?.length || 0,
+                  albums: listAlbums()?.length || 0,
+                  tracks: listTracks()?.length || 0,
+                }
+        }}
       }
     </p>
   </div>
@@ -24,46 +24,48 @@
         {{ 'artistes' | transloco }}
       </h2>
       @if (listArtists()?.length && listArtists()!.length > limitArtist()) {
-      <button
-        class="btn btn-sm btn-outline-primary"
-        (click)="moreArtists()"
-        [attr.aria-label]="'show_all_artists' | transloco"
-      >
-        {{ 'show_all' | transloco }}
-      </button>
+        <button
+          class="btn btn-sm btn-outline-primary"
+          (click)="moreArtists()"
+          [attr.aria-label]="'show_all_artists' | transloco"
+        >
+          {{ 'show_all' | transloco }}
+        </button>
       }
     </div>
 
     @if (isLoading1()) {
-    <div class="section-loading">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div class="section-loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
       </div>
-    </div>
     } @else if (listArtists()?.length === 0) {
-    <div class="empty-state">
-      <span class="material-icons" aria-hidden="true">search_off</span>
-      <p>{{ 'no_artist_found' | transloco }}</p>
-    </div>
-    } @else {
-    <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
-      @for (artist of listArtists() | slice:0:limitArtist(); track artist.id_artiste) {
-      <div class="col mb-3">
-        <a class="card artist-card h-100" routerLink="/artist/{{ artist.id_artiste }}">
-          <img
-            [src]="'https://api.deezer.com/artist/' + artist.id_artiste_deezer + '/image?size=big'"
-            class="card-img-top"
-            [alt]="artist.artiste"
-            appDefaultImage
-          />
-          <div class="card-body">
-            <h5 class="card-title">{{ artist.artiste }}</h5>
-            <span class="card-subtitle">{{ 'artiste' | transloco }}</span>
-          </div>
-        </a>
+      <div class="empty-state">
+        <span class="material-icons" aria-hidden="true">search_off</span>
+        <p>{{ 'no_artist_found' | transloco }}</p>
       </div>
-      }
-    </div>
+    } @else {
+      <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+        @for (artist of listArtists() | slice: 0 : limitArtist(); track artist.id_artiste) {
+          <div class="col mb-3">
+            <a class="card artist-card h-100" routerLink="/artist/{{ artist.id_artiste }}">
+              <img
+                [src]="
+                  'https://api.deezer.com/artist/' + artist.id_artiste_deezer + '/image?size=big'
+                "
+                class="card-img-top"
+                [alt]="artist.artiste"
+                appDefaultImage
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ artist.artiste }}</h5>
+                <span class="card-subtitle">{{ 'artiste' | transloco }}</span>
+              </div>
+            </a>
+          </div>
+        }
+      </div>
     }
   </section>
 
@@ -74,46 +76,51 @@
         {{ 'albums' | transloco }}
       </h2>
       @if (listAlbums()?.length && listAlbums()!.length > limitAlbum()) {
-      <button
-        class="btn btn-sm btn-outline-primary"
-        (click)="moreAlbums()"
-        [attr.aria-label]="'show_all_albums' | transloco"
-      >
-        {{ 'show_all' | transloco }}
-      </button>
+        <button
+          class="btn btn-sm btn-outline-primary"
+          (click)="moreAlbums()"
+          [attr.aria-label]="'show_all_albums' | transloco"
+        >
+          {{ 'show_all' | transloco }}
+        </button>
       }
     </div>
 
     @if (isLoading1()) {
-    <div class="section-loading">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div class="section-loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
       </div>
-    </div>
     } @else if (listAlbums()?.length === 0) {
-    <div class="empty-state">
-      <span class="material-icons" aria-hidden="true">search_off</span>
-      <p>{{ 'no_album_found' | transloco }}</p>
-    </div>
-    } @else {
-    <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
-      @for (album of listAlbums() | slice:0:limitAlbum(); track album.id_playlist) {
-      <div class="col mb-3">
-        <a class="card album-card h-100" routerLink="/playlist/{{ album.id_playlist }}">
-          <img [src]="album.url_image" class="card-img-top" [alt]="album.titre" appDefaultImage />
-          <div class="card-body">
-            <h5 class="card-title">{{ album.titre }}</h5>
-            @if (album.artiste) {
-            <span class="card-subtitle">{{ album.artiste }}</span>
-            }
-          </div>
-          <div class="card-footer">
-            <small class="text-muted">{{ album.year_release }}</small>
-          </div>
-        </a>
+      <div class="empty-state">
+        <span class="material-icons" aria-hidden="true">search_off</span>
+        <p>{{ 'no_album_found' | transloco }}</p>
       </div>
-      }
-    </div>
+    } @else {
+      <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2">
+        @for (album of listAlbums() | slice: 0 : limitAlbum(); track album.id_playlist) {
+          <div class="col mb-3">
+            <a class="card album-card h-100" routerLink="/playlist/{{ album.id_playlist }}">
+              <img
+                [src]="album.url_image"
+                class="card-img-top"
+                [alt]="album.titre"
+                appDefaultImage
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ album.titre }}</h5>
+                @if (album.artiste) {
+                  <span class="card-subtitle">{{ album.artiste }}</span>
+                }
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">{{ album.year_release }}</small>
+              </div>
+            </a>
+          </div>
+        }
+      </div>
     }
   </section>
 
@@ -124,98 +131,107 @@
         {{ 'morceaux' | transloco }}
       </h2>
       @if (listTracks()?.length && listTracks()!.length > limitTrack()) {
-      <button
-        class="btn btn-sm btn-outline-primary"
-        (click)="moreTracks()"
-        [attr.aria-label]="'show_all_tracks' | transloco"
-      >
-        {{ 'show_all' | transloco }}
-      </button>
+        <button
+          class="btn btn-sm btn-outline-primary"
+          (click)="moreTracks()"
+          [attr.aria-label]="'show_all_tracks' | transloco"
+        >
+          {{ 'show_all' | transloco }}
+        </button>
       }
     </div>
 
     @if (isLoading2()) {
-    <div class="section-loading">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
-    } @else if (listTracks()?.length === 0) {
-    <div class="empty-state">
-      <span class="material-icons" aria-hidden="true">search_off</span>
-      <p>{{ 'no_track_found' | transloco }}</p>
-    </div>
-    } @else if (listTracks()?.length && listTracks()!.length > 0) {
-    <div class="tracks-list">
-      @for (video of listTracks() | slice:0:limitTrack(); track video.id_video; let index = $index)
-      {
-      <div
-        class="track-item"
-        [class.active]="video.key === queueStore.currentKey()"
-        role="button"
-        tabindex="0"
-        (click)="runPlaylistTrack(index)"
-        (keydown.enter)="runPlaylistTrack(index)"
-        (keydown.space)="runPlaylistTrack(index); $event.preventDefault()"
-      >
-        <span class="track-number">
-          @if (video.key === queueStore.currentKey()) {
-          <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
-          } @else {
-          {{ index + 1 }}
-          }
-        </span>
-        <img
-          [src]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
-          class="track-thumbnail"
-          [attr.alt]="video.titre"
-        />
-        <div class="track-info">
-          <span class="track-title">{{ video.titre }}</span>
-          <span class="track-artist">
-            @if (video.id_artiste !== undefined && video.id_artiste > 0) {
-            <a (click)="$event.stopPropagation()" routerLink="/artist/{{ video.id_artiste }}">
-              {{ video.artiste }}
-            </a>
-            } @else {
-            {{ video.artiste }}
-            } @if (video.titre_album !== undefined) {
-            <span class="track-separator">•</span>
-            <a (click)="$event.stopPropagation()" routerLink="/playlist/{{ video.id_playlist }}">
-              {{ video.titre_album }}
-            </a>
-            }
-          </span>
+      <div class="section-loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <span class="track-duration">
-          @if (video.duree && +video.duree > 0) {
-          {{ video.duree | toMMSS }}
-          }
-        </span>
-        @if (authStore.isAuthenticated()) {
-        <button
-          class="btn btn-sm btn-icon"
-          (click)="
-            $event.stopPropagation(); addVideo(video.key, video.artiste, video.titre, video.duree)
-          "
-          (keydown.enter)="
-            $event.stopPropagation(); addVideo(video.key, video.artiste, video.titre, video.duree)
-          "
-          (keydown.space)="
-            $event.stopPropagation();
-            addVideo(video.key, video.artiste, video.titre, video.duree);
-            $event.preventDefault()
-          "
-          placement="left"
-          ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
-          [attr.aria-label]="'ajouter_a_une_playlist' | transloco"
-        >
-          <span class="material-icons">add</span>
-        </button>
+      </div>
+    } @else if (listTracks()?.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons" aria-hidden="true">search_off</span>
+        <p>{{ 'no_track_found' | transloco }}</p>
+      </div>
+    } @else if (listTracks()?.length && listTracks()!.length > 0) {
+      <div class="tracks-list">
+        @for (
+          video of listTracks() | slice: 0 : limitTrack();
+          track video.id_video;
+          let index = $index
+        ) {
+          <div
+            class="track-item"
+            [class.active]="video.key === queueStore.currentKey()"
+            role="button"
+            tabindex="0"
+            (click)="runPlaylistTrack(index)"
+            (keydown.enter)="runPlaylistTrack(index)"
+            (keydown.space)="runPlaylistTrack(index); $event.preventDefault()"
+          >
+            <span class="track-number">
+              @if (video.key === queueStore.currentKey()) {
+                <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+              } @else {
+                {{ index + 1 }}
+              }
+            </span>
+            <img
+              [src]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+              class="track-thumbnail"
+              [attr.alt]="video.titre"
+            />
+            <div class="track-info">
+              <span class="track-title">{{ video.titre }}</span>
+              <span class="track-artist">
+                @if (video.id_artiste !== undefined && video.id_artiste > 0) {
+                  <a (click)="$event.stopPropagation()" routerLink="/artist/{{ video.id_artiste }}">
+                    {{ video.artiste }}
+                  </a>
+                } @else {
+                  {{ video.artiste }}
+                }
+                @if (video.titre_album !== undefined) {
+                  <span class="track-separator">•</span>
+                  <a
+                    (click)="$event.stopPropagation()"
+                    routerLink="/playlist/{{ video.id_playlist }}"
+                  >
+                    {{ video.titre_album }}
+                  </a>
+                }
+              </span>
+            </div>
+            <span class="track-duration">
+              @if (video.duree && +video.duree > 0) {
+                {{ video.duree | toMMSS }}
+              }
+            </span>
+            @if (authStore.isAuthenticated()) {
+              <button
+                class="btn btn-sm btn-icon"
+                (click)="
+                  $event.stopPropagation();
+                  addVideo(video.key, video.artiste, video.titre, video.duree)
+                "
+                (keydown.enter)="
+                  $event.stopPropagation();
+                  addVideo(video.key, video.artiste, video.titre, video.duree)
+                "
+                (keydown.space)="
+                  $event.stopPropagation();
+                  addVideo(video.key, video.artiste, video.titre, video.duree);
+                  $event.preventDefault()
+                "
+                placement="left"
+                ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
+                [attr.aria-label]="'ajouter_a_une_playlist' | transloco"
+              >
+                <span class="material-icons">add</span>
+              </button>
+            }
+          </div>
         }
       </div>
-      }
-    </div>
     }
   </section>
 
@@ -226,86 +242,92 @@
         {{ 'extras' | transloco }}
       </h2>
       @if (listExtras()?.length && listExtras()!.length > limitExtra()) {
-      <button
-        class="btn btn-sm btn-outline-primary"
-        (click)="moreExtras()"
-        [attr.aria-label]="'show_more_extras' | transloco"
-      >
-        {{ 'more' | transloco }}
-      </button>
+        <button
+          class="btn btn-sm btn-outline-primary"
+          (click)="moreExtras()"
+          [attr.aria-label]="'show_more_extras' | transloco"
+        >
+          {{ 'more' | transloco }}
+        </button>
       }
     </div>
 
     @if (!authStore.isAuthenticated()) {
-    <div class="info-banner">
-      <span class="material-icons" aria-hidden="true">info</span>
-      {{ 'extras_info' | transloco }}
-    </div>
-    } @else if (isLoading3()) {
-    <div class="section-loading">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div class="info-banner">
+        <span class="material-icons" aria-hidden="true">info</span>
+        {{ 'extras_info' | transloco }}
       </div>
-    </div>
-    } @else if (listExtras()?.length === 0) {
-    <div class="empty-state">
-      <span class="material-icons" aria-hidden="true">search_off</span>
-      <p>{{ 'no_extra_found' | transloco }}</p>
-    </div>
-    } @else if (listExtras()?.length && listExtras()!.length > 0) {
-    <div class="tracks-list">
-      @for (extra of listExtras() | slice:0:limitExtra(); track extra.key; let index = $index) {
-      <div
-        class="track-item"
-        [class.active]="extra.key === queueStore.currentKey()"
-        role="button"
-        tabindex="0"
-        (click)="runPlaylistExtra(index)"
-        (keydown.enter)="runPlaylistExtra(index)"
-        (keydown.space)="runPlaylistExtra(index); $event.preventDefault()"
-      >
-        <span class="track-number">
-          @if (extra.key === queueStore.currentKey()) {
-          <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
-          } @else {
-          {{ index + 1 }}
-          }
-        </span>
-        <img
-          [src]="'https://img.youtube.com/vi/' + extra.key + '/mqdefault.jpg'"
-          class="track-thumbnail"
-          [attr.alt]="extra.title"
-        />
-        <div class="track-info">
-          <span class="track-title">{{ extra.title }}</span>
+    } @else if (isLoading3()) {
+      <div class="section-loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <span class="track-duration">
-          @if (extra.duree > 0) {
-          {{ extra.duree | toMMSS }}
-          }
-        </span>
-        @if (authStore.isAuthenticated()) {
-        <button
-          class="btn btn-sm btn-icon"
-          (click)="$event.stopPropagation(); addVideo(extra.key, '', extra.title, extra.duree)"
-          (keydown.enter)="
-            $event.stopPropagation(); addVideo(extra.key, '', extra.title, extra.duree)
-          "
-          (keydown.space)="
-            $event.stopPropagation();
-            addVideo(extra.key, '', extra.title, extra.duree);
-            $event.preventDefault()
-          "
-          placement="left"
-          ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
-          [attr.aria-label]="'ajouter_a_une_playlist' | transloco"
-        >
-          <span class="material-icons">add</span>
-        </button>
+      </div>
+    } @else if (listExtras()?.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons" aria-hidden="true">search_off</span>
+        <p>{{ 'no_extra_found' | transloco }}</p>
+      </div>
+    } @else if (listExtras()?.length && listExtras()!.length > 0) {
+      <div class="tracks-list">
+        @for (
+          extra of listExtras() | slice: 0 : limitExtra();
+          track extra.key;
+          let index = $index
+        ) {
+          <div
+            class="track-item"
+            [class.active]="extra.key === queueStore.currentKey()"
+            role="button"
+            tabindex="0"
+            (click)="runPlaylistExtra(index)"
+            (keydown.enter)="runPlaylistExtra(index)"
+            (keydown.space)="runPlaylistExtra(index); $event.preventDefault()"
+          >
+            <span class="track-number">
+              @if (extra.key === queueStore.currentKey()) {
+                <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+              } @else {
+                {{ index + 1 }}
+              }
+            </span>
+            <img
+              [src]="'https://img.youtube.com/vi/' + extra.key + '/mqdefault.jpg'"
+              class="track-thumbnail"
+              [attr.alt]="extra.title"
+            />
+            <div class="track-info">
+              <span class="track-title">{{ extra.title }}</span>
+            </div>
+            <span class="track-duration">
+              @if (extra.duree > 0) {
+                {{ extra.duree | toMMSS }}
+              }
+            </span>
+            @if (authStore.isAuthenticated()) {
+              <button
+                class="btn btn-sm btn-icon"
+                (click)="
+                  $event.stopPropagation(); addVideo(extra.key, '', extra.title, extra.duree)
+                "
+                (keydown.enter)="
+                  $event.stopPropagation(); addVideo(extra.key, '', extra.title, extra.duree)
+                "
+                (keydown.space)="
+                  $event.stopPropagation();
+                  addVideo(extra.key, '', extra.title, extra.duree);
+                  $event.preventDefault()
+                "
+                placement="left"
+                ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
+                [attr.aria-label]="'ajouter_a_une_playlist' | transloco"
+              >
+                <span class="material-icons">add</span>
+              </button>
+            }
+          </div>
         }
       </div>
-      }
-    </div>
     }
   </section>
 </div>

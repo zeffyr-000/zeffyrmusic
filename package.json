@@ -36,7 +36,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@jsverse/transloco": "^8.2.1",
     "@jsverse/transloco-messageformat": "^8.2.1",
-    "@jsverse/utils": "^1.0.0-beta.5",
+    "@jsverse/utils": "1.0.0-beta.5",
     "@listr2/prompt-adapter-inquirer": "^3.0.5",
     "@ng-bootstrap/ng-bootstrap": "^20.0.0",
     "@ngrx/signals": "^21.0.1",
@@ -74,7 +74,7 @@
     "@types/node": "^20.17.0",
     "@types/youtube": "^0.1.2",
     "@typescript-eslint/eslint-plugin": "^8.56.0",
-    "@typescript-eslint/parser": "^8.33.1",
+    "@typescript-eslint/parser": "^8.56.0",
     "@vitest/coverage-v8": "^4.0.18",
     "angular-eslint": "^21.2.0",
     "cypress": "^15.9.0",
@@ -86,7 +86,7 @@
     "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.0",
+    "typescript-eslint": "^8.56.0",
     "vitest": "^4.0.16"
   },
   "optionalDependencies": {

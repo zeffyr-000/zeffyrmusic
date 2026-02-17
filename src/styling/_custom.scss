@@ -100,7 +100,9 @@ $dropdown-padding-y: 0.25rem;
 $dropdown-min-width: 12rem;
 $dropdown-border-color: var(--bs-border-color);
 $dropdown-border-radius: 0.75rem;
-$dropdown-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$dropdown-box-shadow:
+  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0 4px 6px -2px rgba(0, 0, 0, 0.05);
 $dropdown-link-color: $greyish-brown-two;
 $dropdown-link-hover-color: $blue;
 $dropdown-link-hover-bg: rgba($blue, 0.06);
@@ -208,7 +210,9 @@ $tooltip-bg: $mushroom;
 
 @font-face {
   font-family: 'Nunito';
-  src: local('Nunito-Regular'), url('../assets/font/Nunito/Nunito-Regular.woff2') format('woff2'),
+  src:
+    local('Nunito-Regular'),
+    url('../assets/font/Nunito/Nunito-Regular.woff2') format('woff2'),
     url('../assets/font/Nunito/Nunito-Regular.woff') format('woff'),
     url('../assets/font/Nunito/Nunito-Regular.ttf') format('truetype');
   font-weight: normal;
@@ -217,7 +221,9 @@ $tooltip-bg: $mushroom;
 }
 @font-face {
   font-family: 'Nunito';
-  src: local('Nunito-SemiBold'), url('../assets/font/Nunito/Nunito-SemiBold.woff2') format('woff2'),
+  src:
+    local('Nunito-SemiBold'),
+    url('../assets/font/Nunito/Nunito-SemiBold.woff2') format('woff2'),
     url('../assets/font/Nunito/Nunito-SemiBold.woff') format('woff'),
     url('../assets/font/Nunito/Nunito-SemiBold.ttf') format('truetype');
   font-weight: 600;
@@ -226,7 +232,9 @@ $tooltip-bg: $mushroom;
 }
 @font-face {
   font-family: 'Nunito';
-  src: local('Nunito-Bold'), url('../assets/font/Nunito/Nunito-Bold.woff2') format('woff2'),
+  src:
+    local('Nunito-Bold'),
+    url('../assets/font/Nunito/Nunito-Bold.woff2') format('woff2'),
     url('../assets/font/Nunito/Nunito-Bold.woff') format('woff'),
     url('../assets/font/Nunito/Nunito-Bold.ttf') format('truetype');
   font-weight: bold;
@@ -235,7 +243,8 @@ $tooltip-bg: $mushroom;
 }
 @font-face {
   font-family: 'Nunito';
-  src: local('Nunito-ExtraBold'),
+  src:
+    local('Nunito-ExtraBold'),
     url('../assets/font/Nunito/Nunito-ExtraBold.woff2') format('woff2'),
     url('../assets/font/Nunito/Nunito-ExtraBold.woff') format('woff'),
     url('../assets/font/Nunito/Nunito-ExtraBold.ttf') format('truetype');

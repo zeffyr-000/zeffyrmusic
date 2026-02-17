@@ -1,12 +1,12 @@
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   @for (notification of notifications(); track notification.id) {
-  <ngb-toast
-    [class]="getToastClass(notification)"
-    [autohide]="true"
-    [delay]="notification.duration ?? 5000"
-    (hidden)="onToastHidden(notification)"
-  >
-    {{ notification.message }}
-  </ngb-toast>
+    <ngb-toast
+      [class]="getToastClass(notification)"
+      [autohide]="true"
+      [delay]="notification.duration ?? 5000"
+      (hidden)="onToastHidden(notification)"
+    >
+      {{ notification.message }}
+    </ngb-toast>
   }
 </div>

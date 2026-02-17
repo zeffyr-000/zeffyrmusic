@@ -47,9 +47,9 @@ export class UserLibraryService {
     const status = isPrivate ? 'prive' : 'public';
 
     return this.http
-      .get<{ success: boolean }>(
-        `${environment.URL_SERVER}switch_publique?id_playlist=${idPlaylist}&statut=${status}`
-      )
+      .get<{
+        success: boolean;
+      }>(`${environment.URL_SERVER}switch_publique?id_playlist=${idPlaylist}&statut=${status}`)
       .pipe(
         tap(response => {
           if (response.success) {
@@ -82,9 +82,10 @@ export class UserLibraryService {
     urlImage = ''
   ): Observable<{ success: boolean; isFollowing: boolean }> {
     return this.http
-      .get<{ success: boolean; est_suivi: boolean }>(
-        `${environment.URL_SERVER}switch_suivi/${idPlaylist}`
-      )
+      .get<{
+        success: boolean;
+        est_suivi: boolean;
+      }>(`${environment.URL_SERVER}switch_suivi/${idPlaylist}`)
       .pipe(
         tap(response => {
           if (response.success) {

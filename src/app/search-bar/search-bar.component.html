@@ -9,67 +9,69 @@
 />
 
 <ul class="list-group list-unstyled" id="liste-resultat-recherche">
-  @if(query() && query().length>0) {
-  <li>
-    <a
-      class="list-group-item all_results"
-      (click)="reset($any({}), false, '/search/' + query())"
-      role="button"
-      tabindex="0"
-      (keydown.enter)="reset($any({}), false, '/search/' + query())"
-      (keydown.space)="reset($any({}), false, '/search/' + query()); $event.preventDefault()"
-    >
-      <h4>
-        <span class="material-icons img_artiste_recherche">search</span>
-        {{ 'tous_les_resultats' | transloco }}
-      </h4>
-    </a>
-  </li>
-  } @for (element of resultsArtist(); track element.id_artiste) {
-  <li>
-    <a
-      class="list-group-item"
-      (click)="reset(element, true, '/artist/' + element.id_artiste)"
-      role="button"
-      tabindex="0"
-      (keydown.enter)="reset(element, true, '/artist/' + element.id_artiste)"
-      (keydown.space)="
-        reset(element, true, '/artist/' + element.id_artiste); $event.preventDefault()
-      "
-    >
-      <h4>
-        <img
-          [src]="'https://api.deezer.com/artist/' + element.id_artiste_deezer + '/image'"
-          class="img-rounded img_artiste_recherche"
-          alt=""
-        />
-        {{ element.artiste }}
-      </h4>
-    </a>
-  </li>
-  } @for (element of resultsAlbum(); track element.id_playlist) {
-  <li>
-    <a
-      class="list-group-item"
-      (click)="reset(element, true, '/playlist/' + element.id_playlist)"
-      role="button"
-      tabindex="0"
-      (keydown.enter)="reset(element, true, '/playlist/' + element.id_playlist)"
-      (keydown.space)="
-        reset(element, true, '/playlist/' + element.id_playlist); $event.preventDefault()
-      "
-    >
-      <h4>
-        <img
-          [src]="element.url_image"
-          class="img-rounded img_artiste_recherche"
-          alt=""
-          appDefaultImage
-        />
-        {{ element.titre }}
-        <small>{{ element.artiste }}</small>
-      </h4>
-    </a>
-  </li>
+  @if (query() && query().length > 0) {
+    <li>
+      <a
+        class="list-group-item all_results"
+        (click)="reset($any({}), false, '/search/' + query())"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="reset($any({}), false, '/search/' + query())"
+        (keydown.space)="reset($any({}), false, '/search/' + query()); $event.preventDefault()"
+      >
+        <h4>
+          <span class="material-icons img_artiste_recherche">search</span>
+          {{ 'tous_les_resultats' | transloco }}
+        </h4>
+      </a>
+    </li>
+  }
+  @for (element of resultsArtist(); track element.id_artiste) {
+    <li>
+      <a
+        class="list-group-item"
+        (click)="reset(element, true, '/artist/' + element.id_artiste)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="reset(element, true, '/artist/' + element.id_artiste)"
+        (keydown.space)="
+          reset(element, true, '/artist/' + element.id_artiste); $event.preventDefault()
+        "
+      >
+        <h4>
+          <img
+            [src]="'https://api.deezer.com/artist/' + element.id_artiste_deezer + '/image'"
+            class="img-rounded img_artiste_recherche"
+            alt=""
+          />
+          {{ element.artiste }}
+        </h4>
+      </a>
+    </li>
+  }
+  @for (element of resultsAlbum(); track element.id_playlist) {
+    <li>
+      <a
+        class="list-group-item"
+        (click)="reset(element, true, '/playlist/' + element.id_playlist)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="reset(element, true, '/playlist/' + element.id_playlist)"
+        (keydown.space)="
+          reset(element, true, '/playlist/' + element.id_playlist); $event.preventDefault()
+        "
+      >
+        <h4>
+          <img
+            [src]="element.url_image"
+            class="img-rounded img_artiste_recherche"
+            alt=""
+            appDefaultImage
+          />
+          {{ element.titre }}
+          <small>{{ element.artiste }}</small>
+        </h4>
+      </a>
+    </li>
   }
 </ul>
