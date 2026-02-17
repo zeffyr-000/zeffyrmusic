@@ -1,6 +1,12 @@
-@for (artist of artists(); track $index) { @if (artist.id_artist) {<a
-  [routerLink]="['/artist', artist.id_artist]"
-  itemprop="byArtist url"
-  >{{ artist.label }}</a
->} @else{<span itemprop="byArtist">{{ artist.label }}</span
->} }
+@for (artist of artists(); track $index) {
+  @if (artist.id_artist) {
+    <a
+      [routerLink]="['/artist', artist.id_artist]"
+      itemprop="byArtist url"
+      (click)="$event.stopPropagation()"
+      >{{ artist.label }}</a
+    >
+  } @else {
+    <span itemprop="byArtist">{{ artist.label }}</span>
+  }
+}

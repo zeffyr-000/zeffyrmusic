@@ -11,16 +11,16 @@
       </li>
       <li class="dropdown-divider"></li>
       @if (!authStore.isAuthenticated()) {
-      <li ngbDropdownItem>
-        <button type="button" (click)="openModalRegister()">
-          <span class="material-icons">create_new_folder</span>{{ 'inscription' | transloco }}
-        </button>
-      </li>
-      <li ngbDropdownItem>
-        <button type="button" (click)="openModalLogin()">
-          <span class="material-icons">login</span>{{ 'connexion' | transloco }}
-        </button>
-      </li>
+        <li ngbDropdownItem>
+          <button type="button" (click)="openModalRegister()">
+            <span class="material-icons">create_new_folder</span>{{ 'inscription' | transloco }}
+          </button>
+        </li>
+        <li ngbDropdownItem>
+          <button type="button" (click)="openModalLogin()">
+            <span class="material-icons">login</span>{{ 'connexion' | transloco }}
+          </button>
+        </li>
       }
       <li ngbDropdownItem routerLinkActive="active">
         <a routerLink="/help">
@@ -28,36 +28,36 @@
         </a>
       </li>
       @if (authStore.isAuthenticated()) {
-      <li class="dropdown-divider"></li>
-      <li ngbDropdownItem class="bg-primary text-white">
-        <span class="d-block">{{ authStore.pseudo() }}</span>
-      </li>
-      <li ngbDropdownItem routerLinkActive="active">
-        <a routerLink="/like">
-          <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
-        </a>
-      </li>
-      <li ngbDropdownItem routerLinkActive="active">
-        <a routerLink="/my-playlists">
-          <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
-        </a>
-      </li>
-      <li ngbDropdownItem routerLinkActive="active">
-        <a routerLink="/my-selection">
-          <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-        </a>
-      </li>
-      <li ngbDropdownItem routerLinkActive="active">
-        <a routerLink="/settings">
-          <span class="material-icons">settings</span>{{ 'settings' | transloco }}
-        </a>
-      </li>
-      <li class="dropdown-divider"></li>
-      <li ngbDropdownItem>
-        <button (click)="onLogout()">
-          <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco }}
-        </button>
-      </li>
+        <li class="dropdown-divider"></li>
+        <li ngbDropdownItem class="bg-primary text-white">
+          <span class="d-block">{{ authStore.pseudo() }}</span>
+        </li>
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/like">
+            <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
+          </a>
+        </li>
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/my-playlists">
+            <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
+          </a>
+        </li>
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/my-selection">
+            <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
+          </a>
+        </li>
+        <li ngbDropdownItem routerLinkActive="active">
+          <a routerLink="/settings">
+            <span class="material-icons">settings</span>{{ 'settings' | transloco }}
+          </a>
+        </li>
+        <li class="dropdown-divider"></li>
+        <li ngbDropdownItem>
+          <button (click)="onLogout()">
+            <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco }}
+          </button>
+        </li>
       }
     </ul>
   </div>
@@ -88,55 +88,55 @@
   </div>
 
   <ul class="nav col-5 d-none d-lg-flex" id="header-nav">
-    @if(authStore.isAuthenticated()) {
-    <li class="nav-item align-self-center d-flex" ngbDropdown>
-      <a id="header-toggle-big" class="btn btn-light" ngbDropdownToggle>
-        {{ authStore.pseudo() }} <span class="caret"></span>
-      </a>
-      <ul ngbDropdownMenu>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/like">
-            <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
-          </a>
-        </li>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/my-playlists">
-            <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
-          </a>
-        </li>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/my-selection">
-            <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-          </a>
-        </li>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/settings">
-            <span class="material-icons">settings</span>{{ 'settings' | transloco }}
-          </a>
-        </li>
-        <li class="dropdown-divider"></li>
-        <li ngbDropdownItem>
-          <button (click)="onLogout()">
-            <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco }}
-          </button>
-        </li>
-      </ul>
-    </li>
-    } @else{
-    <li id="header-li-inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
-      <button
-        type="button"
-        class="btn btn-warning btn-outline-warning text-light"
-        (click)="openModalRegister()"
-      >
-        {{ 'inscription' | transloco }}
-      </button>
-    </li>
-    <li id="header-li-connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
-      <button type="button" class="btn btn-primary text-light" (click)="openModalLogin()">
-        {{ 'connexion' | transloco }}
-      </button>
-    </li>
+    @if (authStore.isAuthenticated()) {
+      <li class="nav-item align-self-center d-flex" ngbDropdown>
+        <a id="header-toggle-big" class="btn btn-light" ngbDropdownToggle>
+          {{ authStore.pseudo() }} <span class="caret"></span>
+        </a>
+        <ul ngbDropdownMenu>
+          <li ngbDropdownItem routerLinkActive="active">
+            <a routerLink="/like">
+              <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
+            </a>
+          </li>
+          <li ngbDropdownItem routerLinkActive="active">
+            <a routerLink="/my-playlists">
+              <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
+            </a>
+          </li>
+          <li ngbDropdownItem routerLinkActive="active">
+            <a routerLink="/my-selection">
+              <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
+            </a>
+          </li>
+          <li ngbDropdownItem routerLinkActive="active">
+            <a routerLink="/settings">
+              <span class="material-icons">settings</span>{{ 'settings' | transloco }}
+            </a>
+          </li>
+          <li class="dropdown-divider"></li>
+          <li ngbDropdownItem>
+            <button (click)="onLogout()">
+              <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco }}
+            </button>
+          </li>
+        </ul>
+      </li>
+    } @else {
+      <li id="header-li-inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
+        <button
+          type="button"
+          class="btn btn-warning btn-outline-warning text-light"
+          (click)="openModalRegister()"
+        >
+          {{ 'inscription' | transloco }}
+        </button>
+      </li>
+      <li id="header-li-connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
+        <button type="button" class="btn btn-primary text-light" (click)="openModalLogin()">
+          {{ 'connexion' | transloco }}
+        </button>
+      </li>
     }
 
     <li id="header-li-help" class="nav-item align-self-center d-flex">
@@ -163,39 +163,40 @@
   </button>
 
   <div id="player-info-left">
-    @if(queueStore.currentKey()){
-    <img
-      [src]="'https://img.youtube.com/vi/' + queueStore.currentKey() + '/mqdefault.jpg'"
-      class="player-thumbnail"
-      [attr.alt]="queueStore.currentVideo()?.titre"
-    />
+    @if (queueStore.currentKey()) {
+      <img
+        [src]="'https://img.youtube.com/vi/' + queueStore.currentKey() + '/mqdefault.jpg'"
+        class="player-thumbnail"
+        [attr.alt]="queueStore.currentVideo()?.titre"
+      />
     }
     <div class="player-track-info">
       <span class="player-track-title">{{ queueStore.currentVideo()?.titre }}</span>
       <span class="player-track-artist">{{ queueStore.currentVideo()?.artiste }}</span>
     </div>
-    @if(authStore.isAuthenticated() && userLibraryService.isLiked(queueStore.currentKey())){
-    <button
-      type="button"
-      class="btn btn-icon btn-like active"
-      (click)="
-        $event.stopPropagation(); userLibraryService.removeLike(queueStore.currentKey()).subscribe()
-      "
-      aria-label="Remove from favorites"
-    >
-      <span class="material-icons">favorite</span>
-    </button>
-    } @else if(authStore.isAuthenticated() && queueStore.currentKey()){
-    <button
-      type="button"
-      class="btn btn-icon btn-like"
-      (click)="
-        $event.stopPropagation(); userLibraryService.addLike(queueStore.currentKey()).subscribe()
-      "
-      aria-label="Add to favorites"
-    >
-      <span class="material-icons">favorite_border</span>
-    </button>
+    @if (authStore.isAuthenticated() && userLibraryService.isLiked(queueStore.currentKey())) {
+      <button
+        type="button"
+        class="btn btn-icon btn-like active"
+        (click)="
+          $event.stopPropagation();
+          userLibraryService.removeLike(queueStore.currentKey()).subscribe()
+        "
+        aria-label="Remove from favorites"
+      >
+        <span class="material-icons">favorite</span>
+      </button>
+    } @else if (authStore.isAuthenticated() && queueStore.currentKey()) {
+      <button
+        type="button"
+        class="btn btn-icon btn-like"
+        (click)="
+          $event.stopPropagation(); userLibraryService.addLike(queueStore.currentKey()).subscribe()
+        "
+        aria-label="Add to favorites"
+      >
+        <span class="material-icons">favorite_border</span>
+      </button>
     }
   </div>
 
@@ -226,10 +227,10 @@
           <span class="material-icons">skip_previous</span>
         </button>
         <button type="button" id="play-button" class="btn text-light" (click)="onPlayPause()">
-          @if(playerStore.isPlaying()){
-          <span class="material-icons">pause</span>
-          }@else{
-          <span class="material-icons">play_arrow</span>
+          @if (playerStore.isPlaying()) {
+            <span class="material-icons">pause</span>
+          } @else {
+            <span class="material-icons">play_arrow</span>
           }
         </button>
         <button
@@ -293,19 +294,19 @@
           (keydown.space)="$event.preventDefault()"
           #contentSlider1
         >
-          @if(isBrowser){
-          <span
-            class="ui-slider-handle"
-            #sliderPlayer
-            [style.left.%]="playerStore.progress()"
-            ngDraggable
-            [bounds]="contentSlider1"
-            [inBounds]="true"
-            lockAxis="y"
-            [preventDefaultEvent]="true"
-            (movingOffset)="onDragMovingPlayer($event)"
-            (endOffset)="onDragEndPlayer($event)"
-          ></span>
+          @if (isBrowser) {
+            <span
+              class="ui-slider-handle"
+              #sliderPlayer
+              [style.left.%]="playerStore.progress()"
+              ngDraggable
+              [bounds]="contentSlider1"
+              [inBounds]="true"
+              lockAxis="y"
+              [preventDefaultEvent]="true"
+              (movingOffset)="onDragMovingPlayer($event)"
+              (endOffset)="onDragEndPlayer($event)"
+            ></span>
           }
         </div>
         <div id="load-video" [style.width.%]="playerStore.loadedProgress()"></div>
@@ -328,19 +329,19 @@
           (keydown.space)="$event.preventDefault()"
           #contentSlider2
         >
-          @if(isBrowser) {
-          <span
-            class="ui-slider-handle"
-            #sliderVolume
-            [style.left.%]="playerStore.volume()"
-            ngDraggable
-            [bounds]="contentSlider2"
-            [inBounds]="true"
-            lockAxis="y"
-            [preventDefaultEvent]="true"
-            (movingOffset)="onDragMovingVolume($event)"
-            (endOffset)="onDragEndVolume($event)"
-          ></span>
+          @if (isBrowser) {
+            <span
+              class="ui-slider-handle"
+              #sliderVolume
+              [style.left.%]="playerStore.volume()"
+              ngDraggable
+              [bounds]="contentSlider2"
+              [inBounds]="true"
+              lockAxis="y"
+              [preventDefaultEvent]="true"
+              (movingOffset)="onDragMovingVolume($event)"
+              (endOffset)="onDragEndVolume($event)"
+            ></span>
           }
         </div>
         <div id="load-volume-current" [style.width.%]="playerStore.volume()"></div>
@@ -376,73 +377,73 @@
       <hr class="flex-grow-1" />
     </div>
 
-    @if(!isRegistered()){
-    <form (submit)="onSubmitRegister($event)" class="modal-form">
-      <div class="form-group">
-        <label class="form-label" for="pseudo">
-          <span class="material-icons" aria-hidden="true">badge</span>
-          {{ 'pseudo' | transloco }}
-        </label>
-        <input
-          type="text"
-          id="pseudo"
-          class="form-control"
-          ngbAutofocus
-          [formField]="registerForm.pseudo"
-        />
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="mailLogin">
-          <span class="material-icons" aria-hidden="true">alternate_email</span>
-          {{ 'mail' | transloco }}
-        </label>
-        <input type="email" id="mailLogin" class="form-control" [formField]="registerForm.mail" />
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="password">
-          <span class="material-icons" aria-hidden="true">lock</span>
-          {{ 'mot_de_passe' | transloco }}
-        </label>
-        <input
-          type="password"
-          id="password"
-          class="form-control"
-          [formField]="registerForm.password"
-        />
-      </div>
+    @if (!isRegistered()) {
+      <form (submit)="onSubmitRegister($event)" class="modal-form">
+        <div class="form-group">
+          <label class="form-label" for="pseudo">
+            <span class="material-icons" aria-hidden="true">badge</span>
+            {{ 'pseudo' | transloco }}
+          </label>
+          <input
+            type="text"
+            id="pseudo"
+            class="form-control"
+            ngbAutofocus
+            [formField]="registerForm.pseudo"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mailLogin">
+            <span class="material-icons" aria-hidden="true">alternate_email</span>
+            {{ 'mail' | transloco }}
+          </label>
+          <input type="email" id="mailLogin" class="form-control" [formField]="registerForm.mail" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <span class="material-icons" aria-hidden="true">lock</span>
+            {{ 'mot_de_passe' | transloco }}
+          </label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            [formField]="registerForm.password"
+          />
+        </div>
 
-      @if(registerForm().dirty() && error()!=='') {
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
-      }
+        @if (registerForm().dirty() && error() !== '') {
+          <div class="modal-alert modal-alert-danger">
+            <span class="material-icons" aria-hidden="true">error</span>
+            <span>{{ error() }}</span>
+          </div>
+        }
 
-      <div class="modal-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="registerForm().invalid()">
-          <span class="material-icons" aria-hidden="true">person_add</span>
-          {{ 'je_m_inscris' | transloco }}
-        </button>
-      </div>
-    </form>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="registerForm().invalid()">
+            <span class="material-icons" aria-hidden="true">person_add</span>
+            {{ 'je_m_inscris' | transloco }}
+          </button>
+        </div>
+      </form>
     } @else {
-    <div>
-      <div class="modal-alert modal-alert-success">
-        <span class="material-icons" aria-hidden="true">check_circle</span>
-        <span>{{ 'inscription_succes' | transloco }}</span>
+      <div>
+        <div class="modal-alert modal-alert-success">
+          <span class="material-icons" aria-hidden="true">check_circle</span>
+          <span>{{ 'inscription_succes' | transloco }}</span>
+        </div>
+        <div class="modal-actions">
+          <button
+            type="button"
+            (click)="dismissAndOpenLogin(modal)"
+            class="btn btn-primary"
+            aria-haspopup="dialog"
+          >
+            <span class="material-icons" aria-hidden="true">login</span>
+            {{ 'connexion' | transloco }}
+          </button>
+        </div>
       </div>
-      <div class="modal-actions">
-        <button
-          type="button"
-          (click)="dismissAndOpenLogin(modal)"
-          class="btn btn-primary"
-          aria-haspopup="dialog"
-        >
-          <span class="material-icons" aria-hidden="true">login</span>
-          {{ 'connexion' | transloco }}
-        </button>
-      </div>
-    </div>
     }
   </div>
 </ng-template>
@@ -496,11 +497,11 @@
         />
       </div>
 
-      @if(loginForm().dirty() && error()!==''){
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
+      @if (loginForm().dirty() && error() !== '') {
+        <div class="modal-alert modal-alert-danger">
+          <span class="material-icons" aria-hidden="true">error</span>
+          <span>{{ error() }}</span>
+        </div>
       }
 
       <div class="modal-actions">
@@ -537,41 +538,41 @@
     ></button>
   </div>
   <div class="modal-body">
-    @if(!isSuccess()){
-    <form (submit)="onSubmitResetPass($event)" class="modal-form">
-      <div class="form-group">
-        <label class="form-label" for="mailReset">
-          <span class="material-icons" aria-hidden="true">alternate_email</span>
-          {{ 'mail' | transloco }}
-        </label>
-        <input
-          type="email"
-          id="mailReset"
-          class="form-control"
-          ngbAutofocus
-          [formField]="resetPassForm.mail"
-        />
-      </div>
+    @if (!isSuccess()) {
+      <form (submit)="onSubmitResetPass($event)" class="modal-form">
+        <div class="form-group">
+          <label class="form-label" for="mailReset">
+            <span class="material-icons" aria-hidden="true">alternate_email</span>
+            {{ 'mail' | transloco }}
+          </label>
+          <input
+            type="email"
+            id="mailReset"
+            class="form-control"
+            ngbAutofocus
+            [formField]="resetPassForm.mail"
+          />
+        </div>
 
-      @if(resetPassForm().dirty() && error()!=='') {
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
-      }
+        @if (resetPassForm().dirty() && error() !== '') {
+          <div class="modal-alert modal-alert-danger">
+            <span class="material-icons" aria-hidden="true">error</span>
+            <span>{{ error() }}</span>
+          </div>
+        }
 
-      <div class="modal-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="resetPassForm().invalid()">
-          <span class="material-icons" aria-hidden="true">send</span>
-          {{ 'envoyer' | transloco }}
-        </button>
-      </div>
-    </form>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="resetPassForm().invalid()">
+            <span class="material-icons" aria-hidden="true">send</span>
+            {{ 'envoyer' | transloco }}
+          </button>
+        </div>
+      </form>
     } @else {
-    <div class="modal-alert modal-alert-success">
-      <span class="material-icons" aria-hidden="true">check_circle</span>
-      <span>{{ 'mail_pass_envoye_succes' | transloco }}</span>
-    </div>
+      <div class="modal-alert modal-alert-success">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        <span>{{ 'mail_pass_envoye_succes' | transloco }}</span>
+      </div>
     }
   </div>
 </ng-template>
@@ -595,32 +596,33 @@
       <span class="text-muted">{{ addArtist }}</span>
     </div>
 
-    @if(error()!==''){
-    <div class="modal-alert modal-alert-danger">
-      <span class="material-icons" aria-hidden="true">error</span>
-      <span>{{ error() }}</span>
-    </div>
-    } @if (userDataStore.playlists().length===0) {
-    <div class="modal-alert modal-alert-info">
-      <span class="material-icons" aria-hidden="true">info</span>
-      <span>{{ 'ajouter_musique_playlist_empty' | transloco }}</span>
-    </div>
+    @if (error() !== '') {
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
+    }
+    @if (userDataStore.playlists().length === 0) {
+      <div class="modal-alert modal-alert-info">
+        <span class="material-icons" aria-hidden="true">info</span>
+        <span>{{ 'ajouter_musique_playlist_empty' | transloco }}</span>
+      </div>
     }
 
     <table class="table table-hover">
       @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
-      <tr>
-        <td>
-          <button
-            class="btn btn-link text-start w-100 d-flex align-items-center gap-2"
-            (click)="onAddVideo(playlist.id_playlist, modal)"
-            [attr.aria-label]="('ajouter_a_une_playlist' | transloco) + ' - ' + playlist.titre"
-          >
-            <span class="material-icons" aria-hidden="true">queue_music</span>
-            {{ playlist.titre }}
-          </button>
-        </td>
-      </tr>
+        <tr>
+          <td>
+            <button
+              class="btn btn-link text-start w-100 d-flex align-items-center gap-2"
+              (click)="onAddVideo(playlist.id_playlist, modal)"
+              [attr.aria-label]="('ajouter_a_une_playlist' | transloco) + ' - ' + playlist.titre"
+            >
+              <span class="material-icons" aria-hidden="true">queue_music</span>
+              {{ playlist.titre }}
+            </button>
+          </td>
+        </tr>
       }
     </table>
   </div>
@@ -645,22 +647,22 @@
       <hr class="my-2" />
 
       @if (!authStore.isAuthenticated()) {
-      <button
-        type="button"
-        class="nav-link d-flex align-items-center gap-2 btn btn-link text-start p-0"
-        (click)="closeMobileMenu(); openModalRegister()"
-      >
-        <span class="material-icons">create_new_folder</span>
-        {{ 'inscription' | transloco }}
-      </button>
-      <button
-        type="button"
-        class="nav-link d-flex align-items-center gap-2 btn btn-link text-start p-0"
-        (click)="closeMobileMenu(); openModalLogin()"
-      >
-        <span class="material-icons">login</span>
-        {{ 'connexion' | transloco }}
-      </button>
+        <button
+          type="button"
+          class="nav-link d-flex align-items-center gap-2 btn btn-link text-start p-0"
+          (click)="closeMobileMenu(); openModalRegister()"
+        >
+          <span class="material-icons">create_new_folder</span>
+          {{ 'inscription' | transloco }}
+        </button>
+        <button
+          type="button"
+          class="nav-link d-flex align-items-center gap-2 btn btn-link text-start p-0"
+          (click)="closeMobileMenu(); openModalLogin()"
+        >
+          <span class="material-icons">login</span>
+          {{ 'connexion' | transloco }}
+        </button>
       }
 
       <a
@@ -673,64 +675,64 @@
       </a>
 
       @if (authStore.isAuthenticated()) {
-      <hr class="my-2" />
+        <hr class="my-2" />
 
-      <div class="nav-link bg-primary text-white rounded px-3 py-2 fw-bold">
-        {{ authStore.pseudo() }}
-      </div>
+        <div class="nav-link bg-primary text-white rounded px-3 py-2 fw-bold">
+          {{ authStore.pseudo() }}
+        </div>
 
-      <a
-        class="nav-link d-flex align-items-center gap-2"
-        routerLink="/like"
-        (click)="closeMobileMenu()"
-      >
-        <span class="material-icons">favorite</span>
-        {{ 'mes_likes' | transloco }}
-        @if (userDataStore.likedVideoCount() > 0) {
-        <span class="badge bg-secondary ms-auto">{{ userDataStore.likedVideoCount() }}</span>
-        }
-      </a>
-      <a
-        class="nav-link d-flex align-items-center gap-2"
-        routerLink="/my-playlists"
-        (click)="closeMobileMenu()"
-      >
-        <span class="material-icons">library_music</span>
-        {{ 'mes_playlists' | transloco }}
-        @if (userDataStore.playlistCount() > 0) {
-        <span class="badge bg-secondary ms-auto">{{ userDataStore.playlistCount() }}</span>
-        }
-      </a>
-      <a
-        class="nav-link d-flex align-items-center gap-2"
-        routerLink="/my-selection"
-        (click)="closeMobileMenu()"
-      >
-        <span class="material-icons">favorite</span>
-        {{ 'ma_selection' | transloco }}
-        @if (userDataStore.followCount() > 0) {
-        <span class="badge bg-secondary ms-auto">{{ userDataStore.followCount() }}</span>
-        }
-      </a>
-      <a
-        class="nav-link d-flex align-items-center gap-2"
-        routerLink="/settings"
-        (click)="closeMobileMenu()"
-      >
-        <span class="material-icons">settings</span>
-        {{ 'settings' | transloco }}
-      </a>
+        <a
+          class="nav-link d-flex align-items-center gap-2"
+          routerLink="/like"
+          (click)="closeMobileMenu()"
+        >
+          <span class="material-icons">favorite</span>
+          {{ 'mes_likes' | transloco }}
+          @if (userDataStore.likedVideoCount() > 0) {
+            <span class="badge bg-secondary ms-auto">{{ userDataStore.likedVideoCount() }}</span>
+          }
+        </a>
+        <a
+          class="nav-link d-flex align-items-center gap-2"
+          routerLink="/my-playlists"
+          (click)="closeMobileMenu()"
+        >
+          <span class="material-icons">library_music</span>
+          {{ 'mes_playlists' | transloco }}
+          @if (userDataStore.playlistCount() > 0) {
+            <span class="badge bg-secondary ms-auto">{{ userDataStore.playlistCount() }}</span>
+          }
+        </a>
+        <a
+          class="nav-link d-flex align-items-center gap-2"
+          routerLink="/my-selection"
+          (click)="closeMobileMenu()"
+        >
+          <span class="material-icons">favorite</span>
+          {{ 'ma_selection' | transloco }}
+          @if (userDataStore.followCount() > 0) {
+            <span class="badge bg-secondary ms-auto">{{ userDataStore.followCount() }}</span>
+          }
+        </a>
+        <a
+          class="nav-link d-flex align-items-center gap-2"
+          routerLink="/settings"
+          (click)="closeMobileMenu()"
+        >
+          <span class="material-icons">settings</span>
+          {{ 'settings' | transloco }}
+        </a>
 
-      <hr class="my-2" />
+        <hr class="my-2" />
 
-      <button
-        type="button"
-        class="nav-link d-flex align-items-center gap-2 btn btn-link text-start text-danger p-0"
-        (click)="closeMobileMenu(); onLogout()"
-      >
-        <span class="material-icons">power_settings_new</span>
-        {{ 'deconnexion' | transloco }}
-      </button>
+        <button
+          type="button"
+          class="nav-link d-flex align-items-center gap-2 btn btn-link text-start text-danger p-0"
+          (click)="closeMobileMenu(); onLogout()"
+        >
+          <span class="material-icons">power_settings_new</span>
+          {{ 'deconnexion' | transloco }}
+        </button>
       }
     </nav>
   </div>

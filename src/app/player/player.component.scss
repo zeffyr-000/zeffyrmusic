@@ -103,7 +103,9 @@
   background: transparent;
   border: none;
   color: var(--bs-secondary-color);
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
 
   &:hover {
     background: rgba(var(--bs-primary-rgb), 0.1);

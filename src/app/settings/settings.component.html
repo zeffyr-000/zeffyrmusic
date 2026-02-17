@@ -156,16 +156,17 @@
         />
       </div>
 
-      @if(editPassForm().dirty() && error()!=='') {
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
-      } @if(successPass()) {
-      <div class="modal-alert modal-alert-success">
-        <span class="material-icons" aria-hidden="true">check_circle</span>
-        <span>{{ 'mot_de_passe_modifie_succes' | transloco }}</span>
-      </div>
+      @if (editPassForm().dirty() && error() !== '') {
+        <div class="modal-alert modal-alert-danger">
+          <span class="material-icons" aria-hidden="true">error</span>
+          <span>{{ error() }}</span>
+        </div>
+      }
+      @if (successPass()) {
+        <div class="modal-alert modal-alert-success">
+          <span class="material-icons" aria-hidden="true">check_circle</span>
+          <span>{{ 'mot_de_passe_modifie_succes' | transloco }}</span>
+        </div>
       }
 
       <div class="modal-actions">
@@ -207,16 +208,17 @@
         />
       </div>
 
-      @if(editMailForm().dirty() && error()!=='') {
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
-      } @if(successMail()) {
-      <div class="modal-alert modal-alert-success">
-        <span class="material-icons" aria-hidden="true">check_circle</span>
-        <span>{{ 'mail_modifie_succes' | transloco }}</span>
-      </div>
+      @if (editMailForm().dirty() && error() !== '') {
+        <div class="modal-alert modal-alert-danger">
+          <span class="material-icons" aria-hidden="true">error</span>
+          <span>{{ error() }}</span>
+        </div>
+      }
+      @if (successMail()) {
+        <div class="modal-alert modal-alert-success">
+          <span class="material-icons" aria-hidden="true">check_circle</span>
+          <span>{{ 'mail_modifie_succes' | transloco }}</span>
+        </div>
       }
 
       <div class="modal-actions">
@@ -256,21 +258,22 @@
           [formField]="editLanguageForm.language"
         >
           @for (lang of availableLanguages(); track lang) {
-          <option [value]="lang">{{ 'langue_' + lang | transloco }}</option>
+            <option [value]="lang">{{ 'langue_' + lang | transloco }}</option>
           }
         </select>
       </div>
 
-      @if(editLanguageForm().dirty() && error()!=='') {
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
-      } @if(successLanguage()){
-      <div class="modal-alert modal-alert-success">
-        <span class="material-icons" aria-hidden="true">check_circle</span>
-        <span>{{ 'language_updated_succesfully' | transloco }}</span>
-      </div>
+      @if (editLanguageForm().dirty() && error() !== '') {
+        <div class="modal-alert modal-alert-danger">
+          <span class="material-icons" aria-hidden="true">error</span>
+          <span>{{ error() }}</span>
+        </div>
+      }
+      @if (successLanguage()) {
+        <div class="modal-alert modal-alert-success">
+          <span class="material-icons" aria-hidden="true">check_circle</span>
+          <span>{{ 'language_updated_succesfully' | transloco }}</span>
+        </div>
       }
 
       <div class="modal-actions">
@@ -317,16 +320,17 @@
         />
       </div>
 
-      @if(deleteAccountForm().dirty() && error()!=='') {
-      <div class="modal-alert modal-alert-danger">
-        <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
-      </div>
-      } @if(successDelete()){
-      <div class="modal-alert modal-alert-success">
-        <span class="material-icons" aria-hidden="true">check_circle</span>
-        <span>{{ 'account_deleted_succesfully' | transloco }}</span>
-      </div>
+      @if (deleteAccountForm().dirty() && error() !== '') {
+        <div class="modal-alert modal-alert-danger">
+          <span class="material-icons" aria-hidden="true">error</span>
+          <span>{{ error() }}</span>
+        </div>
+      }
+      @if (successDelete()) {
+        <div class="modal-alert modal-alert-success">
+          <span class="material-icons" aria-hidden="true">check_circle</span>
+          <span>{{ 'account_deleted_succesfully' | transloco }}</span>
+        </div>
       }
 
       <div class="modal-actions">
@@ -360,16 +364,17 @@
 
     <div id="google-signin-button" class="google-signin-container"></div>
 
-    @if(error()!=='') {
-    <div class="modal-alert modal-alert-danger">
-      <span class="material-icons" aria-hidden="true">error</span>
-      <span>{{ error() }}</span>
-    </div>
-    } @if(successGoogleAccount()){
-    <div class="modal-alert modal-alert-success">
-      <span class="material-icons" aria-hidden="true">check_circle</span>
-      <span>{{ 'associate_google_account_succesfully' | transloco }}</span>
-    </div>
+    @if (error() !== '') {
+      <div class="modal-alert modal-alert-danger">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ error() }}</span>
+      </div>
+    }
+    @if (successGoogleAccount()) {
+      <div class="modal-alert modal-alert-success">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        <span>{{ 'associate_google_account_succesfully' | transloco }}</span>
+      </div>
     }
   </div>
 </ng-template>

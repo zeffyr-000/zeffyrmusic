@@ -5,18 +5,20 @@
     <app-player class="col-xs-3 col-md-3" id="player-sidebar"></app-player>
 
     <div class="col-xs-9 col-md-9" id="content">
-      @if((queueStore.sourceTopChartsId() || queueStore.sourcePlaylistId()) &&
-      !isRedirectingToCurrentUrl()){
-      <a
-        [routerLink]="
-          queueStore.sourceTopChartsId()
-            ? ['top', queueStore.sourceTopChartsId()]
-            : ['playlist', queueStore.sourcePlaylistId()]
-        "
-      >
-        <span class="material-icons">chevron_left</span>
-        {{ 'back_current_playlist' | transloco }}
-      </a>
+      @if (
+        (queueStore.sourceTopChartsId() || queueStore.sourcePlaylistId()) &&
+        !isRedirectingToCurrentUrl()
+      ) {
+        <a
+          [routerLink]="
+            queueStore.sourceTopChartsId()
+              ? ['top', queueStore.sourceTopChartsId()]
+              : ['playlist', queueStore.sourcePlaylistId()]
+          "
+        >
+          <span class="material-icons">chevron_left</span>
+          {{ 'back_current_playlist' | transloco }}
+        </a>
       }
       <router-outlet></router-outlet>
     </div>
@@ -25,18 +27,20 @@
 
 <app-toast-container></app-toast-container>
 
-@if(!isOnline()){
-<ngb-alert id="alert-connection-lost" (close)="isOnline.set(true)" type="danger">
-  {{ 'perte_connexion' | transloco }}
-</ngb-alert>
-} @if(uiStore.showSessionExpiredMessage()){
-<ngb-alert id="alert-logout" (close)="uiStore.hideSessionExpired()" type="danger">
-  {{ 'veuillez_vous_reconnecter' | transloco }}
-</ngb-alert>
-} @if(playerStore.errorMessage()){
-<ngb-alert id="alert-error" class="d-lg-none" (close)="clearErrorMessage()" type="danger">
-  {{ playerStore.errorMessage() | transloco }}
-</ngb-alert>
+@if (!isOnline()) {
+  <ngb-alert id="alert-connection-lost" (close)="isOnline.set(true)" type="danger">
+    {{ 'perte_connexion' | transloco }}
+  </ngb-alert>
+}
+@if (uiStore.showSessionExpiredMessage()) {
+  <ngb-alert id="alert-logout" (close)="uiStore.hideSessionExpired()" type="danger">
+    {{ 'veuillez_vous_reconnecter' | transloco }}
+  </ngb-alert>
+}
+@if (playerStore.errorMessage()) {
+  <ngb-alert id="alert-error" class="d-lg-none" (close)="clearErrorMessage()" type="danger">
+    {{ playerStore.errorMessage() | transloco }}
+  </ngb-alert>
 }
 <ng-template #contentModalReload let-modal>
   <div class="modal-header">

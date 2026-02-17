@@ -36,7 +36,9 @@
 
     &:hover {
       border-color: rgba(var(--bs-danger-rgb), 0.4);
-      box-shadow: var(--shadow-md), 0 0 0 1px rgba(var(--bs-danger-rgb), 0.1);
+      box-shadow:
+        var(--shadow-md),
+        0 0 0 1px rgba(var(--bs-danger-rgb), 0.1);
     }
 
     .settings-card-icon {

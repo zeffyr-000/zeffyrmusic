@@ -23,3 +23,5 @@ updates:
           - 'patch'
     # Ensure lock file is always updated
     versioning-strategy: increase
+    ignore:
+      - dependency-name: '@jsverse/utils'
