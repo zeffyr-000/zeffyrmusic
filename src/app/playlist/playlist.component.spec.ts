@@ -357,6 +357,60 @@ describe('PlaylistComponent', () => {
     expect(component.idPlaylist()).toEqual('');
   });
 
+  it('should clear imgBig when loadLike is called', () => {
+    component.loadLike();
+    fixture.detectChanges();
+
+    expect(component.imgBig()).toBe('');
+  });
+
+  it('should display likes-cover with favorite icon on like page', () => {
+    const userDataStore = TestBed.inject(UserDataStore);
+    try {
+      userDataStore.setLikedVideos([
+        { id: '1', key: 'K1', titre: 'T1', duree: '100', artiste: 'A1' } as UserVideo,
+      ]);
+      component.loadLike();
+      fixture.detectChanges();
+
+      const likesCover = fixture.nativeElement.querySelector('#likes-cover');
+      const playlistImage = fixture.nativeElement.querySelector('#playlist-image');
+
+      expect(likesCover).toBeTruthy();
+      expect(likesCover.querySelector('.material-icons').textContent.trim()).toBe('favorite');
+      expect(playlistImage).toBeNull();
+    } finally {
+      userDataStore.reset();
+    }
+  });
+
+  it('should display playlist-image instead of likes-cover for normal playlists', () => {
+    component.isLikePage.set(false);
+    component.isLoading.set(false);
+    component.imgBig.set('https://example.com/image.jpg');
+    component.playlist.set([
+      {
+        id_video: '1',
+        titre: 't',
+        artiste: 'a',
+        id_artiste: 1,
+        key: 'k1',
+        duree: '1',
+        artists: [],
+        id_playlist: '',
+        ordre: '',
+        titre_album: '',
+      },
+    ] as Video[]);
+    fixture.detectChanges();
+
+    const likesCover = fixture.nativeElement.querySelector('#likes-cover');
+    const playlistImage = fixture.nativeElement.querySelector('#playlist-image');
+
+    expect(likesCover).toBeNull();
+    expect(playlistImage).toBeTruthy();
+  });
+
   it('should populate playlist from likedVideos when loadLike is called', () => {
     const userDataStore = TestBed.inject(UserDataStore);
     const mockListLikeVideo = [

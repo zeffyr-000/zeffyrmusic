@@ -325,7 +325,7 @@ export class PlaylistComponent {
     this.isPrivate.set(false);
     this.idPlaylist.set('');
     this.playlist.set([]);
-    this.imgBig.set(`${environment.URL_ASSETS}assets/img/default.jpg`);
+    this.imgBig.set('');
     this.idTopCharts.set(null);
     this.title.set('');
     this.titre.set('');

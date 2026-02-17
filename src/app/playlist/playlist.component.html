@@ -10,7 +10,13 @@
     @if (!isPrivate() && (!isLikePage() || playlist().length > 0)) {
       <div id="playlist-header" class="card-header clearfix border-0">
         <div class="panel-head-content row">
-          @if (imgBig() && imgBig() !== undefined && imgBig() !== '') {
+          @if (isLikePage()) {
+            <div id="playlist-image-wrapper" class="col col-4 p-0">
+              <div id="likes-cover">
+                <span class="material-icons" aria-hidden="true">favorite</span>
+              </div>
+            </div>
+          } @else if (imgBig()) {
             <div id="playlist-image-wrapper" class="col col-4 p-0">
               <img
                 id="playlist-image"
