@@ -25,3 +25,7 @@ updates:
     versioning-strategy: increase
     ignore:
       - dependency-name: '@jsverse/utils'
+      # Keep Node types aligned on major 20 to match CI/runtime tooling expectations.
+      - dependency-name: '@types/node'
+        versions:
+          - '>=21'
