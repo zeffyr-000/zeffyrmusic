@@ -73,7 +73,7 @@
     "@types/express-serve-static-core": "^5.0.6",
     "@types/node": "^20.17.0",
     "@types/youtube": "^0.1.2",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.33.1",
     "@vitest/coverage-v8": "^4.0.18",
     "angular-eslint": "^21.2.0",
