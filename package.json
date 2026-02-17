@@ -33,7 +33,7 @@
     "@angular/youtube-player": "^21.1.4",
     "@fortawesome/angular-fontawesome": "^4.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
-    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@jsverse/transloco": "^8.2.1",
     "@jsverse/transloco-messageformat": "^8.2.1",
     "@jsverse/utils": "1.0.0-beta.5",
