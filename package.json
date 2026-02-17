@@ -45,7 +45,7 @@
     "angular2-draggable": "^16.0.0",
     "bootstrap": "^5.3.8",
     "cookie-parser": "^1.4.7",
-    "core-js": "^3.47.0",
+    "core-js": "^3.48.0",
     "express": "^4.22.1",
     "material-icons": "^1.13.12",
     "ngx-google-analytics": "^14.0.1",
