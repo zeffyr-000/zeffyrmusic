@@ -20,6 +20,7 @@ import { Playlist } from '../models/playlist.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { UiStore } from '../store/ui/ui.store';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 describe('PlaylistComponent', () => {
   let component: PlaylistComponent;
@@ -1299,8 +1300,11 @@ describe('PlaylistComponent (Server context)', () => {
       component.idPlaylist.set('');
       component.isLikePage.set(false);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const event = { previousIndex: 0, currentIndex: 1, container: { data: mockVideos } } as any;
+      const event = {
+        previousIndex: 0,
+        currentIndex: 1,
+        container: { data: mockVideos },
+      } as CdkDragDrop<Video[]>;
       component.onTrackDrop(event);
 
       expect(userLibraryServiceMock.reorderPlaylistTracks).not.toHaveBeenCalled();
@@ -1326,12 +1330,11 @@ describe('PlaylistComponent (Server context)', () => {
         )
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const event = {
         previousIndex: 0,
         currentIndex: 1,
         container: { data: component.playlist() },
-      } as any;
+      } as CdkDragDrop<Video[]>;
       component.onTrackDrop(event);
 
       expect(userLibraryServiceMock.reorderLikes).toHaveBeenCalledWith(['k2', 'k1']);
@@ -1363,12 +1366,11 @@ describe('PlaylistComponent (Server context)', () => {
         )
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const event = {
         previousIndex: 0,
         currentIndex: 1,
         container: { data: component.playlist() },
-      } as any;
+      } as CdkDragDrop<Video[]>;
       component.onTrackDrop(event);
 
       expect(showErrorSpy).toHaveBeenCalled();

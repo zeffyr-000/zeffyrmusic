@@ -25,6 +25,10 @@ updates:
     versioning-strategy: increase
     ignore:
       - dependency-name: '@jsverse/utils'
+      # Keep prompt adapter on major 3 (major 4 requires Node >=22).
+      - dependency-name: '@listr2/prompt-adapter-inquirer'
+        versions:
+          - '>=4'
       # Keep Node types aligned on major 20 to match CI/runtime tooling expectations.
       - dependency-name: '@types/node'
         versions:
