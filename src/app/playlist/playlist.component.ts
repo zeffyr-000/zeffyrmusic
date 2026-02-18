@@ -28,10 +28,13 @@ import {
   NgbDropdownMenu,
   NgbDropdownItem,
   NgbModal,
+  NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 import { SeoService } from '../services/seo.service';
 import { UserLibraryService } from '../services/user-library.service';
+import { PlaylistThumbnailService } from '../services/playlist-thumbnail.service';
+import { PlaylistThumbnailModalComponent } from './playlist-thumbnail-modal/playlist-thumbnail-modal.component';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { AuthStore, PlayerStore, QueueStore, UiStore } from '../store';
 import {
@@ -58,6 +61,7 @@ import { UserVideo } from '../models/video.model';
     NgbDropdownToggle,
     NgbDropdownMenu,
     NgbDropdownItem,
+    NgbTooltip,
     TranslocoPipe,
     ToMMSSPipe,
     CdkDropList,
@@ -83,13 +87,18 @@ export class PlaylistComponent {
   readonly playerStore = inject(PlayerStore);
   readonly queueStore = inject(QueueStore);
   readonly userLibraryService = inject(UserLibraryService);
+  private readonly thumbnailService = inject(PlaylistThumbnailService);
   private readonly uiStore = inject(UiStore);
 
   readonly isLoading = signal(true);
   readonly isPrivate = signal(false);
   readonly idPlaylist = signal<string | null>(null);
   readonly playlist = signal<Video[]>([]);
-  readonly imgBig = signal('');
+  private readonly imgBigRaw = signal('');
+  readonly imgBig = computed(
+    () => this.imgBigRaw() || `${environment.URL_ASSETS}assets/img/default.jpg`
+  );
+  readonly hasCustomImg = computed(() => !!this.imgBigRaw());
   readonly idTopCharts = signal<string | null>(null);
   readonly idPersoOwner = signal('');
   readonly title = signal('');
@@ -325,7 +334,7 @@ export class PlaylistComponent {
     this.isPrivate.set(false);
     this.idPlaylist.set('');
     this.playlist.set([]);
-    this.imgBig.set('');
+    this.imgBigRaw.set('');
     this.idTopCharts.set(null);
     this.title.set('');
     this.titre.set('');
@@ -340,7 +349,7 @@ export class PlaylistComponent {
     this.isPrivate.set(false);
     this.idPlaylist.set(data.id_playlist);
     this.playlist.set(data.tab_video);
-    this.imgBig.set(data.img_big || `${environment.URL_ASSETS}assets/img/default.jpg`);
+    this.imgBigRaw.set(data.img_big || '');
     this.idTopCharts.set(data.id_top || null);
     this.title.set(data.title);
     this.titre.set(data.titre || '');
@@ -547,6 +556,34 @@ export class PlaylistComponent {
     } else {
       return '';
     }
+  }
+
+  openThumbnailModal(): void {
+    const idPlaylist = this.idPlaylist();
+    if (!idPlaylist) {
+      return;
+    }
+    const modalRef = this.modalService.open(PlaylistThumbnailModalComponent, {
+      centered: true,
+      size: 'lg',
+    });
+    modalRef.componentInstance.idPlaylist = idPlaylist;
+    modalRef.result.then(
+      result => this.imgBigRaw.set(result.img_big),
+      () => undefined
+    );
+  }
+
+  resetThumbnail(): void {
+    const idPlaylist = this.idPlaylist();
+    if (!idPlaylist) {
+      return;
+    }
+    this.thumbnailService.resetThumbnail(idPlaylist).subscribe({
+      next: result => this.imgBigRaw.set(result.img_big),
+      error: () =>
+        this.uiStore.showError(this.translocoService.translate('playlist_thumbnail_error')),
+    });
   }
 
   adjustPlaylistDuration(totalTime: number) {

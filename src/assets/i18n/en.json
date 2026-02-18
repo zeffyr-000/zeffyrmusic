@@ -332,5 +332,16 @@
   "partager": "Share",
   "drag_to_reorder": "Drag to reorder",
   "reorder_success": "Order updated",
-  "reorder_error": "Error reordering tracks"
+  "reorder_error": "Error reordering tracks",
+
+  "playlist_thumbnail_edit": "Edit thumbnail",
+  "playlist_thumbnail_reset": "Restore default thumbnail",
+  "playlist_thumbnail_select": "Click to choose an image",
+  "playlist_thumbnail_crop_hint": "Resize the selection area to crop your image",
+  "playlist_thumbnail_gif_warning": "Animated GIFs will be cropped as a static image.",
+  "playlist_thumbnail_file_too_large": "The file exceeds the maximum allowed size (10 MB).",
+  "playlist_thumbnail_error_format": "Unsupported file format. Use JPEG, PNG or GIF.",
+  "playlist_thumbnail_confirm": "Save",
+  "playlist_thumbnail_accepted_formats": "JPEG, PNG, GIF — max 10 MB",
+  "playlist_thumbnail_error": "An error occurred while updating the thumbnail."
 }

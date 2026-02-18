@@ -1,0 +1,81 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <span class="material-icons" aria-hidden="true">add_photo_alternate</span>
+    {{ 'playlist_thumbnail_edit' | transloco }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    (click)="modal.dismiss('Cross click')"
+    aria-label="Close"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @switch (step()) {
+    @case ('select') {
+      <div class="thumbnail-drop-zone">
+        <label class="thumbnail-drop-label" for="thumbnail-input" tabindex="0">
+          <span class="material-icons thumbnail-drop-icon" aria-hidden="true"
+            >add_photo_alternate</span
+          >
+          <span class="mt-2 fw-semibold">{{ 'playlist_thumbnail_select' | transloco }}</span>
+          <span class="text-body-secondary small mt-1">{{
+            'playlist_thumbnail_accepted_formats' | transloco
+          }}</span>
+        </label>
+        <input
+          id="thumbnail-input"
+          type="file"
+          accept="image/jpeg,image/png,image/gif"
+          class="visually-hidden"
+          (change)="onFileSelected($event)"
+        />
+      </div>
+    }
+    @case ('crop') {
+      @if (gifWarning()) {
+        <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" role="alert">
+          <span class="material-icons" aria-hidden="true">warning</span>
+          {{ 'playlist_thumbnail_gif_warning' | transloco }}
+        </div>
+      }
+      <div class="cropper-wrapper">
+        <image-cropper
+          [imageChangedEvent]="imageChangedEvent()"
+          [aspectRatio]="1"
+          [maintainAspectRatio]="true"
+          [format]="outputFormat()"
+          [output]="'blob'"
+          [imageQuality]="90"
+          (imageCropped)="onImageCropped($event)"
+        />
+      </div>
+      <p class="text-body-secondary small mt-2 text-center">
+        {{ 'playlist_thumbnail_crop_hint' | transloco }}
+      </p>
+    }
+  }
+
+  <div class="modal-actions">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">
+      <span class="material-icons" aria-hidden="true">close</span>
+      {{ 'annuler' | transloco }}
+    </button>
+    @if (step() === 'crop') {
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="!croppedBlob() || isLoading()"
+        (click)="confirm()"
+      >
+        @if (isLoading()) {
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        } @else {
+          <span class="material-icons" aria-hidden="true">check</span>
+        }
+        {{ 'playlist_thumbnail_confirm' | transloco }}
+      </button>
+    }
+  </div>
+</div>
