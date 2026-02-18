@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { PLATFORM_ID } from '@angular/core';
 import { YoutubePlayerService } from './youtube-player.service';
+import { PlayerStore } from '../store/player/player.store';
 
 describe('YoutubePlayerService', () => {
   describe('Browser context', () => {
@@ -51,6 +52,62 @@ describe('YoutubePlayerService', () => {
       service.error$.next('some_error');
       service.clearError();
       expect(service.error$.value).toBeNull();
+    });
+
+    it('should stop progress tracking on error', () => {
+      // Start a progress interval manually
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const svc = service as any;
+      svc.progressInterval = window.setInterval(vi.fn(), 200);
+      expect(svc.progressInterval).not.toBeNull();
+
+      // Trigger onError
+      svc.onError({ data: 100 } as unknown as YT.OnErrorEvent);
+
+      expect(svc.progressInterval).toBeNull();
+      expect(service.error$.value).toBe('error_request_not_found');
+    });
+
+    it('should stop progress tracking and set error on unknown error code', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const svc = service as any;
+      svc.progressInterval = window.setInterval(vi.fn(), 200);
+
+      svc.onError({ data: 999 } as unknown as YT.OnErrorEvent);
+
+      expect(svc.progressInterval).toBeNull();
+      expect(service.error$.value).toBe('error_unknown');
+    });
+
+    it('should not call updateProgress after error stops tracking', () => {
+      vi.useFakeTimers();
+      const playerStore = TestBed.inject(PlayerStore);
+      const spy = vi.spyOn(playerStore, 'updateProgress');
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const svc = service as any;
+
+      // Simulate an active player with progress tracking
+      svc.player = {
+        getCurrentTime: () => 10,
+        getDuration: () => 100,
+        getVideoLoadedFraction: () => 0.5,
+      };
+      svc.startProgressTracking();
+
+      // Verify tracking fires
+      vi.advanceTimersByTime(200);
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      // Trigger error — should stop tracking
+      svc.onError({ data: 2 } as unknown as YT.OnErrorEvent);
+      spy.mockClear();
+
+      // No further updates after error
+      vi.advanceTimersByTime(600);
+      expect(spy).not.toHaveBeenCalled();
+
+      vi.useRealTimers();
     });
   });
 

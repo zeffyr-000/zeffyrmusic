@@ -114,6 +114,8 @@ export class YoutubePlayerService {
   }
 
   private onError(event: YT.OnErrorEvent): void {
+    this.stopProgressTracking();
+
     const errorMessages: Record<number, string> = {
       2: 'error_invalid_parameter',
       5: 'error_html_player',

@@ -477,12 +477,6 @@ describe('PlayerService', () => {
       expect(service.isPlaying).toBe(false);
     });
 
-    it('should clear the refInterval on video pause', () => {
-      service.refInterval = 123;
-      mockYoutubePlayer.stateChange$.next(2); // PAUSED
-      expect(service.refInterval).toBe(null);
-    });
-
     it('should call lecture on before', () => {
       const spy = vi.spyOn(service, 'lecture');
       service.tabIndex = [0, 1, 2];
@@ -561,48 +555,13 @@ describe('PlayerService', () => {
       expect(mockYoutubePlayer.destroy).toHaveBeenCalled();
     });
 
-    it('should update player running on playerRunning', () => {
-      mockYoutubePlayer.getCurrentTime.mockReturnValue(120);
-      mockYoutubePlayer.getDuration.mockReturnValue(300);
-      mockYoutubePlayer.getLoadedFraction.mockReturnValue(0.5);
-
-      service.playerRunning();
-
-      expect(mockYoutubePlayer.getCurrentTime).toHaveBeenCalled();
-      expect(mockYoutubePlayer.getDuration).toHaveBeenCalled();
-      expect(mockYoutubePlayer.getLoadedFraction).toHaveBeenCalled();
-      expect(playerStore.currentTime()).toBe(120);
-      expect(playerStore.duration()).toBe(300);
-      expect(playerStore.loadedFraction()).toBe(0.5);
-    });
-
-    it('should update player running on playerRunning when player is not ready', () => {
-      mockYoutubePlayer.getCurrentTime.mockReturnValue(undefined);
-      mockYoutubePlayer.getDuration.mockReturnValue(undefined);
-      mockYoutubePlayer.getLoadedFraction.mockReturnValue(undefined);
-
-      service.playerRunning();
-
-      expect(mockYoutubePlayer.getCurrentTime).toHaveBeenCalled();
-      expect(mockYoutubePlayer.getDuration).toHaveBeenCalled();
-      expect(mockYoutubePlayer.getLoadedFraction).toHaveBeenCalled();
-      // PlayerStore should be updated with undefined currentTime but not duration/loadedFraction
-      expect(playerStore.currentTime()).toBeUndefined();
-    });
-
-    it('should update player running on playerRunning with empty values', () => {
-      mockYoutubePlayer.getCurrentTime.mockReturnValue(10);
-      mockYoutubePlayer.getDuration.mockReturnValue(30);
-      mockYoutubePlayer.getLoadedFraction.mockReturnValue(0.5);
-
-      service.playerRunning();
-
-      expect(mockYoutubePlayer.getCurrentTime).toHaveBeenCalled();
-      expect(mockYoutubePlayer.getDuration).toHaveBeenCalled();
-      expect(mockYoutubePlayer.getLoadedFraction).toHaveBeenCalled();
-      expect(playerStore.currentTime()).toBe(10);
-      expect(playerStore.duration()).toBe(30);
-      expect(playerStore.loadedFraction()).toBe(0.5);
+    it('should unsubscribe from error$ on ngOnDestroy', () => {
+      service.ngOnDestroy();
+      // After destroy, emitting an error should not update the store
+      const playerStore = TestBed.inject(PlayerStore);
+      playerStore.clearError();
+      mockYoutubePlayer.error$.next('error_after_destroy');
+      expect(playerStore.errorMessage()).toBeNull();
     });
 
     it('should call uiStore.openAddVideoModal on addVideoInPlaylist', () => {

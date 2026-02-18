@@ -20,8 +20,6 @@ import { getTranslocoTestingProviders } from '../transloco-testing';
 import { environment } from 'src/environments/environment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockTestComponent } from '../mock-test.component';
-import { Directive, EventEmitter, Input, Output, ElementRef } from '@angular/core';
-import { AngularDraggableModule } from 'angular2-draggable';
 import { UiStore } from '../store/ui/ui.store';
 import type { MockPlayerService, MockInitService } from '../models/test-mocks.model';
 
@@ -36,24 +34,6 @@ import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search
 })
 class MockSearchBarComponent {}
 
-// Mock for angular2-draggable ngDraggable directive
-// Replaces the real directive to avoid jsdom incompatibilities
-// with DOM operations used by angular2-draggable
-@Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: '[ngDraggable]',
-  standalone: true,
-})
-class MockNgDraggableDirective {
-  @Input() ngDraggable = true;
-  @Input() bounds?: ElementRef;
-  @Input() inBounds = true;
-  @Input() lockAxis?: string;
-  @Input() preventDefaultEvent = false;
-  @Output() movingOffset = new EventEmitter<{ x: number; y: number }>();
-  @Output() endOffset = new EventEmitter<{ x: number; y: number }>();
-}
-
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
@@ -65,8 +45,6 @@ describe('HeaderComponent', () => {
   let googleAnalyticsServiceSpy: MockedObject<GoogleAnalyticsService>;
   let translocoService: TranslocoService;
   let activeModalSpy: MockedObject<NgbActiveModal>;
-  let onUpdateSliderPlayerSpy: ReturnType<typeof vi.spyOn>;
-  let onUpdateVolumeSpy: ReturnType<typeof vi.spyOn>;
   let modalService: NgbModal;
   let routerSpyObj: MockedObject<Router>;
   let routeSpyObj: MockedObject<ActivatedRoute>;
@@ -173,7 +151,6 @@ describe('HeaderComponent', () => {
         HeaderComponent,
         FontAwesomeTestingModule,
         RouterTestingModule.withRoutes([{ path: 'test', component: MockTestComponent }]),
-        MockNgDraggableDirective,
         MockSearchBarComponent,
       ],
       providers: [
@@ -195,16 +172,6 @@ describe('HeaderComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    // Override HeaderComponent to replace AngularDraggableModule with mock
-    TestBed.overrideComponent(HeaderComponent, {
-      remove: {
-        imports: [AngularDraggableModule],
-      },
-      add: {
-        imports: [MockNgDraggableDirective],
-      },
-    });
-
     initService = TestBed.inject(InitService);
     playerService = TestBed.inject(PlayerService);
     userLibraryService = TestBed.inject(UserLibraryService);
@@ -220,12 +187,9 @@ describe('HeaderComponent', () => {
     // Create component for each test (complete isolation)
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
-    onUpdateSliderPlayerSpy = vi.spyOn(component, 'onUpdateSliderPlayer');
-    onUpdateVolumeSpy = vi.spyOn(component, 'onUpdateVolume');
     fixture.detectChanges();
 
     // Reset component properties to initial state
-    component.onDragingPlayer = false;
     component.isRegistered.set(false);
     component.error.set('');
     component.isSuccess.set(false);
@@ -348,70 +312,38 @@ describe('HeaderComponent', () => {
   });
 
   describe('Slider controls', () => {
-    it('should call onUpdateSliderPlayer when onDragMovingPlayer is called', () => {
-      component.onDragMovingPlayer({ x: 50 });
-      expect(onUpdateSliderPlayerSpy).toHaveBeenCalledWith(50);
-      expect(component.onDragingPlayer).toBe(true);
+    it('should update drag state on player slider input', () => {
+      const event = { target: { value: '50' } } as unknown as Event;
+      component.onPlayerSliderInput(event);
+      expect(component.isDraggingPlayer()).toBe(true);
+      expect(component.dragProgress()).toBe(50);
     });
 
-    it('should call onUpdateSliderPlayer when onDragEndPlayer is called', () => {
-      component.onDragEndPlayer({ x: 75 });
-      expect(onUpdateSliderPlayerSpy).toHaveBeenCalledWith(75);
-      expect(component.onDragingPlayer).toBe(false);
+    it('should commit seek and clear drag state on player slider change', () => {
+      const seekSpy = vi.spyOn(component.playerStore, 'seekToPercent');
+      const event = { target: { value: '75' } } as unknown as Event;
+      component.onPlayerSliderChange(event);
+      expect(playerService.updatePositionSlider).toHaveBeenCalledWith(0.75);
+      expect(seekSpy).toHaveBeenCalledWith(75);
+      expect(component.isDraggingPlayer()).toBe(false);
     });
 
-    it('should call onUpdateSliderPlayer when onClickSliderPlayer is called', () => {
-      component.onClickSliderPlayer({ offsetX: 100 });
-      expect(onUpdateSliderPlayerSpy).toHaveBeenCalledWith(100);
+    it('should use drag progress when dragging player slider', () => {
+      component.isDraggingPlayer.set(true);
+      component.dragProgress.set(42);
+      expect(component.displayProgress()).toBe(42);
     });
 
-    it('should call playerService.updatePositionSlider with correct position', () => {
-      component.sliderPlayerRef = {
-        nativeElement: {
-          parentNode: { offsetWidth: 200 },
-        },
-      } as ElementRef;
-
-      component.onUpdateSliderPlayer(100);
-      expect(playerService.updatePositionSlider).toHaveBeenCalledWith(0.5);
+    it('should use store progress when not dragging', () => {
+      component.isDraggingPlayer.set(false);
+      // displayProgress falls back to playerStore.progress() which defaults to 0
+      expect(component.displayProgress()).toBe(component.playerStore.progress());
     });
 
-    it('should return early if sliderPlayerRef is not available', () => {
-      component.sliderPlayerRef = undefined as unknown as ElementRef;
-      component.onUpdateSliderPlayer(100);
-      expect(playerService.updatePositionSlider).not.toHaveBeenCalled();
-    });
-
-    it('should call updateVolume when onDragMovingVolume is called', () => {
-      component.onDragMovingVolume({ x: 50 });
-      expect(playerService.updateVolume).toHaveBeenCalledWith(50);
-    });
-
-    it('should call onUpdateVolume when onDragEndVolume is called', () => {
-      component.onDragEndVolume({ x: 75 });
-      expect(onUpdateVolumeSpy).toHaveBeenCalledWith(75);
-    });
-
-    it('should call onUpdateVolume when onClickSliderVolume is called', () => {
-      component.onClickSliderVolume({ offsetX: 100 });
-      expect(onUpdateVolumeSpy).toHaveBeenCalledWith(100);
-    });
-
-    it('should call playerService.updateVolume with correct volume', () => {
-      component.sliderVolumeRef = {
-        nativeElement: {
-          parentNode: { offsetWidth: 100 },
-        },
-      } as ElementRef;
-
-      component.onUpdateVolume(50);
-      expect(playerService.updateVolume).toHaveBeenCalledWith(50); // 50/100 * 100 = 50
-    });
-
-    it('should return early if sliderVolumeRef is not available', () => {
-      component.sliderVolumeRef = undefined as unknown as ElementRef;
-      component.onUpdateVolume(50);
-      expect(playerService.updateVolume).not.toHaveBeenCalled();
+    it('should call playerService.updateVolume on volume input', () => {
+      const event = { target: { value: '80' } } as unknown as Event;
+      component.onVolumeInput(event);
+      expect(playerService.updateVolume).toHaveBeenCalledWith(80);
     });
   });
 
