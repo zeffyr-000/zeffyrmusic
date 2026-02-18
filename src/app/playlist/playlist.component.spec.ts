@@ -1,5 +1,5 @@
 import type { MockedObject, Mock } from 'vitest';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
@@ -361,7 +361,9 @@ describe('PlaylistComponent', () => {
     component.loadLike();
     fixture.detectChanges();
 
-    expect(component.imgBig()).toBe('');
+    // imgBig is computed — falls back to default.jpg when no custom image is set
+    expect(component.hasCustomImg()).toBe(false);
+    expect(component.imgBig()).toContain('default.jpg');
   });
 
   it('should display likes-cover with favorite icon on like page', () => {
@@ -385,23 +387,17 @@ describe('PlaylistComponent', () => {
   });
 
   it('should display playlist-image instead of likes-cover for normal playlists', () => {
-    component.isLikePage.set(false);
-    component.isLoading.set(false);
-    component.imgBig.set('https://example.com/image.jpg');
-    component.playlist.set([
-      {
-        id_video: '1',
-        titre: 't',
-        artiste: 'a',
-        id_artiste: 1,
-        key: 'k1',
-        duree: '1',
-        artists: [],
-        id_playlist: '',
-        ordre: '',
-        titre_album: '',
-      },
-    ] as Video[]);
+    const httpMock = TestBed.inject(HttpTestingController);
+    const testUrl = `${environment.URL_SERVER}json/playlist/1`;
+
+    // Flush the pending request triggered by beforeEach (params subscription -> initLoad)
+    httpMock.expectOne(testUrl).flush(mockPlaylistData);
+
+    component.loadPlaylist(testUrl);
+    httpMock.expectOne(testUrl).flush({
+      ...mockPlaylistData,
+      img_big: 'https://example.com/image.jpg',
+    });
     fixture.detectChanges();
 
     const likesCover = fixture.nativeElement.querySelector('#likes-cover');
@@ -409,6 +405,7 @@ describe('PlaylistComponent', () => {
 
     expect(likesCover).toBeNull();
     expect(playlistImage).toBeTruthy();
+    httpMock.verify();
   });
 
   it('should populate playlist from likedVideos when loadLike is called', () => {
@@ -446,10 +443,20 @@ describe('PlaylistComponent', () => {
   });
 
   it('should call userLibraryService.toggleFollow with correct arguments when switchFollow is called', () => {
-    component.idPlaylist.set('testId');
-    component.titre.set('testTitle');
-    component.artist.set('testArtist');
-    component.imgBig.set('testImgBig');
+    const httpMock = TestBed.inject(HttpTestingController);
+    const testUrl = `${environment.URL_SERVER}json/playlist/1`;
+
+    // Flush the pending request triggered by beforeEach (params subscription -> initLoad)
+    httpMock.expectOne(testUrl).flush(mockPlaylistData);
+
+    component.loadPlaylist(testUrl);
+    httpMock.expectOne(testUrl).flush({
+      ...mockPlaylistData,
+      id_playlist: 'testId',
+      titre: 'testTitle',
+      artiste: 'testArtist',
+      img_big: 'testImgBig',
+    });
 
     component.switchFollow();
 
@@ -459,6 +466,7 @@ describe('PlaylistComponent', () => {
       'testArtist',
       'testImgBig'
     );
+    httpMock.verify();
   });
 
   it('should call playerService.runPlaylist with correct arguments when runPlaylist is called', () => {

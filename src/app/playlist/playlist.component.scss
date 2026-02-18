@@ -189,3 +189,54 @@
     margin-left: 0;
   }
 }
+
+// =============================================================================
+// THUMBNAIL OVERLAY - Edit controls visible on owner's playlist cover
+// =============================================================================
+
+.thumbnail-overlay {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  #playlist-image-wrapper:hover & {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .thumbnail-overlay {
+    opacity: 1;
+  }
+}
+
+.btn-thumbnail-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--bs-white);
+  background: rgba(var(--bs-dark-rgb), 0.5);
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(var(--bs-dark-rgb), 0.75);
+    outline: 2px solid rgba(var(--bs-white-rgb), 0.6);
+    outline-offset: 1px;
+  }
+
+  .material-icons {
+    font-size: 0.95rem;
+  }
+}

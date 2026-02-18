@@ -17,7 +17,7 @@
               </div>
             </div>
           } @else if (imgBig()) {
-            <div id="playlist-image-wrapper" class="col col-4 p-0">
+            <div id="playlist-image-wrapper" class="col col-4 p-0 position-relative">
               <img
                 id="playlist-image"
                 [src]="imgBig()"
@@ -26,6 +26,38 @@
                 appDefaultImage
                 itemprop="image"
               />
+              @if (isOwner() && !idTopCharts()) {
+                <div class="thumbnail-overlay rounded">
+                  <button
+                    type="button"
+                    class="btn-thumbnail-action"
+                    (click)="openThumbnailModal()"
+                    [attr.aria-label]="'playlist_thumbnail_edit' | transloco"
+                    ngbTooltip="{{ 'playlist_thumbnail_edit' | transloco }}"
+                    placement="top"
+                    [container]="'body'"
+                    tooltipClass="tooltip-nowrap"
+                    triggers="mouseenter:mouseleave"
+                  >
+                    <span class="material-icons" aria-hidden="true">edit</span>
+                  </button>
+                  @if (hasCustomImg()) {
+                    <button
+                      type="button"
+                      class="btn-thumbnail-action"
+                      (click)="resetThumbnail()"
+                      [attr.aria-label]="'playlist_thumbnail_reset' | transloco"
+                      ngbTooltip="{{ 'playlist_thumbnail_reset' | transloco }}"
+                      placement="top"
+                      [container]="'body'"
+                      tooltipClass="tooltip-nowrap"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <span class="material-icons" aria-hidden="true">restart_alt</span>
+                    </button>
+                  }
+                </div>
+              }
             </div>
           }
 

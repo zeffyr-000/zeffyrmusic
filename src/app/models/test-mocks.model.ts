@@ -7,6 +7,7 @@ import type { Video, UserVideo } from './video.model';
 import type { UserPlaylist } from './playlist.model';
 import type { FollowItem } from './follow.model';
 import type { LoginResponse, UserReponse } from './user.model';
+import type { ThumbnailResult } from '../services/playlist-thumbnail.service';
 
 /** Mock for PlayerService */
 export interface MockPlayerService {
@@ -114,4 +115,12 @@ export interface MockGoogleAnalyticsService {
   event: MockedFunction<
     (action: string, category?: string, label?: string, value?: number) => void
   >;
+}
+
+/** Mock for PlaylistThumbnailService */
+export interface MockPlaylistThumbnailService {
+  uploadThumbnail: MockedFunction<
+    (idPlaylist: string, blob: Blob, mimeType: string) => Observable<ThumbnailResult>
+  >;
+  resetThumbnail: MockedFunction<(idPlaylist: string) => Observable<ThumbnailResult>>;
 }

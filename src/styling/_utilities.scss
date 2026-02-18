@@ -6,6 +6,11 @@
 // PAGE LAYOUT - Shared page container and header patterns
 // =============================================================================
 
+.tooltip-nowrap .tooltip-inner {
+  white-space: nowrap;
+  max-width: none;
+}
+
 // Page container with centered max-width
 .page-container {
   max-width: 900px;

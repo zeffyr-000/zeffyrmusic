@@ -332,5 +332,16 @@
   "partager": "Partager",
   "drag_to_reorder": "Glisser pour réorganiser",
   "reorder_success": "Ordre mis à jour",
-  "reorder_error": "Erreur lors de la réorganisation"
+  "reorder_error": "Erreur lors de la réorganisation",
+
+  "playlist_thumbnail_edit": "Modifier la vignette",
+  "playlist_thumbnail_reset": "Rétablir la vignette par défaut",
+  "playlist_thumbnail_select": "Cliquez pour choisir une image",
+  "playlist_thumbnail_crop_hint": "Redimensionnez la zone de sélection pour cadrer votre image",
+  "playlist_thumbnail_gif_warning": "Les GIF animés seront recadrés en image statique.",
+  "playlist_thumbnail_file_too_large": "Le fichier dépasse la taille maximale autorisée (10 Mo).",
+  "playlist_thumbnail_error_format": "Format de fichier non supporté. Utilisez JPEG, PNG ou GIF.",
+  "playlist_thumbnail_confirm": "Enregistrer",
+  "playlist_thumbnail_accepted_formats": "JPEG, PNG, GIF — max 10 Mo",
+  "playlist_thumbnail_error": "Une erreur est survenue lors de la mise à jour de la vignette."
 }
