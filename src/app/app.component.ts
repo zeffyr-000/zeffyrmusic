@@ -27,6 +27,7 @@ import { filter } from 'rxjs';
 import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 import { HeaderComponent } from './header/header.component';
+import { ControlBarComponent } from './control-bar/control-bar.component';
 import { PlayerComponent } from './player/player.component';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlayerStore } from './store/player/player.store';
@@ -41,6 +42,7 @@ import { ToastContainerComponent } from './toast-container/toast-container.compo
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HeaderComponent,
+    ControlBarComponent,
     PlayerComponent,
     RouterLink,
     RouterOutlet,

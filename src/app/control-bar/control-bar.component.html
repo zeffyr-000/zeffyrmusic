@@ -1,0 +1,159 @@
+<div
+  class="cb-container"
+  [class.expanded]="isPlayerExpanded()"
+  appSwipeDown
+  (swipeDown)="collapsePlayer()"
+  role="region"
+  [attr.aria-label]="'aria_controles_lecteur' | transloco"
+>
+  <button
+    type="button"
+    class="cb-collapse-btn"
+    (click)="collapsePlayer()"
+    [attr.aria-label]="'aria_reduire_lecteur' | transloco"
+  >
+    <span class="material-icons" aria-hidden="true">keyboard_arrow_down</span>
+  </button>
+
+  <div class="cb-left">
+    @if (thumbnailUrl()) {
+      <img [src]="thumbnailUrl()" class="cb-thumbnail" [attr.alt]="currentTitle()" />
+    }
+    <div class="cb-track-info">
+      <span class="cb-track-title">{{ currentTitle() }}</span>
+      <span class="cb-track-artist">{{ currentArtist() }}</span>
+    </div>
+    @if (authStore.isAuthenticated() && currentKey()) {
+      <button
+        type="button"
+        class="cb-btn-icon btn-like"
+        [class.active]="isLiked()"
+        (click)="toggleLike($event)"
+        [attr.aria-label]="(isLiked() ? 'aria_retirer_favori' : 'aria_ajouter_favori') | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">{{
+          isLiked() ? 'favorite' : 'favorite_border'
+        }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="cb-center">
+    <button type="button" class="cb-mobile-title d-md-none" (click)="expandPlayer()">
+      <span class="cb-mobile-track-title">{{ currentTitle() }}</span>
+      <span class="cb-mobile-track-artist">{{ currentArtist() }}</span>
+    </button>
+
+    <div class="cb-controls">
+      <button
+        type="button"
+        class="cb-btn-icon desktop-only"
+        [disabled]="!queueStore.hasPrevious() && playerStore.currentTimeFormatted() === '0:00'"
+        (click)="onBefore()"
+        [attr.aria-label]="'aria_piste_precedente' | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">skip_previous</span>
+      </button>
+      <button
+        type="button"
+        class="cb-btn-icon cb-btn-play"
+        (click)="onPlayPause()"
+        [attr.aria-label]="playerStore.isPlaying() ? ('pause' | transloco) : ('lire' | transloco)"
+      >
+        <span class="material-icons" aria-hidden="true">{{
+          playerStore.isPlaying() ? 'pause' : 'play_arrow'
+        }}</span>
+      </button>
+      <button
+        type="button"
+        class="cb-btn-icon desktop-only"
+        [disabled]="!queueStore.hasNext()"
+        (click)="onAfter()"
+        [attr.aria-label]="'aria_piste_suivante' | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">skip_next</span>
+      </button>
+    </div>
+
+    <div class="cb-controls cb-secondary-actions desktop-only">
+      <button
+        type="button"
+        class="cb-btn-icon btn-fullscreen"
+        (click)="goFullscreen('player')"
+        placement="top"
+        triggers="mouseenter:mouseleave"
+        [ngbTooltip]="'video_plein_ecran' | transloco"
+        [attr.aria-label]="'video_plein_ecran' | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">fullscreen</span>
+      </button>
+      <button
+        type="button"
+        class="cb-btn-icon"
+        [class.active]="playerStore.isRepeat()"
+        (click)="repeat()"
+        placement="top"
+        triggers="mouseenter:mouseleave"
+        [ngbTooltip]="'repetition' | transloco"
+        [attr.aria-label]="'repetition' | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">repeat</span>
+      </button>
+      <button
+        type="button"
+        class="cb-btn-icon"
+        [class.active]="queueStore.isShuffled()"
+        (click)="random()"
+        placement="top"
+        triggers="mouseenter:mouseleave"
+        [ngbTooltip]="'lecture_aleatoire' | transloco"
+        [attr.aria-label]="'lecture_aleatoire' | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">shuffle</span>
+      </button>
+    </div>
+
+    <div class="cb-seek">
+      <div class="cb-time-current">{{ playerStore.currentTimeFormatted() }}</div>
+      <div class="cb-seek-track">
+        <div class="cb-slider-bar">
+          <div class="cb-progress-buffered" [style.width.%]="playerStore.loadedProgress()"></div>
+          <div class="cb-progress-current" [style.width.%]="displayProgress()"></div>
+          <input
+            type="range"
+            class="cb-slider-range"
+            min="0"
+            max="100"
+            step="0.1"
+            [value]="displayProgress()"
+            (input)="onPlayerSliderInput($event)"
+            (change)="onPlayerSliderChange($event)"
+            [attr.aria-label]="'aria_position_lecture' | transloco"
+          />
+        </div>
+      </div>
+      <div class="cb-time-total">{{ playerStore.durationFormatted() }}</div>
+    </div>
+  </div>
+
+  <div class="cb-right">
+    <div class="cb-volume">
+      <span class="material-icons" aria-hidden="true">{{ volumeIcon() }}</span>
+      <div class="cb-volume-track">
+        <div class="cb-slider-bar">
+          <div class="cb-volume-level" [style.width.%]="playerStore.volume()"></div>
+          <input
+            type="range"
+            class="cb-slider-range"
+            min="0"
+            max="100"
+            step="1"
+            [value]="playerStore.volume()"
+            (input)="onVolumeInput($event)"
+            [attr.aria-label]="'aria_volume' | transloco"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

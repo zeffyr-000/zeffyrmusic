@@ -117,6 +117,48 @@ export interface MockGoogleAnalyticsService {
   >;
 }
 
+/** Mock for UserLibraryService */
+export interface MockUserLibraryService {
+  isLiked: MockedFunction<(key: string) => boolean>;
+  addLike: MockedFunction<(key: string) => Observable<boolean>>;
+  removeLike: MockedFunction<(key: string) => Observable<boolean>>;
+  addVideoToPlaylist: MockedFunction<
+    (
+      idPlaylist: string,
+      key: string,
+      title: string,
+      artist: string,
+      duration: number
+    ) => Observable<boolean>
+  >;
+  removeVideoFromPlaylist: MockedFunction<(idVideo: string) => Observable<boolean>>;
+  toggleFollow: MockedFunction<
+    (
+      idPlaylist: string,
+      title?: string,
+      artist?: string,
+      urlImage?: string
+    ) => Observable<{ success: boolean; isFollowing: boolean }>
+  >;
+  removeFollow: MockedFunction<
+    (idPlaylist: string) => Observable<{ success: boolean; isFollowing: boolean }>
+  >;
+  initializeFromLogin: MockedFunction<
+    (playlists: UserPlaylist[], follows: FollowItem[], likedVideos: UserVideo[]) => void
+  >;
+  resetOnLogout: MockedFunction<() => void>;
+  addPlaylist: MockedFunction<(idPlaylist: string, title: string) => void>;
+  updatePlaylistTitle: MockedFunction<(idPlaylist: string, title: string) => void>;
+  togglePlaylistVisibility: MockedFunction<
+    (idPlaylist: string, isPrivate: boolean) => Observable<boolean>
+  >;
+  deletePlaylist: MockedFunction<(idPlaylist: string) => Observable<boolean>>;
+  reorderPlaylistTracks: MockedFunction<
+    (idPlaylist: string, orderedVideoIds: string[]) => Observable<boolean>
+  >;
+  reorderLikes: MockedFunction<(orderedKeys: string[]) => Observable<boolean>>;
+}
+
 /** Mock for PlaylistThumbnailService */
 export interface MockPlaylistThumbnailService {
   uploadThumbnail: MockedFunction<

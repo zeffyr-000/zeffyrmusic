@@ -4,7 +4,6 @@ import {
   PLATFORM_ID,
   TemplateRef,
   ViewChild,
-  computed,
   inject,
   effect,
   signal,
@@ -19,20 +18,17 @@ import {
   NgbDropdownToggle,
   NgbDropdownMenu,
   NgbDropdownItem,
-  NgbTooltip,
   NgbOffcanvas,
 } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
-import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
-import { AuthStore, UserDataStore, PlayerStore, QueueStore, UiStore } from '../store';
+import { AuthStore, UserDataStore, UiStore } from '../store';
 import { UserService } from '../services/user.service';
 import { LoginResponse, UserReponse } from '../models/user.model';
 import { isPlatformBrowser } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
-import { SwipeDownDirective } from '../directives/swipe-down.directive';
 import '../models/google-identity.model';
 
 @Component({
@@ -48,8 +44,6 @@ import '../models/google-identity.model';
     RouterLink,
     RouterLinkActive,
     SearchBarComponent,
-    SwipeDownDirective,
-    NgbTooltip,
     FormField,
     TranslocoPipe,
   ],
@@ -60,10 +54,7 @@ export class HeaderComponent {
   private readonly platformId = inject(PLATFORM_ID);
   readonly authStore = inject(AuthStore);
   readonly userDataStore = inject(UserDataStore);
-  readonly playerStore = inject(PlayerStore);
-  readonly queueStore = inject(QueueStore);
   readonly uiStore = inject(UiStore);
-  playerService = inject(PlayerService);
   readonly userLibraryService = inject(UserLibraryService);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
@@ -88,14 +79,6 @@ export class HeaderComponent {
   addTitle = '';
   addDuration = 0;
   URL_ASSETS: string;
-  readonly isPlayerExpanded = signal(false);
-
-  // Slider drag state — prevents progress signal updates from fighting user drag
-  readonly isDraggingPlayer = signal(false);
-  readonly dragProgress = signal(0);
-  readonly displayProgress = computed(() =>
-    this.isDraggingPlayer() ? this.dragProgress() : this.playerStore.progress()
-  );
 
   // Signal Forms models
   readonly registerModel = signal({ pseudo: '', mail: '', password: '' });
@@ -148,61 +131,6 @@ export class HeaderComponent {
         this.openModal(this.contentModalAddVideo);
       }
     });
-  }
-
-  goFullscreen(id: string) {
-    if (!this.isBrowser) return;
-    const el = document.getElementById(id);
-    el?.requestFullscreen();
-  }
-
-  repeat() {
-    this.playerService.switchRepeat();
-  }
-
-  random() {
-    this.playerService.switchRandom();
-  }
-
-  /** Handles real-time visual feedback during player slider drag */
-  onPlayerSliderInput(event: Event) {
-    const value = +(event.target as HTMLInputElement).value;
-    this.isDraggingPlayer.set(true);
-    this.dragProgress.set(value);
-  }
-
-  /** Commits the seek position when user releases the player slider */
-  onPlayerSliderChange(event: Event) {
-    const value = +(event.target as HTMLInputElement).value;
-    this.playerStore.seekToPercent(value);
-    this.playerService.updatePositionSlider(value / 100);
-    this.isDraggingPlayer.set(false);
-  }
-
-  /** Updates volume in real-time as user drags the volume slider */
-  onVolumeInput(event: Event) {
-    const value = +(event.target as HTMLInputElement).value;
-    this.playerService.updateVolume(value);
-  }
-
-  onPlayPause() {
-    this.playerService.onPlayPause();
-  }
-
-  onBefore() {
-    this.playerService.before();
-  }
-
-  onAfter() {
-    this.playerService.after();
-  }
-
-  expandPlayer() {
-    this.isPlayerExpanded.set(true);
-  }
-
-  collapsePlayer() {
-    this.isPlayerExpanded.set(false);
   }
 
   openModal(content: TemplateRef<unknown>) {
