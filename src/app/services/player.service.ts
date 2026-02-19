@@ -29,12 +29,12 @@ export class PlayerService implements OnDestroy {
   currentIndex = 0;
   listVideo: Video[] = [];
   isPlaying = false;
-  refInterval: number | null = null;
   currentTitle = '';
   currentArtist = '';
   currentKey = '';
 
   private stateChangeSubscription!: Subscription;
+  private errorSubscription!: Subscription;
   private queueInitialized = false;
 
   private isBrowser: boolean;
@@ -49,7 +49,7 @@ export class PlayerService implements OnDestroy {
         this.handleStateChange(state);
       });
 
-      this.youtubePlayer.error$.subscribe(error => {
+      this.errorSubscription = this.youtubePlayer.error$.subscribe(error => {
         if (error) {
           this.playerStore.setError(error);
         }
@@ -100,19 +100,6 @@ export class PlayerService implements OnDestroy {
 
     if (state === 0) {
       this.after();
-    }
-
-    if (state === 1 || state === -1 || state === 3) {
-      if (this.refInterval === null) {
-        this.refInterval = window.setInterval(this.playerRunning.bind(this), 200);
-      }
-    }
-
-    if (state === 2) {
-      if (this.refInterval !== null) {
-        clearInterval(this.refInterval);
-      }
-      this.refInterval = null;
     }
   }
 
@@ -222,14 +209,6 @@ export class PlayerService implements OnDestroy {
     }
   }
 
-  playerRunning() {
-    const currentTime = this.youtubePlayer.getCurrentTime();
-    const totalTime = this.youtubePlayer.getDuration();
-    const loadVideo = 100 * this.youtubePlayer.getLoadedFraction();
-
-    this.playerStore.updateProgress(currentTime, totalTime, loadVideo / 100);
-  }
-
   /** Removes a video from the current playback queue by its id_video */
   removeVideoFromQueue(idVideo: string): void {
     for (let i = 0; i < this.listVideo.length; i++) {
@@ -315,6 +294,7 @@ export class PlayerService implements OnDestroy {
 
   ngOnDestroy() {
     this.stateChangeSubscription?.unsubscribe();
+    this.errorSubscription?.unsubscribe();
     this.youtubePlayer.destroy();
   }
 }

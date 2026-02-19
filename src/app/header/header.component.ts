@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   PLATFORM_ID,
   TemplateRef,
   ViewChild,
+  computed,
   inject,
   effect,
   signal,
@@ -33,7 +33,6 @@ import { LoginResponse, UserReponse } from '../models/user.model';
 import { isPlatformBrowser } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
-import { AngularDraggableModule } from 'angular2-draggable';
 import '../models/google-identity.model';
 
 @Component({
@@ -53,7 +52,6 @@ import '../models/google-identity.model';
     NgbTooltip,
     FormField,
     TranslocoPipe,
-    AngularDraggableModule,
   ],
 })
 export class HeaderComponent {
@@ -77,14 +75,11 @@ export class HeaderComponent {
   @ViewChild('contentModalLogin') contentModalLogin!: TemplateRef<unknown>;
   @ViewChild('contentModalRegister') contentModalRegister!: TemplateRef<unknown>;
   @ViewChild('contentMobileMenu', { static: true }) contentMobileMenu!: TemplateRef<unknown>;
-  @ViewChild('sliderPlayer', {}) sliderPlayerRef!: ElementRef;
-  @ViewChild('sliderVolume', {}) sliderVolumeRef!: ElementRef;
   @ViewChild('contentModalAddVideo', {})
   private readonly contentModalAddVideo!: TemplateRef<unknown>;
 
   private readonly offcanvasService = inject(NgbOffcanvas);
 
-  onDragingPlayer = false;
   readonly isRegistered = signal(false);
   readonly error = signal('');
   readonly isSuccess = signal(false);
@@ -94,6 +89,13 @@ export class HeaderComponent {
   addDuration = 0;
   URL_ASSETS: string;
   readonly isPlayerExpanded = signal(false);
+
+  // Slider drag state — prevents progress signal updates from fighting user drag
+  readonly isDraggingPlayer = signal(false);
+  readonly dragProgress = signal(0);
+  readonly displayProgress = computed(() =>
+    this.isDraggingPlayer() ? this.dragProgress() : this.playerStore.progress()
+  );
 
   // Signal Forms models
   readonly registerModel = signal({ pseudo: '', mail: '', password: '' });
@@ -162,85 +164,25 @@ export class HeaderComponent {
     this.playerService.switchRandom();
   }
 
-  onDragMovingPlayer(e: { x: number }) {
-    this.onDragingPlayer = true;
-    this.onUpdateSliderPlayer(e.x);
-    if (this.sliderPlayerRef?.nativeElement) {
-      this.sliderPlayerRef.nativeElement.style.left = 'auto';
-    }
+  /** Handles real-time visual feedback during player slider drag */
+  onPlayerSliderInput(event: Event) {
+    const value = +(event.target as HTMLInputElement).value;
+    this.isDraggingPlayer.set(true);
+    this.dragProgress.set(value);
   }
 
-  onDragEndPlayer(e: { x: number }) {
-    this.onDragingPlayer = false;
-    this.onUpdateSliderPlayer(e.x);
-    if (this.sliderPlayerRef?.nativeElement) {
-      this.sliderPlayerRef.nativeElement.style.transform = 'none';
-    }
+  /** Commits the seek position when user releases the player slider */
+  onPlayerSliderChange(event: Event) {
+    const value = +(event.target as HTMLInputElement).value;
+    this.playerStore.seekToPercent(value);
+    this.playerService.updatePositionSlider(value / 100);
+    this.isDraggingPlayer.set(false);
   }
 
-  onClickSliderPlayer(e: { offsetX: number }) {
-    this.onUpdateSliderPlayer(e.offsetX);
-    if (this.sliderPlayerRef?.nativeElement) {
-      this.sliderPlayerRef.nativeElement.style.transform = 'none';
-    }
-  }
-
-  onUpdateSliderPlayer(value: number) {
-    // Guard: sliderPlayerRef can be null during SSR or before AfterViewInit
-    if (!this.sliderPlayerRef?.nativeElement) {
-      return;
-    }
-    const size = this.sliderPlayerRef.nativeElement.parentNode.offsetWidth;
-    if (value < 0) {
-      value = 0;
-    }
-
-    if (value > size) {
-      value = size;
-    }
-
-    const position = value / size;
-    this.playerService.updatePositionSlider(position);
-  }
-
-  onDragMovingVolume(e: { x: number }) {
-    this.playerService.updateVolume(e.x);
-    if (this.sliderVolumeRef?.nativeElement) {
-      this.sliderVolumeRef.nativeElement.style.left = 'auto';
-    }
-  }
-
-  onDragEndVolume(e: { x: number }) {
-    this.onUpdateVolume(e.x);
-    if (this.sliderVolumeRef?.nativeElement) {
-      this.sliderVolumeRef.nativeElement.style.transform = 'none';
-    }
-  }
-
-  onClickSliderVolume(e: { offsetX: number }) {
-    this.onUpdateVolume(e.offsetX);
-    if (this.sliderVolumeRef?.nativeElement) {
-      this.sliderVolumeRef.nativeElement.style.transform = 'none';
-    }
-  }
-
-  onUpdateVolume(value: number) {
-    // Guard: sliderVolumeRef can be null during SSR or before AfterViewInit
-    if (!this.sliderVolumeRef?.nativeElement) {
-      return;
-    }
-    const size = this.sliderVolumeRef.nativeElement.parentNode.offsetWidth;
-    if (value < 0) {
-      value = 0;
-    }
-
-    if (value > size) {
-      value = size;
-    }
-
-    const volume = Math.round((100 * value) / size);
-
-    this.playerService.updateVolume(volume);
+  /** Updates volume in real-time as user drags the volume slider */
+  onVolumeInput(event: Event) {
+    const value = +(event.target as HTMLInputElement).value;
+    this.playerService.updateVolume(value);
   }
 
   onPlayPause() {

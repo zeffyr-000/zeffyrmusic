@@ -285,32 +285,21 @@
     <div id="header-player-center-load">
       <div id="current-time">{{ playerStore.currentTimeFormatted() }}</div>
       <div id="slider-1-main">
-        <div
-          id="slider-1-content"
-          class="ui-slider"
-          tabindex="0"
-          (click)="onClickSliderPlayer($event)"
-          (keydown.enter)="$event.preventDefault()"
-          (keydown.space)="$event.preventDefault()"
-          #contentSlider1
-        >
-          @if (isBrowser) {
-            <span
-              class="ui-slider-handle"
-              #sliderPlayer
-              [style.left.%]="playerStore.progress()"
-              ngDraggable
-              [bounds]="contentSlider1"
-              [inBounds]="true"
-              lockAxis="y"
-              [preventDefaultEvent]="true"
-              (movingOffset)="onDragMovingPlayer($event)"
-              (endOffset)="onDragEndPlayer($event)"
-            ></span>
-          }
+        <div id="slider-1-content">
+          <div id="load-video" [style.width.%]="playerStore.loadedProgress()"></div>
+          <div id="load-video-current" [style.width.%]="displayProgress()"></div>
+          <input
+            type="range"
+            class="slider-range"
+            min="0"
+            max="100"
+            step="0.1"
+            [value]="displayProgress()"
+            (input)="onPlayerSliderInput($event)"
+            (change)="onPlayerSliderChange($event)"
+            aria-label="Seek"
+          />
         </div>
-        <div id="load-video" [style.width.%]="playerStore.loadedProgress()"></div>
-        <div id="load-video-current" [style.width.%]="playerStore.progress()"></div>
       </div>
       <div id="chrono-total">{{ playerStore.durationFormatted() }}</div>
     </div>
@@ -320,31 +309,19 @@
     <div id="header-player-volume-content" class="mx-auto">
       <span class="material-icons text-light">volume_up</span>
       <div id="slider-2-main">
-        <div
-          id="slider-2-content"
-          class="ui-slider"
-          tabindex="0"
-          (click)="onClickSliderVolume($event)"
-          (keydown.enter)="$event.preventDefault()"
-          (keydown.space)="$event.preventDefault()"
-          #contentSlider2
-        >
-          @if (isBrowser) {
-            <span
-              class="ui-slider-handle"
-              #sliderVolume
-              [style.left.%]="playerStore.volume()"
-              ngDraggable
-              [bounds]="contentSlider2"
-              [inBounds]="true"
-              lockAxis="y"
-              [preventDefaultEvent]="true"
-              (movingOffset)="onDragMovingVolume($event)"
-              (endOffset)="onDragEndVolume($event)"
-            ></span>
-          }
+        <div id="slider-2-content">
+          <div id="load-volume-current" [style.width.%]="playerStore.volume()"></div>
+          <input
+            type="range"
+            class="slider-range"
+            min="0"
+            max="100"
+            step="1"
+            [value]="playerStore.volume()"
+            (input)="onVolumeInput($event)"
+            aria-label="Volume"
+          />
         </div>
-        <div id="load-volume-current" [style.width.%]="playerStore.volume()"></div>
       </div>
     </div>
   </div>
