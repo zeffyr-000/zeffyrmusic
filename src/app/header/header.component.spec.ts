@@ -7,7 +7,6 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
 import { FollowItem } from '../models/follow.model';
 import { UserPlaylist } from '../models/playlist.model';
-import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { HeaderComponent } from './header.component';
 import { of } from 'rxjs';
@@ -21,7 +20,7 @@ import { environment } from 'src/environments/environment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockTestComponent } from '../mock-test.component';
 import { UiStore } from '../store/ui/ui.store';
-import type { MockPlayerService, MockInitService } from '../models/test-mocks.model';
+import type { MockInitService } from '../models/test-mocks.model';
 
 import { SearchService } from '../services/search.service';
 import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
@@ -39,7 +38,6 @@ describe('HeaderComponent', () => {
   let fixture: ComponentFixture<HeaderComponent>;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let initService: InitService;
-  let playerService: PlayerService;
   let userLibraryService: UserLibraryService;
   let userService: UserService;
   let googleAnalyticsServiceSpy: MockedObject<GoogleAnalyticsService>;
@@ -53,7 +51,6 @@ describe('HeaderComponent', () => {
   let googleAnalyticsServiceSpyObj: MockedObject<GoogleAnalyticsService>;
   let activeModalSpyObj: MockedObject<NgbActiveModal>;
   let initServiceMock: Partial<MockInitService>;
-  let playerServiceMock: Partial<MockPlayerService>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let userLibraryServiceMock: any;
   let searchServiceMock: Partial<SearchService>;
@@ -97,15 +94,6 @@ describe('HeaderComponent', () => {
     // Create service mocks
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     initServiceMock = { onMessageUnlog: vi.fn() } as any;
-    playerServiceMock = {
-      switchRepeat: vi.fn(),
-      switchRandom: vi.fn(),
-      updatePositionSlider: vi.fn(),
-      updateVolume: vi.fn(),
-      onPlayPause: vi.fn(),
-      before: vi.fn(),
-      after: vi.fn(),
-    };
     userLibraryServiceMock = {
       initializeFromLogin: vi.fn(),
       addVideoToPlaylist: vi.fn().mockReturnValue(of(true)),
@@ -156,7 +144,6 @@ describe('HeaderComponent', () => {
       providers: [
         getTranslocoTestingProviders(),
         { provide: InitService, useValue: initServiceMock },
-        { provide: PlayerService, useValue: playerServiceMock },
         { provide: UserLibraryService, useValue: userLibraryServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: RouterTestingModule, useValue: routerSpyObj },
@@ -173,7 +160,6 @@ describe('HeaderComponent', () => {
     }).compileComponents();
 
     initService = TestBed.inject(InitService);
-    playerService = TestBed.inject(PlayerService);
     userLibraryService = TestBed.inject(UserLibraryService);
     userService = TestBed.inject(UserService);
     googleAnalyticsServiceSpy = TestBed.inject(
@@ -193,7 +179,6 @@ describe('HeaderComponent', () => {
     component.isRegistered.set(false);
     component.error.set('');
     component.isSuccess.set(false);
-    component.isPlayerExpanded.set(false);
   });
 
   it('should create', () => {
@@ -229,62 +214,6 @@ describe('HeaderComponent', () => {
     expect(openModalSpy).toHaveBeenCalled();
   });
 
-  it('should call requestFullscreen when goFullscreen is called', () => {
-    // Create fake HTMLElement with spied requestFullscreen method
-    const element = { requestFullscreen: vi.fn() };
-
-    // Replace document.getElementById with function returning fake HTMLElement
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getElementByIdSpy = vi.spyOn(document, 'getElementById').mockReturnValue(element as any);
-
-    // Call goFullscreen
-    component.goFullscreen('testId');
-
-    // Verify getElementById was called with correct argument
-    expect(document.getElementById).toHaveBeenCalledWith('testId');
-
-    // Verify requestFullscreen was called on element
-    expect(element.requestFullscreen).toHaveBeenCalled();
-
-    // Restore spy to not affect following tests
-    getElementByIdSpy.mockRestore();
-  });
-
-  it('should call playerService.switchRepeat when repeat is called', () => {
-    component.repeat();
-    expect(playerService.switchRepeat).toHaveBeenCalled();
-  });
-
-  it('should call playerService.switchRandom when random is called', () => {
-    component.random();
-    expect(playerService.switchRandom).toHaveBeenCalled();
-  });
-
-  it('should call playerService.onPlayPause when onPlayPause is called', () => {
-    component.onPlayPause();
-    expect(playerService.onPlayPause).toHaveBeenCalled();
-  });
-
-  it('should call playerService.before when onBefore is called', () => {
-    component.onBefore();
-    expect(playerService.before).toHaveBeenCalled();
-  });
-
-  it('should call playerService.after when onAfter is called', () => {
-    component.onAfter();
-    expect(playerService.after).toHaveBeenCalled();
-  });
-
-  it('should expand player', () => {
-    component.expandPlayer();
-    expect(component.isPlayerExpanded()).toBe(true);
-  });
-
-  it('should collapse player', () => {
-    component.collapsePlayer();
-    expect(component.isPlayerExpanded()).toBe(false);
-  });
-
   it('should call modalService.open with the correct arguments when openModal is called', () => {
     const content = {} as TemplateRef<unknown>;
     component.openModal(content);
@@ -309,42 +238,6 @@ describe('HeaderComponent', () => {
       100
     );
     expect(modal.dismiss).toHaveBeenCalled();
-  });
-
-  describe('Slider controls', () => {
-    it('should update drag state on player slider input', () => {
-      const event = { target: { value: '50' } } as unknown as Event;
-      component.onPlayerSliderInput(event);
-      expect(component.isDraggingPlayer()).toBe(true);
-      expect(component.dragProgress()).toBe(50);
-    });
-
-    it('should commit seek and clear drag state on player slider change', () => {
-      const seekSpy = vi.spyOn(component.playerStore, 'seekToPercent');
-      const event = { target: { value: '75' } } as unknown as Event;
-      component.onPlayerSliderChange(event);
-      expect(playerService.updatePositionSlider).toHaveBeenCalledWith(0.75);
-      expect(seekSpy).toHaveBeenCalledWith(75);
-      expect(component.isDraggingPlayer()).toBe(false);
-    });
-
-    it('should use drag progress when dragging player slider', () => {
-      component.isDraggingPlayer.set(true);
-      component.dragProgress.set(42);
-      expect(component.displayProgress()).toBe(42);
-    });
-
-    it('should use store progress when not dragging', () => {
-      component.isDraggingPlayer.set(false);
-      // displayProgress falls back to playerStore.progress() which defaults to 0
-      expect(component.displayProgress()).toBe(component.playerStore.progress());
-    });
-
-    it('should call playerService.updateVolume on volume input', () => {
-      const event = { target: { value: '80' } } as unknown as Event;
-      component.onVolumeInput(event);
-      expect(playerService.updateVolume).toHaveBeenCalledWith(80);
-    });
   });
 
   describe('onSubmitRegister', () => {
