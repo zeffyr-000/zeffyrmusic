@@ -143,6 +143,22 @@ export class PlayerService implements OnDestroy {
   updateVolume(volume: number) {
     this.youtubePlayer.setVolume(volume);
     this.playerStore.setVolume(volume);
+
+    if (volume === 0) {
+      this.youtubePlayer.mute();
+    } else {
+      this.youtubePlayer.unMute();
+    }
+  }
+
+  toggleMute() {
+    const isMuted = this.playerStore.toggleMute();
+    if (isMuted) {
+      this.youtubePlayer.mute();
+    } else {
+      this.youtubePlayer.unMute();
+      this.youtubePlayer.setVolume(this.playerStore.volume());
+    }
   }
 
   updatePositionSlider(position: number) {

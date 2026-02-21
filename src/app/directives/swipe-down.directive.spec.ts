@@ -53,12 +53,6 @@ describe('SwipeDownDirective', () => {
       ],
     });
 
-    const preventDefaultSpy = vi.fn();
-    Object.defineProperty(touchStartEvent, 'preventDefault', {
-      value: preventDefaultSpy,
-      writable: true,
-    });
-
     divEl.nativeElement.dispatchEvent(touchStartEvent);
 
     const touchEndEvent = new TouchEvent('touchend', {
@@ -74,17 +68,101 @@ describe('SwipeDownDirective', () => {
       ],
     });
 
-    const endPreventDefaultSpy = vi.fn();
-    Object.defineProperty(touchEndEvent, 'preventDefault', {
-      value: endPreventDefaultSpy,
-      writable: true,
-    });
-
     divEl.nativeElement.dispatchEvent(touchEndEvent);
 
     fixture.detectChanges();
 
     expect(emitSpy).toHaveBeenCalled();
     expect(component.onSwipeDown).toHaveBeenCalled();
+  });
+
+  describe('touchmove behavior', () => {
+    it('should call preventDefault when moving down from near the top and event is cancelable', () => {
+      // Simulate touchstart near the top
+      const touchStartEvent = new TouchEvent('touchstart', {
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchStartEvent);
+
+      // Simulate touchmove downwards
+      const touchMoveEvent = new TouchEvent('touchmove', {
+        cancelable: true,
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 150 }),
+        ],
+      });
+      const preventDefaultSpy = vi.spyOn(touchMoveEvent, 'preventDefault');
+
+      divEl.nativeElement.dispatchEvent(touchMoveEvent);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+
+    it('should NOT call preventDefault when moving down but event is NOT cancelable', () => {
+      const touchStartEvent = new TouchEvent('touchstart', {
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchStartEvent);
+
+      const touchMoveEvent = new TouchEvent('touchmove', {
+        cancelable: false,
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 150 }),
+        ],
+      });
+      const preventDefaultSpy = vi.spyOn(touchMoveEvent, 'preventDefault');
+
+      divEl.nativeElement.dispatchEvent(touchMoveEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    it('should NOT call preventDefault when moving upwards', () => {
+      const touchStartEvent = new TouchEvent('touchstart', {
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 150 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchStartEvent);
+
+      const touchMoveEvent = new TouchEvent('touchmove', {
+        cancelable: true,
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
+        ],
+      });
+      const preventDefaultSpy = vi.spyOn(touchMoveEvent, 'preventDefault');
+
+      divEl.nativeElement.dispatchEvent(touchMoveEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    it('should NOT call preventDefault when starting touch is NOT near the top', () => {
+      // Simulate touchstart far from the top (e.g., middle of screen)
+      const touchStartEvent = new TouchEvent('touchstart', {
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 200 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchStartEvent);
+
+      // Simulate touchmove downwards
+      const touchMoveEvent = new TouchEvent('touchmove', {
+        cancelable: true,
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 300 }),
+        ],
+      });
+      const preventDefaultSpy = vi.spyOn(touchMoveEvent, 'preventDefault');
+
+      divEl.nativeElement.dispatchEvent(touchMoveEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
   });
 });

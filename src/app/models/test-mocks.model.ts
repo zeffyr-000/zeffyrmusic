@@ -16,6 +16,7 @@ export interface MockPlayerService {
   after: MockedFunction<() => void>;
   onPlayPause: MockedFunction<() => void>;
   updateVolume: MockedFunction<(volume: number) => void>;
+  toggleMute: MockedFunction<() => void>;
   updatePositionSlider: MockedFunction<(position: number) => void>;
   removeToPlaylist: MockedFunction<(index: number) => void>;
   switchRepeat: MockedFunction<() => void>;

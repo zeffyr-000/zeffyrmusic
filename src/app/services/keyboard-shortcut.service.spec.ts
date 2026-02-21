@@ -15,9 +15,9 @@ describe('KeyboardShortcutService', () => {
   let playerServiceMock: {
     onPlayPause: ReturnType<typeof vi.fn>;
     updateVolume: ReturnType<typeof vi.fn>;
+    toggleMute: ReturnType<typeof vi.fn>;
   };
   let playerStoreMock: {
-    toggleMute: ReturnType<typeof vi.fn>;
     seekTo: ReturnType<typeof vi.fn>;
     volume: ReturnType<typeof signal>;
   };
@@ -37,9 +37,9 @@ describe('KeyboardShortcutService', () => {
     playerServiceMock = {
       onPlayPause: vi.fn(),
       updateVolume: vi.fn(),
+      toggleMute: vi.fn(),
     };
     playerStoreMock = {
-      toggleMute: vi.fn(),
       seekTo: vi.fn(),
       volume: signal(50),
     };
@@ -112,7 +112,7 @@ describe('KeyboardShortcutService', () => {
 
   it('should toggle mute on M', () => {
     dispatchKey('m');
-    expect(playerStoreMock.toggleMute).toHaveBeenCalled();
+    expect(playerServiceMock.toggleMute).toHaveBeenCalled();
   });
 
   it('should collapse expanded player on Escape', () => {

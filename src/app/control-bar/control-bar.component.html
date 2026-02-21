@@ -162,7 +162,16 @@
 
   <div class="cb-right">
     <div class="cb-volume">
-      <span class="material-icons" aria-hidden="true">{{ volumeIcon() }}</span>
+      <button
+        type="button"
+        class="cb-btn-icon"
+        (click)="toggleMute()"
+        [attr.aria-label]="
+          (playerStore.isMuted() ? 'aria_activer_son' : 'aria_couper_son') | transloco
+        "
+      >
+        <span class="material-icons" aria-hidden="true">{{ volumeIcon() }}</span>
+      </button>
       <div class="cb-volume-track">
         <div class="cb-slider-bar">
           <div class="cb-volume-level" [style.width.%]="playerStore.volume()"></div>

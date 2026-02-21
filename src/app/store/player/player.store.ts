@@ -98,13 +98,18 @@ export const PlayerStore = signalStore(
       const clampedVolume = Math.max(0, Math.min(100, volume));
       patchState(store, {
         volume: clampedVolume,
+        previousVolume: clampedVolume > 0 ? clampedVolume : store.previousVolume(),
         isMuted: clampedVolume === 0,
       });
     },
 
     toggleMute(): boolean {
       const isMuted = !store.isMuted();
-      patchState(store, { isMuted });
+      if (isMuted) {
+        patchState(store, { isMuted, volume: 0 });
+      } else {
+        patchState(store, { isMuted, volume: store.previousVolume() || 100 });
+      }
       return isMuted;
     },
 

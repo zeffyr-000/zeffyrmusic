@@ -11,6 +11,7 @@ export interface PlayerState {
   duration: number;
   loadedFraction: number;
   volume: number;
+  previousVolume: number;
   isRepeat: boolean;
   isMuted: boolean;
   isPlayerReady: boolean;
@@ -23,6 +24,7 @@ export const initialPlayerState: PlayerState = {
   duration: 0,
   loadedFraction: 0,
   volume: 100,
+  previousVolume: 100,
   isRepeat: false,
   isMuted: false,
   isPlayerReady: false,

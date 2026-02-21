@@ -45,6 +45,7 @@ export class ControlBarComponent {
   });
   readonly isLiked = computed(() => this.userLibraryService.isLiked(this.currentKey()));
   readonly volumeIcon = computed(() => {
+    if (this.playerStore.isMuted()) return 'volume_off';
     const vol = this.playerStore.volume();
     if (vol === 0) return 'volume_off';
     return vol < 50 ? 'volume_down' : 'volume_up';
@@ -119,6 +120,11 @@ export class ControlBarComponent {
   onVolumeInput(event: Event): void {
     const value = +(event.target as HTMLInputElement).value;
     this.playerService.updateVolume(value);
+  }
+
+  /** Toggles mute state. */
+  toggleMute(): void {
+    this.playerService.toggleMute();
   }
 
   // -- Mobile expand/collapse ------------------------------------------------
