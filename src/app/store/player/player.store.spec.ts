@@ -186,9 +186,10 @@ describe('PlayerStore', () => {
   });
 
   describe('Volume Controls', () => {
-    it('should set volume', () => {
+    it('should set volume and update previousVolume', () => {
       store.setVolume(75);
       expect(store.volume()).toBe(75);
+      expect(store.previousVolume()).toBe(75);
     });
 
     it('should clamp volume to valid range', () => {
@@ -198,19 +199,30 @@ describe('PlayerStore', () => {
       expect(store.volume()).toBe(100);
     });
 
-    it('should auto-mute when volume is 0', () => {
+    it('should auto-mute when volume is 0 and not overwrite previousVolume', () => {
+      store.setVolume(50); // Set initial previousVolume
       store.setVolume(0);
       expect(store.isMuted()).toBe(true);
+      expect(store.volume()).toBe(0);
+      expect(store.previousVolume()).toBe(50); // Should retain the last non-zero volume
     });
 
-    it('should toggle mute', () => {
+    it('should toggle mute and restore previous volume', () => {
+      store.setVolume(30);
+
+      // Mute
       const result1 = store.toggleMute();
       expect(result1).toBe(true);
       expect(store.isMuted()).toBe(true);
+      expect(store.volume()).toBe(0);
+      expect(store.previousVolume()).toBe(30);
 
+      // Unmute
       const result2 = store.toggleMute();
       expect(result2).toBe(false);
       expect(store.isMuted()).toBe(false);
+      expect(store.volume()).toBe(30);
+      expect(store.previousVolume()).toBe(30);
     });
 
     it('should set muted state', () => {

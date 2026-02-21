@@ -192,6 +192,14 @@ export class YoutubePlayerService {
     this.playerStore.setVolume(clampedVolume);
   }
 
+  mute(): void {
+    this.player?.mute();
+  }
+
+  unMute(): void {
+    this.player?.unMute();
+  }
+
   seekTo(seconds: number): void {
     this.player?.seekTo(seconds, true);
   }

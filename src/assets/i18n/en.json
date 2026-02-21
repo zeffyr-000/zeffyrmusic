@@ -122,6 +122,8 @@
   "aria_ajouter_favori": "Add to favorites",
   "aria_retirer_favori": "Remove from favorites",
   "aria_volume": "Volume",
+  "aria_activer_son": "Unmute",
+  "aria_couper_son": "Mute",
   "ajouter_a_une_playlist": "Add to a playlist",
   "ajouter_apres_courant": "Play after current",
   "supprimer": "Delete",

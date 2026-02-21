@@ -98,7 +98,7 @@ export class KeyboardShortcutService implements OnDestroy {
       case 'M':
         event.preventDefault();
         this.blurActiveButton(target);
-        this.playerStore.toggleMute();
+        this.playerService.toggleMute();
         break;
 
       case 'Escape':

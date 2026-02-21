@@ -26,6 +26,8 @@ const createMockYoutubePlayerService = () => ({
   pause: vi.fn(),
   togglePlayPause: vi.fn().mockReturnValue(true),
   setVolume: vi.fn(),
+  mute: vi.fn(),
+  unMute: vi.fn(),
   seekTo: vi.fn(),
   seekToPercent: vi.fn(),
   getPlayerState: vi.fn().mockReturnValue(2),
@@ -182,7 +184,33 @@ describe('PlayerService', () => {
     it('should update the volume and emit the new value on updateVolume', () => {
       service.updateVolume(50);
       expect(mockYoutubePlayer.setVolume).toHaveBeenCalledWith(50);
+      expect(mockYoutubePlayer.unMute).toHaveBeenCalled();
       expect(playerStore.volume()).toBe(50);
+    });
+
+    it('should mute the player when volume is updated to 0', () => {
+      service.updateVolume(0);
+      expect(mockYoutubePlayer.setVolume).toHaveBeenCalledWith(0);
+      expect(mockYoutubePlayer.mute).toHaveBeenCalled();
+      expect(playerStore.volume()).toBe(0);
+    });
+
+    it('should toggle mute and call youtubePlayer.mute when muted', () => {
+      playerStore.setVolume(50);
+      service.toggleMute();
+      expect(playerStore.isMuted()).toBe(true);
+      expect(mockYoutubePlayer.mute).toHaveBeenCalled();
+    });
+
+    it('should toggle mute and call youtubePlayer.unMute and setVolume when unmuted', () => {
+      playerStore.setVolume(50);
+      service.toggleMute(); // Mute it first
+      expect(playerStore.isMuted()).toBe(true);
+
+      service.toggleMute(); // Unmute it
+      expect(playerStore.isMuted()).toBe(false);
+      expect(mockYoutubePlayer.unMute).toHaveBeenCalled();
+      expect(mockYoutubePlayer.setVolume).toHaveBeenCalledWith(50);
     });
 
     it('should update the player position on updatePositionSlider', () => {

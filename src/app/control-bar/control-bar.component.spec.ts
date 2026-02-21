@@ -24,6 +24,7 @@ describe('ControlBarComponent', () => {
       onPlayPause: vi.fn(),
       before: vi.fn(),
       after: vi.fn(),
+      toggleMute: vi.fn(),
     };
     userLibraryServiceMock = {
       isLiked: vi.fn<(key: string) => boolean>().mockReturnValue(false),
@@ -165,6 +166,11 @@ describe('ControlBarComponent', () => {
       const event = { target: { value: '80' } } as unknown as Event;
       component.onVolumeInput(event);
       expect(playerService.updateVolume).toHaveBeenCalledWith(80);
+    });
+
+    it('should call playerService.toggleMute on toggleMute', () => {
+      component.toggleMute();
+      expect(playerService.toggleMute).toHaveBeenCalled();
     });
   });
 
