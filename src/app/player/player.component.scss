@@ -124,7 +124,7 @@
 // - #player-sidebar: hide left sidebar
 // - #container-player: hide player container + remove aspect ratio
 // - #player: see styles.scss (must be in global CSS)
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #container-player {
     z-index: -1; // Send behind content
     padding-bottom: 0; // ⚠️ CRITICAL: Remove aspect ratio padding

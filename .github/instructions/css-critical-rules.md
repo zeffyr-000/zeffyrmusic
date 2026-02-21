@@ -243,6 +243,5 @@ If you broke the player:
 ## Related Documentation
 
 - Full architecture: `/docs/CSS_ARCHITECTURE.md`
-- Changelog: `/docs/CSS_REFACTORING_CHANGELOG.md`
 - Agent guidelines: `/AGENTS.md`
 - Component patterns: `/.github/copilot-instructions.md`

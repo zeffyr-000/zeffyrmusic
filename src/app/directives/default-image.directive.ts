@@ -29,6 +29,13 @@ export class DefaultImageDirective {
     this.defaultImage = `${environment.URL_ASSETS}assets/img/default.jpg`;
     this.loadingImage = `${environment.URL_ASSETS}assets/img/loading.jpg`;
 
+    // Set up fade-in transition on the host element
+    if (this.isBrowser) {
+      const el = this.el.nativeElement;
+      this.renderer.setStyle(el, 'transition', 'opacity 0.2s ease');
+      this.renderer.setStyle(el, 'opacity', '0');
+    }
+
     effect(() => {
       const newSrc = this.src();
       if (!this.isBrowser) {
@@ -60,6 +67,7 @@ export class DefaultImageDirective {
     img.onerror = () => {
       this.isLoading = false;
       this.renderer.setAttribute(this.el.nativeElement, 'src', this.defaultImage);
+      this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
       this.processPendingSrc();
     };
   }
@@ -69,6 +77,7 @@ export class DefaultImageDirective {
     // Only apply if this is still the current src (not superseded by pending)
     if (src === this.currentSrc) {
       this.renderer.setAttribute(this.el.nativeElement, 'src', src);
+      this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
     }
     this.processPendingSrc();
   }

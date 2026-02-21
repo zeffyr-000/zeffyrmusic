@@ -12,17 +12,12 @@ import {
   TemplateRef,
   signal,
 } from '@angular/core';
-import {
-  Event,
-  NavigationEnd,
-  NavigationStart,
-  Router,
-  RouterLink,
-  RouterOutlet,
-} from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { InitService } from './services/init.service';
 import { PlayerService } from './services/player.service';
+import { FocusService } from './services/focus.service';
+import { KeyboardShortcutService } from './services/keyboard-shortcut.service';
 import { filter } from 'rxjs';
 import { Meta } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
@@ -38,7 +33,7 @@ import { ToastContainerComponent } from './toast-container/toast-container.compo
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HeaderComponent,
@@ -53,8 +48,8 @@ import { ToastContainerComponent } from './toast-container/toast-container.compo
 })
 export class AppComponent implements OnInit {
   private readonly document = inject<Document>(DOCUMENT);
-  private platformId = inject(PLATFORM_ID);
-  private rendererFactory = inject(RendererFactory2);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly rendererFactory = inject(RendererFactory2);
   private readonly initService = inject(InitService);
   protected readonly playerService = inject(PlayerService);
   protected readonly playerStore = inject(PlayerStore);
@@ -64,13 +59,14 @@ export class AppComponent implements OnInit {
   private readonly metaService = inject(Meta);
   private readonly translocoService = inject(TranslocoService);
   private readonly modalService = inject(NgbModal);
+  private readonly focusService = inject(FocusService);
+  private readonly keyboardShortcutService = inject(KeyboardShortcutService);
 
-  title = 'zeffyrmusic';
   readonly isOnline = signal(true);
-  currentUrl = '';
+  readonly currentUrl = signal('');
 
-  renderer: Renderer2;
-  private isBrowser: boolean;
+  private readonly renderer: Renderer2;
+  private readonly isBrowser: boolean;
 
   @ViewChild('contentModalReload') contentModalReload!: TemplateRef<unknown>;
 
@@ -83,18 +79,8 @@ export class AppComponent implements OnInit {
       this.router.events
         .pipe(filter(event => event instanceof NavigationEnd))
         .subscribe((event: NavigationEnd) => {
-          this.currentUrl = event.urlAfterRedirects;
+          this.currentUrl.set(event.urlAfterRedirects);
         });
-
-      this.router.events.subscribe((event: Event) => {
-        if (event instanceof NavigationStart) {
-          // Show loading indicator
-        }
-
-        if (event instanceof NavigationEnd) {
-          // Hide loading indicator
-        }
-      });
 
       window.addEventListener('offline', () => {
         this.isOnline.set(false);
@@ -107,6 +93,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.focusService.initialize();
+    this.keyboardShortcutService.initialize();
+
     this.initService.getPing().subscribe((success: boolean) => {
       if (this.isBrowser && !success) {
         this.modalService.open(this.contentModalReload, { centered: true, size: 'lg' });
@@ -158,7 +147,7 @@ export class AppComponent implements OnInit {
     const targetUrl = this.queueStore.sourceTopChartsId()
       ? `/top/${this.queueStore.sourceTopChartsId()}`
       : `/playlist/${this.queueStore.sourcePlaylistId()}`;
-    return this.currentUrl === targetUrl;
+    return this.currentUrl() === targetUrl;
   }
 
   clearErrorMessage() {

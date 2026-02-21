@@ -13,7 +13,7 @@ import { QueueStore, AuthStore } from '../store';
 @Component({
   selector: 'app-player',
   templateUrl: './player.component.html',
-  styleUrls: ['./player.component.scss'],
+  styleUrl: './player.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     LazyLoadImageDirective,

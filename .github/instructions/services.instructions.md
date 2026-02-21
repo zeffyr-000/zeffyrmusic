@@ -4,58 +4,47 @@ applyTo: 'src/app/services/**/*.ts'
 
 # Angular Service Instructions
 
-## Service Structure
+## Structure
 
 ```typescript
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class MyService {
-  // Injected dependencies
   private readonly http = inject(HttpClient);
   private readonly authStore = inject(AuthStore);
 
-  // Methods for business logic and HTTP calls
   getData(): Observable<Data> {
     return this.http.get<DataResponse>('/api/data').pipe(
-      map(response => this.mapResponseToData(response)),
+      map(response => this.mapResponse(response)),
       catchError(this.handleError)
     );
   }
 
-  private mapResponseToData(response: DataResponse): Data {
-    // Map snake_case API response to camelCase frontend model
-    return {
-      id: response.id_data,
-      name: response.nom_data,
-    };
+  private mapResponse(response: DataResponse): Data {
+    return { id: response.id_data, name: response.nom_data };
   }
 }
 ```
 
 ## Critical Rules
 
-- Services handle HTTP calls and business logic
-- Services do NOT hold application state - use Signal Stores instead
+- Services handle HTTP calls and business logic only
+- Services do NOT hold application state — use Signal Stores instead
 - Use `inject()` function, never constructor injection
 - Always map API responses from snake_case to camelCase
 
 ## API Data Mapping
 
-Backend uses PHP with snake_case, frontend uses camelCase:
+Backend (PHP/Jelix) uses snake_case, frontend uses camelCase:
 
 ```typescript
-// API response (snake_case from PHP backend)
+// API response
 interface PingResponse {
   est_connecte: boolean;
-  dark_mode_enabled: boolean;
   id_perso: string;
 }
-
-// Frontend model (camelCase)
+// Frontend model
 interface UserInfo {
   isAuthenticated: boolean;
-  darkModeEnabled: boolean;
   idPerso: string;
 }
 ```
@@ -63,28 +52,32 @@ interface UserInfo {
 ## RxJS Best Practices
 
 ```typescript
-// ✅ Use operators instead of nested subscriptions
+// ✅ Use operators
 this.getData().pipe(
   switchMap(data => this.processData(data)),
-  catchError(error => {
-    console.error(error);
-    return EMPTY;
-  }),
+  catchError(error => { console.error(error); return EMPTY; }),
 ).subscribe();
 
-// ❌ Avoid nested subscriptions
+// ❌ No nested subscriptions
 this.getData().subscribe(data => {
   this.processData(data).subscribe(result => { ... });
 });
 ```
 
-## Error Handling
+## Available Services (13 total)
 
-Use consistent error handling patterns:
-
-```typescript
-private handleError = (error: HttpErrorResponse): Observable<never> => {
-  console.error('API Error:', error);
-  return throwError(() => new Error(error.message));
-};
-```
+| Service                    | Purpose                      |
+| -------------------------- | ---------------------------- |
+| `InitService`              | App bootstrap, session, ping |
+| `PlayerService`            | Playback orchestration       |
+| `YoutubePlayerService`     | YouTube IFrame API wrapper   |
+| `UserService`              | User HTTP operations         |
+| `UserLibraryService`       | Library HTTP operations      |
+| `PlaylistService`          | Playlist HTTP operations     |
+| `ArtistService`            | Artist HTTP operations       |
+| `SearchService`            | Search HTTP operations       |
+| `SeoService`               | Canonical URL management     |
+| `FocusService`             | Focus management             |
+| `KeyboardShortcutService`  | Keyboard shortcuts           |
+| `PlaylistThumbnailService` | Thumbnail generation         |
+| `AuthGuard`                | Route guard                  |

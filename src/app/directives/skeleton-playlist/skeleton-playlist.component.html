@@ -1,0 +1,33 @@
+<div class="skeleton-playlist" aria-busy="true" role="status">
+  <span class="visually-hidden">Loading...</span>
+
+  <!-- Playlist header: image + info -->
+  <div class="skeleton-playlist-header">
+    <div class="skeleton-playlist-image skeleton-pulse"></div>
+    <div class="skeleton-playlist-info">
+      <div class="skeleton-line skeleton-line--pl-title skeleton-pulse"></div>
+      <div class="skeleton-line skeleton-line--pl-artist skeleton-pulse"></div>
+      <div class="skeleton-playlist-actions">
+        <div class="skeleton-line skeleton-line--pl-btn-primary skeleton-pulse"></div>
+        <div class="skeleton-line skeleton-line--pl-btn skeleton-pulse"></div>
+        <div class="skeleton-line skeleton-line--pl-btn skeleton-pulse"></div>
+      </div>
+      <div class="skeleton-line skeleton-line--pl-meta skeleton-pulse"></div>
+    </div>
+  </div>
+
+  <!-- Track list -->
+  <div class="skeleton-tracks">
+    @for (_ of items; track $index) {
+      <div class="skeleton-track">
+        <div class="skeleton-track-num skeleton-pulse"></div>
+        <div class="skeleton-track-thumb skeleton-pulse"></div>
+        <div class="skeleton-track-info">
+          <div class="skeleton-line skeleton-line--title skeleton-pulse"></div>
+          <div class="skeleton-line skeleton-line--subtitle skeleton-pulse"></div>
+        </div>
+        <div class="skeleton-track-duration skeleton-pulse"></div>
+      </div>
+    }
+  </div>
+</div>

@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-artist-list',
   templateUrl: './artist-list.component.html',
-  styleUrls: ['./artist-list.component.css'],
+  styleUrl: './artist-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
 })

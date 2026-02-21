@@ -1,65 +1,13 @@
 <div id="header-top" class="row g-0 justify-content-between">
-  <div id="header-burger" class="nav col-3 d-flex d-lg-none justify-content-center" ngbDropdown>
-    <button type="button" class="btn" ngbDropdownToggle aria-label="Open menu">
+  <div id="header-burger" class="nav col-3 d-flex d-lg-none justify-content-center">
+    <button
+      type="button"
+      class="btn"
+      [attr.aria-label]="'menu' | transloco"
+      (click)="openMobileMenu()"
+    >
       <span class="material-icons">menu</span>
     </button>
-    <ul ngbDropdownMenu>
-      <li ngbDropdownItem routerLinkActive="active">
-        <a routerLink="/current">
-          <span class="material-icons">playlist_play</span>{{ 'play_list' | transloco }}
-        </a>
-      </li>
-      <li class="dropdown-divider"></li>
-      @if (!authStore.isAuthenticated()) {
-        <li ngbDropdownItem>
-          <button type="button" (click)="openModalRegister()">
-            <span class="material-icons">create_new_folder</span>{{ 'inscription' | transloco }}
-          </button>
-        </li>
-        <li ngbDropdownItem>
-          <button type="button" (click)="openModalLogin()">
-            <span class="material-icons">login</span>{{ 'connexion' | transloco }}
-          </button>
-        </li>
-      }
-      <li ngbDropdownItem routerLinkActive="active">
-        <a routerLink="/help">
-          <span class="material-icons">help</span>{{ 'help_title' | transloco }}
-        </a>
-      </li>
-      @if (authStore.isAuthenticated()) {
-        <li class="dropdown-divider"></li>
-        <li ngbDropdownItem class="bg-primary text-white">
-          <span class="d-block">{{ authStore.pseudo() }}</span>
-        </li>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/like">
-            <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
-          </a>
-        </li>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/my-playlists">
-            <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
-          </a>
-        </li>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/my-selection">
-            <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
-          </a>
-        </li>
-        <li ngbDropdownItem routerLinkActive="active">
-          <a routerLink="/settings">
-            <span class="material-icons">settings</span>{{ 'settings' | transloco }}
-          </a>
-        </li>
-        <li class="dropdown-divider"></li>
-        <li ngbDropdownItem>
-          <button (click)="onLogout()">
-            <span class="material-icons">power_settings_new</span>{{ 'deconnexion' | transloco }}
-          </button>
-        </li>
-      }
-    </ul>
   </div>
 
   <div id="header-logo" class="nav col-3">
@@ -82,6 +30,8 @@
             : URL_ASSETS + 'assets/img/logo_mobile.png'
         "
         [alt]="'home' | transloco"
+        height="40"
+        width="40"
         class="d-lg-none"
       />
     </a>
@@ -95,22 +45,22 @@
         </a>
         <ul ngbDropdownMenu>
           <li ngbDropdownItem routerLinkActive="active">
-            <a routerLink="/like">
+            <a routerLink="/like" ariaCurrentWhenActive="page">
               <span class="material-icons">favorite</span>{{ 'mes_likes' | transloco }}
             </a>
           </li>
           <li ngbDropdownItem routerLinkActive="active">
-            <a routerLink="/my-playlists">
+            <a routerLink="/my-playlists" ariaCurrentWhenActive="page">
               <span class="material-icons">library_music</span>{{ 'mes_playlists' | transloco }}
             </a>
           </li>
           <li ngbDropdownItem routerLinkActive="active">
-            <a routerLink="/my-selection">
+            <a routerLink="/my-selection" ariaCurrentWhenActive="page">
               <span class="material-icons">favorite</span>{{ 'ma_selection' | transloco }}
             </a>
           </li>
           <li ngbDropdownItem routerLinkActive="active">
-            <a routerLink="/settings">
+            <a routerLink="/settings" ariaCurrentWhenActive="page">
               <span class="material-icons">settings</span>{{ 'settings' | transloco }}
             </a>
           </li>
@@ -439,6 +389,8 @@
       <a
         class="nav-link d-flex align-items-center gap-2"
         routerLink="/current"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
         (click)="closeMobileMenu()"
       >
         <span class="material-icons">playlist_play</span>
@@ -469,6 +421,8 @@
       <a
         class="nav-link d-flex align-items-center gap-2"
         routerLink="/help"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
         (click)="closeMobileMenu()"
       >
         <span class="material-icons">help</span>
@@ -478,46 +432,45 @@
       @if (authStore.isAuthenticated()) {
         <hr class="my-2" />
 
-        <div class="nav-link bg-primary text-white rounded px-3 py-2 fw-bold">
+        <div class="nav-link bg-body-secondary rounded px-3 py-2 fw-bold">
           {{ authStore.pseudo() }}
         </div>
 
         <a
           class="nav-link d-flex align-items-center gap-2"
           routerLink="/like"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           (click)="closeMobileMenu()"
         >
           <span class="material-icons">favorite</span>
           {{ 'mes_likes' | transloco }}
-          @if (userDataStore.likedVideoCount() > 0) {
-            <span class="badge bg-secondary ms-auto">{{ userDataStore.likedVideoCount() }}</span>
-          }
         </a>
         <a
           class="nav-link d-flex align-items-center gap-2"
           routerLink="/my-playlists"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           (click)="closeMobileMenu()"
         >
           <span class="material-icons">library_music</span>
           {{ 'mes_playlists' | transloco }}
-          @if (userDataStore.playlistCount() > 0) {
-            <span class="badge bg-secondary ms-auto">{{ userDataStore.playlistCount() }}</span>
-          }
         </a>
         <a
           class="nav-link d-flex align-items-center gap-2"
           routerLink="/my-selection"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           (click)="closeMobileMenu()"
         >
           <span class="material-icons">favorite</span>
           {{ 'ma_selection' | transloco }}
-          @if (userDataStore.followCount() > 0) {
-            <span class="badge bg-secondary ms-auto">{{ userDataStore.followCount() }}</span>
-          }
         </a>
         <a
           class="nav-link d-flex align-items-center gap-2"
           routerLink="/settings"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           (click)="closeMobileMenu()"
         >
           <span class="material-icons">settings</span>

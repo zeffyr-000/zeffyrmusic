@@ -4,117 +4,103 @@ applyTo: '**/*.html'
 
 # Angular Template Instructions
 
-## Modern Control Flow Syntax
-
-Use Angular's built-in control flow, not structural directives:
+## Modern Control Flow
 
 ```html
-<!-- ✅ Use @if -->
+<!-- ✅ Use @if / @for / @switch -->
 @if (isLoading()) {
-<app-spinner />
+<app-skeleton-card [count]="6" />
 } @else if (error()) {
 <div class="alert alert-danger">{{ error() }}</div>
-} @else {
-<div>Content</div>
-}
-
-<!-- ❌ Don't use *ngIf -->
-<div *ngIf="isLoading">Loading...</div>
-
-<!-- ✅ Use @for with track -->
-@for (item of items(); track item.id) {
+} @else { @for (item of items(); track item.id) {
 <app-item [item]="item" />
 } @empty {
-<p>No items found</p>
-}
+<div class="empty-state">
+  <span class="material-icons empty-state-icon" aria-hidden="true">search_off</span>
+  <p class="empty-state-text">{{ 'no_results' | transloco }}</p>
+</div>
+} }
 
-<!-- ❌ Don't use *ngFor -->
-<div *ngFor="let item of items">{{ item.name }}</div>
-
-<!-- ✅ Use @switch -->
-@switch (status()) { @case ('loading') { <app-spinner /> } @case ('error') { <app-error /> }
-@default { <app-content /> } }
+<!-- ❌ Don't use *ngIf, *ngFor, *ngSwitch -->
 ```
 
-## Signal Access in Templates
+## Signal Access
 
-Always call signals as functions:
+Always call signals as functions in templates:
 
 ```html
-<!-- ✅ Correct -->
+<!-- ✅ -->
 <div>{{ userName() }}</div>
 <button [disabled]="isLoading()">Submit</button>
 
-<!-- ❌ Incorrect -->
+<!-- ❌ -->
 <div>{{ userName }}</div>
 ```
 
-## Pipes for Display
+## Pipes
 
 - Duration: `{{ video.duree | toMMSS }}`
-- Date: `{{ date | date:'short' }}`
 - Translation: `{{ 'key' | transloco }}`
+- Date: `{{ date | date:'short' }}`
 
-## Template Best Practices
+## Skeleton Loaders
 
-- Keep templates clean - move complex logic to computed signals
-- Use semantic HTML elements
-- Add accessibility attributes (aria-\*, role)
-- Use Bootstrap 5 classes for styling
+```html
+@if (isLoading()) { <app-skeleton-card [count]="6" />
+<!-- card grids -->
+<app-skeleton-list [count]="8" />
+<!-- track lists -->
+<app-skeleton-artist [count]="6" />
+<!-- artist profile -->
+<app-skeleton-playlist [count]="8" />
+<!-- playlist page -->
+}
+```
+
+## Empty State
+
+```html
+<div class="empty-state">
+  <span class="material-icons empty-state-icon" aria-hidden="true">icon_name</span>
+  <p class="empty-state-text">{{ 'message_key' | transloco }}</p>
+  <a class="btn btn-outline-primary mt-3" routerLink="/">{{ 'back_home' | transloco }}</a>
+</div>
+```
 
 ## ng-bootstrap Accessibility
 
-**CRITICAL: ng-bootstrap directives handle keyboard accessibility automatically.**
+**CRITICAL: ng-bootstrap handles keyboard/ARIA automatically.**
 
 ```html
-<!-- ❌ INCORRECT: Redundant attributes -->
-<button
-  ngbDropdownToggle
-  tabindex="0"
-  role="button"
-  (keydown.enter)="handleEnter()"
-  (keydown.space)="handleSpace()"
->
-  <!-- ✅ CORRECT: ng-bootstrap handles it -->
-  <button ngbDropdownToggle>Menu</button>
-</button>
+<!-- ✅ ng-bootstrap handles it -->
+<button ngbDropdownToggle>Menu</button>
+
+<!-- ❌ Redundant — DO NOT add these on ng-bootstrap elements -->
+<button ngbDropdownToggle tabindex="0" role="button" (keydown.enter)="..."></button>
 ```
 
-Directives that auto-handle accessibility:
-
-- `ngbDropdownToggle`
-- `ngbTooltip`
-- `ngbPopover`
-- `ngbModal`
-- `ngbCollapse`
+Auto-handled: `ngbDropdownToggle`, `ngbTooltip`, `ngbPopover`, `ngbModal`, `ngbCollapse`
 
 ## Interactive Elements
 
-Use native interactive elements for actions:
+Use native `<button>` for actions, not `<a>`:
 
 ```html
-<!-- ✅ CORRECT: Native button -->
+<!-- ✅ -->
 <button type="button" class="btn btn-primary" (click)="doAction()">Action</button>
 
-<!-- ❌ INCORRECT: Link used as button -->
-<a
-  class="btn btn-primary"
-  role="button"
-  tabindex="0"
-  (click)="doAction()"
-  (keydown.enter)="doAction()"
-  (keydown.space)="doAction(); $event.preventDefault()"
->
-  Action
-</a>
+<!-- ❌ -->
+<a role="button" tabindex="0" (click)="doAction()" (keydown.enter)="doAction()">Action</a>
 ```
 
-## Required ARIA Attributes
+## Required ARIA
 
-| Element         | Required                       |
-| --------------- | ------------------------------ |
-| Close button    | `aria-label="Close"`           |
-| Loading spinner | `role="status"`                |
-| Alert messages  | `role="alert"`                 |
-| Images          | `alt="description"`            |
-| Navigation      | `aria-label="Navigation name"` |
+| Element      | Required                       |
+| ------------ | ------------------------------ |
+| Close button | `aria-label="Close"`           |
+| Spinner      | `role="status"`                |
+| Alert        | `role="alert"`                 |
+| Image        | `alt="description"`            |
+| Navigation   | `aria-label="Navigation name"` |
+| Icon         | `aria-hidden="true"`           |
+| Nav links    | `ariaCurrentWhenActive="page"` |

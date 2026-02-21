@@ -1,415 +1,140 @@
-# ZeffyrMusic - Architecture Documentation
-
-## Table of Contents
-
-- [System Overview](#system-overview)
-- [Data Flow Diagrams](#data-flow-diagrams)
-- [Design Decisions](#design-decisions)
-- [Performance Strategy](#performance-strategy)
-- [Directory Structure](#directory-structure)
-
----
+# Zeffyr Music — Architecture
 
 ## System Overview
 
-ZeffyrMusic is a modern music streaming web application built with **Angular 21** using a **zoneless architecture** for optimal performance. The application follows a component-based architecture with centralized state management using **@ngrx/signals**.
-
-### High-Level Architecture
+Music streaming app built with **Angular 21** (SSR, zoneless, OnPush). Plays YouTube videos via IFrame API with a custom UI, centralized state via `@ngrx/signals`.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Browser / Client                         │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │   Angular   │  │   Signal    │  │     YouTube Player      │  │
-│  │ Components  │◄─┤   Stores    │  │         API             │  │
-│  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────────┘  │
-│         │                │                      │                │
-│         └────────────────┼──────────────────────┘                │
-│                          │                                       │
-│                   ┌──────▼──────┐                                │
-│                   │  Services   │                                │
-│                   └──────┬──────┘                                │
-└──────────────────────────┼──────────────────────────────────────┘
-                           │ HTTP
-┌──────────────────────────▼──────────────────────────────────────┐
-│                    Express.js SSR Server                         │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐  ┌─────────────────┐                       │
-│  │  Angular SSR    │  │   API Proxy     │                       │
-│  │   Rendering     │  │   Middleware    │                       │
-│  └─────────────────┘  └────────┬────────┘                       │
-└────────────────────────────────┼────────────────────────────────┘
-                                 │
-┌────────────────────────────────▼────────────────────────────────┐
-│                      Backend API Server                          │
-│             (PHP/Jelix - External Service)                       │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│                  Browser                     │
+│  Components ← Signal Stores ← Services      │
+│       └── YouTube IFrame API                 │
+└──────────────────┬──────────────────────────┘
+                   │ HTTP
+┌──────────────────▼──────────────────────────┐
+│         Express.js SSR Server                │
+│  Angular SSR + API Proxy                     │
+└──────────────────┬──────────────────────────┘
+                   │
+┌──────────────────▼──────────────────────────┐
+│     PHP/Jelix Backend (snake_case API)       │
+└─────────────────────────────────────────────┘
 ```
 
-### Key Components
+## Data Flows
 
-| Component            | Technology            | Purpose                        |
-| -------------------- | --------------------- | ------------------------------ |
-| **Frontend**         | Angular 21            | SPA with SSR support           |
-| **State Management** | @ngrx/signals         | Reactive state with signals    |
-| **Player**           | YouTube IFrame API    | Music video playback           |
-| **Styling**          | Bootstrap 5 + SCSS    | Responsive UI                  |
-| **i18n**             | Transloco             | Multi-language support (FR/EN) |
-| **SSR**              | Angular SSR + Express | Server-side rendering          |
-
----
-
-## Data Flow Diagrams
-
-### 1. Authentication Flow
+### Playback
 
 ```
-┌──────────┐    ┌─────────────┐    ┌─────────────┐    ┌──────────┐
-│  User    │───▶│   Header    │───▶│ UserService │───▶│  Backend │
-│  Login   │    │  Component  │    │             │    │   API    │
-└──────────┘    └──────┬──────┘    └──────┬──────┘    └────┬─────┘
-                       │                  │                 │
-                       │                  │    Response     │
-                       │                  │◀────────────────┘
-                       │                  │
-                       │           ┌──────▼──────┐
-                       │           │  AuthStore  │
-                       │           │  (signals)  │
-                       │           └──────┬──────┘
-                       │                  │
-                       ▼                  ▼
-              ┌─────────────────────────────────┐
-              │    UI Updates (Reactive)        │
-              │  - User menu visible            │
-              │  - Protected routes accessible  │
-              └─────────────────────────────────┘
+User clicks track → PlayerService → QueueStore.setQueue()
+  → YouTubePlayerService → YouTube IFrame API
+  → onStateChange → PlayerStore.setStatus() / updateProgress()
+  → Components react via signals
 ```
 
-### 2. Music Playback Flow
+### Authentication
 
 ```
-┌──────────────┐     ┌───────────────┐     ┌──────────────────┐
-│  Playlist    │────▶│ PlayerService │────▶│   QueueStore     │
-│  Component   │     │               │     │  (current track) │
-└──────────────┘     └───────┬───────┘     └────────┬─────────┘
-                             │                       │
-                             ▼                       ▼
-                    ┌─────────────────┐    ┌─────────────────┐
-                    │  YouTubePlayer  │◀───│   PlayerStore   │
-                    │    Service      │    │ (playing state) │
-                    └────────┬────────┘    └─────────────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  YouTube IFrame │
-                    │      API        │
-                    └─────────────────┘
+InitService.ping() → API /ping → AuthStore.login()
+  → Components read authStore.isAuthenticated()
+  → Protected routes use AuthGuard
 ```
 
-### 3. State Management Architecture
+### User Actions (playlists, follows, likes)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Signal Stores                            │
-├─────────────┬─────────────┬─────────────┬──────────────────┤
-│  AuthStore  │ PlayerStore │ QueueStore  │  UserDataStore   │
-│             │             │             │                  │
-│ • pseudo    │ • isPlaying │ • queue     │ • playlists      │
-│ • idPerso   │ • volume    │ • currentKey│ • follows        │
-│ • isAuth    │ • duration  │ • sourceId  │ • likedVideos    │
-│ • isDarkMode│ • position  │ • shuffle   │                  │
-└─────────────┴─────────────┴─────────────┴──────────────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              ▼              ▼              ▼
-        Components     Components      Components
-        (reactive)     (reactive)      (reactive)
+Component → UserLibraryService.addLike() → API POST
+  → UserDataStore.likeVideo() → Components react
 ```
 
----
+## State Management
+
+5 Signal Stores in `src/app/store/`:
+
+| Store           | Purpose                       | Key Signals                                                 |
+| --------------- | ----------------------------- | ----------------------------------------------------------- |
+| `AuthStore`     | Auth, preferences, dark mode  | `isAuthenticated()`, `pseudo()`, `isDarkMode()`             |
+| `PlayerStore`   | Playback state                | `isPlaying()`, `volume()`, `progress()`, `duration()`       |
+| `QueueStore`    | Track queue, shuffle          | `currentVideo()`, `items()`, `isShuffled()`, `hasNext()`    |
+| `UserDataStore` | Playlists, follows, likes     | `playlists()`, `follows()`, `likedVideos()`                 |
+| `UiStore`       | Modals, notifications, mobile | `isPlayerExpanded()`, `hasActiveModal()`, `notifications()` |
+
+All stores use `withSsrSafety()` for safe browser API access.
+
+### Store Features (`src/app/store/features/`)
+
+| Feature              | Methods                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `withSsrSafety()`    | `isBrowser()`, `runInBrowser()`, `getLocalStorage()`, `setLocalStorage()`, `setBodyAttribute()`, `checkIsMobile()` |
+| `withLocalStorage()` | Automatic localStorage persistence                                                                                 |
 
 ## Design Decisions
 
-### 1. Zoneless Architecture
+### Zoneless
 
-**Decision**: Use Angular's experimental zoneless change detection.
+`provideZonelessChangeDetection()` — no Zone.js. Explicit change detection via signals. All components use `OnPush`.
 
-**Rationale**:
+### Signal Stores over NgRx
 
-- Eliminates Zone.js overhead (~100KB bundle reduction)
-- Explicit change detection via signals
-- Better performance for real-time updates (music player)
-- Prepares codebase for Angular's future direction
+Smaller bundle, native signals integration, simpler boilerplate, type-safe.
 
-**Implementation**:
+### Signal Forms
 
-```typescript
-// app.config.ts
-provideExperimentalZonelessChangeDetection();
-```
+`@angular/forms/signals` — `form()` + schema validators. Arrow functions for Transloco messages (deferred evaluation).
 
-### 2. Signal-Based State Management
+### SSR + Hydration
 
-**Decision**: Use @ngrx/signals instead of traditional NgRx Store.
+`provideClientHydration(withEventReplay())` — SEO + fast FCP. `TransferState` shares data.
 
-**Rationale**:
+### Standalone Components
 
-- Smaller bundle size compared to full NgRx
-- Native Angular signals integration
-- Simpler boilerplate
-- Type-safe by default
-- Better tree-shaking
+100% standalone (Angular 21 default). No NgModules. Better tree-shaking and lazy loading.
 
-**Stores implemented**:
+## Routing
 
-- `AuthStore` - Authentication state
-- `PlayerStore` - Player state (volume, playing, etc.)
-- `QueueStore` - Music queue management
-- `UserDataStore` - User playlists and preferences
-- `UiStore` - UI state (modals, toasts, notifications, mobile detection)
-
-### 3. OnPush Change Detection Everywhere
-
-**Decision**: All components use `ChangeDetectionStrategy.OnPush`.
-
-**Rationale**:
-
-- Reduces change detection cycles
-- Works well with signals and immutable data
-- Required for zoneless mode
-
-### 4. SSR with Hydration
-
-**Decision**: Server-side rendering with client hydration.
-
-**Rationale**:
-
-- Better SEO for music content
-- Faster First Contentful Paint (FCP)
-- Improved Core Web Vitals
-
-**Implementation**:
+All routes lazy-loaded except `HomeComponent`. Protected routes: `like`, `settings`, `my-playlists`, `my-selection`.
 
 ```typescript
-// app.config.server.ts
-provideClientHydration(withEventReplay());
+{ path: 'playlist/:id_playlist', loadComponent: () => import('./playlist/playlist.component').then(m => m.PlaylistComponent) }
 ```
 
-### 5. Standalone Components
+Router configured with `withPreloading(PreloadAllModules)` and `withViewTransitions()` (200ms cross-fade, blur on navigate to prevent aria-hidden focus conflicts).
 
-**Decision**: 100% standalone components (no NgModules).
+## Performance
 
-**Rationale**:
+| Strategy          | Impact                       |
+| ----------------- | ---------------------------- |
+| Lazy loading      | -40% initial bundle          |
+| Zoneless          | -100KB (no Zone.js)          |
+| OnPush            | Fewer CD cycles              |
+| PreloadAllModules | Fast subsequent nav          |
+| Image lazy load   | `appLazyLoadImage` directive |
 
-- Simpler dependency management
-- Better tree-shaking
-- Easier lazy loading
-- Angular 21 best practice
-
-### 6. Signal Forms (Experimental)
-
-**Decision**: Use Angular's experimental Signal Forms API (`@angular/forms/signals`) for all forms.
-
-**Rationale**:
-
-- Native signal integration for reactive form state
-- Type-safe form models
-- Simplified validation with declarative validators
-- Better performance with fine-grained reactivity
-- Preparation for Angular's future forms direction
-
-**Implementation with Transloco i18n**:
-
-```typescript
-import { form, FormField, required, minLength } from '@angular/forms/signals';
-import { TranslocoService } from '@jsverse/transloco';
-
-private transloco = inject(TranslocoService);
-
-readonly formModel = signal({
-  email: '',
-  password: '',
-});
-
-readonly myForm = form(this.formModel, schemaPath => {
-  // required() without message - submit button is disabled when form is invalid
-  required(schemaPath.email);
-  required(schemaPath.password);
-  // minLength with message - use arrow function for lazy evaluation
-  minLength(schemaPath.password, 6, {
-    message: () => this.transloco.translate('validation_password_minlength', { min: 6 })
-  });
-});
-```
-
-> ⚠️ **IMPORTANT**: Always use arrow functions (`message: () => ...`) for validation messages
-> with Transloco. The form schema is evaluated synchronously during component construction,
-> **before** translation files are loaded. Using a direct call like `message: this.transloco.translate(...)`
-> will result in "Missing translation" warnings. Arrow functions defer the translation lookup
-> until the error message is actually displayed.
-
-Translation files use Transloco interpolation for dynamic values:
-
-```json
-{
-  "validation_password_minlength": "Password must be at least {{ min }} characters"
-}
-```
-
-Templates display the pre-translated message directly:
-
-```html
-<input type="password" [formField]="myForm.password" />
-@for (error of myForm.password().errors(); track error.kind) {
-<div>{{ error.message }}</div>
-}
-```
-
-### 7. Feature-Based Folder Structure
-
-**Decision**: Organize code by feature, not by type.
-
-**Rationale**:
-
-- Easier navigation
-- Better encapsulation
-- Simpler refactoring
-- Co-location of related files
-
----
-
-## Performance Strategy
-
-### 1. Bundle Optimization
-
-| Strategy           | Implementation          | Impact              |
-| ------------------ | ----------------------- | ------------------- |
-| **Lazy Loading**   | Routes loaded on demand | -40% initial bundle |
-| **Tree Shaking**   | Standalone components   | -15% unused code    |
-| **Zoneless**       | No Zone.js              | -100KB              |
-| **Code Splitting** | Per-route chunks        | Faster navigation   |
-
-### 2. Performance Budgets
-
-```json
-{
-  "budgets": [
-    {
-      "type": "initial",
-      "maximumWarning": "1.2MB",
-      "maximumError": "1.5MB"
-    },
-    {
-      "type": "anyComponentStyle",
-      "maximumWarning": "6kb",
-      "maximumError": "10kb"
-    }
-  ]
-}
-```
-
-### 3. Runtime Optimizations
-
-| Optimization               | Description                         |
-| -------------------------- | ----------------------------------- |
-| **OnPush Detection**       | Only check when inputs change       |
-| **Signal Reactivity**      | Fine-grained updates                |
-| **TrackBy Functions**      | Efficient list rendering            |
-| **Lazy Loading Images**    | Custom `appLazyLoadImage` directive |
-| **Default Image Fallback** | `appDefaultImage` directive         |
-
-### 4. Caching Strategy
-
-- **TransferState**: Share data between SSR and client
-- **HTTP Interceptors**: Cache API responses
-- **LocalStorage**: Persist user preferences and auth state
-
-### 5. Core Web Vitals Targets
-
-| Metric  | Target  | Strategy                  |
-| ------- | ------- | ------------------------- |
-| **LCP** | < 2.5s  | SSR + image optimization  |
-| **FID** | < 100ms | Zoneless + code splitting |
-| **CLS** | < 0.1   | Reserved image dimensions |
-
----
+Budgets: initial 1.2MB warning / 1.5MB error, component style 12kb / 16kb.
 
 ## Directory Structure
 
 ```
-src/
-├── app/
-│   ├── artist/              # Artist feature
-│   ├── current/             # Current queue feature
-│   ├── directives/          # Shared directives
-│   │   ├── default-image.directive.ts
-│   │   ├── lazy-load-image.directive.ts
-│   │   └── swipe-down.directive.ts
-│   ├── header/              # Header component
-│   ├── help/                # Help pages
-│   ├── home/                # Home page
-│   ├── interceptor/         # HTTP interceptors
-│   ├── models/              # TypeScript interfaces
-│   ├── my-playlists/        # User playlists
-│   ├── my-selection/        # User selection
-│   ├── pipes/               # Custom pipes
-│   ├── player/              # Player component
-│   ├── playlist/            # Playlist feature
-│   ├── reset-password/      # Password reset
-│   ├── routing/             # Route guards
-│   ├── search/              # Search feature
-│   ├── search-bar/          # Search bar component
-│   ├── services/            # Business logic
-│   │   ├── artist.service.ts
-│   │   ├── init.service.ts
-│   │   ├── player.service.ts
-│   │   ├── playlist.service.ts
-│   │   ├── search.service.ts
-│   │   ├── user.service.ts
-│   │   ├── user-library.service.ts
-│   │   └── youtube-player.service.ts
-│   ├── settings/            # User settings
-│   ├── store/               # Signal stores
-│   │   ├── auth/
-│   │   ├── player/
-│   │   ├── queue/
-│   │   ├── ui/
-│   │   ├── user-data/
-│   │   └── features/        # Shared store features
-│   └── utils/               # Utility functions
-├── assets/
-│   ├── i18n/                # Translation files
-│   ├── img/                 # Images
-│   └── font/                # Fonts
-├── environments/            # Environment configs
-└── styling/                 # Global SCSS
+src/app/
+├── store/          # 5 Signal Stores + features
+├── services/       # 13 services (HTTP + business logic)
+├── models/         # 10 TypeScript interface files
+├── directives/     # 3 shared directives + 4 skeleton components
+├── pipes/          # toMMSS pipe
+├── utils/          # formatTime utility
+├── interceptor/    # HTTP interceptors
+├── routing/        # Route guards
+└── [feature]/      # 15 feature components (mostly lazy-loaded)
+    ├── home/  artist/  playlist/  search/
+    ├── current/  my-playlists/  my-selection/
+    ├── settings/  help/  reset-password/
+    ├── header/  control-bar/  player/
+    └── search-bar/  toast-container/
 ```
 
----
+## Testing
 
-## Testing Strategy
-
-### Unit Tests (Vitest)
-
-- **541 tests** covering all components and services
-- Signal stores fully tested
-- Mock providers for external dependencies
-
-### E2E Tests (Cypress)
-
-- Critical user flows tested
-- Artist page navigation
-- Playlist interactions
-
-### Coverage Targets
-
-| Type       | Target | Current |
-| ---------- | ------ | ------- |
-| Statements | > 80%  | ✅      |
-| Branches   | > 75%  | ✅      |
-| Functions  | > 80%  | ✅      |
-
----
-
-_Last updated: February 2026_
+- **Unit**: Vitest — 623+ tests across 45+ spec files
+- **E2E**: Cypress — critical user flows
+- **Coverage**: ≥ 80% target
+- **Mocks**: Typed interfaces in `src/app/models/test-mocks.model.ts`

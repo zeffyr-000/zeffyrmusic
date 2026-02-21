@@ -4,7 +4,7 @@ applyTo: '**/*.spec.ts'
 
 # Test Instructions (Vitest)
 
-## Test Structure
+## Structure
 
 ```typescript
 import { describe, it, expect, beforeEach, vi, type MockedObject } from 'vitest';
@@ -33,14 +33,12 @@ describe('ComponentName', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load data on init', () => {
+  it('should load data', () => {
     // Arrange
     serviceMock.getData.mockReturnValue(of(mockData));
-
     // Act
     fixture.detectChanges();
-
-    // Assert - use signal() call syntax
+    // Assert — signal call syntax
     expect(component.isLoading()).toBe(false);
     expect(component.data()).toEqual(mockData);
   });
@@ -49,18 +47,18 @@ describe('ComponentName', () => {
 
 ## Critical Rules
 
-- Use Vitest, not Jest or Jasmine
-- Access signal values with function call syntax: `component.value()`
+- Use **Vitest**, not Jest or Jasmine
+- Access signal values with function call: `component.value()`
 - Use typed mocks from `src/app/models/test-mocks.model.ts`
 - Follow AAA pattern: Arrange, Act, Assert
 
 ## Mocking
 
 ```typescript
-// Mock a service method
+// Service mock
 serviceMock.getData.mockReturnValue(of(response));
 
-// Mock a store
+// Store mock
 const authStoreMock = {
   isAuthenticated: signal(true),
   pseudo: signal('TestUser'),
@@ -70,19 +68,13 @@ const authStoreMock = {
 ## Testing Signals
 
 ```typescript
-// Test initial signal value
-expect(component.isLoading()).toBe(false);
-
-// Test signal after update
+expect(component.isLoading()).toBe(false); // initial
 component.setLoading(true);
-expect(component.isLoading()).toBe(true);
-
-// Test computed signal
-expect(component.displayName()).toBe('Expected Value');
+expect(component.isLoading()).toBe(true); // after update
+expect(component.displayName()).toBe('Expected'); // computed
 ```
 
-## Coverage Requirements
+## Coverage
 
-- Minimum coverage: 80%
+- Target: ≥ 80%
 - Run: `npx vitest run --coverage`
-- All new code must be tested

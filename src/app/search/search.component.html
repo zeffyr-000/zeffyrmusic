@@ -35,11 +35,7 @@
     </div>
 
     @if (isLoading1()) {
-      <div class="section-loading">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <app-skeleton-card [count]="4" />
     } @else if (listArtists()?.length === 0) {
       <div class="empty-state">
         <span class="material-icons" aria-hidden="true">search_off</span>
@@ -87,11 +83,7 @@
     </div>
 
     @if (isLoading1()) {
-      <div class="section-loading">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <app-skeleton-card [count]="4" />
     } @else if (listAlbums()?.length === 0) {
       <div class="empty-state">
         <span class="material-icons" aria-hidden="true">search_off</span>
@@ -142,11 +134,7 @@
     </div>
 
     @if (isLoading2()) {
-      <div class="section-loading">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <app-skeleton-list [count]="5" />
     } @else if (listTracks()?.length === 0) {
       <div class="empty-state">
         <span class="material-icons" aria-hidden="true">search_off</span>
@@ -258,11 +246,7 @@
         {{ 'extras_info' | transloco }}
       </div>
     } @else if (isLoading3()) {
-      <div class="section-loading">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <app-skeleton-list [count]="5" />
     } @else if (listExtras()?.length === 0) {
       <div class="empty-state">
         <span class="material-icons" aria-hidden="true">search_off</span>

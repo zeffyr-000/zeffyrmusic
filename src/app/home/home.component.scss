@@ -44,3 +44,21 @@
     row-gap: var(--spacing-sm);
   }
 }
+
+// Card hover lift effect
+a.card {
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

@@ -1,0 +1,36 @@
+<div class="skeleton-artist" aria-busy="true" role="status">
+  <span class="visually-hidden">Loading...</span>
+
+  <!-- Artist header: avatar + info -->
+  <div class="skeleton-artist-header">
+    <div class="skeleton-artist-avatar skeleton-pulse"></div>
+    <div class="skeleton-artist-info">
+      <div class="skeleton-line skeleton-line--badge skeleton-pulse"></div>
+      <div class="skeleton-line skeleton-line--heading skeleton-pulse"></div>
+      <div class="skeleton-line skeleton-line--bio skeleton-pulse"></div>
+      <div class="skeleton-line skeleton-line--bio-short skeleton-pulse"></div>
+      <div class="skeleton-line skeleton-line--meta skeleton-pulse"></div>
+      <div class="skeleton-line skeleton-line--action skeleton-pulse"></div>
+    </div>
+  </div>
+
+  <!-- Albums grid -->
+  <div class="skeleton-artist-albums">
+    <div class="skeleton-line skeleton-line--section-title skeleton-pulse"></div>
+    <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+      @for (_ of items; track $index) {
+        <div class="col mb-2">
+          <div class="card h-100">
+            <div class="skeleton-card-img skeleton-pulse"></div>
+            <div class="card-body">
+              <div class="skeleton-line skeleton-line--title skeleton-pulse"></div>
+            </div>
+            <div class="card-footer">
+              <div class="skeleton-line skeleton-line--small skeleton-pulse"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

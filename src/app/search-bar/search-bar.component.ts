@@ -1,86 +1,132 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { ArtistResult } from '../models/artist.model';
 import { PlaylistResult } from '../models/playlist.model';
-import { Subject } from 'rxjs';
-import { debounceTime, switchMap, filter, distinctUntilChanged, tap } from 'rxjs/operators';
+import { Observable, of, OperatorFunction } from 'rxjs';
+import {
+  debounceTime,
+  switchMap,
+  filter,
+  distinctUntilChanged,
+  map,
+  catchError,
+} from 'rxjs/operators';
 import { SearchService } from '../services/search.service';
-import { SearchBarResponse } from '../models/search.model';
 import { FormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DefaultImageDirective } from '../directives/default-image.directive';
+import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+
+/** Unified result item for the typeahead dropdown */
+export interface SearchResultItem {
+  type: 'all' | 'artist' | 'album';
+  label: string;
+  sublabel?: string;
+  imageUrl?: string;
+  navigateUrl: string;
+  original?: ArtistResult | PlaylistResult;
+}
 
 @Component({
   selector: 'app-search-bar',
   templateUrl: './search-bar.component.html',
-  styleUrls: ['./search-bar.component.scss'],
+  styleUrl: './search-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, TranslocoPipe, DefaultImageDirective],
+  imports: [FormsModule, TranslocoPipe, DefaultImageDirective, NgbTypeahead],
 })
-export class SearchBarComponent implements OnInit {
+export class SearchBarComponent {
   private readonly searchService = inject(SearchService);
   private readonly router = inject(Router);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
 
   readonly query = signal('');
-  readonly resultsArtist = signal<ArtistResult[]>([]);
-  readonly resultsAlbum = signal<PlaylistResult[]>([]);
-  private searchSubject = new Subject<string>();
 
-  ngOnInit() {
-    this.searchSubject
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap(query => {
-          if (query.length === 0) {
-            this.resultsAlbum.set([]);
-            this.resultsArtist.set([]);
-          }
-        }),
-        filter(query => query.length >= 2),
-        switchMap(query => this.searchService.searchBar(query))
+  @ViewChild('typeaheadInstance', { static: true }) typeaheadInstance!: NgbTypeahead;
+
+  /** NgbTypeahead search function — returns an Observable of SearchResultItem[] */
+  searchTypeahead: OperatorFunction<string, readonly SearchResultItem[]> = (
+    text$: Observable<string>
+  ) =>
+    text$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      filter(term => term.length >= 2),
+      switchMap(term =>
+        this.searchService.searchBar(term).pipe(
+          map(data => {
+            const results: SearchResultItem[] = [];
+
+            // "All results" entry
+            results.push({
+              type: 'all',
+              label: '',
+              navigateUrl: '/search/' + term,
+            });
+
+            // Artists
+            for (const artist of data.artist) {
+              results.push({
+                type: 'artist',
+                label: artist.artiste ?? artist.artist,
+                imageUrl: 'https://api.deezer.com/artist/' + artist.id_artiste_deezer + '/image',
+                navigateUrl: '/artist/' + artist.id_artiste,
+                original: artist,
+              });
+            }
+
+            // Albums
+            for (const album of data.playlist) {
+              results.push({
+                type: 'album',
+                label: album.titre,
+                sublabel: album.artiste,
+                imageUrl: album.url_image,
+                navigateUrl: '/playlist/' + album.id_playlist,
+                original: album,
+              });
+            }
+
+            return results;
+          }),
+          catchError(() => of([]))
+        )
       )
-      .subscribe((data: SearchBarResponse) => {
-        this.resultsAlbum.set(data.playlist);
-        this.resultsArtist.set(data.artist);
-      });
-  }
+    );
 
-  search() {
-    this.searchSubject.next(this.query());
-  }
+  /** Formatter for the input field — keep it clean after selection */
+  inputFormatter = (): string => '';
 
-  reset(element: ArtistResult | PlaylistResult, redirect: boolean, url: string) {
-    if (redirect) {
-      let query = '';
+  /** Formatter for the dropdown items — return the label text */
+  resultFormatter = (item: SearchResultItem): string => item.label;
 
-      if ('artiste' in element && element.artiste !== undefined) {
-        query += element.artiste;
+  /** Handle typeahead item selection */
+  onSelect(event: { item: SearchResultItem; preventDefault: () => void }): void {
+    event.preventDefault();
+
+    const item = event.item;
+
+    if (item.original) {
+      let analyticsQuery = '';
+      if ('artiste' in item.original && item.original.artiste) {
+        analyticsQuery += item.original.artiste;
       }
-
-      if ('titre' in element && element.titre !== undefined) {
-        if (query.length > 0) {
-          query += ' ';
+      if ('titre' in item.original && item.original.titre) {
+        if (analyticsQuery.length > 0) {
+          analyticsQuery += ' ';
         }
-
-        query += element.titre;
+        analyticsQuery += item.original.titre;
       }
-
-      if (query.length > 0) {
+      if (analyticsQuery.length > 0) {
         this.googleAnalyticsService.pageView('/recherche?q=' + this.query());
       }
     }
 
     this.query.set('');
-    this.resultsAlbum.set([]);
-    this.resultsArtist.set([]);
-
-    this.router.navigate([url]);
+    this.router.navigate([item.navigateUrl]);
   }
 
-  getQuerystr() {
+  getQuerystr(): string {
     return encodeURIComponent(this.query());
   }
 }

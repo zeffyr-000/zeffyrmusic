@@ -1,122 +1,72 @@
 # Copilot Instructions - Zeffyr Music
 
-> Repository-wide custom instructions for GitHub Copilot.
-> These guidelines ensure consistent, production-ready code quality.
+> Repository-wide instructions for GitHub Copilot.
+> For the complete guide, see `/AGENTS.md`.
 
-## Project Overview
+## Quick Rules
 
-- **Framework**: Angular 21 with SSR (Server-Side Rendering)
-- **State Management**: @ngrx/signals (Signal Stores)
-- **Testing**: Vitest (unit), Cypress (E2E)
-- **Styling**: SCSS + Bootstrap 5
-- **i18n**: Transloco (fr/en)
-- **Change Detection**: OnPush everywhere (zoneless-ready)
+- **Angular 21** — SSR, standalone components, zoneless (`provideZonelessChangeDetection()`)
+- **OnPush** change detection on all components
+- **Signal Stores** (`@ngrx/signals`) for shared state — never `BehaviorSubject`
+- **`inject()`** function only — no constructor injection
+- **Signals syntax**: `this.isLoading()` (function call), not `this.isLoading`
+- **`readonly`** on all injected dependencies and signals
+- **`styleUrl`** (singular) not `styleUrls`
+- **English only** for comments — no French
+- **Vitest** for tests — not Jest/Jasmine
+- **Modern control flow**: `@if`, `@for`, `@switch` — not `*ngIf`, `*ngFor`
 
-## Critical Rules
+## Component Structure
 
-### State Management
+```typescript
+@Component({
+  selector: 'app-my-feature',
+  templateUrl: './my-feature.component.html',
+  styleUrl: './my-feature.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslocoPipe, ...],
+})
+export class MyFeatureComponent {
+  private readonly myService = inject(MyService);
+  readonly authStore = inject(AuthStore);
+  readonly playlistId = input.required<string>();
+  readonly onClose = output<void>();
+  readonly isLoading = signal(false);
+  readonly displayName = computed(() => this.authStore.pseudo() || 'Guest');
+}
+```
 
-- Use Signal Stores (`@ngrx/signals`) for all shared state
-- Never use `BehaviorSubject`/`Subject` for application state
-- Inject stores with `inject(StoreName)`
+## Key Patterns
 
-### Change Detection
-
-- Use `signal()` for local component state
-- Never use `ChangeDetectorRef.markForCheck()` with signals
-- All components must use `ChangeDetectionStrategy.OnPush`
-
-### Dependency Injection
-
-- Always use the `inject()` function
-- Never use constructor injection
-
-### Signals Syntax
-
-- Access signal values with function call syntax: `this.isLoading()`, not `this.isLoading`
-- Use `computed()` for derived state
-- Use `effect()` sparingly for side effects
-
-### SSR Compatibility
-
-- Always check platform before accessing browser APIs
-- Use `withSsrSafety()` feature in stores
-- Never access `window`, `document`, `localStorage` directly without platform checks
-
-### Comments & Documentation
-
-- Write all comments in English (no French)
-- Keep JSDoc concise - avoid verbose examples
-- One-line summary for simple functions
-
-### Testing
-
-- Framework: Vitest
-- Minimum coverage: 80%
-- Use typed mocks from `src/app/models/test-mocks.model.ts`
-- Test signal values with function call syntax: `expect(component.isLoading()).toBe(false)`
-
-### Transloco i18n
-
-- Use arrow functions for validation messages in Signal Forms:
-  ```typescript
-  message: () => this.translocoService.translate('key', { param: value });
-  ```
-- Never call `translate()` directly in form schema definitions
+- **SSR safety**: Use `withSsrSafety()` in stores — never access `window`/`document` directly
+- **Transloco + Signal Forms**: Arrow functions for validation messages (`message: () => ...`)
+- **SEO**: Every routed component sets title, meta description, canonical URL
+- **Skeleton loaders**: `app-skeleton-card`, `app-skeleton-list`, `app-skeleton-artist`, `app-skeleton-playlist`
+- **Empty state**: `.empty-state` + `.empty-state-icon` + `.empty-state-text` pattern
+- **YouTube player CSS**: MUST be in `styles.scss` (global) — see `css-critical-rules.md`
 
 ## Architecture
 
-### Folder Structure
+| Concern        | Store | Service |
+| -------------- | ----- | ------- |
+| State holding  | ✅    | ❌      |
+| HTTP calls     | ❌    | ✅      |
+| Business logic | ❌    | ✅      |
 
+Stores: `AuthStore`, `PlayerStore`, `QueueStore`, `UserDataStore`, `UiStore`
+
+## Testing
+
+```typescript
+import { describe, it, expect, vi, type MockedObject } from 'vitest';
+// Signal assertions: expect(component.isLoading()).toBe(false)
+// Typed mocks from src/app/models/test-mocks.model.ts
 ```
-src/app/
-├── store/           # Signal Stores (centralized state)
-├── services/        # Business logic & HTTP calls
-├── models/          # TypeScript interfaces
-├── utils/           # Shared utility functions
-├── directives/      # Shared directives
-├── pipes/           # Custom pipes
-└── [feature]/       # Feature modules (lazy-loaded)
-```
-
-### Store vs Service Responsibilities
-
-| Concern         | Store | Service |
-| --------------- | ----- | ------- |
-| State holding   | ✅    | ❌      |
-| State mutations | ✅    | ❌      |
-| HTTP calls      | ❌    | ✅      |
-| Business logic  | ❌    | ✅      |
-
-### Available Stores
-
-| Store           | Purpose                                   |
-| --------------- | ----------------------------------------- |
-| `AuthStore`     | Authentication, user preferences          |
-| `PlayerStore`   | Playback state (status, progress, volume) |
-| `QueueStore`    | Playlist queue, current track             |
-| `UserDataStore` | User playlists, follows, likes            |
-| `UiStore`       | UI state (modals, notifications, mobile)  |
 
 ## Code Quality
 
-- No dead code (remove unused imports, variables, methods)
-- No code duplication (extract shared logic)
+- No `any` types — use proper typing
+- No dead code — remove unused imports/variables
 - Method length ≤ 30 lines
-- Cyclomatic complexity ≤ 10
-- No `any` types (use proper typing)
-
-## Git Conventions
-
-```
-feat: add playlist sharing feature
-fix: resolve SSR hydration mismatch
-refactor: migrate SettingsComponent to signals
-test: add coverage for AuthStore
-docs: update documentation
-```
-
-## CI/CD & GitHub Actions
-
-- Use POSIX-compliant shell syntax (not bash-specific)
-- See `/.github/instructions/workflows.instructions.md` for detailed guidelines
+- `@media (hover: hover)` guard for hover effects
+- Bootstrap utilities over custom CSS

@@ -20,6 +20,8 @@ import { Video } from '../models/video.model';
 import { SearchService } from '../services/search.service';
 import { isPlatformBrowser, SlicePipe } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
+import { SkeletonCardComponent } from '../directives/skeleton-card/skeleton-card.component';
+import { SkeletonListComponent } from '../directives/skeleton-list/skeleton-list.component';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { AuthStore, QueueStore } from '../store';
@@ -27,12 +29,21 @@ import { AuthStore, QueueStore } from '../store';
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
+  styleUrl: './search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, DefaultImageDirective, SlicePipe, TranslocoPipe, ToMMSSPipe, NgbTooltip],
+  imports: [
+    RouterLink,
+    DefaultImageDirective,
+    SkeletonCardComponent,
+    SkeletonListComponent,
+    SlicePipe,
+    TranslocoPipe,
+    ToMMSSPipe,
+    NgbTooltip,
+  ],
 })
 export class SearchComponent implements OnInit, OnDestroy {
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly searchService = inject(SearchService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly titleService = inject(Title);

@@ -20,6 +20,7 @@ import { ArtistData, RelatedArtist } from '../models/artist.model';
 import { ArtistService } from '../services/artist.service';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
 import { DefaultImageDirective } from '../directives/default-image.directive';
+import { SkeletonArtistComponent } from '../directives/skeleton-artist/skeleton-artist.component';
 import { isPlatformBrowser } from '@angular/common';
 import { SeoService } from '../services/seo.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -28,9 +29,15 @@ import { AuthStore } from '../store';
 @Component({
   selector: 'app-artist',
   templateUrl: './artist.component.html',
-  styleUrls: ['./artist.component.scss'],
+  styleUrl: './artist.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ShareButtons, RouterLink, DefaultImageDirective, TranslocoPipe],
+  imports: [
+    ShareButtons,
+    RouterLink,
+    DefaultImageDirective,
+    SkeletonArtistComponent,
+    TranslocoPipe,
+  ],
 })
 export class ArtistComponent implements OnInit {
   private readonly artistService = inject(ArtistService);
