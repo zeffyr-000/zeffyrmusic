@@ -4,146 +4,105 @@ applyTo: '**/*.scss,**/*.css'
 
 # SCSS/CSS Instructions
 
-## Framework
-
-- Bootstrap 5.3.x with ng-bootstrap 20.x.x
-- Custom variables in `src/styling/_custom.scss` (BEFORE Bootstrap import)
-- Global styles in `src/styling/styles.scss`
-- Component styles in `*.component.scss` files
-
 ## File Structure
 
 ```
 src/styling/
-├── _custom.scss           # Bootstrap variable overrides (import FIRST)
+├── _custom.scss           # Bootstrap variable overrides + CSS custom properties (BEFORE Bootstrap)
+├── _utilities.scss        # Shared utilities (~1270 lines, 11 sections)
 ├── _material-icons-optimized.scss
-└── styles.scss            # Main entry point
+└── styles.scss            # Entry: custom → bootstrap → utilities → global styles
 ```
 
-## Variable Customization
+Import order in `styles.scss` is critical:
 
-Always override Bootstrap variables in `_custom.scss` BEFORE importing Bootstrap:
-
-```scss
-// ✅ CORRECT: Override before import
-// _custom.scss
-$primary: #1ac8e5;
-$border-radius: 0.5rem;
-
-// styles.scss
-@import 'custom'; // Variables first
-@import 'bootstrap/scss/bootstrap'; // Then Bootstrap
-```
+1. `_custom.scss` (variables BEFORE Bootstrap to override `!default`)
+2. `bootstrap/scss/bootstrap`
+3. `ngx-sharebuttons/themes/default`
+4. `_material-icons-optimized`
+5. `_utilities`
 
 ## Best Practices
 
 ```scss
-// ✅ Use Bootstrap utilities in templates instead of custom CSS
-// <div class="d-flex justify-content-between align-items-center">
-
-// ✅ Use component-scoped styles
-:host {
-  display: block;
-}
-
-// ✅ Use CSS variables for theming (auto dark mode support)
+// ✅ Use Bootstrap CSS variables (auto dark mode)
 .custom-element {
   color: var(--bs-body-color);
   background: var(--bs-body-bg);
   border-color: var(--bs-border-color);
 }
 
-// ✅ Use Bootstrap color functions
-.custom-badge {
-  background-color: tint-color($primary, 20%);
-  color: color-contrast($primary);
+// ✅ Component-scoped styles
+:host {
+  display: block;
 }
 
-// ❌ Avoid !important
+// ✅ Mobile-first with Bootstrap breakpoints
 .element {
-  color: red !important; // Don't do this
-}
-
-// ❌ Avoid hardcoded colors
-.element {
-  color: #333; // Use var(--bs-body-color) instead
-}
-
-// ❌ Avoid deep nesting (max 3 levels)
-.parent {
-  .child {
-    .grandchild {
-      .great-grandchild {
-        // Too deep
-      }
-    }
-  }
-}
-```
-
-## Dark Mode Support
-
-```scss
-// Default (light mode) styles
-.custom-element {
-  background: $white;
-}
-
-// Dark mode override
-body[data-bs-theme='dark'] {
-  .custom-element {
-    background: $dark;
-  }
-}
-
-// Or use CSS variables that auto-switch
-.custom-element {
-  background: var(--bs-body-bg); // Automatic!
-}
-```
-
-## Naming Convention
-
-- Use BEM-like naming for custom classes: `block__element--modifier`
-- Prefix custom utilities with project name if needed: `zf-custom-class`
-
-## Responsive Design
-
-Use Bootstrap breakpoints (mobile-first approach):
-
-```scss
-.element {
-  // Mobile first (default)
   flex-direction: column;
-  padding: 1rem;
-
-  // Tablet and up
   @include media-breakpoint-up(md) {
     flex-direction: row;
-    padding: 2rem;
   }
+}
 
-  // Desktop and up
-  @include media-breakpoint-up(lg) {
-    padding: 3rem;
+// ✅ Hover guard for touch devices
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+// ❌ No hardcoded colors → use var(--bs-body-color) or $primary
+// ❌ No !important
+// ❌ Max 3 levels SCSS nesting
+// ❌ No styles for #player in component CSS (see css-critical-rules.md)
+```
+
+## Design System (in `_custom.scss` `:root`)
+
+| Category    | Examples                                            |
+| ----------- | --------------------------------------------------- |
+| Spacing     | `--spacing-xs` (0.25rem) → `--spacing-2xl` (3rem)   |
+| Shadows     | `--shadow-sm/md/lg/xl`, `--shadow-card/-card-hover` |
+| Transitions | `--transition-fast/base/slow` (150/200/300ms)       |
+| Radii       | `--radius-sm/md/lg/xl/full`                         |
+| Typography  | `--text-xs` → `--text-3xl`                          |
+| Z-index     | `--z-dropdown` → `--z-tooltip`                      |
+| Player      | `--control-bar-height`, `--control-bar-bg`, etc.    |
+
+## `_utilities.scss` Sections
+
+| Section           | Purpose                                        |
+| ----------------- | ---------------------------------------------- |
+| Custom Scrollbars | Thin themed scrollbars                         |
+| Touch Targets     | WCAG 2.5.8 minimum size                        |
+| Page Layout       | `.page-container`, `.page-header`              |
+| Tracks List       | Spotify-style track grid                       |
+| CDK Drag-and-Drop | Drag handle styles                             |
+| Shared Keyframes  | `fade-in-up`, `slideIn`, `dropdownReveal`      |
+| Skeleton Loaders  | `.skeleton-pulse`, `.skeleton-line--*`         |
+| Empty State       | `.empty-state`, `.empty-state-icon/text`       |
+| Original Utils    | Legacy helpers                                 |
+| Cards             | Modern hover cards with `@media (hover:hover)` |
+
+## Dark Mode
+
+```scss
+// CSS variables adapt automatically
+.element {
+  color: var(--bs-body-color);
+} // auto light/dark
+
+// Explicit override if needed
+body[data-bs-theme='dark'] {
+  .element {
+    background: $black;
   }
 }
 ```
-
-## Bootstrap Breakpoints Reference
-
-| Breakpoint | Min-width | Class infix |
-| ---------- | --------- | ----------- |
-| X-Small    | <576px    | (none)      |
-| Small      | ≥576px    | `-sm`       |
-| Medium     | ≥768px    | `-md`       |
-| Large      | ≥992px    | `-lg`       |
-| X-Large    | ≥1200px   | `-xl`       |
-| XX-Large   | ≥1400px   | `-xxl`      |
 
 ## Performance
 
-- Keep component styles under 6KB (warning) / 10KB (error)
-- Avoid complex selectors (max specificity: 3 classes)
+- Component style budget: warning 12kb, error 16kb
+- Prefer Bootstrap utility classes over custom CSS
 - Use CSS containment where appropriate
-- Prefer utility classes over custom CSS

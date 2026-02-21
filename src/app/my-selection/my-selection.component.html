@@ -4,8 +4,9 @@
   </header>
 
   @if (userDataStore.follows().length === 0) {
-    <div class="selection-intro">
-      <p>{{ 'selection_empty' | transloco }}</p>
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon" aria-hidden="true">bookmarks</span>
+      <p class="empty-state-text">{{ 'selection_empty' | transloco }}</p>
     </div>
   }
 

@@ -1,0 +1,21 @@
+<div
+  class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-xl-6"
+  aria-busy="true"
+  role="status"
+>
+  <span class="visually-hidden">Loading...</span>
+  @for (_ of items; track $index) {
+    <div class="col mb-2">
+      <div class="card h-100">
+        <div class="skeleton-card-img skeleton-pulse"></div>
+        <div class="card-body">
+          <div class="skeleton-line skeleton-line--title skeleton-pulse"></div>
+          <div class="skeleton-line skeleton-line--subtitle skeleton-pulse"></div>
+        </div>
+        <div class="card-footer">
+          <div class="skeleton-line skeleton-line--small skeleton-pulse"></div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

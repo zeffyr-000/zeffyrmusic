@@ -1,39 +1,96 @@
-#header_recherche > input {
-  width: 80%;
+// =============================================================================
+// SEARCH BAR — NgbTypeahead styles
+// =============================================================================
+
+:host {
+  display: block;
+  position: relative;
 }
 
-#liste-resultat-recherche {
-  width: 74%;
-  position: absolute;
-  z-index: 10;
+// Typeahead dropdown container
+:host ::ng-deep .dropdown-menu {
+  width: 100%;
+  min-width: 300px;
+  z-index: 1050;
+  max-height: 420px;
+  overflow-y: auto;
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--bs-border-color);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-xs, 4px) 0;
+  margin-top: var(--spacing-xs, 4px);
 }
 
-#liste-resultat-recherche .list-group-item {
-  padding: 4px;
-}
+// Remove default Bootstrap dropdown-item padding, let our layout handle it
+:host ::ng-deep .dropdown-item {
+  padding: 0;
+  border-radius: 0;
 
-#liste-resultat-recherche .list-group-item.all_results {
-  min-height: 60px;
-}
-
-#liste-resultat-recherche h4 {
-  margin: 0px;
-  line-height: 60px;
-}
-
-.img_artiste_recherche {
-  height: 60px;
-  width: 60px;
-  font-size: 60px;
-}
-
-@media screen and (max-device-width: 799px), screen and (max-width: 799px) {
-  #header_recherche > input {
-    width: 99%;
+  &:hover,
+  &:focus,
+  &.active {
+    background: rgba(var(--bs-primary-rgb), 0.08);
   }
-  #liste-resultat-recherche {
-    position: absolute;
-    right: 0;
+}
+
+// "See all results" separator
+.search-result-all {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  font-weight: 600;
+  font-size: var(--text-sm, 0.875rem);
+  border-bottom: 1px solid var(--bs-border-color);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.search-result-all-icon {
+  font-size: 1.25rem;
+  color: var(--bs-primary);
+  flex-shrink: 0;
+}
+
+// Regular result item layout
+.search-result-item {
+  gap: var(--spacing-sm, 8px);
+  min-height: 48px;
+  padding: var(--spacing-xs, 4px) var(--spacing-md, 16px);
+}
+
+.search-result-img {
+  height: 40px;
+  width: 40px;
+  object-fit: cover;
+  border-radius: var(--radius-sm, 4px);
+  flex-shrink: 0;
+}
+
+.search-result-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.search-result-label {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.search-result-sublabel {
+  color: var(--bs-secondary-color);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+@media screen and (max-width: 767.98px) {
+  :host ::ng-deep .dropdown-menu {
     width: 100%;
+    min-width: unset;
+    border-radius: 0 0 var(--radius-lg, 12px) var(--radius-lg, 12px);
   }
 }

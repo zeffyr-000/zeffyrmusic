@@ -123,18 +123,15 @@
         </div>
       }
     } @else if (isAvailable() === false) {
-      <p class="bg-info p-2 rounded">{{ 'artist_not_available' | transloco }}</p>
-      <p>
-        <a routerLink="/">{{ 'back_home' | transloco }}</a>
-      </p>
+      <div class="empty-state">
+        <span class="material-icons empty-state-icon" aria-hidden="true">person_off</span>
+        <p class="empty-state-text">{{ 'artist_not_available' | transloco }}</p>
+        <a class="btn btn-outline-primary mt-3" routerLink="/">{{ 'back_home' | transloco }}</a>
+      </div>
     }
   </div>
 } @else {
-  <div class="d-flex justify-content-center align-items-center">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
+  <app-skeleton-artist [count]="6" />
 }
 
 <ng-template #contentModalShare let-modal>

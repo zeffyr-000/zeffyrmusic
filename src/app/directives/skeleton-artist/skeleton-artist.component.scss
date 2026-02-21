@@ -1,0 +1,100 @@
+// =============================================================================
+// SKELETON ARTIST - Artist profile placeholder
+// Mirrors artist.component layout: avatar + info header, then album grid
+// =============================================================================
+
+.skeleton-artist {
+  padding: var(--spacing-lg, 1.5rem);
+}
+
+.skeleton-artist-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg, 1.5rem);
+  margin-bottom: var(--spacing-xl, 2rem);
+}
+
+.skeleton-artist-avatar {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-artist-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.5rem);
+  flex: 1;
+  padding-top: var(--spacing-sm, 0.5rem);
+}
+
+.skeleton-line--badge {
+  height: 12px;
+  width: 60px;
+}
+
+.skeleton-line--heading {
+  height: 28px;
+  width: 220px;
+  margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.skeleton-line--bio {
+  height: 12px;
+  width: 90%;
+}
+
+.skeleton-line--bio-short {
+  height: 12px;
+  width: 60%;
+}
+
+.skeleton-line--meta {
+  height: 24px;
+  width: 120px;
+  border-radius: 20px;
+  margin-top: var(--spacing-xs, 0.25rem);
+}
+
+.skeleton-line--action {
+  height: 36px;
+  width: 100px;
+  border-radius: var(--radius-md, 8px);
+  margin-top: var(--spacing-sm, 0.5rem);
+}
+
+.skeleton-artist-albums {
+  margin-top: var(--spacing-lg, 1.5rem);
+}
+
+.skeleton-line--section-title {
+  height: 20px;
+  width: 100px;
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+@media screen and (max-width: 767.98px) {
+  .skeleton-artist-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .skeleton-artist-avatar {
+    width: 140px;
+    height: 140px;
+  }
+
+  .skeleton-artist-info {
+    align-items: center;
+  }
+
+  .skeleton-line--bio {
+    width: 80%;
+  }
+
+  .skeleton-line--heading {
+    width: 160px;
+  }
+}

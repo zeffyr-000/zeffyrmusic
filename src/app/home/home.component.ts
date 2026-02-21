@@ -15,6 +15,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { HomeAlbum } from '../models/album.model';
 import { InitService } from '../services/init.service';
 import { DefaultImageDirective } from '../directives/default-image.directive';
+import { SkeletonCardComponent } from '../directives/skeleton-card/skeleton-card.component';
 import { isPlatformServer } from '@angular/common';
 import { SeoService } from '../services/seo.service';
 import { environment } from 'src/environments/environment';
@@ -24,12 +25,12 @@ const RANDOM_TOP_KEY = makeStateKey<HomeAlbum[]>('randomTop');
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, DefaultImageDirective, TranslocoPipe],
+  imports: [RouterLink, DefaultImageDirective, SkeletonCardComponent, TranslocoPipe],
 })
 export class HomeComponent implements OnInit {
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly initService = inject(InitService);
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);

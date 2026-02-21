@@ -1,0 +1,53 @@
+// =============================================================================
+// SKELETON LIST - Track list placeholder
+// Mirrors .track-item grid from _utilities.scss
+// =============================================================================
+
+.skeleton-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.skeleton-track {
+  display: grid;
+  grid-template-columns: 40px 56px 1fr 70px;
+  align-items: center;
+  gap: var(--spacing-md, 1rem);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  border-radius: var(--radius-md, 8px);
+}
+
+.skeleton-track-num {
+  height: 14px;
+  width: 20px;
+}
+
+.skeleton-track-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.skeleton-track-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.skeleton-track-duration {
+  height: 14px;
+  width: 40px;
+  margin-left: auto;
+}
+
+@media screen and (max-width: 767.98px) {
+  .skeleton-track {
+    grid-template-columns: 40px 1fr;
+  }
+
+  .skeleton-track-thumb,
+  .skeleton-track-duration {
+    display: none;
+  }
+}

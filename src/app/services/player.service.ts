@@ -12,6 +12,7 @@ import { YoutubePlayerService } from './youtube-player.service';
  * PlayerService - Playback orchestration and playlist management
  *
  * Coordinates YouTube player, stores and playlist CRUD operations.
+ * All state is held in QueueStore and PlayerStore (single source of truth).
  */
 @Injectable({
   providedIn: 'root',
@@ -23,15 +24,6 @@ export class PlayerService implements OnDestroy {
   private readonly queueStore = inject(QueueStore);
   private readonly uiStore = inject(UiStore);
   private readonly youtubePlayer = inject(YoutubePlayerService);
-
-  tabIndexInitial: number[] = [];
-  tabIndex: number[] = [];
-  currentIndex = 0;
-  listVideo: Video[] = [];
-  isPlaying = false;
-  currentTitle = '';
-  currentArtist = '';
-  currentKey = '';
 
   private stateChangeSubscription!: Subscription;
   private errorSubscription!: Subscription;
@@ -61,14 +53,6 @@ export class PlayerService implements OnDestroy {
 
         if (items.length > 0 && currentKey && !this.queueInitialized) {
           this.queueInitialized = true;
-
-          this.listVideo = items;
-          this.tabIndex = this.queueStore.tabIndex();
-          this.tabIndexInitial = this.queueStore.tabIndexOriginal();
-          this.currentKey = currentKey;
-          this.currentTitle = this.queueStore.currentTitle();
-          this.currentArtist = this.queueStore.currentArtist();
-
           this.youtubePlayer.cueVideo(currentKey);
         }
       });
@@ -78,19 +62,15 @@ export class PlayerService implements OnDestroy {
   private handleStateChange(state: YT.PlayerState): void {
     switch (state) {
       case 0: // ENDED
-        this.isPlaying = false;
         this.playerStore.setEnded();
         break;
       case 2: // PAUSED
-        this.isPlaying = false;
         this.playerStore.pause();
         break;
       case -1: // UNSTARTED
-        this.isPlaying = false;
         this.playerStore.setIdle();
         break;
       case 1: // PLAYING
-        this.isPlaying = true;
         this.playerStore.play();
         break;
       case 3: // BUFFERING
@@ -104,55 +84,59 @@ export class PlayerService implements OnDestroy {
   }
 
   lecture(indice: number, indexInitial = false) {
+    const items = this.queueStore.items();
+    const tabIndex = this.queueStore.tabIndex();
+    let actualItemIndex: number;
+    let tabIndexPosition: number;
+
     if (indexInitial) {
-      this.currentIndex = indice;
+      // indice = direct index into items[]
+      actualItemIndex = indice;
+      tabIndexPosition = tabIndex.indexOf(indice);
+      if (tabIndexPosition === -1) tabIndexPosition = indice;
     } else {
-      this.currentIndex = this.tabIndex[indice];
+      // indice = position in tabIndex[]
+      tabIndexPosition = indice;
+      actualItemIndex = tabIndex[indice];
     }
 
-    this.youtubePlayer.loadVideo(this.listVideo[this.currentIndex].key);
+    const video = items[actualItemIndex];
+    this.youtubePlayer.loadVideo(video.key);
 
-    this.currentKey = this.listVideo[this.currentIndex].key;
-    this.currentTitle = this.listVideo[this.currentIndex].titre;
-    let fullTitle = this.currentTitle;
-
-    if (
-      this.listVideo[this.currentIndex].artiste &&
-      this.listVideo[this.currentIndex].artiste !== ''
-    ) {
-      this.currentArtist = this.listVideo[this.currentIndex].artiste;
-      fullTitle += ' - ' + this.listVideo[this.currentIndex].artiste;
-    } else {
-      this.currentArtist = '';
+    let fullTitle = video.titre;
+    if (video.artiste && video.artiste !== '') {
+      fullTitle += ' - ' + video.artiste;
     }
 
     this.titleService.setTitle(fullTitle + ' - Zeffyr Music');
-
-    this.queueStore.goToIndex(indice);
-
-    this.currentIndex = indice;
+    this.queueStore.goToIndex(tabIndexPosition);
   }
 
   before() {
     this.youtubePlayer.clearError();
-    if (this.listVideo[this.tabIndex[this.currentIndex - 1]] !== undefined) {
-      this.lecture(this.currentIndex - 1);
+    const items = this.queueStore.items();
+    const tabIndex = this.queueStore.tabIndex();
+    const currentIndex = this.queueStore.currentIndex();
+
+    if (items[tabIndex[currentIndex - 1]] !== undefined) {
+      this.lecture(currentIndex - 1);
     }
   }
 
   after() {
     this.youtubePlayer.clearError();
-    if (this.tabIndex[this.currentIndex + 1] !== undefined) {
-      this.lecture(this.currentIndex + 1);
+    const tabIndex = this.queueStore.tabIndex();
+    const currentIndex = this.queueStore.currentIndex();
+
+    if (tabIndex[currentIndex + 1] !== undefined) {
+      this.lecture(currentIndex + 1);
     } else if (this.playerStore.isRepeat()) {
-      this.currentIndex = 0;
-      this.lecture(this.currentIndex);
+      this.lecture(0);
     }
   }
 
   onPlayPause() {
-    const isNowPlaying = this.youtubePlayer.togglePlayPause();
-    this.isPlaying = isNowPlaying;
+    this.youtubePlayer.togglePlayPause();
     // PlayerStore is updated via handleStateChange when YouTube emits the state
   }
 
@@ -167,31 +151,16 @@ export class PlayerService implements OnDestroy {
 
   removeToPlaylist(index: number) {
     this.queueStore.setSource(null, null);
-    this.listVideo.splice(index, 1);
-    this.tabIndexInitial.pop();
-    this.tabIndex = this.tabIndexInitial.slice(0);
 
-    if (this.queueStore.isShuffled()) {
-      this.shuffle(this.tabIndex);
-    }
+    const tabIndex = this.queueStore.tabIndex();
+    const currentIndex = this.queueStore.currentIndex();
+    const currentActualIndex = tabIndex[currentIndex];
+    const isCurrentTrack = index === currentActualIndex;
 
-    if (index === this.currentIndex) {
+    this.queueStore.removeFromQueue(index);
+
+    if (isCurrentTrack) {
       this.youtubePlayer.pause();
-    } else {
-      if (index < this.currentIndex) {
-        this.currentIndex--;
-      }
-    }
-  }
-
-  shuffle(v: number[]) {
-    for (
-      let j: number, x: number, i = v.length;
-      i;
-      j = Number.parseInt((Math.random() * i).toString(), 10), x = v[--i], v[i] = v[j], v[j] = x
-    ) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      null;
     }
   }
 
@@ -200,20 +169,14 @@ export class PlayerService implements OnDestroy {
   }
 
   switchRandom() {
-    const isShuffled = this.queueStore.toggleShuffle();
-
-    if (isShuffled) {
-      this.shuffle(this.tabIndex);
-    } else {
-      this.tabIndex = this.tabIndexInitial.slice(0);
-    }
+    this.queueStore.toggleShuffle();
   }
 
   /** Removes a video from the current playback queue by its id_video */
   removeVideoFromQueue(idVideo: string): void {
-    for (let i = 0; i < this.listVideo.length; i++) {
-      if (this.listVideo[i].id_video === idVideo) {
-        // Use removeToPlaylist logic to properly update indices
+    const items = this.queueStore.items();
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id_video === idVideo) {
         this.removeToPlaylist(i);
         break;
       }
@@ -226,44 +189,15 @@ export class PlayerService implements OnDestroy {
   }
 
   addInCurrentList(playlist: Video[], idTopCharts: string | null = '') {
-    if (this.listVideo.length === 0) {
-      // Source will be set via queueStore.setQueue in runPlaylist
-      // or directly here if called directly
+    if (this.queueStore.items().length === 0) {
       this.queueStore.setSource(playlist[0]?.id_playlist ?? null, idTopCharts);
     } else {
-      // If adding to an existing list, we can no longer identify a single source
       this.queueStore.setSource(null, null);
     }
-    this.listVideo = this.listVideo.concat(playlist);
-
-    const index = this.tabIndexInitial.length;
-    const iMax = this.listVideo.length;
-
-    for (let i = 0; i < iMax; i++) {
-      this.tabIndexInitial.push(i + index);
-      this.tabIndex.push(i + index);
-    }
-
-    if (this.queueStore.isShuffled()) {
-      this.shuffle(this.tabIndex);
-    }
-
     this.queueStore.addToQueue(playlist);
   }
 
   addVideoAfterCurrentInList(video: Video) {
-    this.listVideo.splice(this.currentIndex + 1, 0, video);
-
-    const index = this.tabIndexInitial.length;
-    const iMax = this.listVideo.length;
-
-    this.tabIndexInitial.push(index + 1);
-    this.tabIndex.push(iMax + 1);
-
-    if (this.queueStore.isShuffled()) {
-      this.shuffle(this.tabIndex);
-    }
-
     this.queueStore.addAfterCurrent(video);
   }
 
@@ -277,11 +211,7 @@ export class PlayerService implements OnDestroy {
       return;
     }
 
-    this.listVideo = [];
-    this.tabIndexInitial = [];
-    this.tabIndex = [];
     const sourcePlaylistId = playlistId ?? playlist[0]?.id_playlist ?? null;
-    this.addInCurrentList(playlist, idTopCharts);
     this.queueStore.setQueue(playlist, sourcePlaylistId, idTopCharts);
 
     this.lecture(index, true);

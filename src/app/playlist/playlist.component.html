@@ -22,7 +22,7 @@
                 id="playlist-image"
                 [src]="imgBig()"
                 class="rounded"
-                alt=""
+                [alt]="titre() || title()"
                 appDefaultImage
                 itemprop="image"
               />
@@ -226,8 +226,9 @@
                     (click)="
                       $event.stopPropagation(); userLibraryService.removeLike(video.key).subscribe()
                     "
+                    [attr.aria-label]="'aria_retirer_favori' | transloco"
                   >
-                    <span class="material-icons">favorite</span>
+                    <span class="material-icons" aria-hidden="true">favorite</span>
                   </button>
                 } @else if (authStore.isAuthenticated()) {
                   <button
@@ -236,8 +237,9 @@
                     (click)="
                       $event.stopPropagation(); userLibraryService.addLike(video.key).subscribe()
                     "
+                    [attr.aria-label]="'aria_ajouter_favori' | transloco"
                   >
-                    <span class="material-icons">favorite_border</span>
+                    <span class="material-icons" aria-hidden="true">favorite_border</span>
                   </button>
                 }
                 <span
@@ -315,11 +317,7 @@
     }
   </div>
 } @else {
-  <div class="d-flex justify-content-center align-items-center">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
+  <app-skeleton-playlist [count]="8" />
 }
 
 <ng-template #contentModalShare let-modal>

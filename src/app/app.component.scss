@@ -5,7 +5,7 @@
 #main {
   height: 100%;
   padding-top: 60px;
-  padding-bottom: var(--control-bar-height, 72px);
+  padding-bottom: calc(var(--control-bar-height, 72px) + env(safe-area-inset-bottom, 0px));
 }
 
 #container,
@@ -18,6 +18,7 @@
 #content {
   height: 100%;
   overflow: auto;
+  outline: none;
 }
 
 // Alert positioning
@@ -39,7 +40,7 @@
 }
 
 // Responsive behavior for mobile
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #content {
     // Prevent horizontal scrollbar on mobile browsers
     // Previously used magic number 99.3214534% (2019-2026)
@@ -48,7 +49,7 @@
     box-sizing: border-box;
     overflow: visible;
     padding: 0;
-    margin: 0 0 var(--control-bar-height-mobile, 64px) 0;
+    margin: 0 0 calc(var(--control-bar-height-mobile, 64px) + env(safe-area-inset-bottom, 0px)) 0;
   }
 
   #main {

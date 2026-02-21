@@ -34,7 +34,7 @@ import '../models/google-identity.model';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgbDropdown,

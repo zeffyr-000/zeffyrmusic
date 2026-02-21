@@ -31,7 +31,11 @@
           ngbDropdown
           placement="left-top"
         >
-          <button class="btn btn-sm btn-icon" ngbDropdownToggle aria-label="Menu actions">
+          <button
+            class="btn btn-sm btn-icon"
+            ngbDropdownToggle
+            [attr.aria-label]="'menu_actions' | transloco"
+          >
             <span class="material-icons">more_vert</span>
           </button>
           <ul ngbDropdownMenu>

@@ -6,11 +6,7 @@
     itemtype="http://schema.org/MusicPlaylist"
   >
     @if (isLoading()) {
-      <div class="content-loading">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <app-skeleton-card [count]="6" />
     } @else {
       @if (page === 'top') {
         <h1 class="h3" itemprop="name">{{ 'hits_by_decade' | transloco }}</h1>
@@ -50,7 +46,11 @@
         [class.row-cols-xl-6]="page === 'home'"
         [class.row-cols-xl-5]="page !== 'home'"
       >
-        @for (chart of page === 'home' ? listTopSliced() : listTop(); track chart.id) {
+        @for (
+          chart of page === 'home' ? listTopSliced() : listTop();
+          track chart.id;
+          let i = $index
+        ) {
           <div
             class="col mb-2"
             itemprop="track"
@@ -63,7 +63,8 @@
                 class="card-img-top"
                 alt="{{ chart.titre }}"
                 itemprop="image"
-                fetchpriority="high"
+                [attr.fetchpriority]="i === 0 ? 'high' : null"
+                [attr.loading]="i === 0 ? null : 'lazy'"
                 appDefaultImage
               />
               <div class="card-body">
@@ -106,11 +107,7 @@
       {{ 'top_albums' | transloco }}
     </h1>
     @if (isLoading()) {
-      <div class="content-loading">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <app-skeleton-card [count]="6" />
     } @else {
       <div
         class="row row-cols-md-3 row-cols-sm-2 row-cols-2"
@@ -140,7 +137,8 @@
                 class="card-img-top"
                 alt="{{ album.titre }}"
                 itemprop="image"
-                fetchpriority="high"
+                [attr.fetchpriority]="i === 0 ? 'high' : null"
+                [attr.loading]="i === 0 ? null : 'lazy'"
                 appDefaultImage
               />
               <div class="card-body">

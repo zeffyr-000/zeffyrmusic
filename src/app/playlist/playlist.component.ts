@@ -19,6 +19,7 @@ import { Playlist } from '../models/playlist.model';
 import { PlaylistService } from '../services/playlist.service';
 import { APP_BASE_HREF, isPlatformBrowser } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
+import { SkeletonPlaylistComponent } from '../directives/skeleton-playlist/skeleton-playlist.component';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
 import { ArtistListComponent } from './artist-list/artist-list.component';
@@ -49,10 +50,11 @@ import { UserVideo } from '../models/video.model';
 @Component({
   selector: 'app-playlist',
   templateUrl: './playlist.component.html',
-  styleUrls: ['./playlist.component.scss'],
+  styleUrl: './playlist.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DefaultImageDirective,
+    SkeletonPlaylistComponent,
     RouterLink,
     ShareButtons,
     LazyLoadImageDirective,
@@ -70,7 +72,7 @@ import { UserVideo } from '../models/video.model';
   ],
 })
 export class PlaylistComponent {
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
   private baseHref = inject(APP_BASE_HREF, { optional: true });
   private readonly playlistService = inject(PlaylistService);
   private readonly activatedRoute = inject(ActivatedRoute);

@@ -48,19 +48,25 @@
 #header-li-connexion > button,
 #header-li-inscription > button {
   border-radius: 20px;
-  padding: 2px 28px;
+  padding: var(--spacing-xs) var(--spacing-lg);
   margin: 4px;
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 // Responsive styles - use Bootstrap breakpoints
-@media screen and (max-width: 1199px) {
+@media screen and (max-width: 1199.98px) {
   #header-li-connexion > button,
   #header-li-inscription > button {
-    padding: 2px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--text-sm);
   }
 }
 
-@media (max-width: 750px) {
+@media (max-width: 767.98px) {
   #header-toggle-big {
     display: none;
   }
@@ -74,16 +80,6 @@
   #header-nav > li > a {
     padding-left: 0;
     padding-right: 2px;
-  }
-  #header-nav .dropdown-menu {
-    width: 100% !important;
-    margin-top: 0;
-    border: 0;
-    box-shadow: none;
-    background-color: $white !important;
-    color: $gray-medium !important;
-    position: absolute !important;
-    float: none !important;
   }
   #header-recherche {
     width: 50%;

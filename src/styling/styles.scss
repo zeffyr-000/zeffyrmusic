@@ -89,7 +89,7 @@ body[data-bs-theme='dark'] {
 // Mobile: Reduce player height to 1px
 // ⚠️ CRITICAL: Player must stay in DOM for YouTube API
 // Setting height to 1px hides it visually but keeps API functional
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #player {
     height: 1px;
   }
@@ -147,4 +147,46 @@ td[ng-click] {
 .btn-group > .tooltip + .btn,
 .btn-group > .popover + .btn {
   margin-left: -1px;
+}
+
+// =============================================================================
+// VIEW TRANSITIONS - Cross-fade between route navigations
+// =============================================================================
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+
+@keyframes vt-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }

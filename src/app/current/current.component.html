@@ -34,7 +34,11 @@
         ngbDropdown
         placement="left-top"
       >
-        <button class="btn btn-sm btn-icon" ngbDropdownToggle aria-label="Menu actions">
+        <button
+          class="btn btn-sm btn-icon"
+          ngbDropdownToggle
+          [attr.aria-label]="'menu_actions' | transloco"
+        >
           <span class="material-icons">more_vert</span>
         </button>
         <ul ngbDropdownMenu>
@@ -63,6 +67,11 @@
           }
         </ul>
       </span>
+    </div>
+  } @empty {
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon" aria-hidden="true">queue_music</span>
+      <p class="empty-state-text">{{ 'queue_empty' | transloco }}</p>
     </div>
   }
 </div>

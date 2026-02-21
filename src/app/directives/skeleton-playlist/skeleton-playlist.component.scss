@@ -1,0 +1,162 @@
+// =============================================================================
+// SKELETON PLAYLIST - Playlist page placeholder
+// Mirrors playlist.component layout: header (image + info) + track list
+// =============================================================================
+
+.skeleton-playlist {
+  padding: var(--spacing-md, 1rem);
+}
+
+// ---------------------------------------------------------------------------
+// Header: image + info block
+// ---------------------------------------------------------------------------
+
+.skeleton-playlist-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg, 1.5rem);
+  padding: var(--spacing-lg, 1.5rem);
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--bs-border-color);
+}
+
+.skeleton-playlist-image {
+  width: 170px;
+  height: 170px;
+  border-radius: var(--radius-lg, 12px);
+  flex-shrink: 0;
+}
+
+.skeleton-playlist-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.5rem);
+  flex: 1;
+  padding-top: var(--spacing-xs, 0.25rem);
+}
+
+.skeleton-line--pl-title {
+  height: 24px;
+  width: 200px;
+}
+
+.skeleton-line--pl-artist {
+  height: 18px;
+  width: 120px;
+  margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.skeleton-playlist-actions {
+  display: flex;
+  gap: var(--spacing-sm, 0.5rem);
+  margin-top: var(--spacing-sm, 0.5rem);
+}
+
+.skeleton-line--pl-btn-primary {
+  height: 36px;
+  width: 90px;
+  border-radius: var(--radius-md, 8px);
+}
+
+.skeleton-line--pl-btn {
+  height: 36px;
+  width: 110px;
+  border-radius: var(--radius-md, 8px);
+}
+
+.skeleton-line--pl-meta {
+  height: 22px;
+  width: 160px;
+  border-radius: 20px;
+  margin-top: var(--spacing-sm, 0.5rem);
+}
+
+// ---------------------------------------------------------------------------
+// Track list (same structure as skeleton-list)
+// ---------------------------------------------------------------------------
+
+.skeleton-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.skeleton-track {
+  display: grid;
+  grid-template-columns: 40px 56px 1fr 70px;
+  align-items: center;
+  gap: var(--spacing-md, 1rem);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  border-radius: var(--radius-md, 8px);
+}
+
+.skeleton-track-num {
+  height: 14px;
+  width: 20px;
+}
+
+.skeleton-track-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.skeleton-track-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.skeleton-track-duration {
+  height: 14px;
+  width: 40px;
+  margin-left: auto;
+}
+
+// ---------------------------------------------------------------------------
+// Mobile responsive
+// ---------------------------------------------------------------------------
+
+@media screen and (max-width: 767.98px) {
+  .skeleton-playlist-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-md, 1rem);
+  }
+
+  .skeleton-playlist-image {
+    width: 140px;
+    height: 140px;
+  }
+
+  .skeleton-playlist-info {
+    align-items: center;
+  }
+
+  .skeleton-playlist-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm, 0.5rem);
+    width: 100%;
+  }
+
+  .skeleton-line--pl-btn-primary {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .skeleton-line--pl-btn {
+    width: 100%;
+  }
+
+  .skeleton-track {
+    grid-template-columns: 40px 1fr;
+  }
+
+  .skeleton-track-thumb,
+  .skeleton-track-duration {
+    display: none;
+  }
+}

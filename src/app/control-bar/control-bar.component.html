@@ -89,6 +89,30 @@
       </button>
       <button
         type="button"
+        class="cb-btn-icon cb-btn-volume-mobile"
+        [ngbPopover]="volumePopoverContent"
+        placement="top"
+        popoverClass="volume-popover"
+        [attr.aria-label]="'aria_volume' | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">{{ volumeIcon() }}</span>
+      </button>
+      <ng-template #volumePopoverContent>
+        <div class="cb-volume-popover">
+          <input
+            type="range"
+            class="cb-volume-slider-vertical"
+            min="0"
+            max="100"
+            step="1"
+            [value]="playerStore.volume()"
+            (input)="onVolumeInput($event)"
+            [attr.aria-label]="'aria_volume' | transloco"
+          />
+        </div>
+      </ng-template>
+      <button
+        type="button"
         class="cb-btn-icon"
         [class.active]="playerStore.isRepeat()"
         (click)="repeat()"

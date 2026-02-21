@@ -6,10 +6,11 @@ import {
   computed,
   inject,
   signal,
+  DOCUMENT,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbTooltip, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
@@ -21,11 +22,12 @@ import { SwipeDownDirective } from '../directives/swipe-down.directive';
   templateUrl: './control-bar.component.html',
   styleUrl: './control-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SwipeDownDirective, NgbTooltip, TranslocoPipe],
+  imports: [SwipeDownDirective, NgbTooltip, NgbPopover, TranslocoPipe],
 })
 export class ControlBarComponent {
   // -- Dependencies ----------------------------------------------------------
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly document = inject<Document>(DOCUMENT);
   private readonly playerService = inject(PlayerService);
   private readonly userLibraryService = inject(UserLibraryService);
   private readonly destroyRef = inject(DestroyRef);
@@ -123,9 +125,15 @@ export class ControlBarComponent {
 
   expandPlayer(): void {
     this.isPlayerExpanded.set(true);
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.body.style.overflow = 'hidden';
+    }
   }
 
   collapsePlayer(): void {
     this.isPlayerExpanded.set(false);
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.body.style.overflow = '';
+    }
   }
 }

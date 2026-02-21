@@ -1,11 +1,17 @@
+<a class="visually-hidden-focusable" href="#content">{{ 'skip_to_content' | transloco }}</a>
 <app-header id="header" class="navbar navbar-inverse fixed-top"></app-header>
 <app-control-bar />
 
 <div id="main" class="container-fluid">
   <div id="container" class="row">
-    <app-player class="col-xs-3 col-md-3" id="player-sidebar"></app-player>
+    <app-player
+      class="col-3 col-md-3"
+      id="player-sidebar"
+      role="complementary"
+      [attr.aria-label]="'play_list' | transloco"
+    ></app-player>
 
-    <div class="col-xs-9 col-md-9" id="content">
+    <div class="col-9 col-md-9" id="content">
       @if (
         (queueStore.sourceTopChartsId() || queueStore.sourcePlaylistId()) &&
         !isRedirectingToCurrentUrl()
