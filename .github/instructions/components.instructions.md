@@ -59,6 +59,76 @@ readonly onClose = output<void>();
 readonly onSelect = output<PlaylistItem>();
 ```
 
+## Restarting CSS Entry Animations Without DOM Recreation
+
+When a CSS `animation` is tied to a DOM element that should **persist** across value changes
+(avoid NG0956), you cannot rely on DOM recreation to replay the animation.
+Use the **animation-name toggling trick** instead:
+
+**Pattern (ControlBarComponent is the reference implementation):**
+
+```typescript
+// 1. A private tick signal incremented on each relevant change
+private readonly _animTick = signal(0);
+
+// 2. A public boolean computed derived from it
+readonly cbAnimA = computed(() => this._animTick() % 2 === 0);
+
+constructor() {
+  // 3. effect() increments the tick when the tracked value changes
+  effect(() => {
+    this.currentKey();               // establish reactive dependency
+    untracked(() => this._animTick.update(v => v + 1));
+  });
+}
+```
+
+```html
+<!-- 4. Bind alternating classes on the animated element -->
+<div [class.cb-anim-a]="cbAnimA()" [class.cb-anim-b]="!cbAnimA()">...</div>
+```
+
+```scss
+// 5. Two IDENTICAL keyframes with different names
+// The browser restarts the animation whenever animation-name changes.
+.my-element.anim-a {
+  animation: enter-a 220ms ease-out both;
+}
+.my-element.anim-b {
+  animation: enter-b 220ms ease-out both;
+}
+
+@keyframes enter-a {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes enter-b {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+**Why it works:** The CSS spec triggers a new animation run whenever `animation-name` changes,
+even if the new keyframe definition is identical. No DOM recreation needed.
+
+**When to use it:**
+
+- Element must stay in DOM (no `@for` recreation)
+- You need to replay an entry animation on a data change
+- Avoids NG0956 while keeping visual feedback
+
 ## SEO (Routed Components Only)
 
 Every routed component must set:

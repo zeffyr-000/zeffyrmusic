@@ -15,31 +15,41 @@
     <span class="material-icons" aria-hidden="true">keyboard_arrow_down</span>
   </button>
 
-  <div class="cb-left">
-    @if (thumbnailUrl()) {
-      <img [src]="thumbnailUrl()" class="cb-thumbnail" [attr.alt]="currentTitle()" />
-    }
-    <div class="cb-track-info">
-      <span class="cb-track-title">{{ currentTitle() }}</span>
-      <span class="cb-track-artist">{{ currentArtist() }}</span>
+  @for (key of currentKeyArr(); track $index) {
+    <div class="cb-left" [class.cb-anim-a]="cbAnimA()" [class.cb-anim-b]="!cbAnimA()">
+      @if (thumbnailUrl()) {
+        <img [src]="thumbnailUrl()" class="cb-thumbnail" [attr.alt]="currentTitle()" />
+      }
+      <div class="cb-track-info">
+        <span class="cb-track-title">{{ currentTitle() }}</span>
+        <span class="cb-track-artist">{{ currentArtist() }}</span>
+      </div>
+      @if (authStore.isAuthenticated() && key) {
+        <button
+          type="button"
+          class="cb-btn-icon btn-like"
+          [class.active]="isLiked()"
+          (click)="toggleLike($event)"
+          [attr.aria-label]="
+            (isLiked() ? 'aria_retirer_favori' : 'aria_ajouter_favori') | transloco
+          "
+        >
+          <span class="material-icons" aria-hidden="true">{{
+            isLiked() ? 'favorite' : 'favorite_border'
+          }}</span>
+        </button>
+      }
     </div>
-    @if (authStore.isAuthenticated() && currentKey()) {
-      <button
-        type="button"
-        class="cb-btn-icon btn-like"
-        [class.active]="isLiked()"
-        (click)="toggleLike($event)"
-        [attr.aria-label]="(isLiked() ? 'aria_retirer_favori' : 'aria_ajouter_favori') | transloco"
-      >
-        <span class="material-icons" aria-hidden="true">{{
-          isLiked() ? 'favorite' : 'favorite_border'
-        }}</span>
-      </button>
-    }
-  </div>
+  }
 
   <div class="cb-center">
-    <button type="button" class="cb-mobile-title d-md-none" (click)="expandPlayer()">
+    <button
+      type="button"
+      class="cb-mobile-title d-md-none"
+      [class.cb-anim-a]="cbAnimA()"
+      [class.cb-anim-b]="!cbAnimA()"
+      (click)="expandPlayer()"
+    >
       <span class="cb-mobile-track-title">{{ currentTitle() }}</span>
       <span class="cb-mobile-track-artist">{{ currentArtist() }}</span>
     </button>

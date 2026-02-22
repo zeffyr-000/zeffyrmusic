@@ -81,6 +81,30 @@ Always call signals as functions in templates:
 
 Auto-handled: `ngbDropdownToggle`, `ngbTooltip`, `ngbPopover`, `ngbModal`, `ngbCollapse`
 
+## NG0956: Never Use Inline Arrays as `@for` Source
+
+**WHY:** `@for (x of [signal()])` creates a **new array on every change detection cycle**.
+Angular sees a new reference → destroys and recreates the entire DOM → NG0956 warning
+in the console and unnecessary performance cost.
+
+```html
+<!-- ❌ Triggers NG0956 — new array every cycle -->
+@for (key of [currentKey()]; track key) { ... }
+
+<!-- ✅ Use track $index when stable identity is not required -->
+@for (key of currentKeyArr(); track $index) { ... }
+
+<!-- ✅ Or use @let when you just need the value as a local variable -->
+@let key = currentKey();
+```
+
+When the `@for` is used **intentionally** to trigger a CSS entry animation on value change
+(e.g. `cb-left` in `ControlBarComponent`), use `track $index` AND drive the animation
+via alternating class names instead — see `components.instructions.md` for the `_animTick` pattern.
+
+**Key rule:** A signal-derived array MUST be stored in a `computed()` in the component,
+never constructed inline in the template.
+
 ## Interactive Elements
 
 Use native `<button>` for actions, not `<a>`:

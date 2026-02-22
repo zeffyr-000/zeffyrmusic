@@ -224,4 +224,59 @@ describe('ControlBarComponent', () => {
       expect(component.volumeIcon()).toBe('volume_up');
     });
   });
+
+  describe('currentKeyArr', () => {
+    const mockVideo = { key: 'track-a', titre: 'Track A', artiste: 'Artist' } as Video;
+    const mockVideo2 = { key: 'track-b', titre: 'Track B', artiste: 'Artist' } as Video;
+
+    it('should contain exactly one element', () => {
+      component.queueStore.setQueue([mockVideo], null);
+      expect(component.currentKeyArr()).toHaveLength(1);
+    });
+
+    it('should contain the current key', () => {
+      component.queueStore.setQueue([mockVideo], null);
+      expect(component.currentKeyArr()[0]).toBe('track-a');
+    });
+
+    it('should update when the track key changes', () => {
+      component.queueStore.setQueue([mockVideo], null);
+      const arr1 = component.currentKeyArr();
+      component.queueStore.setQueue([mockVideo2], null);
+      const arr2 = component.currentKeyArr();
+      expect(arr2[0]).toBe('track-b');
+      expect(arr1).not.toBe(arr2);
+    });
+
+    it('should maintain referential stability when key has not changed', () => {
+      component.queueStore.setQueue([mockVideo], null);
+      const arr1 = component.currentKeyArr();
+      const arr2 = component.currentKeyArr();
+      expect(arr1).toBe(arr2);
+    });
+  });
+
+  describe('Animation tick (cbAnimA)', () => {
+    const mockVideo = { key: 'track-a', titre: 'Track A', artiste: 'Artist' } as Video;
+    const mockVideo2 = { key: 'track-b', titre: 'Track B', artiste: 'Artist' } as Video;
+
+    it('should alternate cbAnimA between true and false on each track change', () => {
+      const initial = component.cbAnimA();
+      component.queueStore.setQueue([mockVideo], null);
+      fixture.detectChanges();
+      const after1 = component.cbAnimA();
+      expect(after1).toBe(!initial);
+      component.queueStore.setQueue([mockVideo2], null);
+      fixture.detectChanges();
+      expect(component.cbAnimA()).toBe(initial);
+    });
+
+    it('should not change cbAnimA when key stays the same', () => {
+      component.queueStore.setQueue([mockVideo], null);
+      fixture.detectChanges();
+      const before = component.cbAnimA();
+      fixture.detectChanges();
+      expect(component.cbAnimA()).toBe(before);
+    });
+  });
 });

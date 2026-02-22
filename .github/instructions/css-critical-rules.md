@@ -216,6 +216,37 @@ npm run lint
 **Symptom:** Mobile player still visible (>1px height)  
 **Fix:** Add #container-player { padding-bottom: 0; } on mobile
 
+### Mistake 4: Fixed Overlay Behind the Header (z-index < 1030)
+
+**Context:** Bootstrap `.fixed-top` (the app `<header>`) uses `z-index: 1030`.
+Any `position: fixed` element that overlaps the header area and has a lower z-index
+will be partially or fully hidden behind it — its top border/edge will be invisible.
+
+**Symptom:** Top border of a fixed pill/banner appears cut off or invisible.
+
+**Fix:** Set `z-index: 1031` (or higher) on the overlay, and position it **below** the header
+(`top: calc(60px + ...) `) or use a negative offset **only if** z-index > 1030.
+
+```scss
+// ✅ Correct — visible above the header
+.back-to-playlist-banner {
+  position: fixed;
+  top: calc(60px + env(safe-area-inset-top, 0px) - 12px); // slight overlap with header bottom
+  z-index: 1031; // MUST be > Bootstrap .fixed-top (1030)
+}
+
+// ❌ Wrong — pill hides behind the header
+.back-to-playlist-banner {
+  position: fixed;
+  top: calc(60px - 12px);
+  z-index: var(--z-dropdown, 1000); // 1000 < 1030 → behind the navbar
+}
+```
+
+**Zero layout shift rule:** Fixed overlays that appear/disappear MUST NOT shift page content.
+Do NOT add `padding-top` to a sibling container to compensate — use `position: fixed` and
+accept that the overlay floats above the content.
+
 ---
 
 ## Emergency Recovery
