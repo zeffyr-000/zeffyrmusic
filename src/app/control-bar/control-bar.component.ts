@@ -4,8 +4,10 @@ import {
   DestroyRef,
   PLATFORM_ID,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
   DOCUMENT,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -37,6 +39,9 @@ export class ControlBarComponent {
 
   // -- Derived state ---------------------------------------------------------
   readonly currentKey = computed(() => this.queueStore.currentKey());
+  /** Stable array reference — only recreated when the track key actually changes.
+   * Used by @for to trigger the .cb-left entry animation on each track change. */
+  readonly currentKeyArr = computed(() => [this.currentKey()]);
   readonly currentTitle = computed(() => this.queueStore.currentVideo()?.titre ?? '');
   readonly currentArtist = computed(() => this.queueStore.currentVideo()?.artiste ?? '');
   readonly thumbnailUrl = computed(() => {
@@ -52,6 +57,19 @@ export class ControlBarComponent {
   });
 
   // -- Local state -----------------------------------------------------------
+  /** Increments on each track change to alternate the CSS animation-name and restart it. */
+  private readonly _animTick = signal(0);
+  /** Alternates true/false on each track change — drives the animation class toggle. */
+  readonly cbAnimA = computed(() => this._animTick() % 2 === 0);
+
+  constructor() {
+    // Re-trigger .cb-left entry animation on track change without DOM recreation (avoids NG0956)
+    effect(() => {
+      this.currentKey(); // establish dependency
+      untracked(() => this._animTick.update(v => v + 1));
+    });
+  }
+
   readonly isPlayerExpanded = signal(false);
   readonly isDraggingPlayer = signal(false);
   readonly dragProgress = signal(0);

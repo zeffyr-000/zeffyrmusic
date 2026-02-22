@@ -29,6 +29,38 @@
   }
 }
 
+// Duplicate keyframes for animation-name toggling trick (browser restarts animation on name change)
+@keyframes cb-track-enter-a {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cb-track-enter-b {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Re-triggers on each track change by alternating animation-name (avoids NG0956 from DOM recreation)
+.cb-left.cb-anim-a {
+  animation: cb-track-enter-a 220ms ease-out both;
+}
+
+.cb-left.cb-anim-b {
+  animation: cb-track-enter-b 220ms ease-out both;
+}
+
 // =============================================================================
 // SLIDER (shared between seek & volume)
 // =============================================================================
@@ -391,6 +423,14 @@
   min-width: 0;
   flex: 1;
   cursor: pointer;
+
+  &.cb-anim-a {
+    animation: cb-track-enter-a 220ms ease-out both;
+  }
+
+  &.cb-anim-b {
+    animation: cb-track-enter-b 220ms ease-out both;
+  }
 }
 
 .cb-mobile-track-title {
@@ -421,8 +461,9 @@
 
 @media (max-width: 767.98px) {
   .cb-container {
-    height: var(--control-bar-height-mobile);
+    height: calc(var(--control-bar-height-mobile) + env(safe-area-inset-bottom, 0px));
     padding: 0 var(--spacing-sm);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     flex-wrap: wrap;
     align-content: center;
     gap: 0;
@@ -450,8 +491,12 @@
     display: none;
   }
 
+  .btn-fullscreen {
+    display: none !important;
+  }
+
   .cb-seek {
-    order: 2;
+    order: 0;
     max-width: none;
     flex-basis: 100%;
     margin: 0;
@@ -480,6 +525,7 @@
     flex-direction: column;
     flex-wrap: nowrap;
     padding: var(--spacing-md) var(--spacing-lg);
+    padding-bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
     gap: 0;
     transition:
       height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -567,6 +613,7 @@
   }
 
   .cb-container.expanded .cb-center .cb-controls {
+    order: 1;
     gap: var(--spacing-xl);
     justify-content: center;
   }
@@ -593,6 +640,7 @@
   .cb-container.expanded .cb-seek {
     flex-basis: auto;
     width: 100%;
+    order: 0;
     padding: 0 var(--spacing-sm);
     max-width: none;
     margin: 0;
@@ -655,6 +703,8 @@
     transition: none;
   }
 
+  .cb-left,
+  .cb-mobile-title,
   .cb-container.expanded .cb-collapse-btn,
   .cb-container.expanded .cb-left,
   .cb-container.expanded .cb-left .cb-thumbnail,

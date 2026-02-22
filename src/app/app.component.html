@@ -2,6 +2,24 @@
 <app-header id="header" class="navbar navbar-inverse fixed-top"></app-header>
 <app-control-bar />
 
+@if (
+  (queueStore.sourceTopChartsId() || queueStore.sourcePlaylistId()) && !isRedirectingToCurrentUrl()
+) {
+  <a
+    class="back-to-playlist-banner"
+    [attr.aria-label]="'back_current_playlist' | transloco"
+    [routerLink]="
+      queueStore.sourceTopChartsId()
+        ? ['top', queueStore.sourceTopChartsId()]
+        : ['playlist', queueStore.sourcePlaylistId()]
+    "
+  >
+    <span class="material-icons" aria-hidden="true">play_circle</span>
+    {{ 'back_current_playlist' | transloco }}
+    <span class="material-icons" aria-hidden="true">chevron_right</span>
+  </a>
+}
+
 <div id="main" class="container-fluid">
   <div id="container" class="row">
     <app-player
@@ -12,21 +30,6 @@
     ></app-player>
 
     <div class="col-9 col-md-9" id="content">
-      @if (
-        (queueStore.sourceTopChartsId() || queueStore.sourcePlaylistId()) &&
-        !isRedirectingToCurrentUrl()
-      ) {
-        <a
-          [routerLink]="
-            queueStore.sourceTopChartsId()
-              ? ['top', queueStore.sourceTopChartsId()]
-              : ['playlist', queueStore.sourcePlaylistId()]
-          "
-        >
-          <span class="material-icons">chevron_left</span>
-          {{ 'back_current_playlist' | transloco }}
-        </a>
-      }
       <router-outlet></router-outlet>
     </div>
   </div>
