@@ -50,7 +50,7 @@
     "ngx-sharebuttons": "^17.0.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.6.2",
-    "zone.js": "^0.16.0"
+    "zone.js": "^0.16.1"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "^2.2.3",
@@ -77,7 +77,7 @@
     "angular-eslint": "^21.2.0",
     "cypress": "^15.10.0",
     "eslint": "^9.28.0",
-    "glob": "^13.0.5",
+    "glob": "^13.0.6",
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
