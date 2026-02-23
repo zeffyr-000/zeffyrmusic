@@ -99,6 +99,14 @@ body[data-bs-theme='dark'] {
     height: auto;
     overflow: visible;
   }
+
+  // Locks scroll when the mobile player is expanded.
+  // Uses a class (not inline style) so ng-bootstrap modal scroll management
+  // doesn't interfere: ng-bootstrap saves/restores body.style.overflow, but
+  // never touches classList, so the two systems stay independent.
+  body.cb-player-expanded {
+    overflow: hidden;
+  }
 }
 
 // =============================================================================
