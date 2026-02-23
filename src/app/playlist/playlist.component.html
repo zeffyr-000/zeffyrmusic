@@ -205,13 +205,13 @@
                   class="track-thumbnail"
                   [attr.alt]="video.titre"
                 />
+                <div class="track-info">
+                  <span class="track-title" itemprop="name">{{ video.titre }}</span>
+                  <span class="track-artist">
+                    <app-artist-list [artists]="video.artists"></app-artist-list>
+                  </span>
+                </div>
               </button>
-              <div class="track-info">
-                <span class="track-title" itemprop="name">{{ video.titre }}</span>
-                <span class="track-artist">
-                  <app-artist-list [artists]="video.artists"></app-artist-list>
-                </span>
-              </div>
               <span class="track-duration">
                 @if (video.duree && +video.duree > 0) {
                   {{ video.duree | toMMSS }}

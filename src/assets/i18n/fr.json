@@ -357,5 +357,7 @@
   "skip_to_content": "Aller au contenu principal",
   "route_announced": "Page chargée : {title}",
   "queue_empty": "Votre file d'attente est vide. Lancez une musique pour commencer !",
-  "menu_actions": "Actions"
+  "menu_actions": "Actions",
+  "current_page_title": "File de lecture - ZeffyrMusic",
+  "current_meta_description": "Consultez et gérez votre file de lecture en cours sur ZeffyrMusic."
 }
