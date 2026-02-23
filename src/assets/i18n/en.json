@@ -357,5 +357,7 @@
   "skip_to_content": "Skip to main content",
   "route_announced": "Page loaded: {title}",
   "queue_empty": "Your queue is empty. Play a song to get started!",
-  "menu_actions": "Actions"
+  "menu_actions": "Actions",
+  "current_page_title": "Queue - ZeffyrMusic",
+  "current_meta_description": "View and manage your current playback queue on ZeffyrMusic."
 }
