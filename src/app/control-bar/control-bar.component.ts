@@ -68,6 +68,13 @@ export class ControlBarComponent {
       this.currentKey(); // establish dependency
       untracked(() => this._animTick.update(v => v + 1));
     });
+
+    // Clean up body class if component is destroyed while player is expanded
+    this.destroyRef.onDestroy(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.document.body.classList.remove('cb-player-expanded');
+      }
+    });
   }
 
   readonly isPlayerExpanded = signal(false);
@@ -150,14 +157,14 @@ export class ControlBarComponent {
   expandPlayer(): void {
     this.isPlayerExpanded.set(true);
     if (isPlatformBrowser(this.platformId)) {
-      this.document.body.style.overflow = 'hidden';
+      this.document.body.classList.add('cb-player-expanded');
     }
   }
 
   collapsePlayer(): void {
     this.isPlayerExpanded.set(false);
     if (isPlatformBrowser(this.platformId)) {
-      this.document.body.style.overflow = '';
+      this.document.body.classList.remove('cb-player-expanded');
     }
   }
 }

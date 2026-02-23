@@ -122,15 +122,28 @@ describe('ControlBarComponent', () => {
   });
 
   describe('Expand/Collapse', () => {
-    it('should expand player', () => {
-      component.expandPlayer();
-      expect(component.isPlayerExpanded()).toBe(true);
+    afterEach(() => {
+      document.body.classList.remove('cb-player-expanded');
     });
 
-    it('should collapse player', () => {
+    it('should expand player and add body class', () => {
+      component.expandPlayer();
+      expect(component.isPlayerExpanded()).toBe(true);
+      expect(document.body.classList.contains('cb-player-expanded')).toBe(true);
+    });
+
+    it('should collapse player and remove body class', () => {
       component.isPlayerExpanded.set(true);
+      document.body.classList.add('cb-player-expanded');
       component.collapsePlayer();
       expect(component.isPlayerExpanded()).toBe(false);
+      expect(document.body.classList.contains('cb-player-expanded')).toBe(false);
+    });
+
+    it('should not leave body class after expand then collapse', () => {
+      component.expandPlayer();
+      component.collapsePlayer();
+      expect(document.body.classList.contains('cb-player-expanded')).toBe(false);
     });
   });
 
