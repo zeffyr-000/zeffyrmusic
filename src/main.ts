@@ -18,9 +18,9 @@ if (environment.production) {
 
 // Detect standalone PWA mode (iOS home screen, Samsung Browser app mode)
 const isStandalonePwa =
-  ('standalone' in window.navigator &&
-    (window.navigator as Navigator & { standalone: boolean }).standalone) ||
-  window.matchMedia('(display-mode: standalone)').matches;
+  ('standalone' in globalThis.navigator &&
+    (globalThis.navigator as Navigator & { standalone: boolean }).standalone) ||
+  globalThis.matchMedia('(display-mode: standalone)').matches;
 
 // Use different config for standalone PWA:
 // - No hydration (SSR uses PathLocationStrategy, but standalone needs HashLocationStrategy)

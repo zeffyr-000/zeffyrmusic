@@ -139,4 +139,106 @@ describe('SearchBarComponent', () => {
       expect(component.getQuerystr()).toEqual(encodeURIComponent('test query'));
     });
   });
+
+  describe('onSelect with album item', () => {
+    it('should build analytics query with titre and navigate', () => {
+      const routerSpy = vi.spyOn(component['router'], 'navigate');
+      const item: SearchResultItem = {
+        type: 'album',
+        label: 'Test Album',
+        navigateUrl: '/playlist/42',
+        original: {
+          id_playlist: '42',
+          artiste: 'Test Artist',
+          ordre: '1',
+          titre: 'Test Album',
+          url_image: '',
+          year_release: 2021,
+        },
+      };
+
+      component.query.set('album search');
+
+      ngZone.run(() => {
+        component.onSelect({ item, preventDefault: vi.fn() });
+      });
+
+      expect(component.query()).toBe('');
+      expect(routerSpy).toHaveBeenCalledWith(['/playlist/42']);
+      expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/recherche?q=album search');
+    });
+
+    it('should navigate without analytics when item has no original', () => {
+      const routerSpy = vi.spyOn(component['router'], 'navigate');
+      const item: SearchResultItem = {
+        type: 'all',
+        label: '',
+        navigateUrl: '/search/nothing',
+      };
+
+      ngZone.run(() => {
+        component.onSelect({ item, preventDefault: vi.fn() });
+      });
+
+      expect(routerSpy).toHaveBeenCalledWith(['/search/nothing']);
+      expect(googleAnalyticsServiceSpy.pageView).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('searchTypeahead', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should return results including all-results entry, artists and albums', async () => {
+      const { Subject } = await import('rxjs');
+      const input$ = new Subject<string>();
+      const results: SearchResultItem[][] = [];
+
+      component.searchTypeahead(input$).subscribe(r => results.push([...r]));
+
+      // terms shorter than 2 chars should be ignored
+      input$.next('a');
+
+      // valid term triggers the search
+      input$.next('te');
+
+      // Advance past the debounce (300ms)
+      await vi.advanceTimersByTimeAsync(350);
+
+      expect(results.length).toBeGreaterThan(0);
+      const lastResult = results[results.length - 1];
+
+      // First entry should be the "all results" link
+      expect(lastResult[0].type).toBe('all');
+      expect(lastResult[0].navigateUrl).toContain('/search/');
+
+      // Should contain artists and albums from mock
+      const artistItems = lastResult.filter(r => r.type === 'artist');
+      const albumItems = lastResult.filter(r => r.type === 'album');
+      expect(artistItems.length).toBeGreaterThan(0);
+      expect(albumItems.length).toBeGreaterThan(0);
+    });
+
+    it('should return empty array on search error', async () => {
+      const { Subject, throwError } = await import('rxjs');
+      (searchServiceMock.searchBar as ReturnType<typeof vi.fn>).mockReturnValue(
+        throwError(() => new Error('network error'))
+      );
+
+      const input$ = new Subject<string>();
+      const results: SearchResultItem[][] = [];
+
+      component.searchTypeahead(input$).subscribe(r => results.push([...r]));
+
+      input$.next('te');
+      await vi.advanceTimersByTimeAsync(350);
+
+      expect(results[results.length - 1]).toEqual([]);
+    });
+  });
 });

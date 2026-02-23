@@ -1,30 +1,29 @@
 <div class="tracks-list">
   @for (video of queueStore.items(); track video.key; let index = $index) {
-    <div
-      class="track-item"
-      role="button"
-      tabindex="0"
-      (click)="play(index, true)"
-      (keydown.enter)="play(index, true)"
-      (keydown.space)="play(index, true); $event.preventDefault()"
-      [class.active]="video.key === queueStore.currentKey()"
-    >
-      <span class="track-number">
-        @if (video.key === queueStore.currentKey()) {
-          <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
-        } @else {
-          {{ index + 1 }}
-        }
-      </span>
-      <img
-        [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
-        class="track-thumbnail"
-        [attr.alt]="video.titre"
-      />
-      <div class="track-info">
-        <span class="track-title">{{ video.titre }}</span>
-        <span class="track-artist">{{ video.artiste }}</span>
-      </div>
+    <div class="track-item" [class.active]="video.key === queueStore.currentKey()">
+      <button
+        type="button"
+        class="track-item-btn"
+        (click)="play(index, true)"
+        [attr.aria-label]="video.titre + ' — ' + video.artiste"
+      >
+        <span class="track-number">
+          @if (video.key === queueStore.currentKey()) {
+            <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+          } @else {
+            {{ index + 1 }}
+          }
+        </span>
+        <img
+          [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+          class="track-thumbnail"
+          [attr.alt]="video.titre"
+        />
+        <div class="track-info">
+          <span class="track-title">{{ video.titre }}</span>
+          <span class="track-artist">{{ video.artiste }}</span>
+        </div>
+      </button>
       <span
         class="btn-track-menu"
         tabindex="-1"

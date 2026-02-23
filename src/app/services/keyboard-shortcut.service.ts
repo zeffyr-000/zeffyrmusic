@@ -1,6 +1,5 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { PlayerService } from './player.service';
 import { PlayerStore } from '../store/player/player.store';
 import { UiStore } from '../store/ui/ui.store';

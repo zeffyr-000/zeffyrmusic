@@ -165,4 +165,55 @@ describe('SwipeDownDirective', () => {
       expect(preventDefaultSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('touchend without swipe', () => {
+    it('should NOT emit swipeDown when swipe distance is too small', () => {
+      const emitSpy = vi.spyOn(directive.swipeDown, 'emit');
+
+      const touchStartEvent = new TouchEvent('touchstart', {
+        bubbles: true,
+        cancelable: true,
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchStartEvent);
+
+      // End Y is just 10px below start — not enough to trigger swipeDown
+      const touchEndEvent = new TouchEvent('touchend', {
+        bubbles: true,
+        cancelable: true,
+        changedTouches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 60 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchEndEvent);
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should NOT emit swipeDown when swiping upward', () => {
+      const emitSpy = vi.spyOn(directive.swipeDown, 'emit');
+
+      const touchStartEvent = new TouchEvent('touchstart', {
+        bubbles: true,
+        cancelable: true,
+        touches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 200 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchStartEvent);
+
+      const touchEndEvent = new TouchEvent('touchend', {
+        bubbles: true,
+        cancelable: true,
+        changedTouches: [
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
+        ],
+      });
+      divEl.nativeElement.dispatchEvent(touchEndEvent);
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -71,7 +71,7 @@ export function withSsrSafety() {
           if (!isPlatformBrowser(platformId)) {
             return false;
           }
-          return window.matchMedia('(max-width: 768px)').matches;
+          return globalThis.matchMedia('(max-width: 768px)').matches;
         },
       };
     })

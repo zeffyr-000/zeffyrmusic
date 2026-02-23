@@ -17,8 +17,6 @@ if (typeof IntersectionObserver === 'undefined') {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (globalThis as any).IntersectionObserver = class IntersectionObserver {
     // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-    constructor(_callback?: IntersectionObserverCallback, _options?: IntersectionObserverInit) {}
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
     observe(_target: Element) {}
     // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
     unobserve(_target: Element) {}
@@ -33,18 +31,15 @@ if (typeof IntersectionObserver === 'undefined') {
 // Mock Touch for jsdom
 if (typeof Touch === 'undefined') {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (globalThis as any).Touch = class Touch {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(config: any) {
-      Object.assign(this, config);
-    }
+  (globalThis as any).Touch = function Touch(this: Touch, config: TouchInit) {
+    Object.assign(this, config);
   };
 }
 
-// Mock window.scrollTo for jsdom (not implemented)
-if (typeof window !== 'undefined') {
+// Mock scrollTo for jsdom (not implemented)
+if (typeof globalThis.scrollTo === 'undefined') {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  window.scrollTo = () => {};
+  globalThis.scrollTo = () => {};
 }
 
 // Ensure there's at least one script tag in the document for player.service.ts

@@ -179,34 +179,33 @@
               class="track-item"
               [class.track-item--reorderable]="isReorderable()"
               [attr.data-id-video]="video.key"
-              (click)="runPlaylist(i)"
               [class.active]="video.key === queueStore.currentKey()"
               itemprop="track"
               itemscope
               itemtype="http://schema.org/MusicRecording"
-              role="button"
-              tabindex="0"
-              (keydown.enter)="$event.target === $event.currentTarget && runPlaylist(i)"
-              (keydown.space)="
-                $event.target === $event.currentTarget && runPlaylist(i);
-                $event.target === $event.currentTarget && $event.preventDefault()
-              "
               cdkDrag
               [cdkDragDisabled]="!isReorderable()"
               [cdkDragData]="video"
             >
-              <span class="track-number" itemprop="position">
-                @if (video.key === queueStore.currentKey()) {
-                  <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
-                } @else {
-                  {{ i + 1 }}
-                }
-              </span>
-              <img
-                [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
-                class="track-thumbnail"
-                [attr.alt]="video.titre"
-              />
+              <button
+                type="button"
+                class="track-item-btn"
+                (click)="runPlaylist(i)"
+                [attr.aria-label]="video.titre"
+              >
+                <span class="track-number" itemprop="position">
+                  @if (video.key === queueStore.currentKey()) {
+                    <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+                  } @else {
+                    {{ i + 1 }}
+                  }
+                </span>
+                <img
+                  [appLazyLoadImage]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+                  class="track-thumbnail"
+                  [attr.alt]="video.titre"
+                />
+              </button>
               <div class="track-info">
                 <span class="track-title" itemprop="name">{{ video.titre }}</span>
                 <span class="track-artist">

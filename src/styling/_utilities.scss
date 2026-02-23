@@ -226,6 +226,19 @@
   }
 }
 
+/** Accessible play button using display:contents to maintain parent grid layout */
+.track-item-btn {
+  all: unset;
+  display: contents;
+  cursor: pointer;
+}
+
+.track-item:focus-within {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
 .track-number {
   text-align: center;
   font-size: var(--text-sm);
