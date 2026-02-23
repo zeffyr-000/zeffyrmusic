@@ -84,7 +84,7 @@ export class ArtistComponent implements OnInit {
     return this.biography().length > ArtistComponent.BIOGRAPHY_MAX_LENGTH;
   });
 
-  private isBrowser: boolean;
+  private readonly isBrowser: boolean;
 
   constructor() {
     const platformId = inject(PLATFORM_ID);
@@ -159,8 +159,14 @@ export class ArtistComponent implements OnInit {
 
             // Use biography excerpt for meta description if available
             const bioRaw = this.biography().substring(0, 150).trim();
-            const bioExcerpt =
-              bioRaw.length > 0 ? (/(\.{3}|…)$/.test(bioRaw) ? bioRaw : `${bioRaw}...`) : '';
+            let bioExcerpt: string;
+            if (bioRaw.length === 0) {
+              bioExcerpt = '';
+            } else if (/(\.\.\.|…)$/.test(bioRaw)) {
+              bioExcerpt = bioRaw;
+            } else {
+              bioExcerpt = `${bioRaw}...`;
+            }
 
             const metaDescription = bioExcerpt
               ? this.translocoService.translate('description_artist_bio', {

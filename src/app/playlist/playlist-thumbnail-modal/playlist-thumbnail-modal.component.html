@@ -67,10 +67,11 @@
         type="button"
         class="btn btn-primary"
         [disabled]="!croppedBlob() || isLoading()"
+        [attr.aria-busy]="isLoading() || null"
         (click)="confirm()"
       >
         @if (isLoading()) {
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
         } @else {
           <span class="material-icons" aria-hidden="true">check</span>
         }

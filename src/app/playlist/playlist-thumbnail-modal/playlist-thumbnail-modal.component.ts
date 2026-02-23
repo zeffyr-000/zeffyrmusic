@@ -6,7 +6,7 @@ import { PlaylistThumbnailService } from 'src/app/services/playlist-thumbnail.se
 import { UiStore } from 'src/app/store';
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
-const ACCEPTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+const ACCEPTED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif']);
 const MIME_TO_FORMAT: Partial<Record<string, OutputFormat>> = {
   'image/jpeg': 'jpeg',
   'image/png': 'png',
@@ -49,7 +49,7 @@ export class PlaylistThumbnailModalComponent {
       return;
     }
 
-    if (!ACCEPTED_MIME_TYPES.includes(file.type)) {
+    if (!ACCEPTED_MIME_TYPES.has(file.type)) {
       this.uiStore.showError(this.translocoService.translate('playlist_thumbnail_error_format'));
       input.value = '';
       return;

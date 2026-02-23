@@ -31,14 +31,14 @@ export class YoutubePlayerService {
   readonly stateChange$ = new Subject<YT.PlayerState>();
   readonly error$ = new BehaviorSubject<string | null>(null);
 
-  private progressInterval: number | null = null;
+  private progressInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
 
     if (this.isBrowser) {
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(() => this.loadApi());
+      if ('requestIdleCallback' in globalThis) {
+        globalThis.requestIdleCallback(() => this.loadApi());
       } else {
         setTimeout(() => this.loadApi(), 0);
       }
@@ -132,8 +132,8 @@ export class YoutubePlayerService {
   private initVolume(): void {
     if (!this.player) return;
 
-    let volume = parseInt(localStorage.getItem('volume') ?? '', 10);
-    if (isNaN(volume) || volume < 0 || volume > 100) {
+    let volume = Number.parseInt(localStorage.getItem('volume') ?? '', 10);
+    if (Number.isNaN(volume) || volume < 0 || volume > 100) {
       volume = this.player.getVolume?.() ?? 100;
       localStorage.setItem('volume', volume.toString());
     }
@@ -234,7 +234,7 @@ export class YoutubePlayerService {
   private startProgressTracking(): void {
     if (this.progressInterval !== null) return;
 
-    this.progressInterval = window.setInterval(() => {
+    this.progressInterval = globalThis.setInterval(() => {
       if (!this.player) return;
 
       const currentTime = this.getCurrentTime();

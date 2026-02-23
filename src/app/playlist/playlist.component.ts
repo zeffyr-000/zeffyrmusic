@@ -14,7 +14,7 @@ import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { environment } from 'src/environments/environment';
 import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { Video } from '../models/video.model';
+import { Video, UserVideo } from '../models/video.model';
 import { Playlist } from '../models/playlist.model';
 import { PlaylistService } from '../services/playlist.service';
 import { APP_BASE_HREF, isPlatformBrowser } from '@angular/common';
@@ -45,7 +45,6 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { UserVideo } from '../models/video.model';
 
 @Component({
   selector: 'app-playlist',
@@ -533,31 +532,31 @@ export class PlaylistComponent {
 
   sumDurationPlaylist() {
     const currentPlaylist = this.playlist();
-    if (currentPlaylist !== undefined) {
-      let charDuration = '';
-      let sumDuration = 0;
-
-      for (const element of currentPlaylist) {
-        if (Number.parseInt(element.duree, 10) > 0) {
-          sumDuration += Number.parseInt(element.duree, 10);
-        }
-      }
-
-      const hour = Math.floor(sumDuration / 3600);
-      if (hour > 0) {
-        charDuration += hour + ' h ';
-        sumDuration -= 3600 * hour;
-      }
-
-      const minut = Math.floor(sumDuration / 60);
-      if (minut > 0) {
-        charDuration += minut + ' min';
-      }
-
-      return charDuration;
-    } else {
+    if (currentPlaylist === undefined) {
       return '';
     }
+
+    let charDuration = '';
+    let sumDuration = 0;
+
+    for (const element of currentPlaylist) {
+      if (Number.parseInt(element.duree, 10) > 0) {
+        sumDuration += Number.parseInt(element.duree, 10);
+      }
+    }
+
+    const hour = Math.floor(sumDuration / 3600);
+    if (hour > 0) {
+      charDuration += hour + ' h ';
+      sumDuration -= 3600 * hour;
+    }
+
+    const minut = Math.floor(sumDuration / 60);
+    if (minut > 0) {
+      charDuration += minut + ' min';
+    }
+
+    return charDuration;
   }
 
   openThumbnailModal(): void {

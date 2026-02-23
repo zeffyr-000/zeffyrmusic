@@ -35,7 +35,11 @@ export const AuthStore = signalStore(
           preferences,
           initialized: true,
         });
-        this._applyDarkMode(preferences.darkModeEnabled);
+        if (preferences.darkModeEnabled) {
+          this._enableDarkMode();
+        } else {
+          this._disableDarkMode();
+        }
         this._applyLanguage(preferences.language);
       },
 
@@ -51,7 +55,7 @@ export const AuthStore = signalStore(
         store.runInBrowser(() => {
           document.cookie = 'login= ; expires=Sun, 01 Jan 2000 00:00:00 UTC; path=/';
         });
-        this._applyDarkMode(false);
+        this._disableDarkMode();
         this._applyLanguage('fr');
       },
 
@@ -70,7 +74,11 @@ export const AuthStore = signalStore(
             darkModeEnabled: enabled,
           },
         });
-        this._applyDarkMode(enabled);
+        if (enabled) {
+          this._enableDarkMode();
+        } else {
+          this._disableDarkMode();
+        }
       },
 
       toggleDarkMode(): void {
@@ -101,7 +109,11 @@ export const AuthStore = signalStore(
         patchState(store, { preferences: { ...current, ...updates } });
 
         if (updates.darkModeEnabled !== undefined) {
-          this._applyDarkMode(updates.darkModeEnabled);
+          if (updates.darkModeEnabled) {
+            this._enableDarkMode();
+          } else {
+            this._disableDarkMode();
+          }
         }
         if (updates.language !== undefined) {
           this._applyLanguage(updates.language);
@@ -112,12 +124,12 @@ export const AuthStore = signalStore(
         patchState(store, { initialized: true });
       },
 
-      _applyDarkMode(enabled: boolean): void {
-        if (enabled) {
-          store.setBodyAttribute('data-bs-theme', 'dark');
-        } else {
-          store.removeBodyAttribute('data-bs-theme');
-        }
+      _enableDarkMode(): void {
+        store.setBodyAttribute('data-bs-theme', 'dark');
+      },
+
+      _disableDarkMode(): void {
+        store.removeBodyAttribute('data-bs-theme');
       },
 
       _applyLanguage(lang: Language): void {

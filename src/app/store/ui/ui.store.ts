@@ -21,7 +21,7 @@ export const UiStore = signalStore(
     notificationCount: computed(() => state.notifications().length),
     latestNotification: computed(() => {
       const notifications = state.notifications();
-      return notifications.length > 0 ? notifications[notifications.length - 1] : null;
+      return notifications.length > 0 ? notifications.at(-1)! : null;
     }),
   })),
 

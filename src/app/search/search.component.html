@@ -147,27 +147,26 @@
           track video.id_video;
           let index = $index
         ) {
-          <div
-            class="track-item"
-            [class.active]="video.key === queueStore.currentKey()"
-            role="button"
-            tabindex="0"
-            (click)="runPlaylistTrack(index)"
-            (keydown.enter)="runPlaylistTrack(index)"
-            (keydown.space)="runPlaylistTrack(index); $event.preventDefault()"
-          >
-            <span class="track-number">
-              @if (video.key === queueStore.currentKey()) {
-                <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
-              } @else {
-                {{ index + 1 }}
-              }
-            </span>
-            <img
-              [src]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
-              class="track-thumbnail"
-              [attr.alt]="video.titre"
-            />
+          <div class="track-item" [class.active]="video.key === queueStore.currentKey()">
+            <button
+              type="button"
+              class="track-item-btn"
+              (click)="runPlaylistTrack(index)"
+              [attr.aria-label]="video.titre"
+            >
+              <span class="track-number">
+                @if (video.key === queueStore.currentKey()) {
+                  <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+                } @else {
+                  {{ index + 1 }}
+                }
+              </span>
+              <img
+                [src]="'https://img.youtube.com/vi/' + video.key + '/mqdefault.jpg'"
+                class="track-thumbnail"
+                [attr.alt]="video.titre"
+              />
+            </button>
             <div class="track-info">
               <span class="track-title">{{ video.titre }}</span>
               <span class="track-artist">
@@ -259,27 +258,26 @@
           track extra.key;
           let index = $index
         ) {
-          <div
-            class="track-item"
-            [class.active]="extra.key === queueStore.currentKey()"
-            role="button"
-            tabindex="0"
-            (click)="runPlaylistExtra(index)"
-            (keydown.enter)="runPlaylistExtra(index)"
-            (keydown.space)="runPlaylistExtra(index); $event.preventDefault()"
-          >
-            <span class="track-number">
-              @if (extra.key === queueStore.currentKey()) {
-                <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
-              } @else {
-                {{ index + 1 }}
-              }
-            </span>
-            <img
-              [src]="'https://img.youtube.com/vi/' + extra.key + '/mqdefault.jpg'"
-              class="track-thumbnail"
-              [attr.alt]="extra.title"
-            />
+          <div class="track-item" [class.active]="extra.key === queueStore.currentKey()">
+            <button
+              type="button"
+              class="track-item-btn"
+              (click)="runPlaylistExtra(index)"
+              [attr.aria-label]="extra.title"
+            >
+              <span class="track-number">
+                @if (extra.key === queueStore.currentKey()) {
+                  <span class="material-icons playing-icon" aria-hidden="true">play_arrow</span>
+                } @else {
+                  {{ index + 1 }}
+                }
+              </span>
+              <img
+                [src]="'https://img.youtube.com/vi/' + extra.key + '/mqdefault.jpg'"
+                class="track-thumbnail"
+                [attr.alt]="extra.title"
+              />
+            </button>
             <div class="track-info">
               <span class="track-title">{{ extra.title }}</span>
             </div>

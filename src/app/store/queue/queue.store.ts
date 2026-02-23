@@ -5,6 +5,18 @@ import { Video } from '../../models/video.model';
 import { withSsrSafety } from '../features/with-ssr-safety';
 
 /**
+ * Shuffles an array of indices using the crypto-secure PRNG (Fisher-Yates).
+ */
+function shuffleArray(array: number[]): number[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = crypto.getRandomValues(new Uint32Array(1))[0] % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+/**
  * QueueStore - Playback queue management
  *
  * Manages video list, current position, shuffle and navigation.
@@ -88,15 +100,6 @@ export const QueueStore = signalStore(
   })),
 
   withMethods(store => {
-    function shuffleArray(array: number[]): number[] {
-      const shuffled = [...array];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    }
-
     return {
       setQueue(
         items: Video[],
@@ -234,7 +237,7 @@ export const QueueStore = signalStore(
           patchState(store, {
             isShuffled: false,
             tabIndex: [...store.tabIndexOriginal()],
-            currentIndex: newCurrentIndex >= 0 ? newCurrentIndex : 0,
+            currentIndex: Math.max(0, newCurrentIndex),
           });
         }
 

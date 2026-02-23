@@ -361,20 +361,27 @@
     }
 
     <table class="table table-hover">
-      @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
+      <thead class="visually-hidden">
         <tr>
-          <td>
-            <button
-              class="btn btn-link text-start w-100 d-flex align-items-center gap-2"
-              (click)="onAddVideo(playlist.id_playlist, modal)"
-              [attr.aria-label]="('ajouter_a_une_playlist' | transloco) + ' - ' + playlist.titre"
-            >
-              <span class="material-icons" aria-hidden="true">queue_music</span>
-              {{ playlist.titre }}
-            </button>
-          </td>
+          <th scope="col">{{ 'playlists' | transloco }}</th>
         </tr>
-      }
+      </thead>
+      <tbody>
+        @for (playlist of userDataStore.playlists(); track playlist.id_playlist) {
+          <tr>
+            <td>
+              <button
+                class="btn btn-link text-start w-100 d-flex align-items-center gap-2"
+                (click)="onAddVideo(playlist.id_playlist, modal)"
+                [attr.aria-label]="('ajouter_a_une_playlist' | transloco) + ' - ' + playlist.titre"
+              >
+                <span class="material-icons" aria-hidden="true">queue_music</span>
+                {{ playlist.titre }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
     </table>
   </div>
 </ng-template>

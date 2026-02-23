@@ -326,4 +326,35 @@ describe('SearchComponent', () => {
 
     expect(unsubscribeSpy).toHaveBeenCalled();
   });
+
+  it('should not call playerService.runPlaylist when listTracks is undefined', () => {
+    component.listTracks.set(undefined);
+    component.runPlaylistTrack(0);
+    expect(playerService.runPlaylist).not.toHaveBeenCalled();
+  });
+
+  it('should not call playerService.runPlaylist when listExtras is null', () => {
+    component.listExtras.set(undefined);
+    component.runPlaylistExtra(0);
+    expect(playerService.runPlaylist).not.toHaveBeenCalled();
+  });
+
+  it('should load data and skip isLoading3 when user is not authenticated', () => {
+    authStore.logout();
+    component.ngOnInit();
+
+    expect(component.isLoading3()).toBe(false);
+    expect(searchServiceMock.fullSearch3).not.toHaveBeenCalled();
+  });
+
+  it('should set isLoading3 and call fullSearch3 when user is authenticated', () => {
+    authStore.login(
+      { pseudo: 'test', mail: 'test@test.com', idPerso: '123' },
+      { darkModeEnabled: false, language: 'fr' }
+    );
+    component.ngOnInit();
+
+    expect(component.listExtras()).toEqual(searchResults3.tab_extra);
+    expect(searchServiceMock.fullSearch3).toHaveBeenCalled();
+  });
 });

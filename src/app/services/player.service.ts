@@ -25,8 +25,8 @@ export class PlayerService implements OnDestroy {
   private readonly uiStore = inject(UiStore);
   private readonly youtubePlayer = inject(YoutubePlayerService);
 
-  private stateChangeSubscription!: Subscription;
-  private errorSubscription!: Subscription;
+  private readonly stateChangeSubscription?: Subscription;
+  private readonly errorSubscription?: Subscription;
   private queueInitialized = false;
 
   private isBrowser: boolean;
@@ -200,7 +200,7 @@ export class PlayerService implements OnDestroy {
   }
 
   addVideoInPlaylist(key: string, artist: string, title: string, duration: string | number) {
-    const durationNum = typeof duration === 'string' ? parseInt(duration, 10) : duration;
+    const durationNum = typeof duration === 'string' ? Number.parseInt(duration, 10) : duration;
     this.uiStore.openAddVideoModal({ key, artist, title, duration: durationNum });
   }
 
