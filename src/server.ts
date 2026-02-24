@@ -18,20 +18,36 @@ app.disable('x-powered-by');
 app.set('etag', false);
 app.use(cookieParser());
 
+// Hashed static assets (JS, CSS, hashed fonts) — long-lived immutable cache.
+// Angular appends a content hash to filenames, so no cache invalidation needed.
+app.get(
+  '**',
+  express.static(browserDistFolder, {
+    maxAge: '1y',
+    immutable: true,
+    index: false,
+    redirect: false,
+    lastModified: false,
+    setHeaders: (res, filePath) => {
+      // HTML files must never be cached
+      if (filePath.endsWith('.html')) {
+        res.set('Cache-Control', 'no-store');
+        return;
+      }
+      // Un-hashed assets (images, fonts, i18n JSON) — revalidate daily.
+      // These filenames never change, so long-lived immutable cache is unsafe.
+      if (filePath.includes('/assets/')) {
+        res.set('Cache-Control', 'public, max-age=86400');
+      }
+    },
+  })
+);
+
+// All other responses (SSR, index.html fallback) — never cache
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
   next();
 });
-
-app.get(
-  '**',
-  express.static(browserDistFolder, {
-    maxAge: 0,
-    index: 'index.html',
-    redirect: false,
-    lastModified: false,
-  })
-);
 
 app.get('**', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;

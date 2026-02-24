@@ -111,11 +111,13 @@ export class AppComponent implements OnInit {
     }
 
     this.metaService.updateTag({ name: 'mobile-web-app-capable', content: 'yes' });
+    this.metaService.updateTag({ name: 'apple-mobile-web-app-capable', content: 'yes' });
     this.metaService.updateTag({
       name: 'apple-mobile-web-app-status-bar-style',
       content: 'black-translucent',
     });
     this.metaService.updateTag({ name: 'apple-mobile-web-app-title', content: 'ZeffyrMusic' });
+    this.metaService.updateTag({ name: 'theme-color', content: '#1ac8e5' });
 
     const linkElem = this.renderer.createElement('link');
     this.renderer.setAttribute(linkElem, 'rel', 'apple-touch-icon');
