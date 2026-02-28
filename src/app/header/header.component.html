@@ -129,7 +129,7 @@
     </div>
 
     @if (!isRegistered()) {
-      <form (submit)="onSubmitRegister($event)" class="modal-form">
+      <form [formRoot]="registerForm" class="modal-form">
         <div class="form-group">
           <label class="form-label" for="pseudo">
             <span class="material-icons" aria-hidden="true">badge</span>
@@ -221,7 +221,7 @@
       <hr class="flex-grow-1" />
     </div>
 
-    <form (submit)="onLogIn($event, modal, '')" class="modal-form">
+    <form [formRoot]="loginForm" class="modal-form">
       <div class="form-group">
         <label class="form-label" for="pseudoLogin">
           <span class="material-icons" aria-hidden="true">person</span>
@@ -290,7 +290,7 @@
   </div>
   <div class="modal-body">
     @if (!isSuccess()) {
-      <form (submit)="onSubmitResetPass($event)" class="modal-form">
+      <form [formRoot]="resetPassForm" class="modal-form">
         <div class="form-group">
           <label class="form-label" for="mailReset">
             <span class="material-icons" aria-hidden="true">alternate_email</span>

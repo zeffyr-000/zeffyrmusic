@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { form, FormField, required } from '@angular/forms/signals';
+import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -19,11 +19,11 @@ import {
   NgbModal,
   NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap';
-import { CreatePlaylistResponse, UserReponse } from '../models/user.model';
 import { UserLibraryService } from '../services/user-library.service';
 import { UserService } from '../services/user.service';
 import { UiStore } from '../store/ui/ui.store';
 import { UserDataStore } from '../store/user-data/user-data.store';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-my-playlists',
@@ -32,6 +32,7 @@ import { UserDataStore } from '../store/user-data/user-data.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
+    FormRoot,
     NgbDropdown,
     NgbDropdownItem,
     NgbDropdownMenu,
@@ -54,39 +55,73 @@ export class MyPlaylistsComponent implements OnInit {
 
   // Signal Forms
   readonly createPlaylistModel = signal({ titre: '' });
-  readonly createPlaylistForm = form(this.createPlaylistModel, schemaPath => {
-    required(schemaPath.titre);
-  });
+  readonly createPlaylistForm = form(
+    this.createPlaylistModel,
+    schemaPath => {
+      required(schemaPath.titre);
+    },
+    {
+      submission: {
+        action: async () => {
+          try {
+            const data = await firstValueFrom(
+              this.userService.createPlaylist(this.createPlaylistModel())
+            );
+            if (data.success !== undefined && data.success) {
+              this.userLibraryService.addPlaylist(data.id_playlist, data.titre);
+              this.createPlaylistModel.set({ titre: '' });
+              this.uiStore.showSuccess(this.translocoService.translate('playlist_created'));
+            } else {
+              this.uiStore.showError(
+                this.translocoService.translate(data?.error || 'generic_error')
+              );
+            }
+          } catch {
+            this.uiStore.showError(this.translocoService.translate('generic_error'));
+          }
+        },
+      },
+    }
+  );
 
   readonly editTitleModel = signal({ playlist_titre: '' });
-  readonly editTitleForm = form(this.editTitleModel, schemaPath => {
-    required(schemaPath.playlist_titre);
-  });
+  readonly editTitleForm = form(
+    this.editTitleModel,
+    schemaPath => {
+      required(schemaPath.playlist_titre);
+    },
+    {
+      submission: {
+        action: async () => {
+          const newTitle = this.editTitleModel().playlist_titre;
+          try {
+            const data = await firstValueFrom(
+              this.userService.editTitlePlaylist({
+                id_playlist: this.currentIdPlaylistEdit(),
+                titre: newTitle,
+              })
+            );
+            if (data.success !== undefined && data.success) {
+              this.userLibraryService.updatePlaylistTitle(this.currentIdPlaylistEdit(), newTitle);
+              this.modalService.dismissAll();
+              this.uiStore.showSuccess(this.translocoService.translate('playlist_title_updated'));
+            } else {
+              this.uiStore.showError(
+                this.translocoService.translate(data?.error || 'generic_error')
+              );
+            }
+          } catch {
+            this.uiStore.showError(this.translocoService.translate('generic_error'));
+          }
+        },
+      },
+    }
+  );
 
   ngOnInit() {
     this.titleService.setTitle(
       this.translocoService.translate('mes_playlists') + ' - Zeffyr Music'
     );
-  }
-
-  onCreatePlaylist(event: Event) {
-    event.preventDefault();
-    if (this.createPlaylistForm().valid()) {
-      this.userService.createPlaylist(this.createPlaylistModel()).subscribe({
-        next: (data: CreatePlaylistResponse) => {
-          if (data.success !== undefined && data.success) {
-            this.userLibraryService.addPlaylist(data.id_playlist, data.titre);
-            this.createPlaylistModel.set({ titre: '' });
-            this.uiStore.showSuccess(this.translocoService.translate('playlist_created'));
-          } else {
-            this.uiStore.showError(this.translocoService.translate(data?.error || 'generic_error'));
-          }
-        },
-        error: () => {
-          this.uiStore.showError(this.translocoService.translate('generic_error'));
-        },
-      });
-    }
   }
 
   onSwitchVisibility(idPlaylist: string, visibility: string) {
@@ -105,34 +140,6 @@ export class MyPlaylistsComponent implements OnInit {
     this.modalService.open(contentModalConfirmEditTitle, { size: 'lg' });
     this.currentIdPlaylistEdit.set(idPlaylist);
     this.editTitleModel.set({ playlist_titre: title });
-  }
-
-  onEditTitlePlaylist(event: Event, modal: NgbActiveModal) {
-    event.preventDefault();
-    if (this.editTitleForm().valid()) {
-      const newTitle = this.editTitleModel().playlist_titre;
-      this.userService
-        .editTitlePlaylist({
-          id_playlist: this.currentIdPlaylistEdit(),
-          titre: newTitle,
-        })
-        .subscribe({
-          next: (data: UserReponse) => {
-            if (data.success !== undefined && data.success) {
-              this.userLibraryService.updatePlaylistTitle(this.currentIdPlaylistEdit(), newTitle);
-              modal.dismiss();
-              this.uiStore.showSuccess(this.translocoService.translate('playlist_title_updated'));
-            } else {
-              this.uiStore.showError(
-                this.translocoService.translate(data?.error || 'generic_error')
-              );
-            }
-          },
-          error: () => {
-            this.uiStore.showError(this.translocoService.translate('generic_error'));
-          },
-        });
-    }
   }
 
   onConfirmDeletePlaylist(

@@ -1,7 +1,7 @@
 import type { MockedObject } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbActiveModal, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { FontAwesomeTestingModule } from '@fortawesome/angular-fontawesome/testing';
@@ -10,6 +10,7 @@ import { UserPlaylist } from '../models/playlist.model';
 import { UserLibraryService } from '../services/user-library.service';
 import { HeaderComponent } from './header.component';
 import { of } from 'rxjs';
+import { submit } from '@angular/forms/signals';
 import { InitService } from '../services/init.service';
 import { UserVideo, VideoItem } from '../models/video.model';
 import { Component, NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
@@ -42,19 +43,16 @@ describe('HeaderComponent', () => {
   let userService: UserService;
   let googleAnalyticsServiceSpy: MockedObject<GoogleAnalyticsService>;
   let translocoService: TranslocoService;
-  let activeModalSpy: MockedObject<NgbActiveModal>;
   let modalService: NgbModal;
   let routerSpyObj: MockedObject<Router>;
   let routeSpyObj: MockedObject<ActivatedRoute>;
   let userServiceMock: MockedObject<UserService>;
   let modalServiceSpyObj: MockedObject<NgbModal>;
   let googleAnalyticsServiceSpyObj: MockedObject<GoogleAnalyticsService>;
-  let activeModalSpyObj: MockedObject<NgbActiveModal>;
   let initServiceMock: Partial<MockInitService>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let userLibraryServiceMock: any;
   let searchServiceMock: Partial<SearchService>;
-  const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
   const searchResults1: SearchResults1 = {
     artist: [
@@ -111,7 +109,6 @@ describe('HeaderComponent', () => {
 
     googleAnalyticsServiceSpyObj = { pageView: vi.fn() } as MockedObject<GoogleAnalyticsService>;
     modalServiceSpyObj = { open: vi.fn(), dismissAll: vi.fn() } as MockedObject<NgbModal>;
-    activeModalSpyObj = { dismiss: vi.fn() } as MockedObject<NgbActiveModal>;
   });
 
   beforeEach(async () => {
@@ -150,7 +147,6 @@ describe('HeaderComponent', () => {
         { provide: ActivatedRoute, useValue: routeSpyObj },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceSpyObj },
         { provide: NgbModal, useValue: modalServiceSpyObj },
-        { provide: NgbActiveModal, useValue: activeModalSpyObj },
         {
           provide: SearchService,
           useValue: searchServiceMock,
@@ -165,7 +161,6 @@ describe('HeaderComponent', () => {
     googleAnalyticsServiceSpy = TestBed.inject(
       GoogleAnalyticsService
     ) as MockedObject<GoogleAnalyticsService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
     modalService = TestBed.inject(NgbModal);
     translocoService = TestBed.inject(TranslocoService);
     translocoService.setDefaultLang('en');
@@ -241,7 +236,7 @@ describe('HeaderComponent', () => {
   });
 
   describe('onSubmitRegister', () => {
-    it('should call userService.register and set isRegistered on success', () => {
+    it('should call userService.register and set isRegistered on success', async () => {
       // Signal Forms: set model values directly
       component.registerModel.set({
         pseudo: 'testuser',
@@ -252,7 +247,7 @@ describe('HeaderComponent', () => {
       const registerResponse = { success: true, error: '' };
       vi.spyOn(userService, 'register').mockReturnValue(of(registerResponse));
 
-      component.onSubmitRegister(mockEvent);
+      await submit(component.registerForm);
 
       expect(userService.register).toHaveBeenCalledWith({
         pseudo: 'testuser',
@@ -263,7 +258,7 @@ describe('HeaderComponent', () => {
       expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/inscription/succes');
     });
 
-    it('should set error on register failure', () => {
+    it('should set error on register failure', async () => {
       // Signal Forms: set model values directly
       component.registerModel.set({
         pseudo: 'testuser',
@@ -275,7 +270,7 @@ describe('HeaderComponent', () => {
       const registerResponse = { success: false, error };
       vi.spyOn(userService, 'register').mockReturnValue(of(registerResponse));
 
-      component.onSubmitRegister(mockEvent);
+      await submit(component.registerForm);
 
       expect(userService.register).toHaveBeenCalledWith({
         pseudo: 'testuser',
@@ -289,7 +284,7 @@ describe('HeaderComponent', () => {
   });
 
   describe('onLogIn', () => {
-    it('should login successfully and dismiss modal', () => {
+    it('should login successfully and dismiss modal', async () => {
       // Signal Forms: set model values directly
       component.loginModel.set({ pseudo: 'test@example.com', password: 'password' });
 
@@ -315,8 +310,7 @@ describe('HeaderComponent', () => {
       } as LoginResponse;
       vi.spyOn(userService, 'login').mockReturnValue(of(loginResponse));
 
-      // Signal Forms: onLogIn now takes (modal, token) instead of (form, modal, token)
-      component.onLogIn(mockEvent, activeModalSpy, '');
+      await submit(component.loginForm);
 
       expect(userService.login).toHaveBeenCalledWith(
         { pseudo: 'test@example.com', password: 'password' },
@@ -329,10 +323,10 @@ describe('HeaderComponent', () => {
         liste_suivi,
         like_video
       );
-      expect(activeModalSpy.dismiss).toHaveBeenCalledWith('');
+      expect(modalService.dismissAll).toHaveBeenCalled();
     });
 
-    it('should set error on login failure', () => {
+    it('should set error on login failure', async () => {
       // Signal Forms: set model values directly
       component.loginModel.set({ pseudo: 'test@example.com', password: 'password' });
 
@@ -341,8 +335,7 @@ describe('HeaderComponent', () => {
       const loginResponse = { success: false, error } as LoginResponse;
       vi.spyOn(userService, 'login').mockReturnValue(of(loginResponse));
 
-      // Signal Forms: onLogIn now takes (modal, token) instead of (form, modal, token)
-      component.onLogIn(mockEvent, activeModalSpy, '');
+      await submit(component.loginForm);
 
       expect(userService.login).toHaveBeenCalledWith(
         { pseudo: 'test@example.com', password: 'password' },
@@ -353,20 +346,20 @@ describe('HeaderComponent', () => {
   });
 
   describe('onSubmitResetPass', () => {
-    it('should call userService.resetPass and set isSuccess on success', () => {
+    it('should call userService.resetPass and set isSuccess on success', async () => {
       // Signal Forms: set model values directly
       component.resetPassModel.set({ mail: 'test@example.com' });
 
       const successResponse = { success: true, error: '' };
       vi.spyOn(userService, 'resetPass').mockReturnValue(of(successResponse));
 
-      component.onSubmitResetPass(mockEvent);
+      await submit(component.resetPassForm);
 
       expect(userService.resetPass).toHaveBeenCalledWith({ mail: 'test@example.com' });
       expect(component.isSuccess()).toBe(true);
     });
 
-    it('should set error on reset password failure', () => {
+    it('should set error on reset password failure', async () => {
       // Signal Forms: set model values directly
       component.resetPassModel.set({ mail: 'test@example.com' });
 
@@ -374,7 +367,7 @@ describe('HeaderComponent', () => {
       vi.spyOn(translocoService, 'translate').mockReturnValue('Invalid credentials');
       vi.spyOn(userService, 'resetPass').mockReturnValue(of(errorResponse));
 
-      component.onSubmitResetPass(mockEvent);
+      await submit(component.resetPassForm);
 
       expect(userService.resetPass).toHaveBeenCalledWith({ mail: 'test@example.com' });
       expect(component.error()).toBe('Invalid credentials');
@@ -456,7 +449,7 @@ describe('HeaderComponent', () => {
     document.body.removeChild(mockElement);
   });
 
-  it('should call onLogIn with credential when handleCredentialResponse is called', () => {
+  it('should call userService.login with credential when handleCredentialResponse is called', async () => {
     // Mock userService.login for this specific test
     vi.mocked(userServiceMock.login).mockReturnValue(
       of({
@@ -473,12 +466,10 @@ describe('HeaderComponent', () => {
       })
     );
 
-    vi.spyOn(component, 'onLogIn');
     const mockResponse = { credential: 'mockCredential' };
 
-    component.handleCredentialResponse(mockResponse);
+    await component.handleCredentialResponse(mockResponse);
 
-    // Signal Forms: onLogIn now takes (event, modal, token)
-    expect(component.onLogIn).toHaveBeenCalledWith(null, null, 'mockCredential');
+    expect(userServiceMock.login).toHaveBeenCalledWith(expect.any(Object), 'mockCredential');
   });
 });

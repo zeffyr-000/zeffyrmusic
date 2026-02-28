@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { submit } from '@angular/forms/signals';
 import { ResetPasswordComponent } from './reset-password.component';
 import { UserService } from '../services/user.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -14,7 +15,6 @@ describe('ResetPasswordComponent', () => {
     sendResetPass: ReturnType<typeof vi.fn>;
   };
   let uiStore: InstanceType<typeof UiStore>;
-  const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
   const mockIdPerso = 'test-user-123';
   const mockKey = 'reset-key-abc';
@@ -114,20 +114,20 @@ describe('ResetPasswordComponent', () => {
     });
   });
 
-  describe('onSubmit', () => {
-    it('should not proceed if form is invalid', () => {
-      component.onSubmit(mockEvent);
+  describe('form submission', () => {
+    it('should not proceed if form is invalid', async () => {
+      await submit(component.resetForm);
 
       expect(component.submitted()).toBe(true);
       expect(userServiceMock.sendResetPass).not.toHaveBeenCalled();
     });
 
-    it('should call userService.sendResetPass and show success toast on success', () => {
+    it('should call userService.sendResetPass and show success toast on success', async () => {
       userServiceMock.sendResetPass.mockReturnValue(of({ success: true }));
 
       component.formModel.set({ password: 'password123', confirmPassword: 'password123' });
 
-      component.onSubmit(mockEvent);
+      await submit(component.resetForm);
 
       expect(userServiceMock.sendResetPass).toHaveBeenCalled();
       expect(component.formSuccess()).toBe(true);
@@ -135,12 +135,12 @@ describe('ResetPasswordComponent', () => {
       expect(uiStore.showSuccess).toHaveBeenCalled();
     });
 
-    it('should show error toast on failed reset password', () => {
+    it('should show error toast on failed reset password', async () => {
       userServiceMock.sendResetPass.mockReturnValue(of({ success: false }));
 
       component.formModel.set({ password: 'password123', confirmPassword: 'password123' });
 
-      component.onSubmit(mockEvent);
+      await submit(component.resetForm);
 
       expect(component.loading()).toBe(false);
       expect(component.formSuccess()).toBe(false);
@@ -148,12 +148,12 @@ describe('ResetPasswordComponent', () => {
       expect(uiStore.showError).toHaveBeenCalled();
     });
 
-    it('should show error toast on network error', () => {
+    it('should show error toast on network error', async () => {
       userServiceMock.sendResetPass.mockReturnValue(throwError(() => new Error('Network error')));
 
       component.formModel.set({ password: 'password123', confirmPassword: 'password123' });
 
-      component.onSubmit(mockEvent);
+      await submit(component.resetForm);
 
       expect(component.loading()).toBe(false);
       expect(component.formInvalid()).toBe(true);

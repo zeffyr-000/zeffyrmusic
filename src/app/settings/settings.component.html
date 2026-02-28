@@ -117,7 +117,7 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onSubmitEditPass($event)" class="modal-form">
+    <form [formRoot]="editPassForm" class="modal-form">
       <div class="form-group">
         <label class="form-label" for="passwordold">
           <span class="material-icons" aria-hidden="true">vpn_key</span>
@@ -193,7 +193,7 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onSubmitEditMail($event)" class="modal-form">
+    <form [formRoot]="editMailForm" class="modal-form">
       <div class="form-group">
         <label class="form-label" for="mail">
           <span class="material-icons" aria-hidden="true">alternate_email</span>
@@ -245,7 +245,7 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onSubmitEditLanguage($event)" class="modal-form">
+    <form [formRoot]="editLanguageForm" class="modal-form">
       <div class="form-group">
         <label class="form-label" for="language">
           <span class="material-icons" aria-hidden="true">translate</span>
@@ -305,7 +305,7 @@
       <span>{{ 'delete_account_warning' | transloco }}</span>
     </div>
 
-    <form (submit)="onSubmitDeleteAccount($event)" class="modal-form">
+    <form [formRoot]="deleteAccountForm" class="modal-form">
       <div class="form-group">
         <label class="form-label" for="passwordDelete">
           <span class="material-icons" aria-hidden="true">vpn_key</span>
