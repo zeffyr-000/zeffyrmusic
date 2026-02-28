@@ -102,6 +102,7 @@ export interface MockChangeDetectorRef {
 /** Mock for NgbModal */
 export interface MockNgbModal {
   open: MockedFunction<(content: unknown, options?: unknown) => { result: Promise<unknown> }>;
+  dismissAll?: MockedFunction<(reason?: unknown) => void>;
 }
 
 /** Mock for NgbActiveModal */

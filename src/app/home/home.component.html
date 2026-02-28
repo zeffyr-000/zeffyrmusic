@@ -64,7 +64,7 @@
                 alt="{{ chart.titre }}"
                 itemprop="image"
                 [attr.fetchpriority]="i === 0 ? 'high' : null"
-                [attr.loading]="i === 0 ? null : 'lazy'"
+                [attr.loading]="i < 6 ? null : 'lazy'"
                 appDefaultImage
               />
               <div class="card-body">
@@ -138,7 +138,7 @@
                 alt="{{ album.titre }}"
                 itemprop="image"
                 [attr.fetchpriority]="i === 0 ? 'high' : null"
-                [attr.loading]="i === 0 ? null : 'lazy'"
+                [attr.loading]="i < 6 ? null : 'lazy'"
                 appDefaultImage
               />
               <div class="card-body">

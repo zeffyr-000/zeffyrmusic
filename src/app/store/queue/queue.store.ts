@@ -3,18 +3,7 @@ import { signalStore, withState, withMethods, withComputed, patchState } from '@
 import { initialQueueState } from './queue.models';
 import { Video } from '../../models/video.model';
 import { withSsrSafety } from '../features/with-ssr-safety';
-
-/**
- * Shuffles an array of indices using the crypto-secure PRNG (Fisher-Yates).
- */
-function shuffleArray(array: number[]): number[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = crypto.getRandomValues(new Uint32Array(1))[0] % (i + 1);
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
+import { shuffleArray } from '../../utils';
 
 /**
  * QueueStore - Playback queue management

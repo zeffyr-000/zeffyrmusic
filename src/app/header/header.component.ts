@@ -8,7 +8,7 @@ import {
   effect,
   signal,
 } from '@angular/core';
-import { form, FormField, required, minLength, email } from '@angular/forms/signals';
+import { form, FormField, FormRoot, required, minLength, email } from '@angular/forms/signals';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   NgbActiveModal,
@@ -26,10 +26,11 @@ import { environment } from 'src/environments/environment';
 import { UserLibraryService } from '../services/user-library.service';
 import { AuthStore, UserDataStore, UiStore } from '../store';
 import { UserService } from '../services/user.service';
-import { LoginResponse, UserReponse } from '../models/user.model';
+import { UserReponse } from '../models/user.model';
 import { isPlatformBrowser } from '@angular/common';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import '../models/google-identity.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -45,11 +46,11 @@ import '../models/google-identity.model';
     RouterLinkActive,
     SearchBarComponent,
     FormField,
+    FormRoot,
     TranslocoPipe,
   ],
 })
 export class HeaderComponent {
-  activeModal = inject(NgbActiveModal);
   private readonly modalService = inject(NgbModal);
   private readonly platformId = inject(PLATFORM_ID);
   readonly authStore = inject(AuthStore);
@@ -82,40 +83,90 @@ export class HeaderComponent {
 
   // Signal Forms models
   readonly registerModel = signal({ pseudo: '', mail: '', password: '' });
-  readonly registerForm = form(this.registerModel, schemaPath => {
-    required(schemaPath.pseudo);
-    minLength(schemaPath.pseudo, 4, {
-      message: () => this.translocoService.translate('validation_minlength', { min: 4 }),
-    });
-    required(schemaPath.mail);
-    email(schemaPath.mail, {
-      message: () => this.translocoService.translate('validation_email_invalid'),
-    });
-    required(schemaPath.password);
-    minLength(schemaPath.password, 4, {
-      message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
-    });
-  });
+  readonly registerForm = form(
+    this.registerModel,
+    schemaPath => {
+      required(schemaPath.pseudo);
+      minLength(schemaPath.pseudo, 4, {
+        message: () => this.translocoService.translate('validation_minlength', { min: 4 }),
+      });
+      required(schemaPath.mail);
+      email(schemaPath.mail, {
+        message: () => this.translocoService.translate('validation_email_invalid'),
+      });
+      required(schemaPath.password);
+      minLength(schemaPath.password, 4, {
+        message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
+      });
+    },
+    {
+      submission: {
+        action: async () => {
+          try {
+            const data = await firstValueFrom(this.userService.register(this.registerModel()));
+            if (data.success !== undefined && data.success) {
+              this.isRegistered.set(true);
+              this.googleAnalyticsService.pageView('/inscription/succes');
+            } else {
+              this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
+            }
+          } catch {
+            this.error.set(this.translocoService.translate('generic_error'));
+          }
+        },
+      },
+    }
+  );
 
   readonly loginModel = signal({ pseudo: '', password: '' });
-  readonly loginForm = form(this.loginModel, schemaPath => {
-    required(schemaPath.pseudo);
-    minLength(schemaPath.pseudo, 4, {
-      message: () => this.translocoService.translate('validation_minlength', { min: 4 }),
-    });
-    required(schemaPath.password);
-    minLength(schemaPath.password, 4, {
-      message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
-    });
-  });
+  readonly loginForm = form(
+    this.loginModel,
+    schemaPath => {
+      required(schemaPath.pseudo);
+      minLength(schemaPath.pseudo, 4, {
+        message: () => this.translocoService.translate('validation_minlength', { min: 4 }),
+      });
+      required(schemaPath.password);
+      minLength(schemaPath.password, 4, {
+        message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
+      });
+    },
+    {
+      submission: {
+        action: async () => {
+          await this.loginWithToken('');
+        },
+      },
+    }
+  );
 
   readonly resetPassModel = signal({ mail: '' });
-  readonly resetPassForm = form(this.resetPassModel, schemaPath => {
-    required(schemaPath.mail);
-    email(schemaPath.mail, {
-      message: () => this.translocoService.translate('validation_email_invalid'),
-    });
-  });
+  readonly resetPassForm = form(
+    this.resetPassModel,
+    schemaPath => {
+      required(schemaPath.mail);
+      email(schemaPath.mail, {
+        message: () => this.translocoService.translate('validation_email_invalid'),
+      });
+    },
+    {
+      submission: {
+        action: async () => {
+          try {
+            const data = await firstValueFrom(this.userService.resetPass(this.resetPassModel()));
+            if (data.success !== undefined && data.success) {
+              this.isSuccess.set(true);
+            } else {
+              this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
+            }
+          } catch {
+            this.isSuccess.set(false);
+            this.error.set(this.translocoService.translate('generic_error'));
+          }
+        },
+      },
+    }
+  );
 
   constructor() {
     this.URL_ASSETS = environment.URL_ASSETS;
@@ -153,51 +204,30 @@ export class HeaderComponent {
     this.openModalLogin();
   }
 
-  onSubmitRegister(event: Event) {
-    event.preventDefault();
-    if (this.registerForm().valid()) {
-      this.userService.register(this.registerModel()).subscribe((data: UserReponse) => {
-        if (data.success !== undefined && data.success) {
-          this.isRegistered.set(true);
-
-          this.googleAnalyticsService.pageView('/inscription/succes');
-        } else {
-          this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
-        }
-      });
-    }
-  }
-
-  onLogIn(event: Event | null, modal: NgbActiveModal | null, token: string) {
-    event?.preventDefault();
-    if (token || this.loginForm().valid()) {
+  private async loginWithToken(token: string): Promise<void> {
+    try {
       const formValue = this.loginModel();
-      this.userService.login(formValue, token).subscribe((data: LoginResponse) => {
-        if (data.success !== undefined && data.success) {
-          // Login via AuthStore
-          this.authStore.login(
-            { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail },
-            {
-              darkModeEnabled: data.dark_mode_enabled,
-              language: data.language as 'fr' | 'en',
-            }
-          );
-
-          this.userLibraryService.initializeFromLogin(
-            data.liste_playlist,
-            data.liste_suivi,
-            data.like_video
-          );
-
-          if (modal) {
-            modal.dismiss('');
-          } else {
-            this.modalService.dismissAll();
+      const data = await firstValueFrom(this.userService.login(formValue, token));
+      if (data.success !== undefined && data.success) {
+        // Login via AuthStore
+        this.authStore.login(
+          { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail },
+          {
+            darkModeEnabled: data.dark_mode_enabled,
+            language: data.language as 'fr' | 'en',
           }
-        } else {
-          this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
-        }
-      });
+        );
+        this.userLibraryService.initializeFromLogin(
+          data.liste_playlist,
+          data.liste_suivi,
+          data.like_video
+        );
+        this.modalService.dismissAll();
+      } else {
+        this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
+      }
+    } catch {
+      this.error.set(this.translocoService.translate('generic_error'));
     }
   }
 
@@ -216,19 +246,6 @@ export class HeaderComponent {
         }
       }
     });
-  }
-
-  onSubmitResetPass(event: Event) {
-    event.preventDefault();
-    if (this.resetPassForm().valid()) {
-      this.userService.resetPass(this.resetPassModel()).subscribe((data: UserReponse) => {
-        if (data.success !== undefined && data.success) {
-          this.isSuccess.set(true);
-        } else {
-          this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
-        }
-      });
-    }
   }
 
   onAddVideo(idPlaylist: string, modal: NgbActiveModal) {
@@ -280,8 +297,8 @@ export class HeaderComponent {
     }
   }
 
-  handleCredentialResponse(response: { credential: string }) {
-    this.onLogIn(null, null, response.credential);
+  async handleCredentialResponse(response: { credential: string }): Promise<void> {
+    await this.loginWithToken(response.credential);
   }
 
   renderGoogleRegisterButton() {

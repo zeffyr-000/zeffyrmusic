@@ -19,6 +19,7 @@ import { SkeletonCardComponent } from '../directives/skeleton-card/skeleton-card
 import { isPlatformServer } from '@angular/common';
 import { SeoService } from '../services/seo.service';
 import { environment } from 'src/environments/environment';
+import { shuffleArray } from '../utils';
 
 const RANDOM_TOP_KEY = makeStateKey<HomeAlbum[]>('randomTop');
 
@@ -77,12 +78,12 @@ export class HomeComponent implements OnInit {
         this.isLoading.set(false);
 
         if (isPlatformServer(this.platformId)) {
-          const randomizedTop = data.top.sort(() => Math.random() - 0.5).slice(0, 5);
+          const randomizedTop = shuffleArray(data.top).slice(0, 5);
           this.transferState.set(RANDOM_TOP_KEY, randomizedTop);
           this.listTopSliced.set(randomizedTop);
         } else {
           const storedTop = this.transferState.get(RANDOM_TOP_KEY, null);
-          this.listTopSliced.set(storedTop || data.top.slice(0, 5));
+          this.listTopSliced.set(storedTop ?? shuffleArray(data.top).slice(0, 5));
           this.transferState.remove(RANDOM_TOP_KEY);
         }
 

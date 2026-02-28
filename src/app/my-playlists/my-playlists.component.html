@@ -8,7 +8,7 @@
       <span class="material-icons" aria-hidden="true">add</span>
       {{ 'creer_nouvelle_playlist' | transloco }}
     </h2>
-    <form (submit)="onCreatePlaylist($event)" class="create-form">
+    <form [formRoot]="createPlaylistForm" class="create-form">
       <div class="form-group">
         <label class="form-label" for="new-playlist-name">
           <span class="material-icons" aria-hidden="true">title</span>
@@ -146,7 +146,7 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form (submit)="onEditTitlePlaylist($event, modal)" class="modal-form">
+    <form [formRoot]="editTitleForm" class="modal-form">
       <div class="form-group">
         <label class="form-label" for="playlist-title">
           <span class="material-icons" aria-hidden="true">title</span>

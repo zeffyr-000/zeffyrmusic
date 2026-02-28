@@ -2,8 +2,9 @@ import type { MockedObject } from 'vitest';
 import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
-import { NgbActiveModal, NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError } from 'rxjs';
+import { submit } from '@angular/forms/signals';
 import { InitService } from '../services/init.service';
 import { UserService } from '../services/user.service';
 import { getTranslocoTestingProviders } from '../transloco-testing';
@@ -43,7 +44,6 @@ describe('SettingsComponent', () => {
       associateGoogleAccount: vi.fn(),
     } as MockedObject<UserService>;
     modalServiceSpyObj = { open: vi.fn() } as MockedObject<NgbModal>;
-    const activeModalSpyObj = { dismiss: vi.fn() } as MockedObject<NgbActiveModal>;
     const authGuardMock = { canActivate: vi.fn() } as MockedObject<AuthGuard>;
 
     await TestBed.configureTestingModule({
@@ -53,7 +53,6 @@ describe('SettingsComponent', () => {
         { provide: InitService, useValue: initServiceMock },
         { provide: UserService, useValue: userServiceMock },
         { provide: NgbModal, useValue: modalServiceSpyObj },
-        { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: AuthGuard, useValue: authGuardMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -77,8 +76,6 @@ describe('SettingsComponent', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (window as any).google;
   });
-
-  const mockEvent = { preventDefault: vi.fn() } as unknown as Event;
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -105,7 +102,7 @@ describe('SettingsComponent', () => {
       userServiceMock.editPass.mockReturnValue(of(successResponse));
 
       // Act
-      component.onSubmitEditPass(mockEvent);
+      await submit(component.editPassForm);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
@@ -116,7 +113,7 @@ describe('SettingsComponent', () => {
 
       userServiceMock.editPass.mockReturnValue(of(errorResponse));
       // Act
-      component.onSubmitEditPass(mockEvent);
+      await submit(component.editPassForm);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
@@ -138,7 +135,7 @@ describe('SettingsComponent', () => {
       expect(component.editPassForm().invalid()).toBe(true);
     });
 
-    it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
+    it('should call initService.onMessageUnlog when editPass emits an error', async () => {
       // Signal Forms: set model values directly
       component.editPassModel.set({
         passwordold: 'oldPassword',
@@ -149,7 +146,7 @@ describe('SettingsComponent', () => {
       userServiceMock.editPass.mockReturnValue(throwError('error'));
 
       // Act
-      component.onSubmitEditPass(mockEvent);
+      await submit(component.editPassForm);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalled();
@@ -169,7 +166,7 @@ describe('SettingsComponent', () => {
       userServiceMock.editMail.mockReturnValue(of(successResponse));
 
       // Act
-      component.onSubmitEditMail(mockEvent);
+      await submit(component.editMailForm);
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
@@ -180,7 +177,7 @@ describe('SettingsComponent', () => {
 
       userServiceMock.editMail.mockReturnValue(of(errorResponse));
       // Act
-      component.onSubmitEditMail(mockEvent);
+      await submit(component.editMailForm);
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
@@ -189,7 +186,7 @@ describe('SettingsComponent', () => {
       vi.useRealTimers();
     });
 
-    it('should set this.isConnected to false and call initService.onMessageUnlog when an error occurs', () => {
+    it('should call initService.onMessageUnlog when editMail emits an error', async () => {
       // Signal Forms: set model values directly
       component.editMailModel.set({ mail: 'test@example.com' });
 
@@ -197,7 +194,7 @@ describe('SettingsComponent', () => {
       userServiceMock.editMail.mockReturnValue(throwError(errorResponse));
 
       // Act
-      component.onSubmitEditMail(mockEvent);
+      await submit(component.editMailForm);
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
@@ -246,7 +243,7 @@ describe('SettingsComponent', () => {
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
-  it('should call editLanguage with correct parameters and handle success response', () => {
+  it('should call editLanguage with correct parameters and handle success response', async () => {
     // Signal Forms: set model values directly
     component.editLanguageModel.set({ language: 'en' });
 
@@ -254,7 +251,7 @@ describe('SettingsComponent', () => {
     userServiceMock.editLanguage.mockReturnValue(of(mockResponse));
     vi.useFakeTimers();
 
-    component.onSubmitEditLanguage(mockEvent);
+    await submit(component.editLanguageForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
     expect(component.successLanguage()).toBe(true);
@@ -264,32 +261,32 @@ describe('SettingsComponent', () => {
     expect(component.successLanguage()).toBe(false);
   });
 
-  it('should handle error response correctly', () => {
+  it('should handle error response correctly', async () => {
     // Signal Forms: set model values directly
     component.editLanguageModel.set({ language: 'en' });
 
     const mockResponse = { success: false, error: 'Some error' } as UserReponse;
     userServiceMock.editLanguage.mockReturnValue(of(mockResponse));
 
-    component.onSubmitEditLanguage(mockEvent);
+    await submit(component.editLanguageForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
     expect(component.error()).toBe('Some error');
   });
 
-  it('should handle HTTP error correctly', () => {
+  it('should handle HTTP error correctly', async () => {
     // Signal Forms: set model values directly
     component.editLanguageModel.set({ language: 'en' });
 
     userServiceMock.editLanguage.mockReturnValue(throwError(() => new Error('HTTP error')));
 
-    component.onSubmitEditLanguage(mockEvent);
+    await submit(component.editLanguageForm);
 
     expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
-  it('should handle successful account deletion', () => {
+  it('should handle successful account deletion', async () => {
     vi.useFakeTimers();
 
     // Signal Forms: set model values directly
@@ -299,7 +296,7 @@ describe('SettingsComponent', () => {
     userServiceMock.deleteAccount.mockReturnValue(of(response));
     const logoutSpy = vi.spyOn(component.authStore, 'logout');
 
-    component.onSubmitDeleteAccount(mockEvent);
+    await submit(component.deleteAccountForm);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
     expect(component.successDelete()).toBe(true);
@@ -310,27 +307,27 @@ describe('SettingsComponent', () => {
     expect(logoutSpy).toHaveBeenCalled();
   });
 
-  it('should handle account deletion error from server', () => {
+  it('should handle account deletion error from server', async () => {
     // Signal Forms: set model values directly
     component.deleteAccountModel.set({ password: 'testPassword' });
 
     const response = { success: false, error: 'error_message' } as UserReponse;
     userServiceMock.deleteAccount.mockReturnValue(of(response));
 
-    component.onSubmitDeleteAccount(mockEvent);
+    await submit(component.deleteAccountForm);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
     expect(component.successDelete()).toBe(false);
     expect(component.error()).toBe('error_message');
   });
 
-  it('should handle network error during account deletion', () => {
+  it('should handle network error during account deletion', async () => {
     // Signal Forms: set model values directly
     component.deleteAccountModel.set({ password: 'testPassword' });
 
     userServiceMock.deleteAccount.mockReturnValue(throwError(() => new Error('Network error')));
 
-    component.onSubmitDeleteAccount(mockEvent);
+    await submit(component.deleteAccountForm);
 
     expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
     expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
