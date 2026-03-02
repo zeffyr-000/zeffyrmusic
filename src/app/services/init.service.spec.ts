@@ -153,6 +153,7 @@ describe('InitService', () => {
               titre: 'titre1',
               duree: '100',
               artiste: 'Artist 1',
+              artists: [{ id_artist: '1', label: 'Artist 1' }],
             },
           ],
           liste_video: [],
