@@ -178,13 +178,7 @@ export class PlaylistComponent {
         return;
       }
 
-      this.playlist.set(
-        likedVideos.map(element => {
-          const elementToPush = { ...element } as unknown as Video;
-          elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
-          return elementToPush;
-        })
-      );
+      this.playlist.set(likedVideos.map(element => ({ ...element }) as unknown as Video));
     });
   }
 
@@ -308,13 +302,7 @@ export class PlaylistComponent {
 
     const likedVideos = this.userDataStore.likedVideos();
     if (likedVideos && likedVideos.length > 0) {
-      this.playlist.set(
-        likedVideos.map(element => {
-          const elementToPush = { ...element } as unknown as Video;
-          elementToPush.artists = [{ label: element.artiste, id_artist: '' }];
-          return elementToPush;
-        })
-      );
+      this.playlist.set(likedVideos.map(element => ({ ...element }) as unknown as Video));
     }
 
     this.titleService.setTitle(this.translocoService.translate('mes_likes') + ' - Zeffyr Music');
@@ -493,6 +481,7 @@ export class PlaylistComponent {
         titre: v.titre,
         duree: v.duree,
         artiste: v.artiste,
+        artists: v.artists,
       }));
       this.userDataStore.reorderLikedVideos(reorderedLikes);
 
@@ -505,6 +494,7 @@ export class PlaylistComponent {
               titre: v.titre,
               duree: v.duree,
               artiste: v.artiste,
+              artists: v.artists,
             }))
           );
           this.uiStore.showError(this.translocoService.translate('reorder_error'));

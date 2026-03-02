@@ -19,6 +19,7 @@ export interface UserVideo {
   titre: string;
   duree: string;
   artiste: string;
+  artists: Artist[];
 }
 
 export interface VideoItem {

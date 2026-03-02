@@ -39,6 +39,7 @@ describe('UserDataStore', () => {
     titre: 'Great Song',
     duree: '3:45',
     artiste: 'Artist Name',
+    artists: [{ id_artist: '1', label: 'Artist Name' }],
   };
 
   const mockLikedVideo2: UserVideo = {
@@ -47,6 +48,7 @@ describe('UserDataStore', () => {
     titre: 'Another Song',
     duree: '4:20',
     artiste: 'Another Artist',
+    artists: [{ id_artist: '2', label: 'Another Artist' }],
   };
 
   const mockVideo: Video = {

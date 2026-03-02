@@ -370,7 +370,14 @@ describe('PlaylistComponent', () => {
     const userDataStore = TestBed.inject(UserDataStore);
     try {
       userDataStore.setLikedVideos([
-        { id: '1', key: 'K1', titre: 'T1', duree: '100', artiste: 'A1' } as UserVideo,
+        {
+          id: '1',
+          key: 'K1',
+          titre: 'T1',
+          duree: '100',
+          artiste: 'A1',
+          artists: [{ id_artist: '1', label: 'A1' }],
+        } as UserVideo,
       ]);
       component.loadLike();
       fixture.detectChanges();
@@ -417,6 +424,7 @@ describe('PlaylistComponent', () => {
         titre: 'Titre 1',
         duree: '100',
         artiste: 'Artist 1',
+        artists: [{ id_artist: '1', label: 'Artist 1' }],
       },
       {
         id: '2',
@@ -424,6 +432,7 @@ describe('PlaylistComponent', () => {
         titre: 'Titre 2',
         duree: '200',
         artiste: 'Artist 2',
+        artists: [{ id_artist: '2', label: 'Artist 2' }],
       },
     ] as UserVideo[];
 
@@ -1375,8 +1384,22 @@ describe('PlaylistComponent (Server context)', () => {
     it('should reorder likes and call API on like page', () => {
       const userDataStore = TestBed.inject(UserDataStore);
       const mockLikes: UserVideo[] = [
-        { id: '1', key: 'k1', titre: 'Song 1', duree: '180', artiste: 'A1' },
-        { id: '2', key: 'k2', titre: 'Song 2', duree: '200', artiste: 'A2' },
+        {
+          id: '1',
+          key: 'k1',
+          titre: 'Song 1',
+          duree: '180',
+          artiste: 'A1',
+          artists: [{ id_artist: '1', label: 'A1' }],
+        },
+        {
+          id: '2',
+          key: 'k2',
+          titre: 'Song 2',
+          duree: '200',
+          artiste: 'A2',
+          artists: [{ id_artist: '2', label: 'A2' }],
+        },
       ];
       userDataStore.setLikedVideos(mockLikes);
 
@@ -1411,8 +1434,22 @@ describe('PlaylistComponent (Server context)', () => {
       userLibraryServiceMock.reorderLikes.mockReturnValue(of(false));
 
       const mockLikes: UserVideo[] = [
-        { id: '1', key: 'k1', titre: 'Song 1', duree: '180', artiste: 'A1' },
-        { id: '2', key: 'k2', titre: 'Song 2', duree: '200', artiste: 'A2' },
+        {
+          id: '1',
+          key: 'k1',
+          titre: 'Song 1',
+          duree: '180',
+          artiste: 'A1',
+          artists: [{ id_artist: '1', label: 'A1' }],
+        },
+        {
+          id: '2',
+          key: 'k2',
+          titre: 'Song 2',
+          duree: '200',
+          artiste: 'A2',
+          artists: [{ id_artist: '2', label: 'A2' }],
+        },
       ];
       userDataStore.setLikedVideos(mockLikes);
 
