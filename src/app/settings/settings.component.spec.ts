@@ -1,5 +1,5 @@
 import type { MockedObject } from 'vitest';
-import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
+import { NO_ERRORS_SCHEMA, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { NgbModal, NgbModalModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -8,6 +8,7 @@ import { submit } from '@angular/forms/signals';
 import { InitService } from '../services/init.service';
 import { UserService } from '../services/user.service';
 import { getTranslocoTestingProviders } from '../transloco-testing';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { SettingsComponent } from './settings.component';
 import { AuthGuard } from '../services/auth-guard.service';
 import { UserReponse } from '../models/user.model';
@@ -23,6 +24,7 @@ describe('SettingsComponent', () => {
   let userServiceMock: MockedObject<UserService>;
   let initServiceMock: MockedObject<InitService>;
   let modalServiceSpyObj: MockedObject<NgbModal>;
+  let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     initServiceMock = {
@@ -45,6 +47,7 @@ describe('SettingsComponent', () => {
     } as MockedObject<UserService>;
     modalServiceSpyObj = { open: vi.fn() } as MockedObject<NgbModal>;
     const authGuardMock = { canActivate: vi.fn() } as MockedObject<AuthGuard>;
+    googleAnalyticsServiceMock = { pageView: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [NgbModalModule, SettingsComponent],
@@ -54,6 +57,8 @@ describe('SettingsComponent', () => {
         { provide: UserService, useValue: userServiceMock },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: AuthGuard, useValue: authGuardMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -79,6 +84,13 @@ describe('SettingsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should track pageView on init', () => {
+    expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
+      '/settings',
+      expect.any(String)
+    );
   });
 
   describe('onSubmitEditPass', () => {

@@ -2,11 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  PLATFORM_ID,
   TemplateRef,
   inject,
   signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { UserLibraryService } from '../services/user-library.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { RouterLink } from '@angular/router';
@@ -27,6 +30,8 @@ export class MySelectionComponent implements OnInit {
   private readonly titleService = inject(Title);
   private readonly translocoService = inject(TranslocoService);
   private readonly modalService = inject(NgbModal);
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly userDataStore = inject(UserDataStore);
   private readonly uiStore = inject(UiStore);
 
@@ -36,6 +41,10 @@ export class MySelectionComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('ma_selection') + ' - Zeffyr Music');
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.googleAnalyticsService.pageView('/my-selection', this.titleService.getTitle());
+    }
   }
 
   onConfirmDeleteFollow(

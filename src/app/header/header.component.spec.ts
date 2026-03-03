@@ -255,7 +255,10 @@ describe('HeaderComponent', () => {
         password: 'password',
       });
       expect(component.isRegistered()).toBe(true);
-      expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/inscription/succes');
+      expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith(
+        '/inscription/succes',
+        'Inscription réussie'
+      );
     });
 
     it('should set error on register failure', async () => {

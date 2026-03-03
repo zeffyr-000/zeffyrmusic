@@ -117,6 +117,7 @@ describe('SearchComponent', () => {
             setTitle: () => {
               // Mock setTitle
             },
+            getTitle: () => 'Test Title',
           },
         },
         {
@@ -166,7 +167,7 @@ describe('SearchComponent', () => {
     expect(component.listTracks()).toEqual(searchResults2.tab_video);
 
     if (component['isBrowser']) {
-      expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('search/test');
+      expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/search/test', 'Test Title');
     }
   });
 

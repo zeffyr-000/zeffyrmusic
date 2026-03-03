@@ -75,6 +75,7 @@ describe('ArtistComponent', () => {
             provide: Title,
             useValue: {
               setTitle: vi.fn(),
+              getTitle: vi.fn().mockReturnValue('Test Title'),
             },
           },
           {
@@ -115,7 +116,7 @@ describe('ArtistComponent', () => {
       expect(titleService.setTitle).toHaveBeenCalledWith(
         translocoService.translate('title_artist', { artist: 'Test Artist' })
       );
-      expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('artist/1');
+      expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/artist/1', 'Test Title');
     });
 
     it('should set isAvailable to false when artist name is not provided', () => {
@@ -354,6 +355,7 @@ describe('ArtistComponent', () => {
             provide: Title,
             useValue: {
               setTitle: vi.fn(),
+              getTitle: vi.fn().mockReturnValue('Test Title'),
             },
           },
           {

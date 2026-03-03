@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 import { form, FormField, FormRoot, required, minLength, validate } from '@angular/forms/signals';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Title } from '@angular/platform-browser';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { UserService } from '../services/user.service';
 import { UiStore } from '../store/ui/ui.store';
 import { firstValueFrom } from 'rxjs';
@@ -20,6 +29,8 @@ export class ResetPasswordComponent implements OnInit {
   private readonly userService = inject(UserService);
   private readonly transloco = inject(TranslocoService);
   private readonly titleService = inject(Title);
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly uiStore = inject(UiStore);
 
   readonly formModel = signal({
@@ -96,5 +107,9 @@ export class ResetPasswordComponent implements OnInit {
     );
     this.idPerso = this.route.snapshot.params['id_perso'];
     this.key = this.route.snapshot.params['key'];
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.googleAnalyticsService.pageView('/reset-password', this.titleService.getTitle());
+    }
   }
 }

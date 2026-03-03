@@ -4,7 +4,8 @@ import { of, throwError } from 'rxjs';
 import { submit } from '@angular/forms/signals';
 import { ResetPasswordComponent } from './reset-password.component';
 import { UserService } from '../services/user.service';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { UiStore } from '../store/ui/ui.store';
 
@@ -15,18 +16,22 @@ describe('ResetPasswordComponent', () => {
     sendResetPass: ReturnType<typeof vi.fn>;
   };
   let uiStore: InstanceType<typeof UiStore>;
+  let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
   const mockIdPerso = 'test-user-123';
   const mockKey = 'reset-key-abc';
 
   beforeEach(async () => {
     userServiceMock = { sendResetPass: vi.fn() };
+    googleAnalyticsServiceMock = { pageView: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ResetPasswordComponent],
       providers: [
         getTranslocoTestingProviders(),
         { provide: UserService, useValue: userServiceMock },
+        { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -65,6 +70,13 @@ describe('ResetPasswordComponent', () => {
     it('should set the page title on init', () => {
       component.ngOnInit();
       expect(component['titleService'].getTitle()).toContain('Zeffyr Music');
+    });
+
+    it('should track pageView on init', () => {
+      expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
+        '/reset-password',
+        expect.any(String)
+      );
     });
   });
 

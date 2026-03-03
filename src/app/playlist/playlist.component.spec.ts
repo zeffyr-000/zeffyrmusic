@@ -257,7 +257,10 @@ describe('PlaylistComponent', () => {
     // Check other properties in the same way
     //expect(titleServiceSpy).toHaveBeenCalledWith(mockPlaylistData.title + ' - Zeffyr Music');
     expect(metaService.updateTag).toHaveBeenCalled();
-    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
+    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(
+      '/' + activatedRoute.snapshot.url.join('/'),
+      expect.any(String)
+    );
   });
 
   it('private', () => {
@@ -276,7 +279,10 @@ describe('PlaylistComponent', () => {
     expect(httpClientSpy).toHaveBeenCalledWith(url);
     expect(component.isPrivate()).toBe(true);
     // Check other properties in the same way
-    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
+    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(
+      '/' + activatedRoute.snapshot.url.join('/'),
+      expect.any(String)
+    );
   });
 
   it('share title', () => {
@@ -301,7 +307,10 @@ describe('PlaylistComponent', () => {
       'title - The Must-Haves of the Moment | Zeffyr Music'
     );
     //expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:description', content: 'description_partage_playlist' });
-    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
+    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(
+      '/' + activatedRoute.snapshot.url.join('/'),
+      expect.any(String)
+    );
   });
 
   it('url empty', () => {
@@ -346,7 +355,10 @@ describe('PlaylistComponent', () => {
       translocoService.translate('mes_likes') + ' - Zeffyr Music'
     );
     expect(metaService.updateTag).toHaveBeenCalled();
-    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(activatedRoute.snapshot.url.join('/'));
+    expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(
+      '/' + activatedRoute.snapshot.url.join('/'),
+      expect.any(String)
+    );
   });
 
   it('should set isLikePage to true when loadLike is called', () => {

@@ -113,7 +113,10 @@ describe('SearchBarComponent', () => {
 
       expect(component.query()).toBe('');
       expect(routerSpy).toHaveBeenCalledWith(['/artist/123']);
-      expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/recherche?q=test');
+      expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith(
+        '/recherche?q=test',
+        'Recherche'
+      );
     });
 
     it('should navigate to "all results" without analytics', () => {
@@ -165,7 +168,10 @@ describe('SearchBarComponent', () => {
 
       expect(component.query()).toBe('');
       expect(routerSpy).toHaveBeenCalledWith(['/playlist/42']);
-      expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith('/recherche?q=album search');
+      expect(googleAnalyticsServiceSpy.pageView).toHaveBeenCalledWith(
+        '/recherche?q=album%20search',
+        'Recherche'
+      );
     });
 
     it('should navigate without analytics when item has no original', () => {

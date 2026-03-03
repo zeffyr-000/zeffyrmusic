@@ -98,7 +98,8 @@ export class HomeComponent implements OnInit {
         this.listTopAlbums.set(data.top_albums);
 
         if (!isPlatformServer(this.platformId)) {
-          this.googleAnalyticsService.pageView('/');
+          const path = url ? `/${url}` : '/';
+          this.googleAnalyticsService.pageView(path, this.titleService.getTitle());
         }
       },
       error: () => {

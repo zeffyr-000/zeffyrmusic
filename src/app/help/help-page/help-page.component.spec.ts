@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HelpPageComponent } from './help-page.component';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { getTranslocoTestingProviders } from 'src/app/transloco-testing';
 
 describe('HelpPageComponent', () => {
@@ -10,14 +12,18 @@ describe('HelpPageComponent', () => {
   let route: ActivatedRoute;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let getSpy: any;
+  let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     getSpy = vi.fn().mockReturnValue('test-page');
+    googleAnalyticsServiceMock = { pageView: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [HelpPageComponent],
       providers: [
         getTranslocoTestingProviders(),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: getSpy } } } },
+        { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     }).compileComponents();
   });
@@ -31,6 +37,13 @@ describe('HelpPageComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should track pageView on init', () => {
+    expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
+      '/help/test-page',
+      expect.any(String)
+    );
   });
 
   it('should set page on ngOnInit', () => {

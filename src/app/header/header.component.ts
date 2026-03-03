@@ -106,7 +106,7 @@ export class HeaderComponent {
             const data = await firstValueFrom(this.userService.register(this.registerModel()));
             if (data.success !== undefined && data.success) {
               this.isRegistered.set(true);
-              this.googleAnalyticsService.pageView('/inscription/succes');
+              this.googleAnalyticsService.pageView('/inscription/succes', 'Inscription réussie');
             } else {
               this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
             }

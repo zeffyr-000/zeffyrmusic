@@ -5,9 +5,10 @@ import { TranslocoService } from '@jsverse/transloco';
 import { of, throwError } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { AuthGuard } from '../services/auth-guard.service';
-import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
+import { NO_ERRORS_SCHEMA, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { UiStore } from '../store/ui/ui.store';
 import type { MockNgbActiveModal, MockNgbModal } from '../models/test-mocks.model';
 
@@ -21,6 +22,7 @@ describe('MySelectionComponent', () => {
   let userDataStore: InstanceType<typeof UserDataStore>;
   let modalServiceMock: MockNgbModal;
   let uiStore: InstanceType<typeof UiStore>;
+  let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     userLibraryServiceMock = {
@@ -29,6 +31,7 @@ describe('MySelectionComponent', () => {
 
     const authGuardMock = { canActivate: vi.fn() };
     modalServiceMock = { open: vi.fn() };
+    googleAnalyticsServiceMock = { pageView: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [MySelectionComponent],
@@ -37,6 +40,8 @@ describe('MySelectionComponent', () => {
         { provide: UserLibraryService, useValue: userLibraryServiceMock },
         { provide: AuthGuard, useValue: authGuardMock },
         { provide: NgbModal, useValue: modalServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -63,6 +68,13 @@ describe('MySelectionComponent', () => {
   it('should set the title on init', () => {
     component.ngOnInit();
     expect(component['titleService'].getTitle()).toBe('My lightbox - Zeffyr Music');
+  });
+
+  it('should track pageView on init', () => {
+    expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
+      '/my-selection',
+      expect.any(String)
+    );
   });
 
   it('should get follows from userDataStore', () => {

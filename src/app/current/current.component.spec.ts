@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
 import { CurrentComponent } from './current.component';
 import { PlayerService } from '../services/player.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { QueueStore, AuthStore } from '../store';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 
@@ -14,12 +15,14 @@ describe('CurrentComponent', () => {
   };
   let queueStore: InstanceType<typeof QueueStore>;
   let authStore: InstanceType<typeof AuthStore>;
+  let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     playerServiceMock = {
       lecture: vi.fn(),
       removeToPlaylist: vi.fn(),
     };
+    googleAnalyticsServiceMock = { pageView: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [CurrentComponent],
@@ -27,6 +30,7 @@ describe('CurrentComponent', () => {
         getTranslocoTestingProviders(),
         { provide: PlayerService, useValue: playerServiceMock },
         { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -46,6 +50,13 @@ describe('CurrentComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should track pageView on init', () => {
+    expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
+      '/current',
+      expect.any(String)
+    );
   });
 
   describe('Store integration', () => {
