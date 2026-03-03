@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { PlayerService } from '../services/player.service';
 import { SeoService } from '../services/seo.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
 import {
   NgbDropdown,
@@ -32,6 +34,8 @@ export class CurrentComponent implements OnInit {
   private readonly metaService = inject(Meta);
   private readonly seoService = inject(SeoService);
   private readonly translocoService = inject(TranslocoService);
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly playerService = inject(PlayerService);
   readonly queueStore = inject(QueueStore);
   readonly authStore = inject(AuthStore);
@@ -43,6 +47,10 @@ export class CurrentComponent implements OnInit {
       content: this.translocoService.translate('current_meta_description') || '',
     });
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}current`);
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.googleAnalyticsService.pageView('/current', this.titleService.getTitle());
+    }
   }
 
   play(index: number, isInitialIndex: boolean) {

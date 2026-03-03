@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { RouterLink } from '@angular/router';
 import { SeoService } from '../services/seo.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -17,6 +19,8 @@ export class HelpComponent implements OnInit {
   private readonly metaService = inject(Meta);
   private readonly seoService = inject(SeoService);
   private readonly translocoService = inject(TranslocoService);
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   ngOnInit() {
     this.titleService.setTitle(this.translocoService.translate('help_meta_title'));
@@ -28,5 +32,9 @@ export class HelpComponent implements OnInit {
       });
     }
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help`);
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.googleAnalyticsService.pageView('/help', this.titleService.getTitle());
+    }
   }
 }

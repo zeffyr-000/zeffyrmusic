@@ -418,7 +418,10 @@ export class PlaylistComponent {
   /** Tracks page view in Google Analytics */
   private trackPageView(): void {
     if (this.isBrowser) {
-      this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+      this.googleAnalyticsService.pageView(
+        '/' + this.activatedRoute.snapshot.url.join('/'),
+        this.titleService.getTitle()
+      );
     }
   }
 

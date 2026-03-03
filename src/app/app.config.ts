@@ -71,6 +71,8 @@ export const appConfig: ApplicationConfig = {
   ],
 };
 
+const gaTrackingCode = environment.GA_TRACKING_ID;
+
 /** Client-only config with Google Analytics and Hydration */
 export const browserConfig: ApplicationConfig = {
   providers: [
@@ -82,7 +84,11 @@ export const browserConfig: ApplicationConfig = {
       withHttpTransferCacheOptions({ includePostRequests: false })
     ),
     importProvidersFrom(
-      NgxGoogleAnalyticsModule.forRoot(environment.production ? 'UA-1664521-8' : 'UA-FAKE-ID')
+      // Disable automatic page_view on gtag config — components send pageView() manually
+      // after setting the correct document title (prevents ghost "Zeffyrmusic" titles in GA)
+      NgxGoogleAnalyticsModule.forRoot(gaTrackingCode, [
+        { command: 'config', values: [gaTrackingCode, { send_page_view: false }] },
+      ])
     ),
   ],
 };
@@ -96,7 +102,10 @@ export const browserConfigStandalone: ApplicationConfig = {
     ...appConfig.providers,
     // No provideClientHydration() - fresh bootstrap instead of hydration
     importProvidersFrom(
-      NgxGoogleAnalyticsModule.forRoot(environment.production ? 'UA-1664521-8' : 'UA-FAKE-ID')
+      // Disable automatic page_view — same reason as browserConfig above
+      NgxGoogleAnalyticsModule.forRoot(gaTrackingCode, [
+        { command: 'config', values: [gaTrackingCode, { send_page_view: false }] },
+      ])
     ),
   ],
 };

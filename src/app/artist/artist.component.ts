@@ -200,7 +200,11 @@ export class ArtistComponent implements OnInit {
           }
 
           if (this.isBrowser) {
-            this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
+            const pageTitle = data.nom ? this.titleService.getTitle() : 'Artist not found';
+            this.googleAnalyticsService.pageView(
+              '/' + this.activatedRoute.snapshot.url.join('/'),
+              pageTitle
+            );
           }
         },
         error: () => {

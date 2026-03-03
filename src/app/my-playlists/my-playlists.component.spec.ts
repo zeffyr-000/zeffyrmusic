@@ -4,9 +4,10 @@ import { UserLibraryService } from '../services/user-library.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { of, throwError } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
-import { NO_ERRORS_SCHEMA, TemplateRef } from '@angular/core';
+import { NO_ERRORS_SCHEMA, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { submit } from '@angular/forms/signals';
 import { CreatePlaylistResponse } from '../models/user.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
@@ -31,6 +32,7 @@ describe('MyPlaylistsComponent', () => {
   let activeModalMock: MockNgbActiveModal;
   let userDataStore: InstanceType<typeof UserDataStore>;
   let uiStore: InstanceType<typeof UiStore>;
+  let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     userLibraryServiceMock = {
@@ -45,6 +47,7 @@ describe('MyPlaylistsComponent', () => {
     };
     modalServiceMock = { open: vi.fn(), dismissAll: vi.fn() };
     activeModalMock = { close: vi.fn(), dismiss: vi.fn() };
+    googleAnalyticsServiceMock = { pageView: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [MyPlaylistsComponent],
@@ -53,6 +56,8 @@ describe('MyPlaylistsComponent', () => {
         { provide: UserService, useValue: userServiceMock },
         { provide: UserLibraryService, useValue: userLibraryServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -79,6 +84,13 @@ describe('MyPlaylistsComponent', () => {
   it('should set the title on init', () => {
     component.ngOnInit();
     expect(component['titleService'].getTitle()).toBe('My playlists - Zeffyr Music');
+  });
+
+  it('should track pageView on init', () => {
+    expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
+      '/my-playlists',
+      expect.any(String)
+    );
   });
 
   // --- Create playlist ---

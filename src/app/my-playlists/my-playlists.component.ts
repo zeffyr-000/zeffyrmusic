@@ -2,12 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  PLATFORM_ID,
   TemplateRef,
   inject,
   signal,
 } from '@angular/core';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { Title } from '@angular/platform-browser';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -20,6 +22,7 @@ import {
   NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap';
 import { UserLibraryService } from '../services/user-library.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { UserService } from '../services/user.service';
 import { UiStore } from '../store/ui/ui.store';
 import { UserDataStore } from '../store/user-data/user-data.store';
@@ -48,6 +51,8 @@ export class MyPlaylistsComponent implements OnInit {
   private readonly translocoService = inject(TranslocoService);
   private readonly userService = inject(UserService);
   private readonly modalService = inject(NgbModal);
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly userDataStore = inject(UserDataStore);
   private readonly uiStore = inject(UiStore);
 
@@ -122,6 +127,10 @@ export class MyPlaylistsComponent implements OnInit {
     this.titleService.setTitle(
       this.translocoService.translate('mes_playlists') + ' - Zeffyr Music'
     );
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.googleAnalyticsService.pageView('/my-playlists', this.titleService.getTitle());
+    }
   }
 
   onSwitchVisibility(idPlaylist: string, visibility: string) {

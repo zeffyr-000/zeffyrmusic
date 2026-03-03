@@ -26,6 +26,7 @@ import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { Title } from '@angular/platform-browser';
 import { InitService } from '../services/init.service';
 import { AuthStore } from '../store';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from 'src/environments/environment';
 import '../models/google-identity.model';
 import { firstValueFrom } from 'rxjs';
@@ -43,6 +44,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   private readonly translocoService = inject(TranslocoService);
   private readonly titleService = inject(Title);
   private readonly initService = inject(InitService);
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
   readonly authStore = inject(AuthStore);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -202,6 +204,10 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     // Initialize form with current mail and language
     this.editMailModel.set({ mail: this.mail() });
     this.editLanguageModel.set({ language: this.language() });
+
+    if (this.isBrowser) {
+      this.googleAnalyticsService.pageView('/settings', this.titleService.getTitle());
+    }
   }
 
   ngAfterViewInit() {

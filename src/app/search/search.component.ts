@@ -115,6 +115,13 @@ export class SearchComponent implements OnInit, OnDestroy {
 
           this.listAlbums.set(data.playlist);
           this.limitAlbum.set(5);
+
+          if (this.isBrowser) {
+            this.googleAnalyticsService.pageView(
+              '/' + this.activatedRoute.snapshot.url.join('/'),
+              this.titleService.getTitle()
+            );
+          }
         });
 
       this.searchService.fullSearch2(this.query()).subscribe((data: { tab_video: Video[] }) => {
@@ -131,10 +138,6 @@ export class SearchComponent implements OnInit, OnDestroy {
           this.listExtras.set(data.tab_extra || []);
           this.limitExtra.set(5);
         });
-      }
-
-      if (this.isBrowser) {
-        this.googleAnalyticsService.pageView(this.activatedRoute.snapshot.url.join('/'));
       }
     });
   }

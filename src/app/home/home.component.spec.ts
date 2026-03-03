@@ -147,7 +147,7 @@ describe('HomeComponent', () => {
     let translocoService: TranslocoService;
 
     beforeEach(async () => {
-      titleService = { setTitle: vi.fn() };
+      titleService = { setTitle: vi.fn(), getTitle: vi.fn().mockReturnValue('Test Title') };
       metaService = { updateTag: vi.fn() };
       googleAnalyticsService = { pageView: vi.fn() };
 
@@ -192,7 +192,7 @@ describe('HomeComponent', () => {
           name: 'description',
         })
       );
-      expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/');
+      expect(googleAnalyticsService.pageView).toHaveBeenCalledWith('/', 'Test Title');
     });
 
     it('should use data from TransferState if available in browser', () => {
@@ -245,7 +245,7 @@ describe('HomeComponent', () => {
     let translocoService: TranslocoService;
 
     beforeEach(async () => {
-      titleService = { setTitle: vi.fn() };
+      titleService = { setTitle: vi.fn(), getTitle: vi.fn().mockReturnValue('Test Title') };
       metaService = { updateTag: vi.fn() };
       googleAnalyticsService = { pageView: vi.fn() };
 

@@ -118,7 +118,7 @@ export class SearchBarComponent {
         analyticsQuery += item.original.titre;
       }
       if (analyticsQuery.length > 0) {
-        this.googleAnalyticsService.pageView('/recherche?q=' + this.query());
+        this.googleAnalyticsService.pageView('/recherche?q=' + this.getQuerystr(), 'Recherche');
       }
     }
 
