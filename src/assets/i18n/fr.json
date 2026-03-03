@@ -54,6 +54,7 @@
   "validation_email_invalid": "Veuillez entrer une adresse e-mail valide",
   "validation_password_minlength": "Le mot de passe doit contenir au moins {{ min }} caractères",
   "validation_minlength": "Ce champ doit contenir au moins {{ min }} caractères",
+  "validation_maxlength": "Ce champ ne doit pas dépasser {{ max }} caractères",
   "validation_passwords_not_matching": "Les mots de passe ne correspondent pas",
 
   "modifier_mail": "Modifier son e-mail",
@@ -129,6 +130,9 @@
   "supprimer_liste_lecture": "Supprimer de la liste de lecture",
   "modifier_nom": "Modifier le nom",
   "renommer": "Renommer",
+  "rename_track": "Renommer la piste",
+  "track_renamed": "Piste renommée avec succès",
+  "delete_track_confirm": "Voulez-vous vraiment supprimer cette piste de la playlist ?",
   "changer_visibilite": "Changer la visibilité",
   "actions": "Actions",
   "nom_playlist": "Nom de la playlist",

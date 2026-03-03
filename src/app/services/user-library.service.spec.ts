@@ -120,6 +120,44 @@ describe('UserLibraryService', () => {
       expect(req.request.method).toBe('GET');
       req.flush({ success: true });
     });
+
+    it('should rename a track successfully', () => {
+      let result: { success: boolean; titre: string; artiste: string; artists: unknown[] } | null =
+        null;
+      service.renameTrack('v123', 'New Title', 'New Artist').subscribe(r => (result = r));
+
+      const req = httpMock.expectOne(`${environment.URL_SERVER}rename_video`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({
+        id_video: 'v123',
+        titre: 'New Title',
+        artiste: 'New Artist',
+      });
+      req.flush({
+        success: true,
+        titre: 'New Title',
+        artiste: 'New Artist',
+        artists: [{ id_artist: '12', label: 'New Artist' }],
+      });
+
+      expect(result).toEqual({
+        success: true,
+        titre: 'New Title',
+        artiste: 'New Artist',
+        artists: [{ id_artist: '12', label: 'New Artist' }],
+      });
+    });
+
+    it('should return success false when rename track fails', () => {
+      let result: { success: boolean; titre: string; artiste: string; artists: unknown[] } | null =
+        null;
+      service.renameTrack('v123', 'New Title', 'New Artist').subscribe(r => (result = r));
+
+      const req = httpMock.expectOne(`${environment.URL_SERVER}rename_video`);
+      req.error(new ProgressEvent('error'));
+
+      expect(result).toEqual({ success: false, titre: '', artiste: '', artists: [] });
+    });
   });
 
   describe('Reorder operations', () => {

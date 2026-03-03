@@ -54,6 +54,7 @@
   "validation_email_invalid": "Please enter a valid email address",
   "validation_password_minlength": "Password must be at least {{ min }} characters",
   "validation_minlength": "This field must be at least {{ min }} characters",
+  "validation_maxlength": "This field must not exceed {{ max }} characters",
   "validation_passwords_not_matching": "Passwords do not match",
 
   "modifier_mail": "Edit your email",
@@ -130,6 +131,9 @@
   "supprimer_liste_lecture": "Delete from the playlist",
   "modifier_nom": "Change the name",
   "renommer": "Rename",
+  "rename_track": "Rename track",
+  "track_renamed": "Track renamed successfully",
+  "delete_track_confirm": "Do you really want to remove this track from the playlist?",
   "changer_visibilite": "Change visibility",
   "actions": "Actions",
   "nom_playlist": "Playlist name",

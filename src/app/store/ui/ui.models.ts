@@ -22,6 +22,7 @@ export interface UiState {
   editPlaylistId: string | null;
   notifications: Notification[];
   showSessionExpiredMessage: boolean;
+  videoAddedToPlaylistId: { id: string; ts: number } | null;
 }
 
 export const initialUiState: UiState = {
@@ -32,4 +33,5 @@ export const initialUiState: UiState = {
   editPlaylistId: null,
   notifications: [],
   showSessionExpiredMessage: false,
+  videoAddedToPlaylistId: null,
 };

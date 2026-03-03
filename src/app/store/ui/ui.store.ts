@@ -120,6 +120,10 @@ export const UiStore = signalStore(
       return this.showNotification({ message, type: 'error', duration });
     },
 
+    notifyVideoAddedToPlaylist(idPlaylist: string): void {
+      patchState(store, { videoAddedToPlaylistId: { id: idPlaylist, ts: Date.now() } });
+    },
+
     showInfo(message: string, duration?: number): string {
       return this.showNotification({ message, type: 'info', duration });
     },

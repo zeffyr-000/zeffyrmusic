@@ -4,10 +4,13 @@ import {
   PLATFORM_ID,
   inject,
   effect,
+  untracked,
   computed,
   signal,
   TemplateRef,
 } from '@angular/core';
+import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
+import { firstValueFrom } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -58,6 +61,8 @@ import {
     ShareButtons,
     LazyLoadImageDirective,
     ArtistListComponent,
+    FormField,
+    FormRoot,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
@@ -110,6 +115,64 @@ export class PlaylistComponent {
   readonly isLikePage = signal(false);
   isBrowser: boolean;
 
+  readonly videoToRename = signal<Video | null>(null);
+  readonly videoToDelete = signal<Video | null>(null);
+  readonly renameTrackModel = signal({ titre: '', artiste: '' });
+  readonly renameTrackForm = form(
+    this.renameTrackModel,
+    schemaPath => {
+      required(schemaPath.titre);
+      validate(schemaPath.titre, ({ value }) => {
+        if ((value() as string).length > 80) {
+          return {
+            kind: 'maxlength',
+            message: this.translocoService.translate('validation_maxlength', { max: 80 }),
+          };
+        }
+        return null;
+      });
+    },
+    {
+      submission: {
+        action: async () => {
+          const video = this.videoToRename();
+          if (!video) {
+            return;
+          }
+          try {
+            const result = await firstValueFrom(
+              this.userLibraryService.renameTrack(
+                video.id_video,
+                this.renameTrackModel().titre,
+                this.renameTrackModel().artiste
+              )
+            );
+            if (result.success) {
+              this.playlist.set(
+                this.playlist().map(v =>
+                  v.id_video === video.id_video
+                    ? {
+                        ...v,
+                        titre: result.titre,
+                        artiste: result.artiste,
+                        artists: result.artists,
+                      }
+                    : v
+                )
+              );
+              this.modalService.dismissAll();
+              this.uiStore.showSuccess(this.translocoService.translate('track_renamed'));
+            } else {
+              this.uiStore.showError(this.translocoService.translate('generic_error'));
+            }
+          } catch {
+            this.uiStore.showError(this.translocoService.translate('generic_error'));
+          }
+        },
+      },
+    }
+  );
+
   readonly isFollower = computed(() => {
     const id = this.idPlaylist();
     if (!id) {
@@ -138,6 +201,14 @@ export class PlaylistComponent {
     this.activatedRoute.params.subscribe(() => {
       this.isLoading.set(true);
       this.initLoad();
+    });
+
+    // Effect to reload playlist when a video is added to it from another component
+    effect(() => {
+      const added = this.uiStore.videoAddedToPlaylistId();
+      if (added && added.id === untracked(this.idPlaylist)) {
+        this.loadPlaylist('');
+      }
     });
 
     // Effect to adjust playlist duration when track changes
@@ -187,6 +258,17 @@ export class PlaylistComponent {
       centered: true,
       size: 'md',
     });
+  }
+
+  openRenameModal(video: Video, tpl: TemplateRef<unknown>): void {
+    this.videoToRename.set(video);
+    this.renameTrackModel.set({ titre: video.titre, artiste: video.artiste });
+    this.modalService.open(tpl, { centered: true, size: 'md' });
+  }
+
+  openDeleteModal(video: Video, tpl: TemplateRef<unknown>): void {
+    this.videoToDelete.set(video);
+    this.modalService.open(tpl, { centered: true, size: 'md' });
   }
 
   initLoad() {

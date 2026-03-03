@@ -182,6 +182,31 @@ describe('UiStore', () => {
     });
   });
 
+  describe('notifyVideoAddedToPlaylist', () => {
+    it('should set videoAddedToPlaylistId with the given playlist id and a timestamp', () => {
+      store.notifyVideoAddedToPlaylist('p42');
+
+      const result = store.videoAddedToPlaylistId();
+      expect(result).not.toBeNull();
+      expect(result!.id).toBe('p42');
+      expect(typeof result!.ts).toBe('number');
+    });
+
+    it('should produce a new object reference with a different ts when called twice with the same id', async () => {
+      vi.useFakeTimers();
+      store.notifyVideoAddedToPlaylist('p42');
+      const first = store.videoAddedToPlaylistId();
+
+      vi.advanceTimersByTime(1);
+      store.notifyVideoAddedToPlaylist('p42');
+      const second = store.videoAddedToPlaylistId();
+
+      expect(second).not.toBe(first);
+      expect(second!.ts).toBeGreaterThan(first!.ts);
+      vi.useRealTimers();
+    });
+  });
+
   describe('Reset', () => {
     it('should reset to initial state', () => {
       store.expandPlayer();

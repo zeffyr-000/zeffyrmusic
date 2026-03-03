@@ -8,6 +8,7 @@ import type { UserPlaylist } from './playlist.model';
 import type { FollowItem } from './follow.model';
 import type { LoginResponse, UserReponse } from './user.model';
 import type { ThumbnailResult } from '../services/playlist-thumbnail.service';
+import type { RenameTrackResult } from '../services/user-library.service';
 
 /** Mock for PlayerService */
 export interface MockPlayerService {
@@ -134,6 +135,9 @@ export interface MockUserLibraryService {
     ) => Observable<boolean>
   >;
   removeVideoFromPlaylist: MockedFunction<(idVideo: string) => Observable<boolean>>;
+  renameTrack: MockedFunction<
+    (idVideo: string, titre: string, artiste: string) => Observable<RenameTrackResult>
+  >;
   toggleFollow: MockedFunction<
     (
       idPlaylist: string,
