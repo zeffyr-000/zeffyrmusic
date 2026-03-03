@@ -47,17 +47,30 @@ Component → UserLibraryService.addLike() → API POST
   → UserDataStore.likeVideo() → Components react
 ```
 
+### Cross-component notification via UiStore
+
+When an action in one component must trigger a reload in another (e.g. adding a video to a playlist from the header modal while `PlaylistComponent` is visible), use a dedicated signal in `UiStore` rather than a `BehaviorSubject` or a forced router navigation.
+
+```
+HeaderComponent.onAddVideo() → API POST (success)
+  → uiStore.notifyVideoAddedToPlaylist(idPlaylist)
+  → PlaylistComponent effect() watches videoAddedToPlaylistId()
+  → if id matches current playlist → loadPlaylist()
+```
+
+`videoAddedToPlaylistId` stores `{ id: string; ts: number }` — the `ts` field guarantees a new object reference on every notification, so the Angular effect fires even when the same playlist is targeted consecutively.
+
 ## State Management
 
 5 Signal Stores in `src/app/store/`:
 
-| Store           | Purpose                       | Key Signals                                                 |
-| --------------- | ----------------------------- | ----------------------------------------------------------- |
-| `AuthStore`     | Auth, preferences, dark mode  | `isAuthenticated()`, `pseudo()`, `isDarkMode()`             |
-| `PlayerStore`   | Playback state                | `isPlaying()`, `volume()`, `progress()`, `duration()`       |
-| `QueueStore`    | Track queue, shuffle          | `currentVideo()`, `items()`, `isShuffled()`, `hasNext()`    |
-| `UserDataStore` | Playlists, follows, likes     | `playlists()`, `follows()`, `likedVideos()`                 |
-| `UiStore`       | Modals, notifications, mobile | `isPlayerExpanded()`, `hasActiveModal()`, `notifications()` |
+| Store           | Purpose                                               | Key Signals                                                                             |
+| --------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `AuthStore`     | Auth, preferences, dark mode                          | `isAuthenticated()`, `pseudo()`, `isDarkMode()`                                         |
+| `PlayerStore`   | Playback state                                        | `isPlaying()`, `volume()`, `progress()`, `duration()`                                   |
+| `QueueStore`    | Track queue, shuffle                                  | `currentVideo()`, `items()`, `isShuffled()`, `hasNext()`                                |
+| `UserDataStore` | Playlists, follows, likes                             | `playlists()`, `follows()`, `likedVideos()`                                             |
+| `UiStore`       | Modals, notifications, mobile, cross-component events | `isPlayerExpanded()`, `hasActiveModal()`, `notifications()`, `videoAddedToPlaylistId()` |
 
 All stores use `withSsrSafety()` for safe browser API access.
 

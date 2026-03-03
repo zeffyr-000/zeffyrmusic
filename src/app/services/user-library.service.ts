@@ -5,7 +5,15 @@ import { environment } from '../../environments/environment';
 import { UserPlaylist } from '../models/playlist.model';
 import { FollowItem } from '../models/follow.model';
 import { UserVideo } from '../models/video.model';
+import { Artist } from '../models/artist.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
+
+export interface RenameTrackResult {
+  success: boolean;
+  titre: string;
+  artiste: string;
+  artists: Artist[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -170,6 +178,16 @@ export class UserLibraryService {
         map(response => response.success),
         catchError(() => of(false))
       );
+  }
+
+  renameTrack(idVideo: string, titre: string, artiste: string): Observable<RenameTrackResult> {
+    return this.http
+      .post<RenameTrackResult>(`${environment.URL_SERVER}rename_video`, {
+        id_video: idVideo,
+        titre,
+        artiste,
+      })
+      .pipe(catchError(() => of({ success: false, titre: '', artiste: '', artists: [] })));
   }
 
   reorderPlaylistTracks(idPlaylist: string, orderedVideoIds: string[]): Observable<boolean> {

@@ -4,7 +4,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
+import { submit } from '@angular/forms/signals';
 import { PlaylistComponent } from './playlist.component';
 import { environment } from 'src/environments/environment';
 import { InitService } from '../services/init.service';
@@ -87,6 +88,9 @@ describe('PlaylistComponent', () => {
       isLiked: vi.fn().mockReturnValue(false),
       addLike: vi.fn().mockReturnValue(of(true)),
       removeLike: vi.fn().mockReturnValue(of(true)),
+      renameTrack: vi
+        .fn()
+        .mockReturnValue(of({ success: true, titre: 'T', artiste: 'A', artists: [] })),
     };
     // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
@@ -131,7 +135,7 @@ describe('PlaylistComponent', () => {
         },
         {
           provide: NgbModal,
-          useValue: { open: vi.fn() },
+          useValue: { open: vi.fn(), dismissAll: vi.fn() },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -1021,6 +1025,134 @@ describe('PlaylistComponent', () => {
       });
     });
   });
+
+  describe('renameTrackForm', () => {
+    const video: Video = {
+      id_video: 'v1',
+      titre: 'Old Title',
+      artiste: 'Old Artist',
+      artists: [],
+      duree: '180',
+      id_playlist: 'p1',
+      key: 'k1',
+      ordre: '1',
+      titre_album: '',
+    };
+
+    beforeEach(() => {
+      component.playlist.set([video]);
+      component.videoToRename.set(video);
+      component.renameTrackModel.set({ titre: 'New Title', artiste: 'New Artist' });
+    });
+
+    it('should update playlist, dismiss modal and show success on successful rename', async () => {
+      const uiStore = TestBed.inject(UiStore);
+      const showSuccessSpy = vi.spyOn(uiStore, 'showSuccess').mockReturnValue('id');
+      const dismissAllSpy = vi.spyOn(component['modalService'], 'dismissAll');
+      userLibraryServiceMock.renameTrack.mockReturnValue(
+        of({
+          success: true,
+          titre: 'New Title',
+          artiste: 'New Artist',
+          artists: [{ label: 'New Artist', id_artist: '' }],
+        })
+      );
+
+      await submit(component.renameTrackForm);
+
+      expect(userLibraryServiceMock.renameTrack).toHaveBeenCalledWith(
+        'v1',
+        'New Title',
+        'New Artist'
+      );
+      expect(component.playlist()[0].titre).toBe('New Title');
+      expect(component.playlist()[0].artiste).toBe('New Artist');
+      expect(dismissAllSpy).toHaveBeenCalled();
+      expect(showSuccessSpy).toHaveBeenCalled();
+    });
+
+    it('should show error notification when result.success is false', async () => {
+      const uiStore = TestBed.inject(UiStore);
+      const showErrorSpy = vi.spyOn(uiStore, 'showError').mockReturnValue('id');
+      userLibraryServiceMock.renameTrack.mockReturnValue(
+        of({ success: false, titre: '', artiste: '', artists: [] })
+      );
+
+      await submit(component.renameTrackForm);
+
+      expect(showErrorSpy).toHaveBeenCalled();
+    });
+
+    it('should show error notification when renameTrack throws', async () => {
+      const uiStore = TestBed.inject(UiStore);
+      const showErrorSpy = vi.spyOn(uiStore, 'showError').mockReturnValue('id');
+      userLibraryServiceMock.renameTrack.mockReturnValue(
+        throwError(() => new Error('Network error'))
+      );
+
+      await submit(component.renameTrackForm);
+
+      expect(showErrorSpy).toHaveBeenCalled();
+    });
+
+    it('should block submission and mark form invalid when titre exceeds 80 characters', async () => {
+      component.renameTrackModel.set({ titre: 'A'.repeat(81), artiste: 'Artist' });
+
+      await submit(component.renameTrackForm);
+
+      expect(userLibraryServiceMock.renameTrack).not.toHaveBeenCalled();
+      expect(component.renameTrackForm().invalid()).toBe(true);
+    });
+  });
+
+  describe('openRenameModal', () => {
+    it('should set videoToRename and renameTrackModel, then open modal', () => {
+      const modalService = TestBed.inject(NgbModal);
+      const openSpy = vi.spyOn(modalService, 'open');
+      const mockTemplate = {} as TemplateRef<unknown>;
+      const video: Video = {
+        id_video: 'v1',
+        titre: 'Old Title',
+        artiste: 'Old Artist',
+        artists: [],
+        duree: '180',
+        id_playlist: 'p1',
+        key: 'k1',
+        ordre: '1',
+        titre_album: '',
+      };
+
+      component.openRenameModal(video, mockTemplate);
+
+      expect(component.videoToRename()).toEqual(video);
+      expect(component.renameTrackModel()).toEqual({ titre: 'Old Title', artiste: 'Old Artist' });
+      expect(openSpy).toHaveBeenCalledWith(mockTemplate, { centered: true, size: 'md' });
+    });
+  });
+
+  describe('openDeleteModal', () => {
+    it('should set videoToDelete and open modal', () => {
+      const modalService = TestBed.inject(NgbModal);
+      const openSpy = vi.spyOn(modalService, 'open');
+      const mockTemplate = {} as TemplateRef<unknown>;
+      const video: Video = {
+        id_video: 'v1',
+        titre: 'Title',
+        artiste: 'Artist',
+        artists: [],
+        duree: '180',
+        id_playlist: 'p1',
+        key: 'k1',
+        ordre: '1',
+        titre_album: '',
+      };
+
+      component.openDeleteModal(video, mockTemplate);
+
+      expect(component.videoToDelete()).toEqual(video);
+      expect(openSpy).toHaveBeenCalledWith(mockTemplate, { centered: true, size: 'md' });
+    });
+  });
 });
 
 // Tests for server context - to be added in a new describe block
@@ -1062,6 +1194,9 @@ describe('PlaylistComponent (Server context)', () => {
       isLiked: vi.fn().mockReturnValue(false),
       addLike: vi.fn().mockReturnValue(of(true)),
       removeLike: vi.fn().mockReturnValue(of(true)),
+      renameTrack: vi
+        .fn()
+        .mockReturnValue(of({ success: true, titre: 'T', artiste: 'A', artists: [] })),
     };
     // BehaviorSubjects are now managed by Signal Stores
     activatedRouteMock = {
@@ -1106,7 +1241,7 @@ describe('PlaylistComponent (Server context)', () => {
         },
         {
           provide: NgbModal,
-          useValue: { open: vi.fn() },
+          useValue: { open: vi.fn(), dismissAll: vi.fn() },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),

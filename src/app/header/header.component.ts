@@ -251,8 +251,12 @@ export class HeaderComponent {
   onAddVideo(idPlaylist: string, modal: NgbActiveModal) {
     this.userLibraryService
       .addVideoToPlaylist(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration)
-      .subscribe();
-    modal.dismiss();
+      .subscribe(success => {
+        if (success) {
+          this.uiStore.notifyVideoAddedToPlaylist(idPlaylist);
+          modal.dismiss();
+        }
+      });
   }
 
   openMobileMenu(): void {

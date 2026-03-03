@@ -280,8 +280,14 @@
                       </li>
                     }
                     @if (isOwner()) {
+                      <li ngbDropdownItem>
+                        <button (click)="openRenameModal(video, renameTrackModal)">
+                          <span class="material-icons">edit</span>
+                          {{ 'rename_track' | transloco }}
+                        </button>
+                      </li>
                       <li ngbDropdownItem class="dropdown-item-danger">
-                        <button (click)="removeVideo(video.id_video)">
+                        <button (click)="openDeleteModal(video, deleteTrackModal)">
                           <span class="material-icons">clear</span>
                           {{ 'supprimer' | transloco }}
                         </button>
@@ -342,5 +348,97 @@
       [showIcon]="true"
       [showText]="true"
     ></share-buttons>
+  </div>
+</ng-template>
+
+<ng-template #renameTrackModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">edit</span>
+      {{ 'rename_track' | transloco }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form [formRoot]="renameTrackForm" class="modal-form">
+      <div class="form-group">
+        <label class="form-label" for="rename-track-titre">
+          {{ 'intitule_titre' | transloco }}
+        </label>
+        <input
+          type="text"
+          id="rename-track-titre"
+          class="form-control"
+          ngbAutofocus
+          [formField]="renameTrackForm.titre"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="rename-track-artiste">
+          {{ 'intitule_artiste' | transloco }}
+        </label>
+        <input
+          type="text"
+          id="rename-track-artiste"
+          class="form-control"
+          [formField]="renameTrackForm.artiste"
+        />
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">
+          {{ 'annuler' | transloco }}
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="renameTrackForm().invalid()">
+          <span class="material-icons" aria-hidden="true">save</span>
+          {{ 'confirmer' | transloco }}
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #deleteTrackModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">delete_forever</span>
+      {{ 'supprimer' | transloco }}
+    </h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-alert modal-alert-warning" role="alert">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      <span>{{ 'delete_track_confirm' | transloco }}</span>
+    </div>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        ngbAutofocus
+        (click)="modal.dismiss('Cancel click')"
+      >
+        {{ 'annuler' | transloco }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="modal.dismiss(); removeVideo(videoToDelete()!.id_video)"
+      >
+        <span class="material-icons" aria-hidden="true">delete_forever</span>
+        {{ 'confirmer' | transloco }}
+      </button>
+    </div>
   </div>
 </ng-template>

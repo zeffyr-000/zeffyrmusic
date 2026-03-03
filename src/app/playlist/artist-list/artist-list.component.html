@@ -9,4 +9,7 @@
   } @else {
     <span itemprop="byArtist">{{ artist.label }}</span>
   }
+  @if (!$last) {
+    {{ ' ' }}
+  }
 }

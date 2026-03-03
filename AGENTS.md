@@ -36,7 +36,7 @@ Browser
 │   ├── PlayerStore    — Playback status, progress, volume
 │   ├── QueueStore     — Track queue, shuffle, current track
 │   ├── UserDataStore  — Playlists, follows, liked videos
-│   └── UiStore        — Modals, notifications, mobile state
+│   └── UiStore        — Modals, notifications, mobile state, cross-component events
 ├── Services (HTTP + business logic, NO state holding)
 └── YouTube IFrame API (external player)
 
