@@ -29,8 +29,11 @@
       [attr.aria-label]="'play_list' | transloco"
     ></app-player>
 
-    <div class="col-9 col-md-9" id="content">
-      <router-outlet></router-outlet>
+    <div class="col-9" id="content">
+      <router-outlet />
+      @if (uiStore.isLyricsPanelOpen() || uiStore.isLyricsPanelClosing()) {
+        <app-lyrics-panel />
+      }
     </div>
   </div>
 </div>

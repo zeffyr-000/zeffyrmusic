@@ -213,6 +213,7 @@ describe('UiStore', () => {
       store.setMobile(true);
       store.openLoginModal();
       store.showNotification({ message: 'Test', type: 'info', duration: 0 });
+      store.openLyricsPanel();
 
       store.reset();
 
@@ -220,6 +221,63 @@ describe('UiStore', () => {
       expect(store.isMobile()).toBe(initialUiState.isMobile);
       expect(store.activeModal()).toBe(initialUiState.activeModal);
       expect(store.notifications()).toEqual(initialUiState.notifications);
+      expect(store.isLyricsPanelOpen()).toBe(false);
+    });
+  });
+
+  describe('Lyrics Panel', () => {
+    it('should have lyrics panel closed initially', () => {
+      expect(store.isLyricsPanelOpen()).toBe(false);
+      expect(store.isLyricsPanelClosing()).toBe(false);
+    });
+
+    it('should open lyrics panel', () => {
+      store.openLyricsPanel();
+      expect(store.isLyricsPanelOpen()).toBe(true);
+      expect(store.isLyricsPanelClosing()).toBe(false);
+    });
+
+    it('should close lyrics panel immediately', () => {
+      store.openLyricsPanel();
+      store.closeLyricsPanel();
+      expect(store.isLyricsPanelOpen()).toBe(false);
+      expect(store.isLyricsPanelClosing()).toBe(false);
+    });
+
+    it('should request animated close (sets closing state)', () => {
+      store.openLyricsPanel();
+      store.requestCloseLyricsPanel();
+      expect(store.isLyricsPanelOpen()).toBe(true);
+      expect(store.isLyricsPanelClosing()).toBe(true);
+    });
+
+    it('should not set closing when panel is already closed', () => {
+      store.requestCloseLyricsPanel();
+      expect(store.isLyricsPanelClosing()).toBe(false);
+    });
+
+    it('should finalize close after animation (closeLyricsPanel resets both)', () => {
+      store.openLyricsPanel();
+      store.requestCloseLyricsPanel();
+      store.closeLyricsPanel();
+      expect(store.isLyricsPanelOpen()).toBe(false);
+      expect(store.isLyricsPanelClosing()).toBe(false);
+    });
+
+    it('should toggle lyrics panel with animated close', () => {
+      expect(store.isLyricsPanelOpen()).toBe(false);
+      store.toggleLyricsPanel();
+      expect(store.isLyricsPanelOpen()).toBe(true);
+      store.toggleLyricsPanel();
+      expect(store.isLyricsPanelClosing()).toBe(true);
+    });
+
+    it('should clear closing state when opening', () => {
+      store.openLyricsPanel();
+      store.requestCloseLyricsPanel();
+      store.openLyricsPanel();
+      expect(store.isLyricsPanelOpen()).toBe(true);
+      expect(store.isLyricsPanelClosing()).toBe(false);
     });
   });
 });

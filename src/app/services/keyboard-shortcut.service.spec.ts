@@ -23,8 +23,10 @@ describe('KeyboardShortcutService', () => {
   };
   let uiStoreMock: {
     isPlayerExpanded: ReturnType<typeof signal>;
+    isLyricsPanelOpen: ReturnType<typeof signal>;
     hasActiveModal: ReturnType<typeof signal>;
     collapsePlayer: ReturnType<typeof vi.fn>;
+    requestCloseLyricsPanel: ReturnType<typeof vi.fn>;
     closeModal: ReturnType<typeof vi.fn>;
   };
   let youtubePlayerMock: {
@@ -45,8 +47,10 @@ describe('KeyboardShortcutService', () => {
     };
     uiStoreMock = {
       isPlayerExpanded: signal(false),
+      isLyricsPanelOpen: signal(false),
       hasActiveModal: signal(false),
       collapsePlayer: vi.fn(),
+      requestCloseLyricsPanel: vi.fn(),
       closeModal: vi.fn(),
     };
     youtubePlayerMock = {
@@ -120,6 +124,14 @@ describe('KeyboardShortcutService', () => {
     (uiStoreMock.isPlayerExpanded as any).set(true);
     dispatchKey('Escape');
     expect(uiStoreMock.collapsePlayer).toHaveBeenCalled();
+  });
+
+  it('should close lyrics panel on Escape when open', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (uiStoreMock.isLyricsPanelOpen as any).set(true);
+    dispatchKey('Escape');
+    expect(uiStoreMock.requestCloseLyricsPanel).toHaveBeenCalled();
+    expect(uiStoreMock.collapsePlayer).not.toHaveBeenCalled();
   });
 
   it('should not trigger shortcuts when typing in an input', () => {

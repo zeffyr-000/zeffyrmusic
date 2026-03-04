@@ -24,7 +24,7 @@ const IGNORED_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
  * - ArrowUp: volume up 5%
  * - ArrowDown: volume down 5%
  * - M: toggle mute
- * - Escape: collapse expanded player / close modal
+ * - Escape: close lyrics panel / collapse expanded player / close modal
  */
 @Injectable({
   providedIn: 'root',
@@ -131,9 +131,11 @@ export class KeyboardShortcutService implements OnDestroy {
     this.playerService.updateVolume(newVolume);
   }
 
-  /** Collapse expanded player or close active modal */
+  /** Collapse expanded player, close lyrics panel, or close active modal */
   private handleEscape(): void {
-    if (this.uiStore.isPlayerExpanded()) {
+    if (this.uiStore.isLyricsPanelOpen()) {
+      this.uiStore.requestCloseLyricsPanel();
+    } else if (this.uiStore.isPlayerExpanded()) {
       this.uiStore.collapsePlayer();
     } else if (this.uiStore.hasActiveModal()) {
       this.uiStore.closeModal();

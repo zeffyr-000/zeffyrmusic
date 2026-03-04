@@ -29,6 +29,7 @@ import { PlayerStore } from './store/player/player.store';
 import { QueueStore } from './store/queue/queue.store';
 import { UiStore } from './store/ui/ui.store';
 import { ToastContainerComponent } from './toast-container/toast-container.component';
+import { LyricsPanelComponent } from './lyrics-panel/lyrics-panel.component';
 
 @Component({
   selector: 'app-root',
@@ -39,6 +40,7 @@ import { ToastContainerComponent } from './toast-container/toast-container.compo
     HeaderComponent,
     ControlBarComponent,
     PlayerComponent,
+    LyricsPanelComponent,
     RouterLink,
     RouterOutlet,
     NgbAlert,
@@ -80,6 +82,7 @@ export class AppComponent implements OnInit {
         .pipe(filter(event => event instanceof NavigationEnd))
         .subscribe((event: NavigationEnd) => {
           this.currentUrl.set(event.urlAfterRedirects);
+          this.uiStore.closeLyricsPanel();
         });
 
       window.addEventListener('offline', () => {

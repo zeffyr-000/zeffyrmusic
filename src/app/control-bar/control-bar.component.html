@@ -144,6 +144,20 @@
       >
         <span class="material-icons" aria-hidden="true">shuffle</span>
       </button>
+      @if (authStore.isAuthenticated() && currentKey()) {
+        <button
+          type="button"
+          class="cb-btn-icon"
+          [class.active]="uiStore.isLyricsPanelOpen()"
+          (click)="toggleLyrics()"
+          placement="top"
+          triggers="mouseenter:mouseleave"
+          [ngbTooltip]="'lyrics' | transloco"
+          [attr.aria-label]="'aria_toggle_lyrics' | transloco"
+        >
+          <span class="material-icons" aria-hidden="true">music_note</span>
+        </button>
+      }
     </div>
 
     <div class="cb-seek">
