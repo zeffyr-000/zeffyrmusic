@@ -23,6 +23,8 @@ export interface UiState {
   notifications: Notification[];
   showSessionExpiredMessage: boolean;
   videoAddedToPlaylistId: { id: string; ts: number } | null;
+  isLyricsPanelOpen: boolean;
+  isLyricsPanelClosing: boolean;
 }
 
 export const initialUiState: UiState = {
@@ -34,4 +36,6 @@ export const initialUiState: UiState = {
   notifications: [],
   showSessionExpiredMessage: false,
   videoAddedToPlaylistId: null,
+  isLyricsPanelOpen: false,
+  isLyricsPanelClosing: false,
 };

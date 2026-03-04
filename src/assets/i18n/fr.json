@@ -363,5 +363,13 @@
   "queue_empty": "Votre file d'attente est vide. Lancez une musique pour commencer !",
   "menu_actions": "Actions",
   "current_page_title": "File de lecture - ZeffyrMusic",
-  "current_meta_description": "Consultez et gérez votre file de lecture en cours sur ZeffyrMusic."
+  "current_meta_description": "Consultez et gérez votre file de lecture en cours sur ZeffyrMusic.",
+
+  "lyrics": "Paroles",
+  "lyrics_title": "Paroles",
+  "lyrics_none": "Aucune parole disponible",
+  "lyrics_error": "Impossible de charger les paroles",
+  "lyrics_service_unavailable": "Service temporairement indisponible",
+  "lyrics_forbidden": "Accès non autorisé",
+  "aria_toggle_lyrics": "Afficher ou masquer les paroles"
 }

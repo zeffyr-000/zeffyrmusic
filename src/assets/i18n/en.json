@@ -363,5 +363,13 @@
   "queue_empty": "Your queue is empty. Play a song to get started!",
   "menu_actions": "Actions",
   "current_page_title": "Queue - ZeffyrMusic",
-  "current_meta_description": "View and manage your current playback queue on ZeffyrMusic."
+  "current_meta_description": "View and manage your current playback queue on ZeffyrMusic.",
+
+  "lyrics": "Lyrics",
+  "lyrics_title": "Lyrics",
+  "lyrics_none": "No lyrics available",
+  "lyrics_error": "Unable to load lyrics",
+  "lyrics_service_unavailable": "Service temporarily unavailable",
+  "lyrics_forbidden": "Access denied",
+  "aria_toggle_lyrics": "Toggle lyrics"
 }

@@ -1,0 +1,78 @@
+<div class="lyrics-overlay">
+  <div class="lyrics-header">
+    <span class="material-icons lyrics-header-icon" aria-hidden="true">music_note</span>
+    <h2 class="lyrics-header-title">{{ 'lyrics_title' | transloco }}</h2>
+    <button
+      #closeBtnRef
+      type="button"
+      class="lyrics-close btn-close"
+      (click)="close()"
+      aria-label="Close"
+    ></button>
+  </div>
+
+  @if (trackName() || artistName()) {
+    <div class="lyrics-track-bar">
+      <span class="lyrics-track-name">{{ trackName() }}</span>
+      @if (trackName() && artistName()) {
+        <span class="lyrics-track-separator"> — </span>
+      }
+      <span class="lyrics-artist-name">{{ artistName() }}</span>
+    </div>
+  }
+
+  <div class="lyrics-content">
+    @if (isLoading()) {
+      <div class="lyrics-loading" aria-busy="true" role="status">
+        <span class="visually-hidden">Loading...</span>
+        @for (_ of skeletonItems; track $index) {
+          <div class="skeleton-pulse skeleton-line--title"></div>
+        }
+      </div>
+    } @else if (error()) {
+      <div class="empty-state">
+        <span class="material-icons empty-state-icon" aria-hidden="true">music_off</span>
+        <p class="empty-state-text">{{ error()! | transloco }}</p>
+      </div>
+    } @else if (isSynced() && lines()) {
+      <div class="lyrics-synced">
+        @for (line of lines(); track $index) {
+          @if (line.text.trim()) {
+            <p
+              #lineRef
+              class="lyrics-line"
+              [class.past]="$index < activeLineIndex()"
+              [class.active]="$index === activeLineIndex()"
+              [attr.aria-current]="$index === activeLineIndex() ? 'true' : null"
+            >
+              {{ line.text }}
+            </p>
+          } @else {
+            <div
+              #lineRef
+              class="lyrics-interlude"
+              [class.past]="$index < activeLineIndex()"
+              [class.active]="$index === activeLineIndex()"
+              aria-hidden="true"
+            >
+              <span class="interlude-note">&#9835;</span>
+              <span class="interlude-note">&#9834;</span>
+              <span class="interlude-note">&#9835;</span>
+              <span class="interlude-note">&#9834;</span>
+              <span class="interlude-note">&#9835;</span>
+            </div>
+          }
+        }
+      </div>
+    } @else if (plainLyrics()) {
+      <div class="lyrics-plain">
+        <p>{{ plainLyrics() }}</p>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span class="material-icons empty-state-icon" aria-hidden="true">music_off</span>
+        <p class="empty-state-text">{{ 'lyrics_none' | transloco }}</p>
+      </div>
+    }
+  </div>
+</div>

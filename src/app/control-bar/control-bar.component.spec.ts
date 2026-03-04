@@ -292,4 +292,12 @@ describe('ControlBarComponent', () => {
       expect(component.cbAnimA()).toBe(before);
     });
   });
+
+  describe('toggleLyrics', () => {
+    it('should call uiStore.toggleLyricsPanel()', () => {
+      const toggleSpy = vi.spyOn(component.uiStore, 'toggleLyricsPanel');
+      component.toggleLyrics();
+      expect(toggleSpy).toHaveBeenCalled();
+    });
+  });
 });

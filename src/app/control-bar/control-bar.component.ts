@@ -16,7 +16,7 @@ import { NgbTooltip, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
-import { AuthStore, PlayerStore, QueueStore } from '../store';
+import { AuthStore, PlayerStore, QueueStore, UiStore } from '../store';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
 
 @Component({
@@ -36,6 +36,7 @@ export class ControlBarComponent {
   readonly authStore = inject(AuthStore);
   readonly playerStore = inject(PlayerStore);
   readonly queueStore = inject(QueueStore);
+  readonly uiStore = inject(UiStore);
 
   // -- Derived state ---------------------------------------------------------
   readonly currentKey = computed(() => this.queueStore.currentKey());
@@ -166,5 +167,10 @@ export class ControlBarComponent {
     if (isPlatformBrowser(this.platformId)) {
       this.document.body.classList.remove('cb-player-expanded');
     }
+  }
+
+  /** Toggles the lyrics panel. */
+  toggleLyrics(): void {
+    this.uiStore.toggleLyricsPanel();
   }
 }

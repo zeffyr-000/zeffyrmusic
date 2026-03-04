@@ -128,6 +128,30 @@ export const UiStore = signalStore(
       return this.showNotification({ message, type: 'info', duration });
     },
 
+    openLyricsPanel(): void {
+      patchState(store, { isLyricsPanelOpen: true, isLyricsPanelClosing: false });
+    },
+
+    /** Request animated close — sets closing state, panel plays exit animation. */
+    requestCloseLyricsPanel(): void {
+      if (store.isLyricsPanelOpen()) {
+        patchState(store, { isLyricsPanelClosing: true });
+      }
+    },
+
+    /** Immediate close — removes panel from DOM without animation. */
+    closeLyricsPanel(): void {
+      patchState(store, { isLyricsPanelOpen: false, isLyricsPanelClosing: false });
+    },
+
+    toggleLyricsPanel(): void {
+      if (store.isLyricsPanelOpen()) {
+        this.requestCloseLyricsPanel();
+      } else {
+        this.openLyricsPanel();
+      }
+    },
+
     reset(): void {
       patchState(store, initialUiState);
     },
