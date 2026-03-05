@@ -38,7 +38,7 @@ describe('AuthGuardService', () => {
 
   it('should allow the authenticated user to access app', () => {
     authStore.login(
-      { pseudo: 'test', idPerso: '123', mail: 'test@test.com' },
+      { pseudo: 'test', idPerso: '123', mail: 'test@test.com', isAdmin: false },
       { darkModeEnabled: false, language: 'fr' }
     );
 

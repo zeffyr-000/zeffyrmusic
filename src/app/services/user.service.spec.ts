@@ -68,6 +68,7 @@ describe('UserService', () => {
       pseudo: 'test_pseudo',
       id_perso: 'test_id_perso',
       mail: 'test_mail',
+      is_admin: false,
       dark_mode_enabled: false,
       language: 'en',
       liste_playlist: [],

@@ -191,6 +191,18 @@
 }
 
 // =============================================================================
+// ADMIN ICON - Shown on context menu items accessible via admin rights only
+// =============================================================================
+
+.admin-only-icon {
+  font-size: 1rem;
+  vertical-align: middle;
+  margin-left: var(--spacing-xs);
+  color: var(--bs-warning);
+  opacity: 0.85;
+}
+
+// =============================================================================
 // THUMBNAIL OVERLAY - Edit controls visible on owner's playlist cover
 // =============================================================================
 

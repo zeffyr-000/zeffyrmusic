@@ -118,7 +118,7 @@ describe('PlayerComponent', () => {
       expect(component.authStore.isAuthenticated()).toBe(false);
 
       authStore.login(
-        { pseudo: 'test', mail: 'test@test.com', idPerso: '123' },
+        { pseudo: 'test', mail: 'test@test.com', idPerso: '123', isAdmin: false },
         { darkModeEnabled: false, language: 'fr' }
       );
 

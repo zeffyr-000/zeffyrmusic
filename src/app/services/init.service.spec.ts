@@ -23,6 +23,7 @@ describe('InitService', () => {
     pseudo: 'testUser',
     id_perso: '123',
     mail: 'test@example.com',
+    is_admin: false,
     dark_mode_enabled: true,
     language: 'fr',
     liste_playlist: [],
@@ -105,6 +106,7 @@ describe('InitService', () => {
           pseudo: '',
           id_perso: '',
           mail: '',
+          is_admin: false,
           dark_mode_enabled: false,
           language: 'fr',
           liste_playlist: [],
@@ -142,6 +144,7 @@ describe('InitService', () => {
           pseudo: 'testUser',
           id_perso: '123',
           mail: 'test@example.com',
+          is_admin: true,
           dark_mode_enabled: true,
           language: 'en',
           liste_playlist: [{ id_playlist: '1', titre: 'Playlist 1', prive: false }],
@@ -172,7 +175,7 @@ describe('InitService', () => {
         req.flush(mockConnectedResponse);
 
         expect(loginSpy).toHaveBeenCalledWith(
-          { pseudo: 'testUser', idPerso: '123', mail: 'test@example.com' },
+          { pseudo: 'testUser', idPerso: '123', mail: 'test@example.com', isAdmin: true },
           { darkModeEnabled: true, language: 'en' }
         );
 

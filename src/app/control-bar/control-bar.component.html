@@ -76,7 +76,7 @@
       <button
         type="button"
         class="cb-btn-icon desktop-only"
-        [disabled]="!queueStore.hasNext()"
+        [disabled]="!queueStore.hasNext() && !playerStore.isRepeat()"
         (click)="onAfter()"
         [attr.aria-label]="'aria_piste_suivante' | transloco"
       >

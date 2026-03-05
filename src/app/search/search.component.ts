@@ -23,7 +23,14 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
 import { SkeletonCardComponent } from '../directives/skeleton-card/skeleton-card.component';
 import { SkeletonListComponent } from '../directives/skeleton-list/skeleton-list.component';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownItem,
+  NgbTooltip,
+} from '@ng-bootstrap/ng-bootstrap';
+import { UserLibraryService } from '../services/user-library.service';
 import { AuthStore, QueueStore } from '../store';
 
 @Component({
@@ -39,6 +46,10 @@ import { AuthStore, QueueStore } from '../store';
     SlicePipe,
     TranslocoPipe,
     ToMMSSPipe,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
     NgbTooltip,
   ],
 })
@@ -53,6 +64,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
   readonly authStore = inject(AuthStore);
   readonly queueStore = inject(QueueStore);
+  readonly userLibraryService = inject(UserLibraryService);
 
   readonly query = signal('');
   readonly isLoading1 = signal(false);
@@ -159,6 +171,14 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   addVideo(key: string, artist: string, title: string, duration: string | number) {
     this.playerService.addVideoInPlaylist(key, artist, title, duration);
+  }
+
+  addVideoAfterCurrentInList(video: Video): void {
+    this.playerService.addVideoAfterCurrentInList(video);
+  }
+
+  addVideoInEndCurrentList(video: Video): void {
+    this.playerService.addInCurrentList([video], null);
   }
 
   moreTracks() {

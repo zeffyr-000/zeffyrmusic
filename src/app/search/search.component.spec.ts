@@ -15,6 +15,7 @@ import { MockTestComponent } from '../mock-test.component';
 import { ToMMSSPipe } from '../pipes/to-mmss.pipe';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { AuthStore, QueueStore } from '../store';
+import { UserLibraryService } from '../services/user-library.service';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -127,6 +128,10 @@ describe('SearchComponent', () => {
         {
           provide: GoogleAnalyticsService,
           useValue: { pageView: vi.fn() },
+        },
+        {
+          provide: UserLibraryService,
+          useValue: { isLiked: vi.fn().mockReturnValue(false) },
         },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -241,6 +246,18 @@ describe('SearchComponent', () => {
     expect(playerService.addVideoInPlaylist).toHaveBeenCalledWith(key, artist, title, duration);
   });
 
+  it('should call playerService.addVideoAfterCurrentInList on addVideoAfterCurrentInList', () => {
+    const video = searchResults2.tab_video[0];
+    component.addVideoAfterCurrentInList(video);
+    expect(playerService.addVideoAfterCurrentInList).toHaveBeenCalledWith(video);
+  });
+
+  it('should call playerService.addInCurrentList on addVideoInEndCurrentList', () => {
+    const video = searchResults2.tab_video[0];
+    component.addVideoInEndCurrentList(video);
+    expect(playerService.addInCurrentList).toHaveBeenCalledWith([video], null);
+  });
+
   it('should set limitTrack to listTracks length on moreTracks', () => {
     component.listTracks.set([
       {
@@ -308,7 +325,7 @@ describe('SearchComponent', () => {
 
     // Login user to trigger fullSearch3
     authStore.login(
-      { pseudo: 'test', mail: 'test@test.com', idPerso: '123' },
+      { pseudo: 'test', mail: 'test@test.com', idPerso: '123', isAdmin: false },
       { darkModeEnabled: false, language: 'fr' }
     );
 
@@ -350,7 +367,7 @@ describe('SearchComponent', () => {
 
   it('should set isLoading3 and call fullSearch3 when user is authenticated', () => {
     authStore.login(
-      { pseudo: 'test', mail: 'test@test.com', idPerso: '123' },
+      { pseudo: 'test', mail: 'test@test.com', idPerso: '123', isAdmin: false },
       { darkModeEnabled: false, language: 'fr' }
     );
     component.ngOnInit();

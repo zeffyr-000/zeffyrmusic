@@ -22,6 +22,7 @@ import { UiStore } from '../store/ui/ui.store';
 
 export interface PingResponse {
   est_connecte: boolean;
+  is_admin: boolean;
   pseudo: string;
   id_perso: string;
   mail: string;
@@ -99,7 +100,7 @@ export class InitService {
       listLikeVideo = data.like_video;
 
       this.authStore.login(
-        { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail },
+        { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail, isAdmin: data.is_admin },
         {
           darkModeEnabled: data.dark_mode_enabled,
           language: data.language as 'fr' | 'en',

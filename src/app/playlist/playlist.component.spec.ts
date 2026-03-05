@@ -20,6 +20,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Playlist } from '../models/playlist.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { UiStore } from '../store/ui/ui.store';
+import { AuthStore } from '../store/auth/auth.store';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 
@@ -1151,6 +1152,50 @@ describe('PlaylistComponent', () => {
 
       expect(component.videoToDelete()).toEqual(video);
       expect(openSpy).toHaveBeenCalledWith(mockTemplate, { centered: true, size: 'md' });
+    });
+  });
+
+  describe('canRenameTrack', () => {
+    let authStore: InstanceType<typeof AuthStore>;
+
+    beforeEach(() => {
+      authStore = TestBed.inject(AuthStore);
+      authStore.logout();
+      component.idPersoOwner.set('');
+    });
+
+    it('should be false when user is not authenticated', () => {
+      expect(component.canRenameTrack()).toBe(false);
+    });
+
+    it('should be false when user is authenticated but not owner and not admin', () => {
+      authStore.login(
+        { pseudo: 'user', idPerso: 'other-id', mail: 'u@test.com', isAdmin: false },
+        { darkModeEnabled: false, language: 'fr' }
+      );
+      component.idPersoOwner.set('owner-id');
+
+      expect(component.canRenameTrack()).toBe(false);
+    });
+
+    it('should be true when user is the owner', () => {
+      authStore.login(
+        { pseudo: 'user', idPerso: 'my-id', mail: 'u@test.com', isAdmin: false },
+        { darkModeEnabled: false, language: 'fr' }
+      );
+      component.idPersoOwner.set('my-id');
+
+      expect(component.canRenameTrack()).toBe(true);
+    });
+
+    it('should be true when user is admin but not owner', () => {
+      authStore.login(
+        { pseudo: 'admin', idPerso: 'admin-id', mail: 'admin@test.com', isAdmin: true },
+        { darkModeEnabled: false, language: 'fr' }
+      );
+      component.idPersoOwner.set('owner-id');
+
+      expect(component.canRenameTrack()).toBe(true);
     });
   });
 });

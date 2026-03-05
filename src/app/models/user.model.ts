@@ -22,6 +22,7 @@ export interface CreatePlaylistResponse {
 
 export interface LoginResponse {
   success: boolean;
+  is_admin: boolean;
   pseudo: string;
   id_perso: string;
   mail: string;
