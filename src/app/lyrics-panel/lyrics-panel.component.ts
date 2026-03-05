@@ -58,6 +58,8 @@ export class LyricsPanelComponent {
   readonly error = signal<string | null>(null);
   readonly trackName = signal<string | null>(null);
   readonly artistName = signal<string | null>(null);
+  /** currentTime captured at reset — used to detect stale time from previous track. */
+  private readonly staleTimeThreshold = signal(0);
 
   /** Skeleton items for the loading state. */
   readonly skeletonItems = Array.from({ length: 8 });
@@ -70,12 +72,16 @@ export class LyricsPanelComponent {
   /** Whether the panel is playing its exit animation. */
   readonly isClosing = computed(() => this.uiStore.isLyricsPanelClosing());
 
-  /** Index of the active lyrics line based on current playback time. */
+  /** Index of the highlighted lyrics line (visual only).
+   * Returns -1 when playback hasn't started so no line appears active.
+   */
   readonly activeLineIndex = computed(() => {
     const currentLines = this.lines();
     if (!currentLines || currentLines.length === 0) return -1;
 
     const currentTime = this.playerStore.currentTime();
+    if (currentTime === 0) return -1;
+
     let activeIdx = -1;
     for (let i = 0; i < currentLines.length; i++) {
       if (currentLines[i].time <= currentTime) {
@@ -87,9 +93,25 @@ export class LyricsPanelComponent {
     return activeIdx;
   });
 
+  /** Index used for auto-scroll.
+   * Falls back to 0 when lyrics are loaded but playback hasn't started.
+   * Guards against cached lyrics arriving before YouTube resets currentTime:
+   * if currentTime still equals the value captured at the last track reset,
+   * it is treated as stale and scroll is forced to line 0.
+   */
+  readonly scrollLineIndex = computed(() => {
+    if (!this.lines()?.length) return -1;
+    const currentTime = this.playerStore.currentTime();
+    // currentTime hasn't changed since the previous track reset → stale value
+    if (currentTime > 0 && currentTime === this.staleTimeThreshold()) return 0;
+    const idx = this.activeLineIndex();
+    return idx >= 0 ? idx : 0;
+  });
+
   // -- ViewChild refs --------------------------------------------------------
   readonly lineElements = viewChildren<ElementRef<HTMLElement>>('lineRef');
   private readonly closeBtn = viewChild<ElementRef<HTMLButtonElement>>('closeBtnRef');
+  private readonly contentEl = viewChild<ElementRef<HTMLElement>>('contentRef');
 
   /** Emits video IDs; switchMap cancels any pending HTTP request. */
   private readonly loadTrigger$ = new Subject<string>();
@@ -132,10 +154,10 @@ export class LyricsPanelComponent {
       });
     });
 
-    // Auto-scroll to the active line
+    // Auto-scroll to the active line.
     effect(() => {
       if (!isPlatformBrowser(this.platformId)) return;
-      const idx = this.activeLineIndex();
+      const idx = this.scrollLineIndex();
       const elements = this.lineElements();
       if (idx >= 0 && elements[idx]) {
         const el = elements[idx].nativeElement;
@@ -146,6 +168,16 @@ export class LyricsPanelComponent {
         if (typeof el.scrollIntoView === 'function') {
           el.scrollIntoView({ behavior, block: 'center' });
         }
+      }
+    });
+
+    // Reset scroll to top when a new load starts (skeleton phase).
+    effect(() => {
+      if (this.isLoading()) {
+        const content = this.contentEl();
+        untracked(() => {
+          if (content) content.nativeElement.scrollTop = 0;
+        });
       }
     });
 
@@ -198,6 +230,7 @@ export class LyricsPanelComponent {
   }
 
   private resetState(): void {
+    this.staleTimeThreshold.set(this.playerStore.currentTime());
     this.lines.set(null);
     this.plainLyrics.set(null);
     this.isSynced.set(false);

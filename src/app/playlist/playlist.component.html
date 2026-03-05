@@ -279,13 +279,23 @@
                         </button>
                       </li>
                     }
-                    @if (isOwner()) {
+                    @if (canRenameTrack()) {
                       <li ngbDropdownItem>
                         <button (click)="openRenameModal(video, renameTrackModal)">
                           <span class="material-icons">edit</span>
                           {{ 'rename_track' | transloco }}
+                          @if (authStore.isAdmin() && !isOwner()) {
+                            <span
+                              class="material-icons admin-only-icon"
+                              aria-hidden="true"
+                              ngbTooltip="Admin"
+                              >admin_panel_settings</span
+                            >
+                          }
                         </button>
                       </li>
+                    }
+                    @if (isOwner()) {
                       <li ngbDropdownItem class="dropdown-item-danger">
                         <button (click)="openDeleteModal(video, deleteTrackModal)">
                           <span class="material-icons">clear</span>

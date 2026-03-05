@@ -9,6 +9,7 @@ export interface UserInfo {
   pseudo: string;
   idPerso: string;
   mail: string;
+  isAdmin: boolean;
 }
 
 export interface UserPreferences {

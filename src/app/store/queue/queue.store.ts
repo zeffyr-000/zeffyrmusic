@@ -128,17 +128,33 @@ export const QueueStore = signalStore(
 
       addAfterCurrent(video: Video): void {
         const currentItems = store.items();
-        const currentIndex = store.currentIndex();
+        const currentPos = store.currentIndex();
         const currentTabIndex = store.tabIndex();
         const currentTabIndexOriginal = store.tabIndexOriginal();
 
-        const newItems = [...currentItems, video];
-        const newVideoIndex = newItems.length - 1;
+        // If queue is empty, just set as first item
+        if (currentItems.length === 0) {
+          patchState(store, { items: [video], tabIndex: [0], tabIndexOriginal: [0] });
+          return;
+        }
 
-        const newTabIndex = [...currentTabIndex];
-        newTabIndex.splice(currentIndex + 1, 0, newVideoIndex);
+        // Physical position in items[] right after the current track
+        const currentItemIndex = currentTabIndex[currentPos] ?? currentItems.length - 1;
+        const insertAt = currentItemIndex + 1;
 
-        const newTabIndexOriginal = [...currentTabIndexOriginal, newVideoIndex];
+        // Insert physically into items[]
+        const newItems = [
+          ...currentItems.slice(0, insertAt),
+          video,
+          ...currentItems.slice(insertAt),
+        ];
+
+        // All tabIndex references >= insertAt must be shifted by +1
+        const newTabIndex = currentTabIndex.map(i => (i >= insertAt ? i + 1 : i));
+        newTabIndex.splice(currentPos + 1, 0, insertAt);
+
+        const newTabIndexOriginal = currentTabIndexOriginal.map(i => (i >= insertAt ? i + 1 : i));
+        newTabIndexOriginal.push(insertAt);
 
         patchState(store, {
           items: newItems,

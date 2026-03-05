@@ -16,6 +16,7 @@ describe('AuthStore', () => {
     pseudo: 'testuser',
     idPerso: '123',
     mail: 'test@example.com',
+    isAdmin: false,
   };
 
   const mockPreferences: UserPreferences = {
@@ -62,6 +63,10 @@ describe('AuthStore', () => {
       expect(store.idPerso()).toBe('');
     });
 
+    it('should return false for isAdmin when not authenticated', () => {
+      expect(store.isAdmin()).toBe(false);
+    });
+
     it('should return false for isDarkMode initially', () => {
       expect(store.isDarkMode()).toBe(false);
     });
@@ -87,8 +92,15 @@ describe('AuthStore', () => {
       expect(store.pseudo()).toBe('testuser');
       expect(store.mail()).toBe('test@example.com');
       expect(store.idPerso()).toBe('123');
+      expect(store.isAdmin()).toBe(false);
       expect(store.isDarkMode()).toBe(true);
       expect(store.language()).toBe('en');
+    });
+
+    it('should return true for isAdmin when user is admin', () => {
+      store.login({ ...mockUser, isAdmin: true }, mockPreferences);
+
+      expect(store.isAdmin()).toBe(true);
     });
 
     it('should apply language via transloco', () => {
@@ -120,6 +132,7 @@ describe('AuthStore', () => {
       expect(store.pseudo()).toBe('');
       expect(store.mail()).toBe('');
       expect(store.idPerso()).toBe('');
+      expect(store.isAdmin()).toBe(false);
     });
 
     it('should apply default language via transloco', () => {

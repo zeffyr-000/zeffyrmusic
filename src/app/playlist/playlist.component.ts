@@ -189,6 +189,8 @@ export class PlaylistComponent {
     () => this.authStore.isAuthenticated() && this.idPersoOwner() === this.authStore.idPerso()
   );
 
+  readonly canRenameTrack = computed(() => this.isOwner() || this.authStore.isAdmin());
+
   readonly isReorderable = computed(() => this.isLikePage() || this.isOwner());
 
   private lastAdjustedKey: string | null = null;

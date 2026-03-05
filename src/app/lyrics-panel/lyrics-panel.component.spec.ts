@@ -108,7 +108,7 @@ describe('LyricsPanelComponent', () => {
     queueStore.setQueue([mockVideo], '1');
     fixture.detectChanges();
 
-    expect(component.activeLineIndex()).toBe(0); // time 0
+    expect(component.activeLineIndex()).toBe(-1); // currentTime = 0, timer not started
 
     playerStore.updateProgress(13);
     expect(component.activeLineIndex()).toBe(1); // time 12.5
@@ -285,5 +285,48 @@ describe('LyricsPanelComponent', () => {
     subject2.next({ ...plainResponse, trackName: 'Second Track' });
     subject2.complete();
     expect(component.trackName()).toBe('Second Track');
+  });
+
+  describe('scrollLineIndex', () => {
+    it('should return -1 when no lines are loaded', () => {
+      lyricsServiceMock.getLyrics.mockReturnValue(of(plainResponse));
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      expect(component.lines()).toBeNull();
+      expect(component.scrollLineIndex()).toBe(-1);
+    });
+
+    it('should return 0 when currentTime equals the stale threshold (previous track value)', () => {
+      // Set currentTime to a non-zero value before the track change
+      playerStore.updateProgress(10);
+
+      // Simulate a track change: resetState() captures currentTime=10 as the stale threshold
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      // currentTime is still 10 (YouTube hasn't reset yet) — stale detection triggers
+      playerStore.updateProgress(10);
+      expect(component.scrollLineIndex()).toBe(0);
+    });
+
+    it('should return 0 when currentTime is 0 (playback not yet started)', () => {
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      // currentTime === 0 → activeLineIndex returns -1, scrollLineIndex falls back to 0
+      expect(playerStore.currentTime()).toBe(0);
+      expect(component.scrollLineIndex()).toBe(0);
+    });
+
+    it('should return the activeLineIndex when playback is progressing normally', () => {
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      playerStore.updateProgress(16);
+      // activeLineIndex at time 16 → index 2 (time 15.3)
+      expect(component.activeLineIndex()).toBe(2);
+      expect(component.scrollLineIndex()).toBe(2);
+    });
   });
 });

@@ -211,7 +211,7 @@ export class HeaderComponent {
       if (data.success !== undefined && data.success) {
         // Login via AuthStore
         this.authStore.login(
-          { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail },
+          { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail, isAdmin: data.is_admin },
           {
             darkModeEnabled: data.dark_mode_enabled,
             language: data.language as 'fr' | 'en',
@@ -254,6 +254,7 @@ export class HeaderComponent {
       .subscribe(success => {
         if (success) {
           this.uiStore.notifyVideoAddedToPlaylist(idPlaylist);
+          this.uiStore.showSuccess(this.translocoService.translate('video_added_to_playlist'));
           modal.dismiss();
         }
       });

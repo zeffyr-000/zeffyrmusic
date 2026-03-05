@@ -147,11 +147,18 @@
           track video.id_video;
           let index = $index
         ) {
-          <div class="track-item" [class.active]="video.key === queueStore.currentKey()">
+          <div
+            class="track-item"
+            [class.active]="video.key === queueStore.currentKey()"
+            tabindex="0"
+            (click)="runPlaylistTrack(index)"
+            (keydown.enter)="runPlaylistTrack(index)"
+            (keydown.space)="runPlaylistTrack(index); $event.preventDefault()"
+          >
             <button
               type="button"
               class="track-item-btn"
-              (click)="runPlaylistTrack(index)"
+              tabindex="-1"
               [attr.aria-label]="video.titre"
             >
               <span class="track-number">
@@ -166,56 +173,101 @@
                 class="track-thumbnail"
                 [attr.alt]="video.titre"
               />
-            </button>
-            <div class="track-info">
-              <span class="track-title">{{ video.titre }}</span>
-              <span class="track-artist">
-                @if (video.id_artiste !== undefined && video.id_artiste > 0) {
-                  <a (click)="$event.stopPropagation()" routerLink="/artist/{{ video.id_artiste }}">
+              <div class="track-info">
+                <span class="track-title">{{ video.titre }}</span>
+                <span class="track-artist">
+                  @if (video.id_artiste !== undefined && video.id_artiste > 0) {
+                    <a
+                      (click)="$event.stopPropagation()"
+                      routerLink="/artist/{{ video.id_artiste }}"
+                    >
+                      {{ video.artiste }}
+                    </a>
+                  } @else {
                     {{ video.artiste }}
-                  </a>
-                } @else {
-                  {{ video.artiste }}
-                }
-                @if (video.titre_album !== undefined) {
-                  <span class="track-separator">•</span>
-                  <a
-                    (click)="$event.stopPropagation()"
-                    routerLink="/playlist/{{ video.id_playlist }}"
-                  >
-                    {{ video.titre_album }}
-                  </a>
-                }
-              </span>
-            </div>
+                  }
+                  @if (video.titre_album !== undefined) {
+                    <span class="track-separator">•</span>
+                    <a
+                      (click)="$event.stopPropagation()"
+                      routerLink="/playlist/{{ video.id_playlist }}"
+                    >
+                      {{ video.titre_album }}
+                    </a>
+                  }
+                </span>
+              </div>
+            </button>
             <span class="track-duration">
               @if (video.duree && +video.duree > 0) {
                 {{ video.duree | toMMSS }}
               }
             </span>
-            @if (authStore.isAuthenticated()) {
-              <button
-                class="btn btn-sm btn-icon"
-                (click)="
-                  $event.stopPropagation();
-                  addVideo(video.key, video.artiste, video.titre, video.duree)
-                "
-                (keydown.enter)="
-                  $event.stopPropagation();
-                  addVideo(video.key, video.artiste, video.titre, video.duree)
-                "
-                (keydown.space)="
-                  $event.stopPropagation();
-                  addVideo(video.key, video.artiste, video.titre, video.duree);
-                  $event.preventDefault()
-                "
-                placement="left"
-                ngbTooltip="{{ 'ajouter_a_une_playlist' | transloco }}"
-                [attr.aria-label]="'ajouter_a_une_playlist' | transloco"
+            <div class="track-actions">
+              @if (authStore.isAuthenticated() && userLibraryService.isLiked(video.key)) {
+                <button
+                  type="button"
+                  class="btn btn-sm btn-icon btn-like active"
+                  (click)="
+                    $event.stopPropagation(); userLibraryService.removeLike(video.key).subscribe()
+                  "
+                  [attr.aria-label]="'aria_retirer_favori' | transloco"
+                >
+                  <span class="material-icons" aria-hidden="true">favorite</span>
+                </button>
+              } @else if (authStore.isAuthenticated()) {
+                <button
+                  type="button"
+                  class="btn btn-sm btn-icon btn-like"
+                  (click)="
+                    $event.stopPropagation(); userLibraryService.addLike(video.key).subscribe()
+                  "
+                  [attr.aria-label]="'aria_ajouter_favori' | transloco"
+                >
+                  <span class="material-icons" aria-hidden="true">favorite_border</span>
+                </button>
+              }
+              <span
+                class="btn-track-menu"
+                tabindex="-1"
+                (click)="$event.stopPropagation()"
+                (keydown.enter)="$event.stopPropagation()"
+                (keydown.space)="$event.stopPropagation()"
+                ngbDropdown
               >
-                <span class="material-icons">add</span>
-              </button>
-            }
+                <button
+                  class="btn btn-sm btn-icon"
+                  ngbDropdownToggle
+                  [attr.aria-label]="'menu_actions' | transloco"
+                >
+                  <span class="material-icons">more_vert</span>
+                </button>
+                <ul ngbDropdownMenu>
+                  <li ngbDropdownItem>
+                    <button (click)="addVideoAfterCurrentInList(video)">
+                      <span class="material-icons">queue_music</span>
+                      {{ 'ajouter_apres_courant' | transloco }}
+                    </button>
+                  </li>
+                  <li ngbDropdownItem>
+                    <button (click)="addVideoInEndCurrentList(video)">
+                      <span class="material-icons">playlist_add</span>
+                      {{ 'ajouter_liste_en_cours' | transloco }}
+                    </button>
+                  </li>
+                  @if (authStore.isAuthenticated()) {
+                    <li ngbDropdownItem>
+                      <button
+                        (click)="addVideo(video.key, video.artiste, video.titre, video.duree)"
+                      >
+                        <span class="material-icons">add</span>
+                        {{ 'ajouter_a_une_playlist' | transloco }}
+                      </button>
+                    </li>
+                  }
+                </ul>
+              </span>
+            </div>
           </div>
         }
       </div>
@@ -258,11 +310,18 @@
           track extra.key;
           let index = $index
         ) {
-          <div class="track-item" [class.active]="extra.key === queueStore.currentKey()">
+          <div
+            class="track-item"
+            [class.active]="extra.key === queueStore.currentKey()"
+            tabindex="0"
+            (click)="runPlaylistExtra(index)"
+            (keydown.enter)="runPlaylistExtra(index)"
+            (keydown.space)="runPlaylistExtra(index); $event.preventDefault()"
+          >
             <button
               type="button"
               class="track-item-btn"
-              (click)="runPlaylistExtra(index)"
+              tabindex="-1"
               [attr.aria-label]="extra.title"
             >
               <span class="track-number">
@@ -277,10 +336,10 @@
                 class="track-thumbnail"
                 [attr.alt]="extra.title"
               />
+              <div class="track-info">
+                <span class="track-title">{{ extra.title }}</span>
+              </div>
             </button>
-            <div class="track-info">
-              <span class="track-title">{{ extra.title }}</span>
-            </div>
             <span class="track-duration">
               @if (extra.duree > 0) {
                 {{ extra.duree | toMMSS }}

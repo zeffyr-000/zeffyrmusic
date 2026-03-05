@@ -131,6 +131,7 @@ describe('CurrentComponent', () => {
           pseudo: 'test',
           mail: 'test@test.com',
           idPerso: '123',
+          isAdmin: false,
         },
         { darkModeEnabled: false, language: 'fr' }
       );

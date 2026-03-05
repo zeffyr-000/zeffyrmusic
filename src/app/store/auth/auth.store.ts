@@ -20,6 +20,7 @@ export const AuthStore = signalStore(
     pseudo: computed(() => state.user()?.pseudo ?? ''),
     mail: computed(() => state.user()?.mail ?? ''),
     idPerso: computed(() => state.user()?.idPerso ?? ''),
+    isAdmin: computed(() => state.user()?.isAdmin ?? false),
     isDarkMode: computed(() => state.preferences().darkModeEnabled),
     language: computed(() => state.preferences().language),
   })),
