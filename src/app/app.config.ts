@@ -37,6 +37,7 @@ export const appConfig: ApplicationConfig = {
       routes,
       withPreloading(PreloadAllModules),
       withViewTransitions({
+        skipInitialTransition: true,
         onViewTransitionCreated: () => {
           // Blur active element before transition to prevent
           // "Blocked aria-hidden on a focused element" warning
