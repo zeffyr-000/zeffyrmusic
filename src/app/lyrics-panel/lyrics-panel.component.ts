@@ -73,14 +73,21 @@ export class LyricsPanelComponent {
   readonly isClosing = computed(() => this.uiStore.isLyricsPanelClosing());
 
   /** Index of the highlighted lyrics line (visual only).
-   * Returns -1 when playback hasn't started so no line appears active.
+   * Returns -1 when playback hasn't started, or when currentTime matches
+   * the stale threshold captured at track change (avoids a flash of the
+   * wrong active line during the brief reset window).
+   * The threshold is cleared by a separate effect once playback diverges.
    */
   readonly activeLineIndex = computed(() => {
     const currentLines = this.lines();
     if (!currentLines || currentLines.length === 0) return -1;
 
     const currentTime = this.playerStore.currentTime();
+    const threshold = this.staleTimeThreshold();
+    // Not started yet
     if (currentTime === 0) return -1;
+    // currentTime still matches the value frozen at track reset — stale
+    if (threshold !== 0 && currentTime === threshold) return -1;
 
     let activeIdx = -1;
     for (let i = 0; i < currentLines.length; i++) {
@@ -94,16 +101,13 @@ export class LyricsPanelComponent {
   });
 
   /** Index used for auto-scroll.
-   * Falls back to 0 when lyrics are loaded but playback hasn't started.
-   * Guards against cached lyrics arriving before YouTube resets currentTime:
-   * if currentTime still equals the value captured at the last track reset,
-   * it is treated as stale and scroll is forced to line 0.
+   * Depends only on activeLineIndex — does not read currentTime directly.
+   * The auto-scroll effect therefore fires only on actual line transitions,
+   * not on every 200ms progress tick. Stale-time detection is handled
+   * upstream in activeLineIndex.
    */
   readonly scrollLineIndex = computed(() => {
     if (!this.lines()?.length) return -1;
-    const currentTime = this.playerStore.currentTime();
-    // currentTime hasn't changed since the previous track reset → stale value
-    if (currentTime > 0 && currentTime === this.staleTimeThreshold()) return 0;
     const idx = this.activeLineIndex();
     return idx >= 0 ? idx : 0;
   });
@@ -141,6 +145,17 @@ export class LyricsPanelComponent {
         this.trackName.set(response.trackName);
         this.artistName.set(response.artistName);
       });
+
+    // Clear the stale-time guard as soon as playback moves away from the
+    // captured threshold. Without this, a later seek to the exact same
+    // numeric time in the new track would incorrectly suppress highlighting.
+    effect(() => {
+      const threshold = this.staleTimeThreshold();
+      const currentTime = this.playerStore.currentTime();
+      if (threshold !== 0 && currentTime !== threshold) {
+        untracked(() => this.staleTimeThreshold.set(0));
+      }
+    });
 
     // Load lyrics when the current video changes
     effect(() => {

@@ -328,5 +328,28 @@ describe('LyricsPanelComponent', () => {
       expect(component.activeLineIndex()).toBe(2);
       expect(component.scrollLineIndex()).toBe(2);
     });
+
+    it('should clear the stale guard once playback diverges so a later seek to the same time works normally', () => {
+      // Set currentTime to 10 before the track change
+      playerStore.updateProgress(10);
+
+      // Track change: resetState() captures currentTime=10 as the stale threshold
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      // currentTime is still 10 — stale guard is active, no line highlighted
+      expect(component.activeLineIndex()).toBe(-1);
+
+      // Playback advances past the threshold — the clearing effect fires
+      playerStore.updateProgress(16);
+      fixture.detectChanges(); // flush the effect that resets staleTimeThreshold to 0
+
+      // Seek back to the same numeric time that was the old stale threshold
+      playerStore.updateProgress(10);
+
+      // Guard has been cleared (threshold === 0), so the Intro line (time 0 ≤ 10) is active
+      expect(component.activeLineIndex()).toBe(0);
+      expect(component.scrollLineIndex()).toBe(0);
+    });
   });
 });

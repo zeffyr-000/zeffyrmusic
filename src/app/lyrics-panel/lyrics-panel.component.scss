@@ -53,6 +53,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  // Isolate this panel's repaints from the rest of the page (video included).
+  // Placed here (not on :host) to avoid clipping :host's box-shadow.
+  contain: paint;
 }
 
 // -- Panel header (always visible) -------------------------------------------
@@ -178,12 +181,13 @@
   transform: scale(1) translateX(0);
   transform-origin: left center;
   position: relative;
+  // Establish a local stacking context so ::after (z-index: -1) renders
+  // behind the text but above the panel background, reliably across browsers.
+  isolation: isolate;
   transition:
     opacity 400ms ease,
     transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    color 300ms ease,
-    text-shadow 300ms ease,
-    padding-left 300ms ease;
+    color 300ms ease;
 
   // Accent bar on the left (hidden by default)
   &::before {
@@ -213,13 +217,29 @@
     opacity: 1;
     color: var(--bs-primary-text-emphasis, color-mix(in srgb, var(--bs-primary) 70%, black));
     transform: scale(1.05) translateX(4px);
-    text-shadow:
-      0 0 30px rgba(var(--bs-primary-rgb), 0.4),
-      0 0 60px rgba(var(--bs-primary-rgb), 0.15);
+    will-change: transform;
 
     &::before {
       opacity: 1;
       transform: scaleY(1);
+    }
+
+    // Glow overlay — GPU-compositable (opacity only), replaces text-shadow animation
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -6px -12px;
+      z-index: -1;
+      border-radius: var(--radius-md, 0.375rem);
+      background: radial-gradient(
+        ellipse 85% 110% at 8% 50%,
+        rgba(var(--bs-primary-rgb), 0.38) 0%,
+        rgba(var(--bs-primary-rgb), 0.08) 45%,
+        transparent 70%
+      );
+      pointer-events: none;
+      opacity: 0.7;
+      will-change: opacity;
     }
   }
 }
@@ -246,25 +266,24 @@
 }
 
 // Continuous subtle glow pulse while line is active
+// Animates only opacity — GPU-compositable, zero repaint
 @keyframes lyrics-glow-pulse {
   0%,
   100% {
-    text-shadow:
-      0 0 30px rgba(var(--bs-primary-rgb), 0.4),
-      0 0 60px rgba(var(--bs-primary-rgb), 0.15);
+    opacity: 0.6;
   }
 
   50% {
-    text-shadow:
-      0 0 40px rgba(var(--bs-primary-rgb), 0.55),
-      0 0 80px rgba(var(--bs-primary-rgb), 0.25);
+    opacity: 1;
   }
 }
 
 .lyrics-line.active {
-  animation:
-    lyrics-line-enter 400ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    lyrics-glow-pulse 2.5s ease-in-out 400ms infinite;
+  animation: lyrics-line-enter 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lyrics-line.active::after {
+  animation: lyrics-glow-pulse 2.5s ease-in-out 400ms infinite;
 }
 
 // -- Interlude (instrumental break) — dancing music notes -------------------
@@ -298,19 +317,19 @@
 @keyframes note-bounce {
   0%,
   100% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0);
   }
 
   25% {
-    transform: translateY(-6px) rotate(-8deg);
+    transform: translateY(-6px);
   }
 
   50% {
-    transform: translateY(-10px) rotate(0deg) scale(1.15);
+    transform: translateY(-10px) scale(1.15);
   }
 
   75% {
-    transform: translateY(-4px) rotate(8deg);
+    transform: translateY(-4px);
   }
 }
 
@@ -330,6 +349,7 @@
 .lyrics-interlude.active .interlude-note {
   color: var(--bs-primary);
   opacity: 1;
+  will-change: transform;
   animation:
     note-appear 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
     note-bounce 1.2s ease-in-out 300ms infinite;
@@ -384,11 +404,35 @@
     transition: none;
     animation: none;
     transform: none;
+
+    &::before {
+      transition: none;
+    }
+
+    &::after {
+      animation: none;
+    }
+  }
+
+  // .lyrics-line.active is more specific than .lyrics-line — must be overridden explicitly
+  .lyrics-line.active {
+    animation: none;
+    transform: none;
+
+    &::after {
+      animation: none;
+    }
   }
 
   .interlude-note {
     transition: none;
     animation: none;
+  }
+
+  // .lyrics-interlude.active .interlude-note is more specific than .interlude-note alone
+  .lyrics-interlude.active .interlude-note {
+    animation: none;
+    transform: none;
   }
 }
 

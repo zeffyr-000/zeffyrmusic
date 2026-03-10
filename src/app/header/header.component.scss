@@ -44,6 +44,16 @@
 
 #header-toggle-big {
   display: block;
+  // Override btn-light static colors with Bootstrap adaptive tokens
+  --bs-btn-bg: var(--bs-tertiary-bg);
+  --bs-btn-border-color: transparent;
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--bs-secondary-bg);
+  --bs-btn-hover-border-color: var(--bs-border-color);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-active-bg: var(--bs-secondary-bg);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-border-color: var(--bs-border-color);
 }
 
 #header-li-connexion > button,
