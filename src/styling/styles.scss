@@ -49,6 +49,16 @@ body[data-bs-theme='dark'] {
   .navbar-inverse {
     background-color: $black;
   }
+
+  // Fix dropdown colors: $dropdown-link-color compiles to a static value on
+  // .dropdown-menu, blocking Bootstrap's dark mode CSS variable inheritance.
+  // Re-declare them here with a higher-specificity selector to restore adaptability.
+  .dropdown-menu {
+    --bs-dropdown-link-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-color: var(--bs-primary);
+    --bs-dropdown-link-active-color: var(--bs-primary);
+    --bs-dropdown-color: var(--bs-body-color);
+  }
 }
 
 // =============================================================================
