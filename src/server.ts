@@ -12,7 +12,9 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 const indexHtml = join(serverDistFolder, 'index.server.html');
 
 const app = express();
-const commonEngine = new CommonEngine();
+const commonEngine = new CommonEngine({
+  allowedHosts: ['www.zeffyrmusic.com', 'zeffyrmusic.com', '127.0.0.1', 'localhost'],
+});
 
 app.disable('x-powered-by');
 app.set('etag', false);
