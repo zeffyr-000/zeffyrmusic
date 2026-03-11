@@ -10,18 +10,18 @@
   "inscription": "Registration",
   "s_identifier": "Sign up",
   "rechercher": "Search",
-  "inscription_description": "Sign up and take advantage of ZeffyrMusic. Save your favorite playlists, create new playlists, and look at from anywhere. All for free.",
+  "inscription_description": "Create an account to save your playlists, follow your favorite artists, and sync your library across all your devices.",
 
-  "pseudo": "Pseudo",
+  "pseudo": "Username",
   "mail": "E-mail",
   "mot_de_passe": "Password",
-  "je_m_inscris": "I register",
-  "inscription_succes": "Congratulations you are registered. Now go to all the features on Zeffyr Music.",
-  "pseudo_existant": "This pseudo is already used by an another player.",
-  "caractere_interdit": "You used unauthorized characters.",
-  "pseudo_espace": "Your pseudo can't begin with a space.",
-  "pseudo_espace_terminer": "Your pseudo can't end with a space.",
-  "pseudo_invalide": "Invalid pseudo (from 4 to 16 signs)",
+  "je_m_inscris": "Create my account",
+  "inscription_succes": "Your account has been created! Log in to get started.",
+  "pseudo_existant": "This username is already taken.",
+  "caractere_interdit": "Your username contains invalid characters.",
+  "pseudo_espace": "Your username can't start with a space.",
+  "pseudo_espace_terminer": "Your username can't end with a space.",
+  "pseudo_invalide": "Invalid username (4 to 16 characters)",
 
   "connexion": "Login",
   "pseudo_ou_mail": "Username or mail",
@@ -31,9 +31,9 @@
   "or": "or",
 
   "deconnexion": "Log out",
-  "mot_de_passe_oublie": "Password forgot",
+  "mot_de_passe_oublie": "Forgot your password?",
   "envoyer": "Send",
-  "mail_pass_envoye_succes": "An email has been sent to your inbox, thank you to see in order to reset your password.",
+  "mail_pass_envoye_succes": "A password reset link has been sent to your inbox.",
 
   "choisissez_langue": "Choose your language",
   "langue": "Language",
@@ -372,5 +372,9 @@
   "lyrics_error": "Unable to load lyrics",
   "lyrics_service_unavailable": "Service temporarily unavailable",
   "lyrics_forbidden": "Access denied",
-  "aria_toggle_lyrics": "Toggle lyrics"
+  "aria_toggle_lyrics": "Toggle lyrics",
+
+  "data_secure": "Your data is protected",
+  "already_registered": "Already have an account? Log in",
+  "no_account_yet": "Don't have an account? Sign up"
 }

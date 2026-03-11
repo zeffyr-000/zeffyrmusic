@@ -10,18 +10,18 @@
   "inscription": "Inscription",
   "s_identifier": "S'identifier",
   "rechercher": "Rechercher",
-  "inscription_description": "Inscrivez-vous et profitez pleinement de ZeffyrMusic. Enregistrez vos playlists favorites , créez de nouvelles playlists, et consultez-les de n'importe où. Et tout cela gratuitement.",
+  "inscription_description": "Créez un compte pour sauvegarder vos playlists, suivre vos artistes préférés et retrouver votre bibliothèque sur tous vos appareils.",
 
   "pseudo": "Pseudo",
   "mail": "E-mail",
   "mot_de_passe": "Mot de passe",
-  "je_m_inscris": "Je m'inscris",
-  "inscription_succes": "Félicitations vous êtes inscrit. Accédez à présent à toutes les fonctionnalités de Zeffyr Music.",
-  "pseudo_existant": "Ce pseudo est déjà utilisé par un autre joueur.",
-  "caractere_interdit": "Vous avez saisi des caractères non autorisés.",
+  "je_m_inscris": "Créer mon compte",
+  "inscription_succes": "Votre compte a été créé ! Connectez-vous pour commencer.",
+  "pseudo_existant": "Ce pseudo est déjà utilisé.",
+  "caractere_interdit": "Votre pseudo contient des caractères non autorisés.",
   "pseudo_espace": "Votre pseudo ne peut pas commencer par un espace.",
   "pseudo_espace_terminer": "Votre pseudo ne peut pas terminer par un espace.",
-  "pseudo_invalide": "Ce pseudo est invalide (entre 4 et 16 caractères)",
+  "pseudo_invalide": "Pseudo invalide (entre 4 et 16 caractères)",
 
   "connexion": "Connexion",
   "pseudo_ou_mail": "Pseudo ou mail",
@@ -31,9 +31,9 @@
   "or": "ou",
 
   "deconnexion": "Déconnexion",
-  "mot_de_passe_oublie": "Mot de passe oublié",
+  "mot_de_passe_oublie": "Mot de passe oublié ?",
   "envoyer": "Envoyer",
-  "mail_pass_envoye_succes": "Un mail vient d'être envoyé dans votre boite mail, merci d'allez la consulter pour réinitialiser votre mot de passe.",
+  "mail_pass_envoye_succes": "Un lien de réinitialisation a été envoyé dans votre boîte mail.",
 
   "choisissez_langue": "Choisissez votre langue",
   "langue": "Langue",
@@ -372,5 +372,9 @@
   "lyrics_error": "Impossible de charger les paroles",
   "lyrics_service_unavailable": "Service temporairement indisponible",
   "lyrics_forbidden": "Accès non autorisé",
-  "aria_toggle_lyrics": "Afficher ou masquer les paroles"
+  "aria_toggle_lyrics": "Afficher ou masquer les paroles",
+
+  "data_secure": "Vos données sont protégées",
+  "already_registered": "Déjà inscrit ? Se connecter",
+  "no_account_yet": "Pas encore de compte ? S'inscrire"
 }

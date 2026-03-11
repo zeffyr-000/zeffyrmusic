@@ -139,16 +139,23 @@
             type="text"
             id="pseudo"
             class="form-control"
+            autocomplete="username"
             ngbAutofocus
             [formField]="registerForm.pseudo"
           />
         </div>
         <div class="form-group">
-          <label class="form-label" for="mailLogin">
+          <label class="form-label" for="mailRegister">
             <span class="material-icons" aria-hidden="true">alternate_email</span>
             {{ 'mail' | transloco }}
           </label>
-          <input type="email" id="mailLogin" class="form-control" [formField]="registerForm.mail" />
+          <input
+            type="email"
+            id="mailRegister"
+            class="form-control"
+            autocomplete="email"
+            [formField]="registerForm.mail"
+          />
         </div>
         <div class="form-group">
           <label class="form-label" for="password">
@@ -159,24 +166,49 @@
             type="password"
             id="password"
             class="form-control"
+            autocomplete="new-password"
             [formField]="registerForm.password"
           />
         </div>
 
-        @if (registerForm().dirty() && error() !== '') {
+        @if (registerForm().dirty() && registerError() !== '') {
           <div class="modal-alert modal-alert-danger">
             <span class="material-icons" aria-hidden="true">error</span>
-            <span>{{ error() }}</span>
+            <span>{{ registerError() }}</span>
           </div>
         }
 
         <div class="modal-actions">
-          <button type="submit" class="btn btn-primary" [disabled]="registerForm().invalid()">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [class.btn-loading]="isSubmittingRegister()"
+            [disabled]="registerForm().invalid() || isSubmittingRegister()"
+            [attr.aria-busy]="isSubmittingRegister() ? 'true' : null"
+          >
             <span class="material-icons" aria-hidden="true">person_add</span>
             {{ 'je_m_inscris' | transloco }}
           </button>
         </div>
       </form>
+
+      <div
+        class="d-flex align-items-center justify-content-center gap-1 pt-3 text-body-secondary small"
+      >
+        <span class="material-icons fs-6" aria-hidden="true">lock</span>
+        {{ 'data_secure' | transloco }}
+      </div>
+
+      <div class="mt-2 text-center">
+        <button
+          type="button"
+          (click)="dismissAndOpenLogin(modal)"
+          class="btn btn-link text-decoration-underline p-0"
+          aria-haspopup="dialog"
+        >
+          {{ 'already_registered' | transloco }}
+        </button>
+      </div>
     } @else {
       <div>
         <div class="modal-alert modal-alert-success">
@@ -231,6 +263,7 @@
           type="text"
           id="pseudoLogin"
           class="form-control"
+          autocomplete="username"
           ngbAutofocus
           [formField]="loginForm.pseudo"
         />
@@ -244,19 +277,26 @@
           type="password"
           id="passwordLogin"
           class="form-control"
+          autocomplete="current-password"
           [formField]="loginForm.password"
         />
       </div>
 
-      @if (loginForm().dirty() && error() !== '') {
+      @if (loginForm().dirty() && loginError() !== '') {
         <div class="modal-alert modal-alert-danger">
           <span class="material-icons" aria-hidden="true">error</span>
-          <span>{{ error() }}</span>
+          <span>{{ loginError() }}</span>
         </div>
       }
 
       <div class="modal-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="loginForm().invalid()">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [class.btn-loading]="isSubmittingLogin()"
+          [disabled]="loginForm().invalid() || isSubmittingLogin()"
+          [attr.aria-busy]="isSubmittingLogin() ? 'true' : null"
+        >
           <span class="material-icons" aria-hidden="true">login</span>
           {{ 'connexion' | transloco }}
         </button>
@@ -265,10 +305,21 @@
       <div class="mt-3 text-center">
         <button
           type="button"
-          (click)="dismissAndOpenModal(modal, contentModalNewPass)"
+          (click)="modal.dismiss(''); openModalResetPass(contentModalNewPass)"
           class="btn btn-link text-decoration-underline p-0"
         >
           {{ 'mot_de_passe_oublie' | transloco }}
+        </button>
+      </div>
+
+      <div class="mt-2 text-center">
+        <button
+          type="button"
+          (click)="dismissAndOpenRegister(modal)"
+          class="btn btn-link text-decoration-underline p-0"
+          aria-haspopup="dialog"
+        >
+          {{ 'no_account_yet' | transloco }}
         </button>
       </div>
     </form>
@@ -300,20 +351,27 @@
             type="email"
             id="mailReset"
             class="form-control"
+            autocomplete="email"
             ngbAutofocus
             [formField]="resetPassForm.mail"
           />
         </div>
 
-        @if (resetPassForm().dirty() && error() !== '') {
+        @if (resetPassForm().dirty() && resetError() !== '') {
           <div class="modal-alert modal-alert-danger">
             <span class="material-icons" aria-hidden="true">error</span>
-            <span>{{ error() }}</span>
+            <span>{{ resetError() }}</span>
           </div>
         }
 
         <div class="modal-actions">
-          <button type="submit" class="btn btn-primary" [disabled]="resetPassForm().invalid()">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [class.btn-loading]="isSubmittingReset()"
+            [disabled]="resetPassForm().invalid() || isSubmittingReset()"
+            [attr.aria-busy]="isSubmittingReset() ? 'true' : null"
+          >
             <span class="material-icons" aria-hidden="true">send</span>
             {{ 'envoyer' | transloco }}
           </button>
@@ -347,10 +405,10 @@
       <span class="text-muted">{{ addArtist }}</span>
     </div>
 
-    @if (error() !== '') {
+    @if (addVideoError() !== '') {
       <div class="modal-alert modal-alert-danger">
         <span class="material-icons" aria-hidden="true">error</span>
-        <span>{{ error() }}</span>
+        <span>{{ addVideoError() }}</span>
       </div>
     }
     @if (userDataStore.playlists().length === 0) {
@@ -412,7 +470,7 @@
           class="nav-link d-flex align-items-center gap-2 btn btn-link text-start p-0"
           (click)="closeMobileMenu(); openModalRegister()"
         >
-          <span class="material-icons">create_new_folder</span>
+          <span class="material-icons">person_add</span>
           {{ 'inscription' | transloco }}
         </button>
         <button

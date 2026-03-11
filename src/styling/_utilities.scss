@@ -1119,6 +1119,40 @@ a.card,
   }
 }
 
+// Loading state button — spinner replaces icon
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+
+  .material-icons {
+    visibility: hidden;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentcolor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin 600ms linear infinite;
+  }
+}
+
+@keyframes btn-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
 // Custom alerts with Material Icons
 .modal-alert {
   display: flex;
