@@ -8,7 +8,15 @@ import {
   effect,
   signal,
 } from '@angular/core';
-import { form, FormField, FormRoot, required, minLength, email } from '@angular/forms/signals';
+import {
+  form,
+  FormField,
+  FormRoot,
+  required,
+  minLength,
+  email,
+  validate,
+} from '@angular/forms/signals';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {
   NgbActiveModal,
@@ -73,8 +81,14 @@ export class HeaderComponent {
   private readonly offcanvasService = inject(NgbOffcanvas);
 
   readonly isRegistered = signal(false);
-  readonly error = signal('');
+  readonly registerError = signal('');
+  readonly loginError = signal('');
+  readonly resetError = signal('');
+  readonly addVideoError = signal('');
   readonly isSuccess = signal(false);
+  readonly isSubmittingRegister = signal(false);
+  readonly isSubmittingLogin = signal(false);
+  readonly isSubmittingReset = signal(false);
   addKey = '';
   addArtist = '';
   addTitle = '';
@@ -98,20 +112,34 @@ export class HeaderComponent {
       minLength(schemaPath.password, 4, {
         message: () => this.translocoService.translate('validation_password_minlength', { min: 4 }),
       });
+      validate(schemaPath.password, ({ value }) => {
+        if ((value() as string).length > 128) {
+          return {
+            kind: 'maxlength',
+            message: this.translocoService.translate('validation_maxlength', { max: 128 }),
+          };
+        }
+        return null;
+      });
     },
     {
       submission: {
         action: async () => {
+          this.isSubmittingRegister.set(true);
           try {
             const data = await firstValueFrom(this.userService.register(this.registerModel()));
             if (data.success !== undefined && data.success) {
               this.isRegistered.set(true);
               this.googleAnalyticsService.pageView('/inscription/succes', 'Inscription réussie');
             } else {
-              this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
+              this.registerError.set(
+                this.translocoService.translate(data?.error || 'generic_error')
+              );
             }
           } catch {
-            this.error.set(this.translocoService.translate('generic_error'));
+            this.registerError.set(this.translocoService.translate('generic_error'));
+          } finally {
+            this.isSubmittingRegister.set(false);
           }
         },
       },
@@ -134,7 +162,12 @@ export class HeaderComponent {
     {
       submission: {
         action: async () => {
-          await this.loginWithToken('');
+          this.isSubmittingLogin.set(true);
+          try {
+            await this.loginWithToken('');
+          } finally {
+            this.isSubmittingLogin.set(false);
+          }
         },
       },
     }
@@ -152,16 +185,19 @@ export class HeaderComponent {
     {
       submission: {
         action: async () => {
+          this.isSubmittingReset.set(true);
           try {
             const data = await firstValueFrom(this.userService.resetPass(this.resetPassModel()));
             if (data.success !== undefined && data.success) {
               this.isSuccess.set(true);
             } else {
-              this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
+              this.resetError.set(this.translocoService.translate(data?.error || 'generic_error'));
             }
           } catch {
             this.isSuccess.set(false);
-            this.error.set(this.translocoService.translate('generic_error'));
+            this.resetError.set(this.translocoService.translate('generic_error'));
+          } finally {
+            this.isSubmittingReset.set(false);
           }
         },
       },
@@ -179,6 +215,7 @@ export class HeaderComponent {
         this.addTitle = data.title;
         this.addDuration = data.duration;
 
+        this.addVideoError.set('');
         this.openModal(this.contentModalAddVideo);
       }
     });
@@ -199,9 +236,22 @@ export class HeaderComponent {
     this.openModal(content);
   }
 
+  openModalResetPass(content: TemplateRef<unknown>) {
+    this.resetPassModel.set({ mail: '' });
+    this.resetError.set('');
+    this.isSuccess.set(false);
+    this.isSubmittingReset.set(false);
+    this.openModal(content);
+  }
+
   dismissAndOpenLogin(modal: NgbModalRef) {
     modal.dismiss('');
     this.openModalLogin();
+  }
+
+  dismissAndOpenRegister(modal: NgbModalRef) {
+    modal.dismiss('');
+    this.openModalRegister();
   }
 
   private async loginWithToken(token: string): Promise<void> {
@@ -224,10 +274,10 @@ export class HeaderComponent {
         );
         this.modalService.dismissAll();
       } else {
-        this.error.set(this.translocoService.translate(data?.error || 'generic_error'));
+        this.loginError.set(this.translocoService.translate(data?.error || 'generic_error'));
       }
     } catch {
-      this.error.set(this.translocoService.translate('generic_error'));
+      this.loginError.set(this.translocoService.translate('generic_error'));
     }
   }
 
@@ -251,12 +301,19 @@ export class HeaderComponent {
   onAddVideo(idPlaylist: string, modal: NgbActiveModal) {
     this.userLibraryService
       .addVideoToPlaylist(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration)
-      .subscribe(success => {
-        if (success) {
-          this.uiStore.notifyVideoAddedToPlaylist(idPlaylist);
-          this.uiStore.showSuccess(this.translocoService.translate('video_added_to_playlist'));
-          modal.dismiss();
-        }
+      .subscribe({
+        next: success => {
+          if (success) {
+            this.uiStore.notifyVideoAddedToPlaylist(idPlaylist);
+            this.uiStore.showSuccess(this.translocoService.translate('video_added_to_playlist'));
+            modal.dismiss();
+          } else {
+            this.addVideoError.set(this.translocoService.translate('generic_error'));
+          }
+        },
+        error: () => {
+          this.addVideoError.set(this.translocoService.translate('generic_error'));
+        },
       });
   }
 
@@ -272,6 +329,9 @@ export class HeaderComponent {
   }
 
   openModalLogin() {
+    this.loginModel.set({ pseudo: '', password: '' });
+    this.loginError.set('');
+    this.isSubmittingLogin.set(false);
     // Blur the active element to prevent aria-hidden conflict
     if (this.isBrowser && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -322,6 +382,10 @@ export class HeaderComponent {
   }
 
   openModalRegister() {
+    this.registerModel.set({ pseudo: '', mail: '', password: '' });
+    this.registerError.set('');
+    this.isRegistered.set(false);
+    this.isSubmittingRegister.set(false);
     // Blur the active element to prevent aria-hidden conflict
     if (this.isBrowser && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();

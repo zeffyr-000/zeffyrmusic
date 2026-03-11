@@ -9,7 +9,7 @@ import { FollowItem } from '../models/follow.model';
 import { UserPlaylist } from '../models/playlist.model';
 import { UserLibraryService } from '../services/user-library.service';
 import { HeaderComponent } from './header.component';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { submit } from '@angular/forms/signals';
 import { InitService } from '../services/init.service';
 import { UserVideo, VideoItem } from '../models/video.model';
@@ -172,7 +172,9 @@ describe('HeaderComponent', () => {
 
     // Reset component properties to initial state
     component.isRegistered.set(false);
-    component.error.set('');
+    component.registerError.set('');
+    component.loginError.set('');
+    component.resetError.set('');
     component.isSuccess.set(false);
   });
 
@@ -235,6 +237,36 @@ describe('HeaderComponent', () => {
     expect(modal.dismiss).toHaveBeenCalled();
   });
 
+  it('should set addVideoError when addVideoToPlaylist returns false', () => {
+    userLibraryServiceMock.addVideoToPlaylist = vi.fn().mockReturnValue(of(false));
+    const modal = { dismiss: vi.fn(), update: vi.fn(), close: vi.fn() };
+    component.addKey = 'key';
+    component.addTitle = 'title';
+    component.addArtist = 'artist';
+    component.addDuration = 100;
+
+    component.onAddVideo('123', modal);
+
+    expect(component.addVideoError()).toBeTruthy();
+    expect(modal.dismiss).not.toHaveBeenCalled();
+  });
+
+  it('should set addVideoError when addVideoToPlaylist errors', () => {
+    userLibraryServiceMock.addVideoToPlaylist = vi
+      .fn()
+      .mockReturnValue(throwError(() => new Error('fail')));
+    const modal = { dismiss: vi.fn(), update: vi.fn(), close: vi.fn() };
+    component.addKey = 'key';
+    component.addTitle = 'title';
+    component.addArtist = 'artist';
+    component.addDuration = 100;
+
+    component.onAddVideo('123', modal);
+
+    expect(component.addVideoError()).toBeTruthy();
+    expect(modal.dismiss).not.toHaveBeenCalled();
+  });
+
   describe('onSubmitRegister', () => {
     it('should call userService.register and set isRegistered on success', async () => {
       // Signal Forms: set model values directly
@@ -282,7 +314,23 @@ describe('HeaderComponent', () => {
       });
       // The component uses translocoService.translate to display the error
       // but stores the result of translate, so we must verify that translate was called
-      expect(component.error()).toBeTruthy();
+      expect(component.registerError()).toBeTruthy();
+    });
+
+    it('should reject password longer than 128 characters', async () => {
+      const longPassword = 'a'.repeat(129);
+      component.registerModel.set({
+        pseudo: 'testuser',
+        mail: 'test@example.com',
+        password: longPassword,
+      });
+
+      const registerSpy = vi.spyOn(userService, 'register');
+
+      await submit(component.registerForm);
+
+      expect(component.registerForm().invalid()).toBe(true);
+      expect(registerSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -345,7 +393,7 @@ describe('HeaderComponent', () => {
         { pseudo: 'test@example.com', password: 'password' },
         ''
       );
-      expect(component.error()).toBeTruthy();
+      expect(component.loginError()).toBeTruthy();
     });
   });
 
@@ -374,7 +422,7 @@ describe('HeaderComponent', () => {
       await submit(component.resetPassForm);
 
       expect(userService.resetPass).toHaveBeenCalledWith({ mail: 'test@example.com' });
-      expect(component.error()).toBe('Invalid credentials');
+      expect(component.resetError()).toBe('Invalid credentials');
     });
   });
 
