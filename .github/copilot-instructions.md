@@ -39,6 +39,7 @@ export class MyFeatureComponent {
 ## Key Patterns
 
 - **SSR safety**: Use `withSsrSafety()` in stores — never access `window`/`document` directly
+- **SSR `allowedHosts`**: Every hostname/IP must be in `CommonEngine({ allowedHosts })` — see `ssr.instructions.md`
 - **Transloco + Signal Forms**: Arrow functions for validation messages (`message: () => ...`)
 - **SEO**: Every routed component sets title, meta description, canonical URL
 - **Skeleton loaders**: `app-skeleton-card`, `app-skeleton-list`, `app-skeleton-artist`, `app-skeleton-playlist`
