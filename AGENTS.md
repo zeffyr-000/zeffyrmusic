@@ -22,7 +22,8 @@
 
 1. **This file** — Architecture, rules, patterns
 2. **`.github/instructions/css-critical-rules.md`** — YouTube player CSS (BREAKING if violated)
-3. Relevant `.github/instructions/*.md` file for the domain you're modifying
+3. **`.github/instructions/ssr.instructions.md`** — SSR config, allowedHosts, browser API safety
+4. Relevant `.github/instructions/*.md` file for the domain you're modifying
 
 ## Architecture Overview
 
@@ -160,18 +161,39 @@ message: this.translocoService.translate('validation_minlength', { min: 4 });
 
 ### 5. SSR Safety
 
+> **Full guide: `.github/instructions/ssr.instructions.md`**
+
+**CommonEngine `allowedHosts`** (since `@angular/ssr` 21.2.2):
+Every production hostname/IP must be listed in `allowedHosts` in `src/server.ts`.
+Missing entries cause **silent fallback to CSR** — no browser-visible error.
+
 ```typescript
-// ✅ Use withSsrSafety() in stores — provides isBrowser(), getLocalStorage(), setBodyAttribute()
+// src/server.ts — keep this list up to date
+const commonEngine = new CommonEngine({
+  allowedHosts: ['www.zeffyrmusic.com', 'zeffyrmusic.com', '146.59.155.20', 'localhost', ...],
+});
+```
+
+**Browser API access rules:**
+
+```typescript
+// ✅ Stores: use withSsrSafety()
 export const MyStore = signalStore(
   { providedIn: 'root' },
   withSsrSafety(),
   withState(initialState)
 );
 
-// ❌ Never access browser APIs directly
+// ✅ Components: use isPlatformBrowser(platformId)
+// ✅ Utility functions: defensive check (typeof globalThis.crypto?.getRandomValues === 'function')
+
+// ❌ Never access directly — crashes on server
 window.localStorage.getItem('key');
 document.getElementById('el');
+crypto.getRandomValues(buffer); // Node < 20 has no globalThis.crypto
 ```
+
+**Production requirements:** Node ≥ 20 (no `globalThis.crypto` in Node 18). After Node upgrade: `sudo pm2 kill` then restart.
 
 ### 6. CSS — YouTube Player (CRITICAL)
 

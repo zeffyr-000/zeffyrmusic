@@ -1,19 +1,20 @@
 /**
- * Returns an unbiased random integer in [0, max] using rejection sampling
- * to eliminate modulo bias when (max + 1) doesn't evenly divide 2^32.
- * Reuses a single buffer to avoid repeated allocations.
- * Relies on globalThis.crypto, available in Node 20+ and all modern browsers.
+ * Returns a random integer in [0, max].
+ * Uses crypto.getRandomValues with rejection sampling when available,
+ * falls back to Math.random when crypto is unavailable (SSR).
  */
 function getRandomIntInclusive(max: number, buffer: Uint32Array<ArrayBuffer>): number {
-  const range = max + 1;
-  // Largest multiple of range that fits in a uint32, minus 1.
-  const limit = Math.floor(0x100000000 / range) * range - 1;
-  while (true) {
-    globalThis.crypto.getRandomValues(buffer);
-    if (buffer[0] <= limit) {
-      return buffer[0] % range;
+  if (typeof globalThis.crypto?.getRandomValues === 'function') {
+    const range = max + 1;
+    const limit = Math.floor(0x100000000 / range) * range - 1;
+    while (true) {
+      globalThis.crypto.getRandomValues(buffer);
+      if (buffer[0] <= limit) {
+        return buffer[0] % range;
+      }
     }
   }
+  return Math.floor(Math.random() * (max + 1));
 }
 
 /**

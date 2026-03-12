@@ -13,7 +13,14 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 
 const app = express();
 const commonEngine = new CommonEngine({
-  allowedHosts: ['www.zeffyrmusic.com', 'zeffyrmusic.com', '127.0.0.1', 'localhost'],
+  allowedHosts: [
+    'www.zeffyrmusic.com',
+    'zeffyrmusic.com',
+    'data.zeffyrmusic.com',
+    '146.59.155.20',
+    '127.0.0.1',
+    'localhost',
+  ],
 });
 
 app.disable('x-powered-by');

@@ -77,7 +77,8 @@ export const UiStore = signalStore(
     },
 
     showNotification(notification: Omit<Notification, 'id'>): string {
-      const id = crypto.randomUUID();
+      const id =
+        globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const newNotification: Notification = { ...notification, id };
 
       patchState(store, {
