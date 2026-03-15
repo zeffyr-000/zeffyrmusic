@@ -27,12 +27,12 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
-            npm install
-          else
-            npm ci
-          fi
+        if: github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'dependabot/')
+        run: npm ci
+
+      - name: Install dependencies (Dependabot)
+        if: github.actor == 'dependabot[bot]' || startsWith(github.head_ref, 'dependabot/')
+        run: npm install
 
       - name: Format check
         run: npm run format:check
