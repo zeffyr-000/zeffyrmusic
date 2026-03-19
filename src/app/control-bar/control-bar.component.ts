@@ -49,6 +49,10 @@ export class ControlBarComponent {
     const key = this.currentKey();
     return key ? `https://img.youtube.com/vi/${key}/mqdefault.jpg` : null;
   });
+  readonly thumbnailUrlHd = computed(() => {
+    const key = this.currentKey();
+    return key ? `https://img.youtube.com/vi/${key}/hqdefault.jpg` : null;
+  });
   readonly isLiked = computed(() => this.userLibraryService.isLiked(this.currentKey()));
   readonly volumeIcon = computed(() => {
     if (this.playerStore.isMuted()) return 'volume_off';
