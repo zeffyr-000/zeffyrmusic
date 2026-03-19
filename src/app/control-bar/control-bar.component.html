@@ -17,7 +17,11 @@
   @for (key of currentKeyArr(); track $index) {
     <div class="cb-left" [class.cb-anim-a]="cbAnimA()" [class.cb-anim-b]="!cbAnimA()">
       @if (thumbnailUrl()) {
-        <img [src]="thumbnailUrl()" class="cb-thumbnail" [attr.alt]="currentTitle()" />
+        <img
+          [src]="isPlayerExpanded() ? thumbnailUrlHd() : thumbnailUrl()"
+          class="cb-thumbnail"
+          [attr.alt]="currentTitle()"
+        />
       }
       <div class="cb-track-info">
         <span class="cb-track-title">{{ currentTitle() }}</span>

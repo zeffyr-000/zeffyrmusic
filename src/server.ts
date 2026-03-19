@@ -30,7 +30,7 @@ app.use(cookieParser());
 // Hashed static assets (JS, CSS, hashed fonts) — long-lived immutable cache.
 // Angular appends a content hash to filenames, so no cache invalidation needed.
 app.get(
-  '**',
+  '/{*path}',
   express.static(browserDistFolder, {
     maxAge: '1y',
     immutable: true,
@@ -58,7 +58,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('**', (req, res, next) => {
+app.get('/{*path}', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;
   const baseUrlValue = baseUrl || '/';
 
