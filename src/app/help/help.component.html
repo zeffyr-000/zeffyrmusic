@@ -31,6 +31,17 @@
         </div>
         <p class="help-card-title">{{ 'help_screen_locked_title' | transloco }}</p>
       </a>
+
+      <a
+        [routerLink]="['/help', 'playlists']"
+        class="help-card"
+        [attr.aria-label]="'help_playlists_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">queue_music</span>
+        </div>
+        <p class="help-card-title">{{ 'help_playlists_title' | transloco }}</p>
+      </a>
     </div>
   </section>
 
@@ -57,6 +68,17 @@
           <span class="material-icons">apple</span>
         </div>
         <p class="help-card-title">{{ 'help_install_ios_title' | transloco }}</p>
+      </a>
+
+      <a
+        [routerLink]="['/help', 'settings']"
+        class="help-card"
+        [attr.aria-label]="'help_settings_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">settings</span>
+        </div>
+        <p class="help-card-title">{{ 'help_settings_title' | transloco }}</p>
       </a>
     </div>
   </section>

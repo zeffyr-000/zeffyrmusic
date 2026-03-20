@@ -66,23 +66,25 @@
   color: inherit;
   display: block;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: rgba(var(--bs-primary-rgb), 0.3);
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card-hover);
+      border-color: rgba(var(--bs-primary-rgb), 0.3);
 
-    .help-card-icon {
-      background: linear-gradient(
-        135deg,
-        rgb(var(--bs-primary-rgb)) 0%,
-        rgba(var(--bs-primary-rgb), 0.7) 100%
-      );
-      transform: scale(1.1);
-      color: white;
-    }
+      .help-card-icon {
+        background: linear-gradient(
+          135deg,
+          rgb(var(--bs-primary-rgb)) 0%,
+          rgba(var(--bs-primary-rgb), 0.7) 100%
+        );
+        transform: scale(1.1);
+        color: white;
+      }
 
-    .help-card-title {
-      color: rgb(var(--bs-primary-rgb));
+      .help-card-title {
+        color: rgb(var(--bs-primary-rgb));
+      }
     }
   }
 

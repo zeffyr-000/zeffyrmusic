@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  OnDestroy,
+  PLATFORM_ID,
+  inject,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -14,7 +21,7 @@ import { environment } from 'src/environments/environment';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe],
 })
-export class HelpComponent implements OnInit {
+export class HelpComponent implements OnInit, OnDestroy {
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
   private readonly seoService = inject(SeoService);
@@ -32,9 +39,19 @@ export class HelpComponent implements OnInit {
       });
     }
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help`);
+    this.seoService.setJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: this.translocoService.translate('help_meta_title'),
+      description,
+    });
 
     if (isPlatformBrowser(this.platformId)) {
       this.googleAnalyticsService.pageView('/help', this.titleService.getTitle());
     }
+  }
+
+  ngOnDestroy(): void {
+    this.seoService.removeJsonLd();
   }
 }
