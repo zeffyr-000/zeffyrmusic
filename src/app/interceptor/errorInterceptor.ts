@@ -1,9 +1,10 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { AuthStore } from '../store/auth/auth.store';
 import { UiStore } from '../store/ui/ui.store';
 import { TranslocoService } from '@jsverse/transloco';
+import { InitService } from '../services/init.service';
 
 /**
  * Global HTTP error interceptor.
@@ -14,6 +15,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authStore = inject(AuthStore);
   const uiStore = inject(UiStore);
   const translocoService = inject(TranslocoService);
+  const injector = inject(Injector);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -24,8 +26,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       switch (error.status) {
         case 401:
-          uiStore.showSessionExpired();
-          authStore.logout();
+          // Guard: run session-expiration flow only once per event
+          if (authStore.isAuthenticated()) {
+            injector.get(InitService).onMessageUnlog();
+          }
           break;
 
         case 403:

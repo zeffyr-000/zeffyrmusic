@@ -45,11 +45,6 @@
     {{ 'perte_connexion' | transloco }}
   </ngb-alert>
 }
-@if (uiStore.showSessionExpiredMessage()) {
-  <ngb-alert id="alert-logout" (close)="uiStore.hideSessionExpired()" type="danger">
-    {{ 'veuillez_vous_reconnecter' | transloco }}
-  </ngb-alert>
-}
 @if (playerStore.errorMessage()) {
   <ngb-alert id="alert-error" class="d-lg-none" (close)="clearErrorMessage()" type="danger">
     {{ playerStore.errorMessage() | transloco }}

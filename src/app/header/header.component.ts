@@ -18,6 +18,7 @@ import {
   validate,
 } from '@angular/forms/signals';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { isOnProtectedRoute } from '../utils';
 import {
   NgbActiveModal,
   NgbModal,
@@ -286,12 +287,9 @@ export class HeaderComponent {
       if (data.success !== undefined && data.success) {
         // Logout via AuthStore (also clears cookie)
         this.authStore.logout();
+        this.userDataStore.reset();
 
-        const url = this.router.url;
-        const urlProtected = this.router.config
-          ?.filter(route => route.canActivate !== undefined)
-          .map(route => route.path);
-        if (urlProtected?.includes(url.split('/')[1])) {
+        if (isOnProtectedRoute(this.router)) {
           this.router.navigate(['/']);
         }
       }

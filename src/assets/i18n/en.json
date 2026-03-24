@@ -106,7 +106,7 @@
   "remove_from_selection": "Remove from selection",
   "remove_from_selection_confirm": "Are you sure you want to remove this item from your selection?",
   "selection_removed": "Item removed from your selection",
-  "veuillez_vous_reconnecter": "You had a disconnection, please reconnect to perform this action",
+  "session_expired": "Your session has expired. Please sign in again.",
   "lire": "Play",
   "pause": "Pause",
   "modifier": "Edit",

@@ -105,14 +105,6 @@ export const UiStore = signalStore(
       patchState(store, { notifications: [] });
     },
 
-    showSessionExpired(): void {
-      patchState(store, { showSessionExpiredMessage: true });
-    },
-
-    hideSessionExpired(): void {
-      patchState(store, { showSessionExpiredMessage: false });
-    },
-
     showSuccess(message: string, duration?: number): string {
       return this.showNotification({ message, type: 'success', duration });
     },
@@ -127,6 +119,10 @@ export const UiStore = signalStore(
 
     showInfo(message: string, duration?: number): string {
       return this.showNotification({ message, type: 'info', duration });
+    },
+
+    showWarning(message: string, duration?: number): string {
+      return this.showNotification({ message, type: 'warning', duration });
     },
 
     openLyricsPanel(): void {

@@ -12,4 +12,5 @@
  * Use formatTime only in TypeScript code (computed signals, etc.).
  */
 export { formatTime } from './format-time';
+export { isOnProtectedRoute } from './is-on-protected-route';
 export { shuffleArray } from './shuffle-array';

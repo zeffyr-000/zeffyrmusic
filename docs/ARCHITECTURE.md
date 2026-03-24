@@ -40,6 +40,16 @@ InitService.ping() → API /ping → AuthStore.login()
   → Protected routes use AuthGuard
 ```
 
+### Session Expiration Detection
+
+The backend (PHP) does not return 401 on expired sessions — `/ping` returns `est_connecte: false` (HTTP 200). Proactive checks run via `InitService.checkSessionIfNeeded()`:
+
+- **Tab return**: `visibilitychange` event (Page Visibility API)
+- **Navigation**: `Router.events` → `NavigationEnd`
+- **Throttle**: one check per `SESSION_CHECK_INTERVAL` (5 min)
+
+On expiration: warning toast → `AuthStore.logout()` → `UserDataStore.reset()` → redirect if on protected route.
+
 ### User Actions (playlists, follows, likes)
 
 ```

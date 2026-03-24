@@ -11,6 +11,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
+import { isOnProtectedRoute } from '../utils';
 import { UserPlaylist } from '../models/playlist.model';
 import { UserVideo, Video } from '../models/video.model';
 import { FollowItem } from '../models/follow.model';
@@ -19,6 +21,8 @@ import { AuthStore } from '../store';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { QueueStore } from '../store/queue/queue.store';
 import { UiStore } from '../store/ui/ui.store';
+
+const SESSION_CHECK_INTERVAL = 60 * 5 * 1000; // 5 minutes
 
 export interface PingResponse {
   est_connecte: boolean;
@@ -48,17 +52,19 @@ const PING_KEY = makeStateKey<PingResponse>('pingData');
   providedIn: 'root',
 })
 export class InitService {
-  private document = inject<Document>(DOCUMENT);
-  private platformId = inject(PLATFORM_ID);
+  private readonly document = inject<Document>(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly httpClient = inject(HttpClient);
-  private transferState = inject(TransferState);
+  private readonly transferState = inject(TransferState);
   private readonly translocoService = inject(TranslocoService);
   private readonly authStore = inject(AuthStore);
   private readonly userDataStore = inject(UserDataStore);
   private readonly queueStore = inject(QueueStore);
   private readonly uiStore = inject(UiStore);
+  private readonly router = inject(Router);
 
   private isBrowser: boolean;
+  private lastSessionCheck = 0;
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -95,6 +101,7 @@ export class InitService {
     let listLikeVideo: UserVideo[] = [];
 
     if (data.est_connecte) {
+      this.lastSessionCheck = Date.now();
       listPlaylist = data.liste_playlist;
       listFollow = data.liste_suivi;
       listLikeVideo = data.like_video;
@@ -125,9 +132,43 @@ export class InitService {
     }
   }
 
-  onMessageUnlog() {
-    this.uiStore.showSessionExpired();
+  onMessageUnlog(): void {
+    this.uiStore.showWarning(this.translocoService.translate('session_expired'), 8000);
     this.authStore.logout();
+    this.userDataStore.reset();
+    this.redirectIfProtectedRoute();
+  }
+
+  /** Ping the server if enough time has elapsed since last check. */
+  checkSessionIfNeeded(): void {
+    if (!this.authStore.isAuthenticated()) {
+      return;
+    }
+    if (Date.now() - this.lastSessionCheck < SESSION_CHECK_INTERVAL) {
+      return;
+    }
+
+    this.httpClient
+      .get<Pick<PingResponse, 'est_connecte'>>(environment.URL_SERVER + 'ping')
+      .subscribe({
+        next: data => {
+          if (data.est_connecte) {
+            this.lastSessionCheck = Date.now();
+          } else {
+            this.onMessageUnlog();
+          }
+        },
+        error: () => {
+          // Network error — don't force logout; update throttle to avoid retry storm
+          this.lastSessionCheck = Date.now();
+        },
+      });
+  }
+
+  private redirectIfProtectedRoute(): void {
+    if (isOnProtectedRoute(this.router)) {
+      this.router.navigate(['/']);
+    }
   }
 
   getHomeInit(): Observable<{ top: HomeAlbum[]; top_albums: HomeAlbum[] }> {
