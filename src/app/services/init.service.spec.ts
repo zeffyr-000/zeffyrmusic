@@ -10,6 +10,8 @@ import { AuthStore } from '../store';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { QueueStore } from '../store/queue/queue.store';
 import { UiStore } from '../store/ui/ui.store';
+import { provideRouter, Router } from '@angular/router';
+import { routes } from '../app.routes';
 
 describe('InitService', () => {
   let service: InitService;
@@ -55,6 +57,7 @@ describe('InitService', () => {
           InitService,
           provideHttpClient(withInterceptorsFromDi()),
           provideHttpClientTesting(),
+          provideRouter(routes),
           { provide: PLATFORM_ID, useValue: 'browser' },
         ],
       });
@@ -236,15 +239,125 @@ describe('InitService', () => {
     });
 
     describe('onMessageUnlog', () => {
-      it('should call uiStore.showSessionExpired and authStore.logout', () => {
+      it('should show warning toast, logout and reset userDataStore', () => {
         const uiStore = TestBed.inject(UiStore);
-        const showSessionExpiredSpy = vi.spyOn(uiStore, 'showSessionExpired');
+        const showWarningSpy = vi.spyOn(uiStore, 'showWarning');
         const logoutSpy = vi.spyOn(authStore, 'logout');
+        const resetSpy = vi.spyOn(userDataStore, 'reset');
 
         service.onMessageUnlog();
 
-        expect(showSessionExpiredSpy).toHaveBeenCalled();
+        expect(showWarningSpy).toHaveBeenCalledWith(expect.any(String), 8000);
         expect(logoutSpy).toHaveBeenCalled();
+        expect(resetSpy).toHaveBeenCalled();
+      });
+
+      it('should redirect to / when on a protected route', () => {
+        const router = TestBed.inject(Router);
+        vi.spyOn(router, 'url', 'get').mockReturnValue('/settings');
+        const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+        service.onMessageUnlog();
+
+        expect(navigateSpy).toHaveBeenCalledWith(['/']);
+      });
+
+      it('should not redirect when on a public route', () => {
+        const router = TestBed.inject(Router);
+        vi.spyOn(router, 'url', 'get').mockReturnValue('/search/test');
+        const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+        service.onMessageUnlog();
+
+        expect(navigateSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('checkSessionIfNeeded', () => {
+      const SIX_MINUTES = 6 * 60 * 1000;
+
+      beforeEach(() => {
+        vi.useFakeTimers();
+      });
+
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it('should not ping if user is not authenticated', () => {
+        authStore.initializeAnonymous();
+
+        service.checkSessionIfNeeded();
+
+        httpMock.expectNone(environment.URL_SERVER + 'ping');
+      });
+
+      it('should not ping if last check was recent', () => {
+        // Bootstrap with authenticated user to set lastSessionCheck
+        service.getPing().subscribe();
+        const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
+        req.flush(mockPingResponse);
+
+        // Immediately check again — should be throttled
+        service.checkSessionIfNeeded();
+
+        httpMock.expectNone(environment.URL_SERVER + 'ping');
+      });
+
+      it('should ping and call onMessageUnlog when est_connecte is false', () => {
+        authStore.login(
+          { pseudo: 'test', idPerso: '1', mail: 'a@b.com', isAdmin: false },
+          { darkModeEnabled: false, language: 'fr' }
+        );
+        // Advance time beyond SESSION_CHECK_INTERVAL to make lastSessionCheck stale
+        vi.advanceTimersByTime(SIX_MINUTES);
+
+        const onMessageUnlogSpy = vi.spyOn(service, 'onMessageUnlog');
+
+        service.checkSessionIfNeeded();
+
+        const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
+        req.flush({ est_connecte: false });
+
+        expect(onMessageUnlogSpy).toHaveBeenCalled();
+      });
+
+      it('should ping and update lastSessionCheck when est_connecte is true', () => {
+        authStore.login(
+          { pseudo: 'test', idPerso: '1', mail: 'a@b.com', isAdmin: false },
+          { darkModeEnabled: false, language: 'fr' }
+        );
+        vi.advanceTimersByTime(SIX_MINUTES);
+
+        service.checkSessionIfNeeded();
+
+        const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
+        req.flush({ est_connecte: true });
+
+        // A second call immediately after should be throttled (lastSessionCheck was updated)
+        service.checkSessionIfNeeded();
+        httpMock.expectNone(environment.URL_SERVER + 'ping');
+      });
+
+      it('should not force logout on network error but update throttle', () => {
+        authStore.login(
+          { pseudo: 'test', idPerso: '1', mail: 'a@b.com', isAdmin: false },
+          { darkModeEnabled: false, language: 'fr' }
+        );
+        vi.advanceTimersByTime(SIX_MINUTES);
+
+        const onMessageUnlogSpy = vi.spyOn(service, 'onMessageUnlog');
+
+        service.checkSessionIfNeeded();
+
+        const req = httpMock.expectOne(environment.URL_SERVER + 'ping');
+        req.error(new ErrorEvent('Network error'));
+
+        expect(onMessageUnlogSpy).not.toHaveBeenCalled();
+
+        // A second call immediately after should be throttled (lastSessionCheck was updated on error)
+        service.checkSessionIfNeeded();
+        httpMock.expectNone(environment.URL_SERVER + 'ping');
       });
     });
   });

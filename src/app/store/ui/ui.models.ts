@@ -10,7 +10,7 @@ export type ModalType = 'login' | 'register' | 'addVideo' | 'resetPass' | 'editP
 export interface Notification {
   id: string;
   message: string;
-  type: 'success' | 'error' | 'info';
+  type: 'success' | 'error' | 'info' | 'warning';
   duration?: number;
 }
 
@@ -21,7 +21,6 @@ export interface UiState {
   addVideoData: VideoItem | null;
   editPlaylistId: string | null;
   notifications: Notification[];
-  showSessionExpiredMessage: boolean;
   videoAddedToPlaylistId: { id: string; ts: number } | null;
   isLyricsPanelOpen: boolean;
   isLyricsPanelClosing: boolean;
@@ -34,7 +33,6 @@ export const initialUiState: UiState = {
   addVideoData: null,
   editPlaylistId: null,
   notifications: [],
-  showSessionExpiredMessage: false,
   videoAddedToPlaylistId: null,
   isLyricsPanelOpen: false,
   isLyricsPanelClosing: false,

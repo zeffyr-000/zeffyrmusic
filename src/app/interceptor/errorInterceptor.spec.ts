@@ -6,15 +6,20 @@ import { errorInterceptor } from './errorInterceptor';
 import { AuthStore } from '../store/auth/auth.store';
 import { UiStore } from '../store/ui/ui.store';
 import { TranslocoService } from '@jsverse/transloco';
+import { provideRouter } from '@angular/router';
+import { InitService } from '../services/init.service';
 
 describe('errorInterceptor', () => {
   let http: HttpClient;
   let httpTesting: HttpTestingController;
   let authStore: InstanceType<typeof AuthStore>;
   let uiStore: InstanceType<typeof UiStore>;
+  let initService: InitService;
 
   const translocoMock = {
     translate: vi.fn((key: string) => key),
+    setActiveLang: vi.fn(),
+    getActiveLang: vi.fn(() => 'fr'),
   };
 
   beforeEach(() => {
@@ -22,8 +27,10 @@ describe('errorInterceptor', () => {
       providers: [
         provideHttpClient(withInterceptors([errorInterceptor])),
         provideHttpClientTesting(),
+        provideRouter([]),
         AuthStore,
         UiStore,
+        InitService,
         { provide: TranslocoService, useValue: translocoMock },
       ],
     });
@@ -32,6 +39,7 @@ describe('errorInterceptor', () => {
     httpTesting = TestBed.inject(HttpTestingController);
     authStore = TestBed.inject(AuthStore);
     uiStore = TestBed.inject(UiStore);
+    initService = TestBed.inject(InitService);
   });
 
   it('should pass through successful requests', () => {
@@ -42,16 +50,30 @@ describe('errorInterceptor', () => {
     httpTesting.expectOne('/api/test').flush({ ok: true });
   });
 
-  it('should handle 401 by logging out and showing session expired', () => {
-    const logoutSpy = vi.spyOn(authStore, 'logout');
-    const sessionSpy = vi.spyOn(uiStore, 'showSessionExpired');
+  it('should handle 401 by calling onMessageUnlog when authenticated', () => {
+    // User must be authenticated for the guard to pass
+    authStore.login(
+      { pseudo: 'test', idPerso: '1', mail: 'a@b.com', isAdmin: false },
+      { darkModeEnabled: false, language: 'fr' }
+    );
+    const onMessageUnlogSpy = vi.spyOn(initService, 'onMessageUnlog');
 
     http.get('/api/test').subscribe({ error: () => undefined });
 
     httpTesting.expectOne('/api/test').flush(null, { status: 401, statusText: 'Unauthorized' });
 
-    expect(logoutSpy).toHaveBeenCalled();
-    expect(sessionSpy).toHaveBeenCalled();
+    expect(onMessageUnlogSpy).toHaveBeenCalled();
+  });
+
+  it('should not call onMessageUnlog on 401 if already logged out', () => {
+    authStore.initializeAnonymous();
+    const onMessageUnlogSpy = vi.spyOn(initService, 'onMessageUnlog');
+
+    http.get('/api/test').subscribe({ error: () => undefined });
+
+    httpTesting.expectOne('/api/test').flush(null, { status: 401, statusText: 'Unauthorized' });
+
+    expect(onMessageUnlogSpy).not.toHaveBeenCalled();
   });
 
   it('should handle 403 by showing error toast', () => {

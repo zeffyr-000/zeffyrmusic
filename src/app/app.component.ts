@@ -83,6 +83,7 @@ export class AppComponent implements OnInit {
         .subscribe((event: NavigationEnd) => {
           this.currentUrl.set(event.urlAfterRedirects);
           this.uiStore.closeLyricsPanel();
+          this.initService.checkSessionIfNeeded();
         });
 
       window.addEventListener('offline', () => {
@@ -91,6 +92,12 @@ export class AppComponent implements OnInit {
 
       window.addEventListener('online', () => {
         this.isOnline.set(true);
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          this.initService.checkSessionIfNeeded();
+        }
       });
     }
   }

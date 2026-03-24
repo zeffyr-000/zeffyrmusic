@@ -106,7 +106,7 @@
   "remove_from_selection": "Retirer de la sélection",
   "remove_from_selection_confirm": "Voulez-vous vraiment retirer cet élément de votre sélection ?",
   "selection_removed": "L'élément a été retiré de votre sélection",
-  "veuillez_vous_reconnecter": "Vous avez subi une deconnexion, veuillez vous reconnecter pour effectuer cette action",
+  "session_expired": "Votre session a expiré. Veuillez vous reconnecter.",
   "lire": "Lire",
   "pause": "Pause",
   "modifier": "Modifier",
