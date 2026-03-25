@@ -1,0 +1,58 @@
+{
+  "top": [
+    {
+      "id": "1",
+      "titre": "La Hit List",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/1.jpg",
+      "description": "Un condensé des plus gros hits du moment."
+    },
+    {
+      "id": "2",
+      "titre": "Classique",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/2.jpg",
+      "description": "Les classiques intemporels"
+    },
+    {
+      "id": "3",
+      "titre": "Rap FR",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/3.jpg",
+      "description": "Le meilleur du rap français"
+    },
+    {
+      "id": "4",
+      "titre": "Rock",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/4.jpg",
+      "description": "Les plus grands classiques du rock"
+    },
+    {
+      "id": "5",
+      "titre": "Électro",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/5.jpg",
+      "description": "Les meilleurs sons électro"
+    },
+    {
+      "id": "6",
+      "titre": "R&B",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/6.jpg",
+      "description": "Le meilleur du R&B"
+    }
+  ],
+  "top_albums": [
+    {
+      "id": "100",
+      "id_playlist": "100",
+      "titre": "Album Test 1",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/cover/100.jpg",
+      "description": "Premier album test",
+      "artiste": "Artiste Test"
+    },
+    {
+      "id": "101",
+      "id_playlist": "101",
+      "titre": "Album Test 2",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/cover/101.jpg",
+      "description": "Deuxième album test",
+      "artiste": "Artiste Test 2"
+    }
+  ]
+}

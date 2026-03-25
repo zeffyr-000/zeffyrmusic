@@ -1,0 +1,28 @@
+{
+  "tab_video": [
+    {
+      "id_video": "1",
+      "key": "dQw4w9WgXcQ",
+      "titre": "Highway to Hell",
+      "artiste": "AC/DC",
+      "duree": "213",
+      "id_playlist": "50",
+      "id_artiste": 100,
+      "ordre": "1",
+      "titre_album": "Highway to Hell",
+      "artists": []
+    },
+    {
+      "id_video": "2",
+      "key": "fJ9rUzIMcZQ",
+      "titre": "Bohemian Rhapsody",
+      "artiste": "Queen",
+      "duree": "354",
+      "id_playlist": "51",
+      "id_artiste": 200,
+      "ordre": "2",
+      "titre_album": "A Night at the Opera",
+      "artists": []
+    }
+  ]
+}

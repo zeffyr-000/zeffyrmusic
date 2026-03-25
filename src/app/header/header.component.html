@@ -11,7 +11,12 @@
   </div>
 
   <div id="header-logo" class="nav col-3">
-    <a class="navbar-brand nav-item p-0" id="header-logo-link" alt="" routerLink="">
+    <a
+      class="navbar-brand nav-item p-0"
+      id="header-logo-link"
+      data-testid="header-logo-link"
+      routerLink=""
+    >
       <img
         [src]="
           authStore.isDarkMode()
@@ -90,7 +95,7 @@
     }
 
     <li id="header-li-help" class="nav-item align-self-center d-flex">
-      <a class="btn btn-light" routerLink="/help">
+      <a class="btn btn-light" data-testid="header-help-link" routerLink="/help">
         <span class="material-icons">help</span>
       </a>
     </li>

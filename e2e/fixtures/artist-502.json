@@ -1,0 +1,31 @@
+{
+  "nom": "Johnny Hallyday",
+  "id_artiste_deezer": "1060",
+  "id_artist": "502",
+  "list_albums": [
+    {
+      "artist": "Johnny Hallyday",
+      "id_playlist": "200",
+      "img_big": "https://e-cdns-images.dzcdn.net/images/cover/200.jpg",
+      "title": "Les 100 plus belles chansons",
+      "titre": "Les 100 plus belles chansons",
+      "year_release": 2006
+    },
+    {
+      "artist": "Johnny Hallyday",
+      "id_playlist": "201",
+      "img_big": "https://e-cdns-images.dzcdn.net/images/cover/201.jpg",
+      "title": "Mon pays c'est l'amour",
+      "titre": "Mon pays c'est l'amour",
+      "year_release": 2018
+    }
+  ],
+  "biography_fr": "Jean-Philippe Smet, dit Johnny Hallyday, est un chanteur, compositeur et acteur français.",
+  "related_artists": [
+    {
+      "id_artiste": 503,
+      "nom": "Eddy Mitchell",
+      "id_artiste_deezer": 1061
+    }
+  ]
+}

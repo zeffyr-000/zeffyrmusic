@@ -43,10 +43,10 @@
 
 ### Testing
 
-| Technology  | Purpose                  |
-| ----------- | ------------------------ |
-| **Vitest**  | Unit testing (527 tests) |
-| **Cypress** | E2E testing              |
+| Technology     | Purpose      |
+| -------------- | ------------ |
+| **Vitest**     | Unit testing |
+| **Playwright** | E2E testing  |
 
 ### Tooling
 
@@ -151,11 +151,11 @@ npm run test:coverage
 ### E2E Tests
 
 ```bash
-# Run Cypress tests
+# Run Playwright E2E tests
 npm run e2e
 
-# Open Cypress UI
-npm run cypress:open
+# Open Playwright interactive UI
+npm run e2e:ui
 ```
 
 ---

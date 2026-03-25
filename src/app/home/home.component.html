@@ -57,7 +57,12 @@
             itemscope
             itemtype="http://schema.org/MusicRecording"
           >
-            <a class="card h-100" routerLink="/top/{{ chart.id }}" itemprop="url">
+            <a
+              class="card h-100"
+              routerLink="/top/{{ chart.id }}"
+              itemprop="url"
+              data-testid="top-chart-card"
+            >
               <img
                 src="{{ chart.url_image }}"
                 class="card-img-top"
@@ -99,6 +104,7 @@
 @if (page !== 'top') {
   <div
     class="card card-body mt-3 border-0 shadow-none"
+    data-testid="album-section"
     [id]="'content-album-' + page"
     itemscope
     itemtype="http://schema.org/MusicPlaylist"

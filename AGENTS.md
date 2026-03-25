@@ -14,7 +14,7 @@
 | i18n             | Transloco + MessageFormat           | 8.2      |
 | Font             | Nunito (Regular/SemiBold/Bold/800)  | local    |
 | Unit Tests       | Vitest                              | 4.x      |
-| E2E Tests        | Cypress                             | 15.x     |
+| E2E Tests        | Playwright                          | 1.58.x   |
 | Change Detection | OnPush everywhere (zoneless)        |          |
 | Dark Mode        | `data-bs-theme="dark"` on `<body>`  |          |
 
@@ -415,12 +415,15 @@ npx vitest run              # Single run
 npx vitest run --coverage   # With coverage
 npm run lint                # ESLint
 npm run build               # Production build
+npm run e2e                 # Playwright E2E tests
+npm run e2e:ui              # Playwright interactive UI mode
 ```
 
 ## Angular CLI MCP Server
 
 The project uses the Angular CLI MCP server for AI-assisted development.
 Configuration: `.vscode/settings.json` with `"angular.experimental.autoStartMCP": true`.
+MCP servers are defined in `.vscode/mcp.json`.
 
 ### Default Tools
 
@@ -450,6 +453,29 @@ Configuration: `.vscode/settings.json` with `"angular.experimental.autoStartMCP"
 - `devserver.start` consumes a port — avoid if a dev server is already running
 - `modernize` is read-only safe and can suggest migration steps
 - All tools are available to AI agents in VS Code via the MCP protocol
+
+## Playwright MCP Server
+
+The project uses `@playwright/mcp` for AI-assisted visual validation.
+The agent can pilot a real browser to navigate, interact, take screenshots, and verify UI after code changes.
+Configuration: `.vscode/mcp.json`.
+
+### Available Capabilities
+
+| Capability   | Description                            |
+| ------------ | -------------------------------------- |
+| `navigate`   | Open a URL in the browser              |
+| `click`      | Click on elements                      |
+| `fill`       | Fill form inputs                       |
+| `screenshot` | Capture and analyze screenshots        |
+| `snapshot`   | Get accessibility snapshot of the page |
+| `evaluate`   | Run JavaScript in the browser console  |
+
+### Usage Notes
+
+- Use after UI modifications to visually validate the result
+- The dev server must be running (`npm start` or `npm run serve:ssr`)
+- Prefer `snapshot` over `screenshot` for text content verification
 
 ## Web Codegen Scorer
 

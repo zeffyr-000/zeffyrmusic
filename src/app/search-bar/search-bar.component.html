@@ -3,6 +3,7 @@
   type="search"
   placeholder="{{ 'rechercher' | transloco }}"
   id="input-search-header"
+  data-testid="search-input"
   [ngModel]="query()"
   (ngModelChange)="query.set($event)"
   [ngbTypeahead]="searchTypeahead"
