@@ -82,15 +82,16 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.0",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "web-codegen-scorer": "^0.0.69"
   },
   "engines": {
     "node": ">=20.19.0"
   },
   "optionalDependencies": {
-    "fsevents": "*",
     "@rollup/rollup-linux-x64-gnu": "*",
-    "@rollup/rollup-linux-x64-musl": "*"
+    "@rollup/rollup-linux-x64-musl": "*",
+    "fsevents": "*"
   },
   "overrides": {
     "@hono/node-server": "1.19.10",

@@ -416,3 +416,87 @@ npx vitest run --coverage   # With coverage
 npm run lint                # ESLint
 npm run build               # Production build
 ```
+
+## Angular CLI MCP Server
+
+The project uses the Angular CLI MCP server for AI-assisted development.
+Configuration: `.vscode/settings.json` with `"angular.experimental.autoStartMCP": true`.
+
+### Default Tools
+
+| Tool                        | Description                                                                          | Local | Network |
+| --------------------------- | ------------------------------------------------------------------------------------ | ----- | ------- |
+| `ai_tutor`                  | Interactive AI-powered Angular tutor                                                 | Yes   | Yes     |
+| `find_examples`             | Find authoritative code examples from official best-practice database                | Yes   | Yes     |
+| `get_best_practices`        | Retrieve Angular Best Practices Guide (standalone, typed forms, modern control flow) | Yes   | Yes     |
+| `list_projects`             | List all applications and libraries in the workspace from `angular.json`             | Yes   | Yes     |
+| `onpush_zoneless_migration` | Analyze code and provide step-by-step plan to migrate to OnPush/zoneless             | Yes   | Yes     |
+| `search_documentation`      | Search official Angular documentation at angular.dev                                 | No    | Yes     |
+
+### Experimental Tools (enabled via `-E`)
+
+| Tool                       | Description                                                     |
+| -------------------------- | --------------------------------------------------------------- |
+| `build`                    | One-off `ng build` (non-watched)                                |
+| `test`                     | Run the project's unit tests                                    |
+| `e2e`                      | Execute end-to-end tests                                        |
+| `devserver.start`          | Start `ng serve` asynchronously (watch mode)                    |
+| `devserver.stop`           | Stop a running dev server                                       |
+| `devserver.wait_for_build` | Get output logs of the most recent dev server build             |
+| `modernize`                | Run code migrations to align with latest Angular best practices |
+
+### Usage Notes
+
+- `devserver.start` consumes a port — avoid if a dev server is already running
+- `modernize` is read-only safe and can suggest migration steps
+- All tools are available to AI agents in VS Code via the MCP protocol
+
+## Web Codegen Scorer
+
+The Angular team open-sourced the [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer),
+a tool to evaluate and score the quality of AI-generated web code.
+
+Use it to:
+
+- Fine-tune system prompts to improve AI-generated Angular code accuracy
+- Compare code quality across different models (Gemini, Claude, GPT, Grok)
+- Monitor quality over time as models and agents evolve
+
+### Setup
+
+```bash
+# Already installed as devDependency — just export an API key
+export ANTHROPIC_API_KEY="..."   # or GEMINI_API_KEY / OPENAI_API_KEY
+```
+
+### Usage
+
+```bash
+# Run evaluation with Zeffyr-specific config
+npx web-codegen-scorer eval --env=web-codegen-scorer
+
+# Run with a specific model
+npx web-codegen-scorer eval --env=web-codegen-scorer --model=claude-sonnet-4-20250514
+
+# Compare models
+npx web-codegen-scorer eval --env=web-codegen-scorer --model=gemini-2.5-flash
+npx web-codegen-scorer eval --env=web-codegen-scorer --model=claude-sonnet-4-20250514
+
+# View reports
+npx web-codegen-scorer report
+```
+
+### Configuration
+
+Project-specific config: `web-codegen-scorer/config.mjs`
+
+- System prompt: `web-codegen-scorer/system-prompt.md` (project conventions)
+- Evaluation prompts: `web-codegen-scorer/prompts/*.md` (generation tasks)
+- Built-in checks: build success, runtime errors, accessibility, LLM rating, best practices
+
+### When to Use
+
+- After modifying `copilot-instructions.md`, `AGENTS.md`, or `llms.txt`
+- When upgrading Angular or core dependencies
+- When comparing AI models for the team
+- Before/after prompt engineering changes

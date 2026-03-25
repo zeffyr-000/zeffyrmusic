@@ -49,3 +49,6 @@ Thumbs.db
 # Cypress
 cypress/videos/
 cypress/screenshots/
+
+# Web Codegen Scorer output
+.web-codegen-scorer/

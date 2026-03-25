@@ -5,7 +5,7 @@ Create a new Angular component following project conventions.
 ## Requirements
 
 - Use `ChangeDetectionStrategy.OnPush`
-- Use `standalone: true`
+- Do NOT set `standalone: true` (it is the default since Angular 19+)
 - Use `inject()` for dependencies
 - Use `signal()` for local state
 - Use `computed()` for derived state
@@ -27,7 +27,6 @@ import {
 
 @Component({
   selector: 'app-component-name',
-  standalone: true,
   imports: [],
   templateUrl: './component-name.component.html',
   styleUrl: './component-name.component.scss',
