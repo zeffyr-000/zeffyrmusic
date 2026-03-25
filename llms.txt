@@ -53,3 +53,27 @@ npm test — Vitest watch
 npx vitest run — Single run
 npm run lint — ESLint
 npm run build — Production build
+
+## Angular Official Context
+For up-to-date Angular best practices and LLM context, see:
+- Best practices: https://angular.dev/assets/context/best-practices.md
+- Full LLM context: https://angular.dev/assets/context/llms-full.txt
+- Angular llms.txt index: https://angular.dev/llms.txt
+
+## Angular 21+ Rules (from official best-practices)
+- Must NOT set `standalone: true` in decorators — it is the default since Angular 19+
+- For new or refactored components/directives, prefer the `host` object in @Component/@Directive over @HostBinding/@HostListener decorators
+- For new or refactored code, prefer `input()` and `output()` functions over @Input/@Output decorators
+- Use `computed()` for derived state
+- Do NOT use `ngClass` — use `class` bindings instead
+- Do NOT use `ngStyle` — use `style` bindings instead
+- Use native control flow (@if, @for, @switch) instead of *ngIf, *ngFor, *ngSwitch
+- Use `inject()` function instead of constructor injection
+- Use `providedIn: 'root'` for singleton services
+- Use Reactive Forms instead of Template-driven Forms
+- Set `changeDetection: ChangeDetectionStrategy.OnPush` in all components
+
+## MCP Tools Available
+Angular CLI MCP server is configured with experimental tools enabled.
+Default: ai_tutor, find_examples, get_best_practices, list_projects, onpush_zoneless_migration, search_documentation.
+Experimental: build, test, e2e, devserver (start/stop/wait_for_build), modernize.

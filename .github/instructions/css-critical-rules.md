@@ -66,14 +66,14 @@ cy.get('#player iframe').should('have.css', 'width', '100%');
 
 ```scss
 // ✅ styles.scss (GLOBAL)
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #player {
     height: 1px;
   } // MUST be global
 }
 
 // ✅ player.component.scss (COMPONENT)
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #container-player {
     padding-bottom: 0; // Remove 16:9 aspect ratio
     height: 1px;
@@ -88,7 +88,7 @@ cy.get('#player iframe').should('have.css', 'width', '100%');
 
 ```scss
 // ❌ player.component.scss - Will cause "not attached to DOM" error
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #player {
     height: 1px;
   } // Encapsulation blocks this
@@ -127,7 +127,7 @@ cy.get('#player').should('have.css', 'height', '1px');
 }
 
 // Mobile override
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #container-player {
     padding-bottom: 0; // ⚠️ CRITICAL
   }
@@ -138,7 +138,7 @@ cy.get('#player').should('have.css', 'height', '1px');
 
 ```scss
 // ❌ Forgetting to override padding-bottom
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 767.98px) {
   #container-player {
     height: 1px; // Not enough - padding-bottom still creates height
   }
@@ -194,7 +194,7 @@ npm run lint
 # Open http://localhost:4200, play track, verify 16:9 aspect ratio
 
 # Mobile player test
-# Resize to <640px, verify player hidden but controls work
+# Resize to <768px, verify player hidden but controls work
 ```
 
 ---

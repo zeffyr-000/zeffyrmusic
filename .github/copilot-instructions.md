@@ -6,6 +6,7 @@
 ## Quick Rules
 
 - **Angular 21** — SSR, standalone components, zoneless (`provideZonelessChangeDetection()`)
+- **Do NOT set `standalone: true`** in decorators — it is the default since Angular 19+
 - **OnPush** change detection on all components
 - **Signal Stores** (`@ngrx/signals`) for shared state — never `BehaviorSubject`
 - **`inject()`** function only — no constructor injection
