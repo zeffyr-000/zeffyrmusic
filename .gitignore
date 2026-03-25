@@ -46,9 +46,10 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# Cypress
-cypress/videos/
-cypress/screenshots/
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
 
 # Web Codegen Scorer output
 .web-codegen-scorer/

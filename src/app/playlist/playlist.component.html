@@ -20,6 +20,7 @@
             <div id="playlist-image-wrapper" class="col col-4 p-0 position-relative">
               <img
                 id="playlist-image"
+                data-testid="playlist-image"
                 [src]="imgBig()"
                 class="rounded"
                 [alt]="titre() || title()"
@@ -63,13 +64,13 @@
 
           <div id="playlist-header-title" class="col col-8 p-0">
             @if (idTopCharts() === null && titre() !== '') {
-              <h1 class="m-t-0 h3" itemprop="name">{{ titre() }}</h1>
+              <h1 class="m-t-0 h3" itemprop="name" data-testid="playlist-title">{{ titre() }}</h1>
             }
             @if (titre() === '') {
-              <h1 class="m-t-0 h3" itemprop="name">{{ title() }}</h1>
+              <h1 class="m-t-0 h3" itemprop="name" data-testid="playlist-title">{{ title() }}</h1>
             }
             @if (isLikePage()) {
-              <h1 class="m-t-0 h3">{{ 'mes_likes' | transloco }}</h1>
+              <h1 class="m-t-0 h3" data-testid="playlist-title">{{ 'mes_likes' | transloco }}</h1>
             }
             @if (artist() !== null && artist() !== '') {
               <h3 class="h4">
@@ -77,7 +78,9 @@
               </h3>
             }
             @if (titre() === '') {
-              <p class="m-t-0" itemtype="description">{{ description() }}</p>
+              <p class="m-t-0" itemtype="description" data-testid="playlist-description">
+                {{ description() }}
+              </p>
             }
 
             <div class="playlist-actions">
@@ -177,6 +180,7 @@
           @for (video of playlist(); track video.key; let i = $index) {
             <div
               class="track-item"
+              data-testid="track-item"
               [class.track-item--reorderable]="isReorderable()"
               [attr.data-id-video]="video.key"
               [class.active]="video.key === queueStore.currentKey()"
@@ -322,8 +326,13 @@
       </div>
     }
     @if (isPrivate()) {
-      <div class="empty-state">
-        <span class="material-icons empty-state-icon" aria-hidden="true">lock</span>
+      <div class="empty-state" data-testid="empty-state">
+        <span
+          class="material-icons empty-state-icon"
+          data-testid="empty-state-icon"
+          aria-hidden="true"
+          >lock</span
+        >
         <p class="empty-state-text">{{ 'playlist_privee' | transloco }}</p>
         <a class="btn btn-outline-primary mt-3" routerLink="/">{{ 'back_home' | transloco }}</a>
       </div>

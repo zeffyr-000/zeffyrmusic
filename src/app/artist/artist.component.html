@@ -11,6 +11,7 @@
           <div id="artist-image-wrapper" class="col-auto p-0">
             <img
               id="artist-image"
+              data-testid="artist-image"
               [src]="urlDeezer()"
               [alt]="name()"
               appDefaultImage
@@ -21,7 +22,7 @@
             <div class="d-flex align-items-center gap-2 mb-2">
               <span class="artist-type-badge">{{ 'intitule_artiste' | transloco }}</span>
             </div>
-            <h1 itemprop="name">{{ name() }}</h1>
+            <h1 itemprop="name" data-testid="artist-name">{{ name() }}</h1>
 
             @if (biography()) {
               <p class="artist-bio" itemprop="description">
@@ -123,8 +124,13 @@
         </div>
       }
     } @else if (isAvailable() === false) {
-      <div class="empty-state">
-        <span class="material-icons empty-state-icon" aria-hidden="true">person_off</span>
+      <div class="empty-state" data-testid="empty-state">
+        <span
+          class="material-icons empty-state-icon"
+          data-testid="empty-state-icon"
+          aria-hidden="true"
+          >person_off</span
+        >
         <p class="empty-state-text">{{ 'artist_not_available' | transloco }}</p>
         <a class="btn btn-outline-primary mt-3" routerLink="/">{{ 'back_home' | transloco }}</a>
       </div>

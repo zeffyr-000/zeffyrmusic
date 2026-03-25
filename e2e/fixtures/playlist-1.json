@@ -1,0 +1,55 @@
+{
+  "id_playlist": "1",
+  "id_perso": "",
+  "title": "La Hit List",
+  "titre": "",
+  "description": "Un condensé des plus gros hits du moment.",
+  "img_big": "https://e-cdns-images.dzcdn.net/images/playlist/big-1.jpg",
+  "og_image": "",
+  "id_top": "1",
+  "est_suivi": false,
+  "est_publique": true,
+  "artiste": null,
+  "id_artiste": null,
+  "id_perso_owner": null,
+  "liste_video": ["abc123", "def456", "ghi789"],
+  "str_index": [0, 1, 2],
+  "tab_video": [
+    {
+      "id_video": "v1",
+      "key": "abc123",
+      "titre": "Hit Song 1",
+      "artiste": "Artiste 1",
+      "id_artiste": 600,
+      "duree": "210",
+      "id_playlist": "1",
+      "ordre": "0",
+      "titre_album": "",
+      "artists": []
+    },
+    {
+      "id_video": "v2",
+      "key": "def456",
+      "titre": "Hit Song 2",
+      "artiste": "Artiste 2",
+      "id_artiste": 601,
+      "duree": "195",
+      "id_playlist": "1",
+      "ordre": "1",
+      "titre_album": "",
+      "artists": []
+    },
+    {
+      "id_video": "v3",
+      "key": "ghi789",
+      "titre": "Hit Song 3",
+      "artiste": "Artiste 3",
+      "id_artiste": 602,
+      "duree": "180",
+      "id_playlist": "1",
+      "ordre": "2",
+      "titre_album": "",
+      "artists": []
+    }
+  ]
+}

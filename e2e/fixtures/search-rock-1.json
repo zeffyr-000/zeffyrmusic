@@ -1,0 +1,32 @@
+{
+  "artist": [
+    {
+      "artiste": "AC/DC",
+      "id_artiste": "100",
+      "id_artiste_deezer": "58"
+    },
+    {
+      "artiste": "Queen",
+      "id_artiste": "200",
+      "id_artiste_deezer": "412"
+    }
+  ],
+  "playlist": [
+    {
+      "id_playlist": "50",
+      "titre": "Best of Rock",
+      "artiste": "Various",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/50.jpg",
+      "year_release": 2023,
+      "ordre": "1"
+    },
+    {
+      "id_playlist": "51",
+      "titre": "Classic Rock",
+      "artiste": "Various",
+      "url_image": "https://e-cdns-images.dzcdn.net/images/playlist/51.jpg",
+      "year_release": 2022,
+      "ordre": "2"
+    }
+  ]
+}

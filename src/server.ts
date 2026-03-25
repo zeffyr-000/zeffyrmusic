@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import bootstrap from './main.server';
 import cookieParser from 'cookie-parser';
 import { REQUEST } from './app/tokens';
+import { environment } from './environments/environment';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -57,6 +58,15 @@ app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
   next();
 });
+
+// API fallback — returns empty JSON when no backend is proxied.
+// Active only when URL_SERVER is a relative path (e.g. /api/ in e2e builds).
+// In production/staging, URL_SERVER is an absolute URL so this route is never registered.
+if (environment.URL_SERVER.startsWith('/')) {
+  app.use('/api', (_req, res) => {
+    res.json({});
+  });
+}
 
 app.get('/{*path}', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;

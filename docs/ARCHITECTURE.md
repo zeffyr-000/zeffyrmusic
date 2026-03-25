@@ -158,6 +158,6 @@ src/app/
 ## Testing
 
 - **Unit**: Vitest — 623+ tests across 45+ spec files
-- **E2E**: Cypress — critical user flows
+- **E2E**: Playwright — critical user flows (mocked API, `data-testid` selectors)
 - **Coverage**: ≥ 80% target
 - **Mocks**: Typed interfaces in `src/app/models/test-mocks.model.ts`

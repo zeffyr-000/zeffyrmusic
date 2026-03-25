@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import angular from '@analogjs/vite-plugin-angular';
 import path from 'path';
 
@@ -30,6 +30,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/setup-vitest.ts'],
+    exclude: [...configDefaults.exclude, 'e2e/**', '.web-codegen-scorer/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
