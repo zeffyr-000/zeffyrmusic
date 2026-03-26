@@ -1,7 +1,6 @@
 /**
- * Returns a random integer in [0, max].
- * Uses crypto.getRandomValues with rejection sampling when available,
- * falls back to Math.random when crypto is unavailable (SSR).
+ * Returns a random integer in [0, max] using crypto.getRandomValues with rejection sampling.
+ * When crypto is unavailable (SSR), returns max deterministically so Fisher-Yates performs no swaps.
  */
 function getRandomIntInclusive(max: number, buffer: Uint32Array<ArrayBuffer>): number {
   if (typeof globalThis.crypto?.getRandomValues === 'function') {
@@ -14,7 +13,8 @@ function getRandomIntInclusive(max: number, buffer: Uint32Array<ArrayBuffer>): n
       }
     }
   }
-  return Math.floor(Math.random() * (max + 1));
+  // SSR fallback: return max so j === i → no swap (array unchanged)
+  return max;
 }
 
 /**

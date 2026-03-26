@@ -25,132 +25,136 @@ export const UiStore = signalStore(
     }),
   })),
 
-  withMethods(store => ({
-    expandPlayer(): void {
-      patchState(store, { isPlayerExpanded: true });
-    },
+  withMethods(store => {
+    let notificationCounter = 0;
 
-    collapsePlayer(): void {
-      patchState(store, { isPlayerExpanded: false });
-    },
+    return {
+      expandPlayer(): void {
+        patchState(store, { isPlayerExpanded: true });
+      },
 
-    togglePlayer(): void {
-      patchState(store, { isPlayerExpanded: !store.isPlayerExpanded() });
-    },
+      collapsePlayer(): void {
+        patchState(store, { isPlayerExpanded: false });
+      },
 
-    setMobile(isMobile: boolean): void {
-      patchState(store, { isMobile });
-    },
+      togglePlayer(): void {
+        patchState(store, { isPlayerExpanded: !store.isPlayerExpanded() });
+      },
 
-    openModal(modalType: ModalType): void {
-      patchState(store, { activeModal: modalType });
-    },
+      setMobile(isMobile: boolean): void {
+        patchState(store, { isMobile });
+      },
 
-    closeModal(): void {
-      patchState(store, {
-        activeModal: null,
-        addVideoData: null,
-        editPlaylistId: null,
-      });
-    },
+      openModal(modalType: ModalType): void {
+        patchState(store, { activeModal: modalType });
+      },
 
-    openLoginModal(): void {
-      patchState(store, { activeModal: 'login' });
-    },
-
-    openRegisterModal(): void {
-      patchState(store, { activeModal: 'register' });
-    },
-
-    openAddVideoModal(videoData: VideoItem): void {
-      patchState(store, {
-        activeModal: 'addVideo',
-        addVideoData: videoData,
-      });
-    },
-
-    openEditPlaylistModal(playlistId: string): void {
-      patchState(store, {
-        activeModal: 'editPlaylist',
-        editPlaylistId: playlistId,
-      });
-    },
-
-    showNotification(notification: Omit<Notification, 'id'>): string {
-      const id =
-        globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      const newNotification: Notification = { ...notification, id };
-
-      patchState(store, {
-        notifications: [...store.notifications(), newNotification],
-      });
-
-      if (notification.duration !== 0) {
-        const duration = notification.duration ?? 5000;
-        store.runInBrowser(() => {
-          setTimeout(() => this.dismissNotification(id), duration);
+      closeModal(): void {
+        patchState(store, {
+          activeModal: null,
+          addVideoData: null,
+          editPlaylistId: null,
         });
-      }
+      },
 
-      return id;
-    },
+      openLoginModal(): void {
+        patchState(store, { activeModal: 'login' });
+      },
 
-    dismissNotification(id: string): void {
-      patchState(store, {
-        notifications: store.notifications().filter(n => n.id !== id),
-      });
-    },
+      openRegisterModal(): void {
+        patchState(store, { activeModal: 'register' });
+      },
 
-    clearNotifications(): void {
-      patchState(store, { notifications: [] });
-    },
+      openAddVideoModal(videoData: VideoItem): void {
+        patchState(store, {
+          activeModal: 'addVideo',
+          addVideoData: videoData,
+        });
+      },
 
-    showSuccess(message: string, duration?: number): string {
-      return this.showNotification({ message, type: 'success', duration });
-    },
+      openEditPlaylistModal(playlistId: string): void {
+        patchState(store, {
+          activeModal: 'editPlaylist',
+          editPlaylistId: playlistId,
+        });
+      },
 
-    showError(message: string, duration?: number): string {
-      return this.showNotification({ message, type: 'error', duration });
-    },
+      showNotification(notification: Omit<Notification, 'id'>): string {
+        const id = globalThis.crypto?.randomUUID?.() ?? `notification-${++notificationCounter}`;
+        const newNotification: Notification = { ...notification, id };
 
-    notifyVideoAddedToPlaylist(idPlaylist: string): void {
-      patchState(store, { videoAddedToPlaylistId: { id: idPlaylist, ts: Date.now() } });
-    },
+        patchState(store, {
+          notifications: [...store.notifications(), newNotification],
+        });
 
-    showInfo(message: string, duration?: number): string {
-      return this.showNotification({ message, type: 'info', duration });
-    },
+        if (notification.duration !== 0) {
+          const duration = notification.duration ?? 5000;
+          store.runInBrowser(() => {
+            setTimeout(() => this.dismissNotification(id), duration);
+          });
+        }
 
-    showWarning(message: string, duration?: number): string {
-      return this.showNotification({ message, type: 'warning', duration });
-    },
+        return id;
+      },
 
-    openLyricsPanel(): void {
-      patchState(store, { isLyricsPanelOpen: true, isLyricsPanelClosing: false });
-    },
+      dismissNotification(id: string): void {
+        patchState(store, {
+          notifications: store.notifications().filter(n => n.id !== id),
+        });
+      },
 
-    /** Request animated close — sets closing state, panel plays exit animation. */
-    requestCloseLyricsPanel(): void {
-      if (store.isLyricsPanelOpen()) {
-        patchState(store, { isLyricsPanelClosing: true });
-      }
-    },
+      clearNotifications(): void {
+        patchState(store, { notifications: [] });
+      },
 
-    /** Immediate close — removes panel from DOM without animation. */
-    closeLyricsPanel(): void {
-      patchState(store, { isLyricsPanelOpen: false, isLyricsPanelClosing: false });
-    },
+      showSuccess(message: string, duration?: number): string {
+        return this.showNotification({ message, type: 'success', duration });
+      },
 
-    toggleLyricsPanel(): void {
-      if (store.isLyricsPanelOpen()) {
-        this.requestCloseLyricsPanel();
-      } else {
-        this.openLyricsPanel();
-      }
-    },
+      showError(message: string, duration?: number): string {
+        return this.showNotification({ message, type: 'error', duration });
+      },
 
-    reset(): void {
-      patchState(store, initialUiState);
-    },
-  }))
+      notifyVideoAddedToPlaylist(idPlaylist: string): void {
+        patchState(store, { videoAddedToPlaylistId: { id: idPlaylist, ts: Date.now() } });
+      },
+
+      showInfo(message: string, duration?: number): string {
+        return this.showNotification({ message, type: 'info', duration });
+      },
+
+      showWarning(message: string, duration?: number): string {
+        return this.showNotification({ message, type: 'warning', duration });
+      },
+
+      openLyricsPanel(): void {
+        patchState(store, { isLyricsPanelOpen: true, isLyricsPanelClosing: false });
+      },
+
+      /** Request animated close — sets closing state, panel plays exit animation. */
+      requestCloseLyricsPanel(): void {
+        if (store.isLyricsPanelOpen()) {
+          patchState(store, { isLyricsPanelClosing: true });
+        }
+      },
+
+      /** Immediate close — removes panel from DOM without animation. */
+      closeLyricsPanel(): void {
+        patchState(store, { isLyricsPanelOpen: false, isLyricsPanelClosing: false });
+      },
+
+      toggleLyricsPanel(): void {
+        if (store.isLyricsPanelOpen()) {
+          this.requestCloseLyricsPanel();
+        } else {
+          this.openLyricsPanel();
+        }
+      },
+
+      reset(): void {
+        patchState(store, initialUiState);
+        notificationCounter = 0;
+      },
+    };
+  })
 );

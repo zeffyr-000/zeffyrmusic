@@ -169,6 +169,37 @@ describe('UiStore', () => {
       expect(store.notifications()[0].type).toBe('info');
     });
 
+    it('should use counter fallback when crypto.randomUUID is unavailable', () => {
+      const originalRandomUUID = globalThis.crypto.randomUUID;
+      globalThis.crypto.randomUUID = undefined as unknown as typeof globalThis.crypto.randomUUID;
+
+      try {
+        const id1 = store.showNotification({ message: 'First', type: 'info', duration: 0 });
+        const id2 = store.showNotification({ message: 'Second', type: 'info', duration: 0 });
+
+        expect(id1).toMatch(/^notification-\d+$/);
+        expect(id2).toMatch(/^notification-\d+$/);
+        expect(id1).not.toBe(id2);
+      } finally {
+        globalThis.crypto.randomUUID = originalRandomUUID;
+      }
+    });
+
+    it('should reset counter fallback on reset()', () => {
+      const originalRandomUUID = globalThis.crypto.randomUUID;
+      globalThis.crypto.randomUUID = undefined as unknown as typeof globalThis.crypto.randomUUID;
+
+      try {
+        store.showNotification({ message: 'Before reset', type: 'info', duration: 0 });
+        store.reset();
+
+        const id = store.showNotification({ message: 'After reset', type: 'info', duration: 0 });
+        expect(id).toBe('notification-1');
+      } finally {
+        globalThis.crypto.randomUUID = originalRandomUUID;
+      }
+    });
+
     it('should auto-dismiss notification after duration', async () => {
       vi.useFakeTimers();
 
