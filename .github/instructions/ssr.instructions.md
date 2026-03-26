@@ -92,16 +92,36 @@ ngOnInit(): void {
 ### In Utility Functions: defensive checks
 
 ```typescript
-// ✅ Correct — fallback when crypto unavailable (SSR on Node < 20)
-if (typeof globalThis.crypto?.getRandomValues === 'function') {
-  globalThis.crypto.getRandomValues(buffer);
-} else {
-  // Math.random fallback
+// ✅ Correct — deterministic fallback when crypto unavailable (SSR)
+function getRandomIntInclusive(max: number, buffer: Uint32Array): number {
+  if (typeof globalThis.crypto?.getRandomValues === 'function') {
+    const range = max + 1;
+    const limit = Math.floor(0x100000000 / range) * range - 1;
+    while (true) {
+      globalThis.crypto.getRandomValues(buffer);
+      if (buffer[0] <= limit) {
+        return buffer[0] % range;
+      }
+    }
+  }
+  // Return max so j === i → no swap in Fisher-Yates (array unchanged)
+  return max;
 }
 
-// ✅ Correct — randomUUID with fallback
-const id =
-  globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+// ✅ Correct — deterministic counter fallback (no Math.random, no Date.now)
+// Counter is scoped inside withMethods closure, not at module level
+export const MyStore = signalStore(
+  { providedIn: 'root' },
+  withMethods(store => {
+    let notificationCounter = 0;
+    return {
+      addNotification(message: string): void {
+        const id = globalThis.crypto?.randomUUID?.() ?? `notification-${++notificationCounter}`;
+        // ...
+      },
+    };
+  })
+);
 ```
 
 ### Forbidden in SSR Context
