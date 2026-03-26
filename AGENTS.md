@@ -166,11 +166,22 @@ message: this.translocoService.translate('validation_minlength', { min: 4 });
 **CommonEngine `allowedHosts`** (since `@angular/ssr` 21.2.2):
 Every production hostname/IP must be listed in `allowedHosts` in `src/server.ts`.
 Missing entries cause **silent fallback to CSR** — no browser-visible error.
+Public server IPs are auto-detected via `os.networkInterfaces()` at startup (private/link-local ranges excluded).
 
 ```typescript
-// src/server.ts — keep this list up to date
+// src/server.ts — domains in code, public server IPs auto-detected
+import { networkInterfaces } from 'node:os';
+import { isIP } from 'node:net';
+
+const privateRanges = [/^10\./, /^172\.(1[6-9]|2\d|3[01])\./, /^192\.168\./, /^169\.254\./];
+const publicIps = Object.values(networkInterfaces())
+  .flat()
+  .filter((info): info is NonNullable<typeof info> => info != null && !info.internal)
+  .map(info => info.address)
+  .filter(addr => isIP(addr) === 4 && !privateRanges.some(re => re.test(addr)));
+
 const commonEngine = new CommonEngine({
-  allowedHosts: ['www.zeffyrmusic.com', 'zeffyrmusic.com', '146.59.155.20', 'localhost', ...],
+  allowedHosts: ['www.zeffyrmusic.com', 'zeffyrmusic.com', 'localhost', ...publicIps],
 });
 ```
 

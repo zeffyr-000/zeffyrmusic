@@ -33,14 +33,24 @@ Since `@angular/ssr` 21.2.2, `CommonEngine` validates request hostnames via `all
 
 ```typescript
 // src/server.ts
+import { networkInterfaces } from 'node:os';
+import { isIP } from 'node:net';
+
+const privateRanges = [/^10\./, /^172\.(1[6-9]|2\d|3[01])\./, /^192\.168\./, /^169\.254\./];
+const publicIps = Object.values(networkInterfaces())
+  .flat()
+  .filter((info): info is NonNullable<typeof info> => info != null && !info.internal)
+  .map(info => info.address)
+  .filter(addr => isIP(addr) === 4 && !privateRanges.some(re => re.test(addr)));
+
 const commonEngine = new CommonEngine({
   allowedHosts: [
     'www.zeffyrmusic.com',
     'zeffyrmusic.com',
     'data.zeffyrmusic.com',
-    '146.59.155.20', // Server public IP
     '127.0.0.1',
     'localhost',
+    ...publicIps, // auto-detects public IPv4 (e.g. 146.59.155.20)
   ],
 });
 ```
@@ -148,10 +158,10 @@ crypto.getRandomValues(buffer); // Not available in Node < 20
 
 ## SSR Debugging
 
-| Symptom                                                           | Likely Cause                       | Fix                                             |
-| ----------------------------------------------------------------- | ---------------------------------- | ----------------------------------------------- |
-| Page loads but no SSR content (empty `<app-root>`)                | Missing hostname in `allowedHosts` | Add hostname to `CommonEngine` config           |
-| `Cannot read properties of undefined (reading 'getRandomValues')` | Node < 20, no `globalThis.crypto`  | Upgrade Node to ≥ 20 or add fallback            |
-| `ReferenceError: window is not defined`                           | Direct browser API access in SSR   | Guard with `isPlatformBrowser` or `isBrowser()` |
-| SSR works locally but not in production                           | PM2 still running old Node binary  | `sudo pm2 kill` then restart                    |
-| `allowedHosts` error in PM2 logs                                  | New domain/IP not in config        | Add to `allowedHosts` array in `server.ts`      |
+| Symptom                                                           | Likely Cause                       | Fix                                                                 |
+| ----------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------- |
+| Page loads but no SSR content (empty `<app-root>`)                | Missing hostname in `allowedHosts` | Add hostname to `CommonEngine` config                               |
+| `Cannot read properties of undefined (reading 'getRandomValues')` | Node < 20, no `globalThis.crypto`  | Upgrade Node to ≥ 20 or add fallback                                |
+| `ReferenceError: window is not defined`                           | Direct browser API access in SSR   | Guard with `isPlatformBrowser` or `isBrowser()`                     |
+| SSR works locally but not in production                           | PM2 still running old Node binary  | `sudo pm2 kill` then restart                                        |
+| `allowedHosts` error in PM2 logs                                  | New domain/IP not in config        | Add domain to `allowedHosts` in `server.ts` (IPs are auto-detected) |
