@@ -153,7 +153,6 @@ export const UiStore = signalStore(
 
       reset(): void {
         patchState(store, initialUiState);
-        notificationCounter = 0;
       },
     };
   })
