@@ -1,0 +1,300 @@
+:host {
+  display: block;
+}
+
+// Admin bar — subtle dark indicator
+.admin-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  background: var(--bs-dark);
+  color: var(--bs-light);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  .material-icons {
+    font-size: 1rem;
+    color: var(--bs-light);
+  }
+}
+
+.admin-page {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  max-width: 100%;
+}
+
+.admin-page-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--spacing-xl);
+
+  .material-icons {
+    color: var(--bs-warning);
+  }
+}
+
+// Side-by-side album panels
+.albums-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+
+  @media (max-width: 767.98px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.album-panel {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  background: var(--bs-body-bg);
+  transition:
+    opacity var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.album-panel-deleted {
+  border-color: var(--bs-danger);
+
+  .album-card,
+  .track-list {
+    opacity: 0.45;
+  }
+
+  .album-card-img {
+    filter: grayscale(1);
+  }
+
+  .btn {
+    opacity: 1;
+  }
+}
+
+.album-panel-kept {
+  border-color: var(--bs-success);
+}
+
+.album-panel-heading {
+  font-size: var(--text-lg);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--bs-border-color);
+}
+
+// Album card (compact preview)
+.album-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+.album-card-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.album-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.album-card-title {
+  font-size: var(--text-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album-card-artist {
+  color: var(--bs-secondary-color);
+  font-size: var(--text-sm);
+}
+
+.album-card-meta {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+// Track list
+.track-list {
+  margin-top: var(--spacing-md);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.track-list-heading {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bs-tertiary-bg);
+  margin: 0;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.track-col-num {
+  width: 40px;
+  text-align: center;
+}
+
+.track-col-duration {
+  width: 60px;
+  text-align: right;
+
+  .material-icons {
+    font-size: 1rem;
+  }
+}
+
+.track-cell-title {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Album 2 input form
+.album-input-form {
+  max-width: 100%;
+}
+
+// Merge section
+.merge-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.merge-section-heading {
+  font-size: var(--text-lg);
+  margin-bottom: var(--spacing-xs);
+}
+
+.merge-section-description {
+  font-size: var(--text-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+// Card-based comparison fields
+.merge-field {
+  margin-bottom: var(--spacing-md);
+}
+
+.merge-field-label {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--bs-secondary-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.merge-field-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.merge-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--bs-border-color);
+  border-radius: var(--radius-md);
+  background: var(--bs-body-bg);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--bs-primary);
+      background: rgba(var(--bs-primary-rgb), 0.03);
+    }
+  }
+
+  &.selected {
+    border-color: var(--bs-primary);
+    background: rgba(var(--bs-primary-rgb), 0.08);
+  }
+}
+
+.merge-option-check {
+  color: var(--bs-primary);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.merge-option-uncheck {
+  color: var(--bs-secondary-color);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.merge-option-text {
+  font-size: var(--text-sm);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.merge-option-id {
+  font-size: var(--text-xs);
+  color: var(--bs-secondary-color);
+  flex-shrink: 0;
+}
+
+.merge-option-with-img {
+  padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-md);
+
+  .merge-option-check,
+  .merge-option-uncheck {
+    align-self: center;
+  }
+}
+
+.merge-option-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+// Track selection option
+.merge-option-tracks-icon {
+  font-size: 1.25rem;
+  color: var(--bs-secondary-color);
+  flex-shrink: 0;
+}
+
+.merge-option-tracks.selected .merge-option-tracks-icon {
+  color: var(--bs-primary);
+}
+
+// Merge button area
+.merge-actions {
+  margin-top: var(--spacing-lg);
+  display: flex;
+  justify-content: flex-end;
+}

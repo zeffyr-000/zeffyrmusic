@@ -1,0 +1,609 @@
+<!-- Admin indicator -->
+<div class="admin-bar">
+  <span class="material-icons" aria-hidden="true">settings</span>
+  <span>{{ 'admin_bar_title' | transloco }}</span>
+</div>
+
+<div class="admin-page">
+  <h1 class="admin-page-title">
+    <span class="material-icons" aria-hidden="true">album</span>
+    {{ 'admin_merge_albums_title' | transloco }}
+  </h1>
+
+  <!-- Albums side-by-side -->
+  <div class="albums-row">
+    <!-- Album 1 -->
+    <section
+      class="album-panel"
+      [class.album-panel-deleted]="deletedAlbumChoice() === 'album1'"
+      [class.album-panel-kept]="mergeSuccess() && deletedAlbumChoice() === 'album2'"
+    >
+      <h2 class="album-panel-heading">
+        @if (deletedAlbumChoice() === 'album1') {
+          <span class="badge text-bg-danger me-2">{{
+            'admin_merge_deleted_badge' | transloco
+          }}</span>
+        } @else if (mergeSuccess() && deletedAlbumChoice() === 'album2') {
+          <span class="badge text-bg-success me-2">{{ 'admin_merge_kept_badge' | transloco }}</span>
+        }
+        {{ 'admin_merge_album1' | transloco }}
+      </h2>
+
+      @if (isLoadingAlbum1()) {
+        <div class="d-flex justify-content-center py-4">
+          <span class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+          </span>
+        </div>
+      } @else if (album1(); as a1) {
+        <div class="album-card">
+          <img
+            class="album-card-img"
+            [src]="a1.img_big"
+            [alt]="getAlbumDisplayTitle(a1)"
+            appDefaultImage
+          />
+          <div class="album-card-info">
+            <strong class="album-card-title">{{ getAlbumDisplayTitle(a1) }}</strong>
+            @if (a1.artiste) {
+              <span class="album-card-artist">{{ a1.artiste }}</span>
+            }
+            <span class="album-card-meta">
+              <span class="badge text-bg-secondary">ID {{ a1.id_playlist }}</span>
+              @if (a1.year) {
+                <span class="badge text-bg-dark">{{ a1.year }}</span>
+              }
+              <span class="badge bg-primary-subtle text-body-secondary">
+                {{ 'admin_merge_tracks_heading' | transloco: { count: a1.tab_video.length } }}
+              </span>
+            </span>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary ms-auto align-self-center"
+            (click)="resetAlbum1()"
+          >
+            <span class="material-icons" aria-hidden="true">swap_horiz</span>
+            {{ 'admin_merge_change_album' | transloco }}
+          </button>
+        </div>
+
+        <!-- Track list -->
+        <div class="track-list">
+          <h3 class="track-list-heading">
+            {{ 'admin_merge_tracks_heading' | transloco: { count: a1.tab_video.length } }}
+          </h3>
+          <table class="table table-sm table-hover mb-0">
+            <thead>
+              <tr>
+                <th class="track-col-num">#</th>
+                <th>{{ 'admin_merge_title_field' | transloco }}</th>
+                <th>{{ 'artiste' | transloco }}</th>
+                <th class="track-col-duration">
+                  <span class="material-icons" aria-hidden="true">schedule</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (v of a1.tab_video; track v.id_video; let i = $index) {
+                <tr>
+                  <td class="track-col-num text-body-secondary">{{ i + 1 }}</td>
+                  <td class="track-cell-title">{{ v.titre }}</td>
+                  <td class="text-body-secondary">{{ v.artiste }}</td>
+                  <td class="track-col-duration text-body-secondary">
+                    @if (v.duree && +v.duree > 0) {
+                      {{ v.duree | toMMSS }}
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <form [formRoot]="album1Form" class="album-input-form">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              [formField]="album1Form.albumInput"
+              [placeholder]="'admin_merge_album1_placeholder' | transloco"
+              id="album1-input"
+            />
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="album1Form().invalid() || isLoadingAlbum1()"
+            >
+              @if (isLoadingAlbum1()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status">
+                  <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+                </span>
+              }
+              {{ 'admin_merge_load_album' | transloco }}
+            </button>
+          </div>
+          @if (album1Error()) {
+            <div class="modal-alert modal-alert-danger mt-2">
+              <span class="material-icons" aria-hidden="true">error</span>
+              <span>{{ album1Error() }}</span>
+            </div>
+          }
+        </form>
+      }
+    </section>
+
+    <!-- Album 2 -->
+    <section
+      class="album-panel"
+      [class.album-panel-deleted]="deletedAlbumChoice() === 'album2'"
+      [class.album-panel-kept]="mergeSuccess() && deletedAlbumChoice() === 'album1'"
+    >
+      <h2 class="album-panel-heading">
+        @if (deletedAlbumChoice() === 'album2') {
+          <span class="badge text-bg-danger me-2">{{
+            'admin_merge_deleted_badge' | transloco
+          }}</span>
+        } @else if (mergeSuccess() && deletedAlbumChoice() === 'album1') {
+          <span class="badge text-bg-success me-2">{{ 'admin_merge_kept_badge' | transloco }}</span>
+        }
+        {{ 'admin_merge_album2' | transloco }}
+      </h2>
+
+      @if (album2(); as a2) {
+        <div class="album-card">
+          <img
+            class="album-card-img"
+            [src]="a2.img_big"
+            [alt]="getAlbumDisplayTitle(a2)"
+            appDefaultImage
+          />
+          <div class="album-card-info">
+            <strong class="album-card-title">{{ getAlbumDisplayTitle(a2) }}</strong>
+            @if (a2.artiste) {
+              <span class="album-card-artist">{{ a2.artiste }}</span>
+            }
+            <span class="album-card-meta">
+              <span class="badge text-bg-secondary">ID {{ a2.id_playlist }}</span>
+              @if (a2.year) {
+                <span class="badge text-bg-dark">{{ a2.year }}</span>
+              }
+              <span class="badge bg-primary-subtle text-body-secondary">
+                {{ 'admin_merge_tracks_heading' | transloco: { count: a2.tab_video.length } }}
+              </span>
+            </span>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary ms-auto align-self-center"
+            (click)="resetAlbum2()"
+          >
+            <span class="material-icons" aria-hidden="true">swap_horiz</span>
+            {{ 'admin_merge_change_album' | transloco }}
+          </button>
+        </div>
+
+        <!-- Track list -->
+        <div class="track-list">
+          <h3 class="track-list-heading">
+            {{ 'admin_merge_tracks_heading' | transloco: { count: a2.tab_video.length } }}
+          </h3>
+          <table class="table table-sm table-hover mb-0">
+            <thead>
+              <tr>
+                <th class="track-col-num">#</th>
+                <th>{{ 'admin_merge_title_field' | transloco }}</th>
+                <th>{{ 'artiste' | transloco }}</th>
+                <th class="track-col-duration">
+                  <span class="material-icons" aria-hidden="true">schedule</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (v of a2.tab_video; track v.id_video; let i = $index) {
+                <tr>
+                  <td class="track-col-num text-body-secondary">{{ i + 1 }}</td>
+                  <td class="track-cell-title">{{ v.titre }}</td>
+                  <td class="text-body-secondary">{{ v.artiste }}</td>
+                  <td class="track-col-duration text-body-secondary">
+                    @if (v.duree && +v.duree > 0) {
+                      {{ v.duree | toMMSS }}
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <form [formRoot]="album2Form" class="album-input-form">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              [formField]="album2Form.albumInput"
+              [placeholder]="'admin_merge_album2_placeholder' | transloco"
+              id="album2-input"
+            />
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="album2Form().invalid() || isLoadingAlbum2()"
+            >
+              @if (isLoadingAlbum2()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status">
+                  <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+                </span>
+              }
+              {{ 'admin_merge_load_album' | transloco }}
+            </button>
+          </div>
+          @if (album2Error()) {
+            <div class="modal-alert modal-alert-danger mt-2">
+              <span class="material-icons" aria-hidden="true">error</span>
+              <span>{{ album2Error() }}</span>
+            </div>
+          }
+        </form>
+      }
+    </section>
+  </div>
+
+  <!-- Comparison -->
+  @if (bothLoaded() && !mergeSuccess()) {
+    <section class="merge-section">
+      <h2 class="merge-section-heading">{{ 'admin_merge_comparison' | transloco }}</h2>
+      <p class="merge-section-description text-body-secondary">
+        {{ 'admin_merge_comparison_desc' | transloco }}
+      </p>
+
+      <!-- Keep album -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_keep_album' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedKeepAlbum() === 'album1'"
+            [attr.aria-pressed]="selectedKeepAlbum() === 'album1'"
+            (click)="onSelectKeepAlbum('album1')"
+          >
+            @if (selectedKeepAlbum() === 'album1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ getAlbumDisplayTitle(album1()!) }}</span>
+            <span class="merge-option-id">ID {{ album1()!.id_playlist }}</span>
+          </button>
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedKeepAlbum() === 'album2'"
+            [attr.aria-pressed]="selectedKeepAlbum() === 'album2'"
+            (click)="onSelectKeepAlbum('album2')"
+          >
+            @if (selectedKeepAlbum() === 'album2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ getAlbumDisplayTitle(album2()!) }}</span>
+            <span class="merge-option-id">ID {{ album2()!.id_playlist }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_title_field' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedTitre() === 'album1'"
+            [attr.aria-pressed]="selectedTitre() === 'album1'"
+            (click)="onSelectTitre('album1')"
+          >
+            @if (selectedTitre() === 'album1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ getAlbumDisplayTitle(album1()!) }}</span>
+          </button>
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedTitre() === 'album2'"
+            [attr.aria-pressed]="selectedTitre() === 'album2'"
+            (click)="onSelectTitre('album2')"
+          >
+            @if (selectedTitre() === 'album2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ getAlbumDisplayTitle(album2()!) }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Artist -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_artist_field' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedArtiste() === 'album1'"
+            [attr.aria-pressed]="selectedArtiste() === 'album1'"
+            (click)="onSelectArtiste('album1')"
+          >
+            @if (selectedArtiste() === 'album1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ album1()!.artiste ?? '—' }}</span>
+          </button>
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedArtiste() === 'album2'"
+            [attr.aria-pressed]="selectedArtiste() === 'album2'"
+            (click)="onSelectArtiste('album2')"
+          >
+            @if (selectedArtiste() === 'album2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ album2()!.artiste ?? '—' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Image -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_image_field' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option merge-option-with-img"
+            [class.selected]="selectedImage() === 'album1'"
+            [attr.aria-pressed]="selectedImage() === 'album1'"
+            (click)="onSelectImage('album1')"
+          >
+            @if (selectedImage() === 'album1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <img
+              class="merge-option-thumb"
+              [src]="album1()!.img_big"
+              [alt]="getAlbumDisplayTitle(album1()!)"
+              appDefaultImage
+            />
+          </button>
+          <button
+            type="button"
+            class="merge-option merge-option-with-img"
+            [class.selected]="selectedImage() === 'album2'"
+            [attr.aria-pressed]="selectedImage() === 'album2'"
+            (click)="onSelectImage('album2')"
+          >
+            @if (selectedImage() === 'album2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <img
+              class="merge-option-thumb"
+              [src]="album2()!.img_big"
+              [alt]="getAlbumDisplayTitle(album2()!)"
+              appDefaultImage
+            />
+          </button>
+        </div>
+      </div>
+
+      <!-- Tracks -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_tracks_field' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option merge-option-tracks"
+            [class.selected]="selectedVideos() === 'album1'"
+            [attr.aria-pressed]="selectedVideos() === 'album1'"
+            (click)="onSelectVideos('album1')"
+          >
+            @if (selectedVideos() === 'album1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="material-icons merge-option-tracks-icon" aria-hidden="true"
+              >queue_music</span
+            >
+            <span class="merge-option-text">
+              {{
+                'admin_merge_use_tracks_from'
+                  | transloco
+                    : { album: getAlbumDisplayTitle(album1()!), count: album1()!.tab_video.length }
+              }}
+            </span>
+            <span class="badge bg-primary-subtle text-body-secondary">
+              {{ album1()!.tab_video.length }}
+            </span>
+          </button>
+          <button
+            type="button"
+            class="merge-option merge-option-tracks"
+            [class.selected]="selectedVideos() === 'album2'"
+            [attr.aria-pressed]="selectedVideos() === 'album2'"
+            (click)="onSelectVideos('album2')"
+          >
+            @if (selectedVideos() === 'album2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="material-icons merge-option-tracks-icon" aria-hidden="true"
+              >queue_music</span
+            >
+            <span class="merge-option-text">
+              {{
+                'admin_merge_use_tracks_from'
+                  | transloco
+                    : { album: getAlbumDisplayTitle(album2()!), count: album2()!.tab_video.length }
+              }}
+            </span>
+            <span class="badge bg-primary-subtle text-body-secondary">
+              {{ album2()!.tab_video.length }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Year -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_year_field' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedYear() === 'album1'"
+            [attr.aria-pressed]="selectedYear() === 'album1'"
+            (click)="onSelectYear('album1')"
+          >
+            @if (selectedYear() === 'album1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ album1()!.year ?? '—' }}</span>
+          </button>
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedYear() === 'album2'"
+            [attr.aria-pressed]="selectedYear() === 'album2'"
+            (click)="onSelectYear('album2')"
+          >
+            @if (selectedYear() === 'album2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ album2()!.year ?? '—' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Merge button -->
+      <div class="merge-actions">
+        <button
+          type="button"
+          class="btn btn-danger btn-lg"
+          [disabled]="isSubmitting()"
+          (click)="openConfirmModal(confirmMergeModal)"
+        >
+          @if (isSubmitting()) {
+            <span class="spinner-border spinner-border-sm me-1" role="status">
+              <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+            </span>
+          }
+          {{ 'admin_merge_submit' | transloco }}
+        </button>
+      </div>
+    </section>
+  }
+</div>
+
+<!-- Confirm modal -->
+<ng-template #confirmMergeModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      {{ 'admin_merge_confirm' | transloco }}
+    </h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-alert modal-alert-warning">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      <span>{{ 'admin_merge_confirm_warning' | transloco }}</span>
+    </div>
+    @if (album1() && album2()) {
+      <p class="mt-3 mb-0">
+        <strong>{{ 'admin_merge_keep_album' | transloco }}:</strong>
+        {{
+          selectedKeepAlbum() === 'album1'
+            ? getAlbumDisplayTitle(album1()!)
+            : getAlbumDisplayTitle(album2()!)
+        }}
+        <span class="text-body-secondary">
+          (ID
+          {{ selectedKeepAlbum() === 'album1' ? album1()!.id_playlist : album2()!.id_playlist }})
+        </span>
+      </p>
+      <p class="text-danger mb-0">
+        <strong>{{ 'admin_merge_delete_album' | transloco }}:</strong>
+        {{
+          selectedKeepAlbum() === 'album1'
+            ? getAlbumDisplayTitle(album2()!)
+            : getAlbumDisplayTitle(album1()!)
+        }}
+        <span class="text-body-secondary">
+          (ID
+          {{ selectedKeepAlbum() === 'album1' ? album2()!.id_playlist : album1()!.id_playlist }})
+        </span>
+      </p>
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+      {{ 'annuler' | transloco }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="confirmMerge()"
+      [disabled]="isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        <span class="spinner-border spinner-border-sm me-1" role="status">
+          <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+        </span>
+      }
+      {{ 'admin_merge_confirm' | transloco }}
+    </button>
+  </div>
+</ng-template>

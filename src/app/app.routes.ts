@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './services/auth-guard.service';
+import { AdminGuard } from './services/admin-guard.service';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -61,6 +62,12 @@ export const routes: Routes = [
     path: 'reset_pass/:id_perso/:key',
     loadComponent: () =>
       import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+  },
+  {
+    path: 'admin/merge-album',
+    loadComponent: () =>
+      import('./admin/merge-album/merge-album.component').then(m => m.MergeAlbumComponent),
+    canActivate: [AdminGuard],
   },
   { path: '**', redirectTo: '' },
 ];
