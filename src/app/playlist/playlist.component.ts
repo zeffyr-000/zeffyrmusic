@@ -193,6 +193,13 @@ export class PlaylistComponent {
 
   readonly isReorderable = computed(() => this.isLikePage() || this.isOwner());
 
+  /** True when the playlist is an album (has artist, not a top chart, not likes, not a user playlist) */
+  readonly isAlbum = computed(() => {
+    const ownerId = this.idPersoOwner();
+    const isUserPlaylist = !!ownerId && ownerId !== '0';
+    return !this.isLikePage() && !this.idTopCharts() && !!this.artist() && !isUserPlaylist;
+  });
+
   private lastAdjustedKey: string | null = null;
   private lastAdjustedDuration = 0;
   private pendingKeyChange = false;
@@ -300,7 +307,7 @@ export class PlaylistComponent {
   }
 
   getMetaDescription(data: Playlist) {
-    let description = '';
+    let description: string;
 
     if (data.id_top !== undefined) {
       description = this.translocoService.translate('description_top', {
@@ -330,7 +337,7 @@ export class PlaylistComponent {
   }
 
   getMetaTitle(data: Playlist) {
-    let title = '';
+    let title: string;
 
     if (data.id_top !== undefined) {
       if (data.decade) {
