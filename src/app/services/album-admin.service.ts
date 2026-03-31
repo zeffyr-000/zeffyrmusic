@@ -17,7 +17,7 @@ export class AlbumAdminService {
 
   mergeAlbums(payload: MergeAlbumsPayload): Observable<MergeAlbumsResponse> {
     return this.httpClient.post<MergeAlbumsResponse>(
-      environment.URL_SERVER + 'api/admin/merge-albums',
+      environment.URL_SERVER + 'admin/merge-albums',
       payload
     );
   }

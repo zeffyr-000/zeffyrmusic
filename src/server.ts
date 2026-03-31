@@ -3,8 +3,6 @@ import { CommonEngine, isMainModule } from '@angular/ssr/node';
 import express from 'express';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { networkInterfaces } from 'node:os';
-import { isIP } from 'node:net';
 import bootstrap from './main.server';
 import cookieParser from 'cookie-parser';
 import { REQUEST } from './app/tokens';
@@ -16,24 +14,14 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 
 const app = express();
 
-// Auto-detect the server's public IPv4 addresses so SSR works when accessed by IP.
-// Private (10.x, 172.16-31.x, 192.168.x), link-local (169.254.x), and IPv6 are excluded
-// to avoid expanding the Host header allowlist beyond intended public endpoints.
-const privateRanges = [/^10\./, /^172\.(1[6-9]|2\d|3[01])\./, /^192\.168\./, /^169\.254\./];
-const publicIps = Object.values(networkInterfaces())
-  .flat()
-  .filter((info): info is NonNullable<typeof info> => info != null && !info.internal)
-  .map(info => info.address)
-  .filter(addr => isIP(addr) === 4 && !privateRanges.some(re => re.test(addr)));
-
 const commonEngine = new CommonEngine({
   allowedHosts: [
     'www.zeffyrmusic.com',
     'zeffyrmusic.com',
     'data.zeffyrmusic.com',
+    '146.59.155.20', // Server public IP (NAT — not visible via networkInterfaces())
     '127.0.0.1',
     'localhost',
-    ...publicIps,
   ],
 });
 

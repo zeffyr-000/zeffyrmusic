@@ -74,7 +74,7 @@ describe('AlbumAdminService', () => {
       expect(data).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(environment.URL_SERVER + 'api/admin/merge-albums');
+    const req = httpMock.expectOne(environment.URL_SERVER + 'admin/merge-albums');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(payload);
     req.flush(mockResponse);
@@ -98,7 +98,7 @@ describe('AlbumAdminService', () => {
       expect(data.error).toBe('not_found');
     });
 
-    const req = httpMock.expectOne(environment.URL_SERVER + 'api/admin/merge-albums');
+    const req = httpMock.expectOne(environment.URL_SERVER + 'admin/merge-albums');
     req.flush(mockResponse);
   });
 });
