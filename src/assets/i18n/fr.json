@@ -456,6 +456,8 @@
   "already_registered": "Déjà inscrit ? Se connecter",
   "no_account_yet": "Pas encore de compte ? S'inscrire",
 
+  "loading": "Chargement…",
+
   "admin_merge_albums": "Fusionner",
   "admin_merge_albums_title": "Fusion d'albums",
   "admin_merge_album1": "Album 1 (source)",
@@ -488,5 +490,25 @@
   "admin_merge_change_album": "Changer d'album",
   "admin_merge_deleted_badge": "Supprimé",
   "admin_merge_kept_badge": "Conservé",
-  "admin_bar_title": "Administration"
+  "admin_bar_title": "Administration",
+  "admin_merge_artists": "Fusionner",
+  "admin_merge_artists_title": "Fusion d'artistes",
+  "admin_merge_artist_artist1": "Artiste 1 (source)",
+  "admin_merge_artist_artist2": "Artiste 2 (doublon)",
+  "admin_merge_artist_artist1_placeholder": "ID ou URL de l'artiste source (ex: 123 ou /artist/123)",
+  "admin_merge_artist_artist2_placeholder": "ID ou URL de l'artiste doublon (ex: 123 ou /artist/123)",
+  "admin_merge_artist_keep": "Artiste conservé",
+  "admin_merge_artist_delete": "Artiste supprimé",
+  "admin_merge_artist_name_field": "Nom",
+  "admin_merge_artist_deezer_id_field": "ID Deezer (photo)",
+  "admin_merge_artist_albums_count": "{count, plural, =1 {# album} other {# albums}}",
+  "admin_merge_artist_albums_info": "Les albums de l'artiste supprimé seront automatiquement transférés sur l'artiste conservé. Les hits seront additionnés.",
+  "admin_merge_artist_submit": "Fusionner les artistes",
+  "admin_merge_artist_confirm_warning": "L'artiste doublon sera supprimé définitivement. Ses albums seront transférés et les hits additionnés. Cette action est irréversible.",
+  "admin_merge_artist_success": "Artistes fusionnés avec succès",
+  "admin_merge_artist_not_found": "Artiste introuvable",
+  "admin_merge_artist_change": "Changer d'artiste",
+  "admin_merge_same_artist": "Les deux artistes doivent être différents",
+  "admin_merge_artist_comparison_desc": "Pour chaque champ, sélectionnez la valeur à conserver dans l'artiste final. L'artiste non conservé sera supprimé et ses albums transférés.",
+  "admin_merge_load": "Charger"
 }

@@ -1,0 +1,442 @@
+<!-- Admin indicator -->
+<div class="admin-bar">
+  <span class="material-icons" aria-hidden="true">settings</span>
+  <span>{{ 'admin_bar_title' | transloco }}</span>
+</div>
+
+<div class="admin-page">
+  <h1 class="admin-page-title">
+    <span class="material-icons" aria-hidden="true">person</span>
+    {{ 'admin_merge_artists_title' | transloco }}
+  </h1>
+
+  <!-- Artists side-by-side -->
+  <div class="artists-row">
+    <!-- Artist 1 -->
+    <section
+      class="artist-panel"
+      [class.artist-panel-deleted]="deletedArtistChoice() === 'artist1'"
+      [class.artist-panel-kept]="mergeSuccess() && deletedArtistChoice() === 'artist2'"
+    >
+      <h2 class="artist-panel-heading">
+        @if (deletedArtistChoice() === 'artist1') {
+          <span class="badge text-bg-danger me-2">{{
+            'admin_merge_deleted_badge' | transloco
+          }}</span>
+        } @else if (mergeSuccess() && deletedArtistChoice() === 'artist2') {
+          <span class="badge text-bg-success me-2">{{ 'admin_merge_kept_badge' | transloco }}</span>
+        }
+        {{ 'admin_merge_artist_artist1' | transloco }}
+      </h2>
+
+      @if (isLoadingArtist1()) {
+        <div class="d-flex justify-content-center py-4">
+          <span class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+          </span>
+        </div>
+      } @else if (artist1(); as a1) {
+        <div class="artist-card">
+          <img
+            class="artist-card-img"
+            [src]="getArtistImageUrl(a1)"
+            [alt]="a1.nom"
+            appDefaultImage
+          />
+          <div class="artist-card-info">
+            <strong class="artist-card-name">{{ a1.nom }}</strong>
+            <span class="artist-card-meta">
+              <span class="badge text-bg-secondary">ID {{ a1.id_artist }}</span>
+              <span class="badge text-bg-dark">Deezer {{ a1.id_artiste_deezer }}</span>
+              <span class="badge bg-primary-subtle text-body-secondary">
+                {{
+                  'admin_merge_artist_albums_count' | transloco: { count: a1.list_albums.length }
+                }}
+              </span>
+            </span>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary ms-auto align-self-center"
+            (click)="resetArtist1()"
+          >
+            <span class="material-icons" aria-hidden="true">swap_horiz</span>
+            {{ 'admin_merge_artist_change' | transloco }}
+          </button>
+        </div>
+
+        <!-- Albums list -->
+        @if (a1.list_albums.length > 0) {
+          <div class="artist-albums-list">
+            <h3 class="artist-albums-heading">
+              {{ 'admin_merge_artist_albums_count' | transloco: { count: a1.list_albums.length } }}
+            </h3>
+            <ul class="list-group list-group-flush">
+              @for (album of a1.list_albums; track album.id_playlist) {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span class="album-title-cell">{{ album.titre }}</span>
+                  @if (album.year_release) {
+                    <span class="badge text-bg-dark">{{ album.year_release }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      } @else {
+        <form [formRoot]="artist1Form" class="artist-input-form">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              [formField]="artist1Form.artistInput"
+              [placeholder]="'admin_merge_artist_artist1_placeholder' | transloco"
+              id="artist1-input"
+            />
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="artist1Form().invalid() || isLoadingArtist1()"
+            >
+              @if (isLoadingArtist1()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status">
+                  <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+                </span>
+              }
+              {{ 'admin_merge_load' | transloco }}
+            </button>
+          </div>
+          @if (artist1Error()) {
+            <div class="modal-alert modal-alert-danger mt-2">
+              <span class="material-icons" aria-hidden="true">error</span>
+              <span>{{ artist1Error() }}</span>
+            </div>
+          }
+        </form>
+      }
+    </section>
+
+    <!-- Artist 2 -->
+    <section
+      class="artist-panel"
+      [class.artist-panel-deleted]="deletedArtistChoice() === 'artist2'"
+      [class.artist-panel-kept]="mergeSuccess() && deletedArtistChoice() === 'artist1'"
+    >
+      <h2 class="artist-panel-heading">
+        @if (deletedArtistChoice() === 'artist2') {
+          <span class="badge text-bg-danger me-2">{{
+            'admin_merge_deleted_badge' | transloco
+          }}</span>
+        } @else if (mergeSuccess() && deletedArtistChoice() === 'artist1') {
+          <span class="badge text-bg-success me-2">{{ 'admin_merge_kept_badge' | transloco }}</span>
+        }
+        {{ 'admin_merge_artist_artist2' | transloco }}
+      </h2>
+
+      @if (isLoadingArtist2()) {
+        <div class="d-flex justify-content-center py-4">
+          <span class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+          </span>
+        </div>
+      } @else if (artist2(); as a2) {
+        <div class="artist-card">
+          <img
+            class="artist-card-img"
+            [src]="getArtistImageUrl(a2)"
+            [alt]="a2.nom"
+            appDefaultImage
+          />
+          <div class="artist-card-info">
+            <strong class="artist-card-name">{{ a2.nom }}</strong>
+            <span class="artist-card-meta">
+              <span class="badge text-bg-secondary">ID {{ a2.id_artist }}</span>
+              <span class="badge text-bg-dark">Deezer {{ a2.id_artiste_deezer }}</span>
+              <span class="badge bg-primary-subtle text-body-secondary">
+                {{
+                  'admin_merge_artist_albums_count' | transloco: { count: a2.list_albums.length }
+                }}
+              </span>
+            </span>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary ms-auto align-self-center"
+            (click)="resetArtist2()"
+          >
+            <span class="material-icons" aria-hidden="true">swap_horiz</span>
+            {{ 'admin_merge_artist_change' | transloco }}
+          </button>
+        </div>
+
+        <!-- Albums list -->
+        @if (a2.list_albums.length > 0) {
+          <div class="artist-albums-list">
+            <h3 class="artist-albums-heading">
+              {{ 'admin_merge_artist_albums_count' | transloco: { count: a2.list_albums.length } }}
+            </h3>
+            <ul class="list-group list-group-flush">
+              @for (album of a2.list_albums; track album.id_playlist) {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span class="album-title-cell">{{ album.titre }}</span>
+                  @if (album.year_release) {
+                    <span class="badge text-bg-dark">{{ album.year_release }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      } @else {
+        <form [formRoot]="artist2Form" class="artist-input-form">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              [formField]="artist2Form.artistInput"
+              [placeholder]="'admin_merge_artist_artist2_placeholder' | transloco"
+              id="artist2-input"
+            />
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="artist2Form().invalid() || isLoadingArtist2()"
+            >
+              @if (isLoadingArtist2()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status">
+                  <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+                </span>
+              }
+              {{ 'admin_merge_load' | transloco }}
+            </button>
+          </div>
+          @if (artist2Error()) {
+            <div class="modal-alert modal-alert-danger mt-2">
+              <span class="material-icons" aria-hidden="true">error</span>
+              <span>{{ artist2Error() }}</span>
+            </div>
+          }
+        </form>
+      }
+    </section>
+  </div>
+
+  <!-- Comparison -->
+  @if (bothLoaded() && !mergeSuccess()) {
+    <section class="merge-section">
+      <h2 class="merge-section-heading">{{ 'admin_merge_comparison' | transloco }}</h2>
+      <p class="merge-section-description text-body-secondary">
+        {{ 'admin_merge_artist_comparison_desc' | transloco }}
+      </p>
+
+      <!-- Keep artist -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_artist_keep' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedKeepArtist() === 'artist1'"
+            [attr.aria-pressed]="selectedKeepArtist() === 'artist1'"
+            (click)="onSelectKeepArtist('artist1')"
+          >
+            @if (selectedKeepArtist() === 'artist1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ artist1()!.nom }}</span>
+            <span class="merge-option-id">ID {{ artist1()!.id_artist }}</span>
+          </button>
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedKeepArtist() === 'artist2'"
+            [attr.aria-pressed]="selectedKeepArtist() === 'artist2'"
+            (click)="onSelectKeepArtist('artist2')"
+          >
+            @if (selectedKeepArtist() === 'artist2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ artist2()!.nom }}</span>
+            <span class="merge-option-id">ID {{ artist2()!.id_artist }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div class="merge-field">
+        <div class="merge-field-label">{{ 'admin_merge_artist_name_field' | transloco }}</div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedNom() === 'artist1'"
+            [attr.aria-pressed]="selectedNom() === 'artist1'"
+            (click)="onSelectNom('artist1')"
+          >
+            @if (selectedNom() === 'artist1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ artist1()!.nom }}</span>
+          </button>
+          <button
+            type="button"
+            class="merge-option"
+            [class.selected]="selectedNom() === 'artist2'"
+            [attr.aria-pressed]="selectedNom() === 'artist2'"
+            (click)="onSelectNom('artist2')"
+          >
+            @if (selectedNom() === 'artist2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <span class="merge-option-text">{{ artist2()!.nom }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Deezer ID (photo) -->
+      <div class="merge-field">
+        <div class="merge-field-label">
+          {{ 'admin_merge_artist_deezer_id_field' | transloco }}
+        </div>
+        <div class="merge-field-options">
+          <button
+            type="button"
+            class="merge-option merge-option-with-img"
+            [class.selected]="selectedDeezerId() === 'artist1'"
+            [attr.aria-pressed]="selectedDeezerId() === 'artist1'"
+            (click)="onSelectDeezerId('artist1')"
+          >
+            @if (selectedDeezerId() === 'artist1') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <img
+              class="merge-option-thumb merge-option-thumb-round"
+              [src]="getArtistImageUrl(artist1()!)"
+              [alt]="artist1()!.nom"
+              appDefaultImage
+            />
+            <span class="merge-option-id">{{ artist1()!.id_artiste_deezer }}</span>
+          </button>
+          <button
+            type="button"
+            class="merge-option merge-option-with-img"
+            [class.selected]="selectedDeezerId() === 'artist2'"
+            [attr.aria-pressed]="selectedDeezerId() === 'artist2'"
+            (click)="onSelectDeezerId('artist2')"
+          >
+            @if (selectedDeezerId() === 'artist2') {
+              <span class="material-icons merge-option-check" aria-hidden="true">check_circle</span>
+            } @else {
+              <span class="material-icons merge-option-uncheck" aria-hidden="true"
+                >radio_button_unchecked</span
+              >
+            }
+            <img
+              class="merge-option-thumb merge-option-thumb-round"
+              [src]="getArtistImageUrl(artist2()!)"
+              [alt]="artist2()!.nom"
+              appDefaultImage
+            />
+            <span class="merge-option-id">{{ artist2()!.id_artiste_deezer }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Info: albums transferred automatically -->
+      <div class="modal-alert modal-alert-info mt-3">
+        <span class="material-icons" aria-hidden="true">info</span>
+        <span>{{ 'admin_merge_artist_albums_info' | transloco }}</span>
+      </div>
+
+      <!-- Merge button -->
+      <div class="merge-actions">
+        <button
+          type="button"
+          class="btn btn-danger btn-lg"
+          [disabled]="isSubmitting()"
+          (click)="openConfirmModal(confirmMergeModal)"
+        >
+          @if (isSubmitting()) {
+            <span class="spinner-border spinner-border-sm me-1" role="status">
+              <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+            </span>
+          }
+          {{ 'admin_merge_artist_submit' | transloco }}
+        </button>
+      </div>
+    </section>
+  }
+</div>
+
+<!-- Confirm modal -->
+<ng-template #confirmMergeModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      {{ 'admin_merge_confirm' | transloco }}
+    </h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-alert modal-alert-warning">
+      <span class="material-icons" aria-hidden="true">warning</span>
+      <span>{{ 'admin_merge_artist_confirm_warning' | transloco }}</span>
+    </div>
+    @if (artist1() && artist2()) {
+      <p class="mt-3 mb-0">
+        <strong>{{ 'admin_merge_artist_keep' | transloco }}:</strong>
+        {{ selectedKeepArtist() === 'artist1' ? artist1()!.nom : artist2()!.nom }}
+        <span class="text-body-secondary">
+          (ID
+          {{ selectedKeepArtist() === 'artist1' ? artist1()!.id_artist : artist2()!.id_artist }})
+        </span>
+      </p>
+      <p class="text-danger mb-0">
+        <strong>{{ 'admin_merge_artist_delete' | transloco }}:</strong>
+        {{ selectedKeepArtist() === 'artist1' ? artist2()!.nom : artist1()!.nom }}
+        <span class="text-body-secondary">
+          (ID
+          {{ selectedKeepArtist() === 'artist1' ? artist2()!.id_artist : artist1()!.id_artist }})
+        </span>
+      </p>
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+      {{ 'annuler' | transloco }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="confirmMerge()"
+      [disabled]="isSubmitting()"
+    >
+      @if (isSubmitting()) {
+        <span class="spinner-border spinner-border-sm me-1" role="status">
+          <span class="visually-hidden">{{ 'loading' | transloco }}</span>
+        </span>
+      }
+      {{ 'admin_merge_confirm' | transloco }}
+    </button>
+  </div>
+</ng-template>
