@@ -69,5 +69,11 @@ export const routes: Routes = [
       import('./admin/merge-album/merge-album.component').then(m => m.MergeAlbumComponent),
     canActivate: [AdminGuard],
   },
+  {
+    path: 'admin/merge-artist',
+    loadComponent: () =>
+      import('./admin/merge-artist/merge-artist.component').then(m => m.MergeArtistComponent),
+    canActivate: [AdminGuard],
+  },
   { path: '**', redirectTo: '' },
 ];

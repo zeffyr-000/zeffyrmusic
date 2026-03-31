@@ -456,6 +456,8 @@
   "already_registered": "Already have an account? Log in",
   "no_account_yet": "Don't have an account? Sign up",
 
+  "loading": "Loading…",
+
   "admin_merge_albums": "Merge",
   "admin_merge_albums_title": "Album merge",
   "admin_merge_album1": "Album 1 (source)",
@@ -488,5 +490,25 @@
   "admin_merge_change_album": "Change album",
   "admin_merge_deleted_badge": "Deleted",
   "admin_merge_kept_badge": "Kept",
-  "admin_bar_title": "Administration"
+  "admin_bar_title": "Administration",
+  "admin_merge_artists": "Merge",
+  "admin_merge_artists_title": "Artist merge",
+  "admin_merge_artist_artist1": "Artist 1 (source)",
+  "admin_merge_artist_artist2": "Artist 2 (duplicate)",
+  "admin_merge_artist_artist1_placeholder": "Source artist ID or URL (e.g. 123 or /artist/123)",
+  "admin_merge_artist_artist2_placeholder": "Duplicate artist ID or URL (e.g. 123 or /artist/123)",
+  "admin_merge_artist_keep": "Artist to keep",
+  "admin_merge_artist_delete": "Artist to delete",
+  "admin_merge_artist_name_field": "Name",
+  "admin_merge_artist_deezer_id_field": "Deezer ID (photo)",
+  "admin_merge_artist_albums_count": "{count, plural, =1 {# album} other {# albums}}",
+  "admin_merge_artist_albums_info": "Albums from the deleted artist will be automatically transferred to the kept artist. Hits will be summed.",
+  "admin_merge_artist_submit": "Merge artists",
+  "admin_merge_artist_confirm_warning": "The duplicate artist will be permanently deleted. Their albums will be transferred and hits summed. This action cannot be undone.",
+  "admin_merge_artist_success": "Artists merged successfully",
+  "admin_merge_artist_not_found": "Artist not found",
+  "admin_merge_artist_change": "Change artist",
+  "admin_merge_same_artist": "Both artists must be different",
+  "admin_merge_artist_comparison_desc": "For each field, select the value to keep in the final artist. The other artist will be deleted and their albums transferred.",
+  "admin_merge_load": "Load"
 }

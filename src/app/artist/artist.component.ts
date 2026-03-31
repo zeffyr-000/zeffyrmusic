@@ -13,6 +13,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
+import {
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownItem,
+  NgbModal,
+  NgbTooltip,
+} from '@ng-bootstrap/ng-bootstrap';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from '../../environments/environment';
 import { Album } from '../models/album.model';
@@ -23,7 +31,6 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
 import { SkeletonArtistComponent } from '../directives/skeleton-artist/skeleton-artist.component';
 import { isPlatformBrowser } from '@angular/common';
 import { SeoService } from '../services/seo.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthStore } from '../store';
 
 @Component({
@@ -37,6 +44,11 @@ import { AuthStore } from '../store';
     DefaultImageDirective,
     SkeletonArtistComponent,
     TranslocoPipe,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+    NgbTooltip,
   ],
 })
 export class ArtistComponent implements OnInit {
@@ -51,6 +63,7 @@ export class ArtistComponent implements OnInit {
   private readonly modalService = inject(NgbModal);
   readonly authStore = inject(AuthStore);
 
+  readonly idArtist = signal('');
   readonly name = signal('');
   readonly idArtistDeezer = signal('');
   readonly urlDeezer = signal('');
@@ -105,6 +118,7 @@ export class ArtistComponent implements OnInit {
   private resetState(): void {
     this.isLoading.set(true);
     this.isAvailable.set(undefined);
+    this.idArtist.set('');
     this.name.set('');
     this.idArtistDeezer.set('');
     this.urlDeezer.set('');
@@ -128,6 +142,8 @@ export class ArtistComponent implements OnInit {
       this.isAvailable.set(false);
       return;
     }
+
+    this.idArtist.set(idArtist);
 
     this.artistService
       .getArtist(idArtist)
