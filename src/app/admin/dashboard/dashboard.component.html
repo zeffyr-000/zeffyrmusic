@@ -1,0 +1,153 @@
+<!-- Admin indicator -->
+<div class="admin-bar">
+  <span class="material-icons" aria-hidden="true">settings</span>
+  <span>{{ 'admin_bar_title' | transloco }}</span>
+</div>
+
+<div class="admin-page">
+  <div class="admin-page-header">
+    <h1 class="admin-page-title">
+      <span class="material-icons" aria-hidden="true">dashboard</span>
+      {{ 'admin_dashboard_title' | transloco }}
+    </h1>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      [disabled]="isLoading()"
+      (click)="onRefresh()"
+    >
+      <span class="material-icons" aria-hidden="true" [class.spin]="isLoading()">refresh</span>
+      {{ 'admin_dashboard_refresh' | transloco }}
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <!-- Skeleton loading -->
+    <div class="stats-section">
+      <div class="section-title skeleton-pulse skeleton-line--title"></div>
+      <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3">
+        @for (_ of skeletonItems; track $index) {
+          <div class="col">
+            <div class="card stat-card">
+              <div class="card-body">
+                <div class="skeleton-pulse skeleton-icon-placeholder mb-3"></div>
+                <div class="skeleton-pulse skeleton-line--title mb-2"></div>
+                <div class="skeleton-pulse skeleton-line--subtitle"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (error()) {
+    <!-- Error state -->
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon" aria-hidden="true">error_outline</span>
+      <p class="empty-state-text">{{ 'admin_dashboard_error' | transloco }}</p>
+      <button type="button" class="btn btn-outline-primary mt-3" (click)="onRefresh()">
+        <span class="material-icons" aria-hidden="true">refresh</span>
+        {{ 'admin_dashboard_refresh' | transloco }}
+      </button>
+    </div>
+  } @else {
+    <!-- Users section -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">people</span>
+        {{ 'admin_dashboard_section_users' | transloco }}
+      </h2>
+      <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3">
+        @for (card of userCards(); track card.labelKey) {
+          <div class="col">
+            <div class="card stat-card stat-card--users">
+              <div class="card-body">
+                <span class="material-icons stat-card__icon" aria-hidden="true">{{
+                  card.icon
+                }}</span>
+                <p class="stat-card__value">{{ card.value | number: '' : 'fr' }}</p>
+                <p class="stat-card__label">{{ card.labelKey | transloco }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Content section -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">library_music</span>
+        {{ 'admin_dashboard_section_content' | transloco }}
+      </h2>
+      <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3">
+        @for (card of contentCards(); track card.labelKey) {
+          <div class="col">
+            <div class="card stat-card stat-card--content">
+              <div class="card-body">
+                <span class="material-icons stat-card__icon" aria-hidden="true">{{
+                  card.icon
+                }}</span>
+                <p class="stat-card__value">{{ card.value | number: '' : 'fr' }}</p>
+                <p class="stat-card__label">{{ card.labelKey | transloco }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Engagement section -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">favorite</span>
+        {{ 'admin_dashboard_section_engagement' | transloco }}
+      </h2>
+      <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3">
+        @for (card of engagementCards(); track card.labelKey) {
+          <div class="col">
+            <div class="card stat-card stat-card--engagement">
+              <div class="card-body">
+                <span class="material-icons stat-card__icon" aria-hidden="true">{{
+                  card.icon
+                }}</span>
+                <p class="stat-card__value">{{ card.value | number: '' : 'fr' }}</p>
+                <p class="stat-card__label">{{ card.labelKey | transloco }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Growth chart -->
+    @if (growth()) {
+      <section class="stats-section">
+        <h2 class="section-title">
+          <span class="material-icons" aria-hidden="true">show_chart</span>
+          {{ 'admin_dashboard_section_growth' | transloco }}
+        </h2>
+        <div class="card chart-container">
+          <div class="card-body">
+            <h3 class="chart-title">{{ 'admin_dashboard_signups_chart' | transloco }}</h3>
+            <div class="chart-wrapper">
+              @defer {
+                <canvas
+                  baseChart
+                  type="line"
+                  [data]="signupChartData()"
+                  [options]="signupChartOptions"
+                ></canvas>
+              } @placeholder {
+                <div
+                  class="d-flex align-items-center justify-content-center h-100 text-body-secondary"
+                >
+                  {{ 'admin_dashboard_signups_chart' | transloco }}
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+  }
+</div>

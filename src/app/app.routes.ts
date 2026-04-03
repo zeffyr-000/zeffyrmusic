@@ -64,6 +64,12 @@ export const routes: Routes = [
       import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
   },
   {
+    path: 'admin/dashboard',
+    loadComponent: () =>
+      import('./admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AdminGuard],
+  },
+  {
     path: 'admin/merge-album',
     loadComponent: () =>
       import('./admin/merge-album/merge-album.component').then(m => m.MergeAlbumComponent),

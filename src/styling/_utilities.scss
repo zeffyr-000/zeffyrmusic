@@ -538,6 +538,28 @@
 }
 
 // =============================================================================
+// ADMIN BAR - Dark indicator bar for admin pages
+// =============================================================================
+
+.admin-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  background: var(--bs-dark);
+  color: var(--bs-light);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  .material-icons {
+    font-size: 1rem;
+    color: var(--bs-light);
+  }
+}
+
+// =============================================================================
 // EMPTY STATE - Shared empty state pattern
 // =============================================================================
 

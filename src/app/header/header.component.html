@@ -69,6 +69,15 @@
               <span class="material-icons">settings</span>{{ 'settings' | transloco }}
             </a>
           </li>
+          @if (authStore.isAdmin()) {
+            <li class="dropdown-divider"></li>
+            <li ngbDropdownItem routerLinkActive="active">
+              <a routerLink="/admin/dashboard" ariaCurrentWhenActive="page">
+                <span class="material-icons">dashboard</span
+                >{{ 'admin_dashboard_link' | transloco }}
+              </a>
+            </li>
+          }
           <li class="dropdown-divider"></li>
           <li ngbDropdownItem>
             <button (click)="onLogout()">
@@ -546,6 +555,19 @@
           <span class="material-icons">settings</span>
           {{ 'settings' | transloco }}
         </a>
+
+        @if (authStore.isAdmin()) {
+          <a
+            class="nav-link d-flex align-items-center gap-2"
+            routerLink="/admin/dashboard"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMobileMenu()"
+          >
+            <span class="material-icons">dashboard</span>
+            {{ 'admin_dashboard_link' | transloco }}
+          </a>
+        }
 
         <hr class="my-2" />
 
