@@ -1,0 +1,40 @@
+.export-info {
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--text-base);
+}
+
+.export-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+
+  @media (min-width: 576px) {
+    flex-direction: row;
+  }
+}
+
+.export-action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+
+  .material-icons {
+    font-size: 2rem;
+  }
+}
+
+.export-action-label {
+  font-weight: 600;
+  font-size: var(--text-base);
+}
+
+.export-action-hint {
+  font-size: var(--text-sm);
+  opacity: 0.7;
+  font-weight: 400;
+}

@@ -45,6 +45,18 @@
         </div>
         <p class="help-card-title">{{ 'help_playlists_title' | transloco }}</p>
       </a>
+
+      <a
+        [routerLink]="['/help', 'export']"
+        class="help-card"
+        data-testid="help-card"
+        [attr.aria-label]="'help_export_title' | transloco"
+      >
+        <div class="help-card-icon" aria-hidden="true">
+          <span class="material-icons">ios_share</span>
+        </div>
+        <p class="help-card-title">{{ 'help_export_title' | transloco }}</p>
+      </a>
     </div>
   </section>
 

@@ -406,6 +406,42 @@
           <p>{{ 'help_settings_tip' | transloco }}</p>
         </div>
       }
+      @case ('export') {
+        <h2>{{ 'help_export_title' | transloco }}</h2>
+        <p>{{ 'help_export_content' | transloco }}</p>
+
+        <section class="help-steps">
+          <h3>{{ 'help_export_step_1_title' | transloco }}</h3>
+          <ul>
+            <li>{{ 'help_export_step_1_content1' | transloco }}</li>
+            <li>{{ 'help_export_step_1_content2' | transloco }}</li>
+          </ul>
+
+          <h3>{{ 'help_export_step_2_title' | transloco }}</h3>
+          <ul>
+            <li>{{ 'help_export_step_2_content1' | transloco }}</li>
+            <li>{{ 'help_export_step_2_content2' | transloco }}</li>
+          </ul>
+
+          <h3>{{ 'help_export_step_3_title' | transloco }}</h3>
+          <ul>
+            <li>{{ 'help_export_step_3_content1' | transloco }}</li>
+            <li>{{ 'help_export_step_3_content2' | transloco }}</li>
+          </ul>
+
+          <h3>{{ 'help_export_step_4_title' | transloco }}</h3>
+          <ol>
+            <li>{{ 'help_export_step_4_content1' | transloco }}</li>
+            <li>{{ 'help_export_step_4_content2' | transloco }}</li>
+            <li>{{ 'help_export_step_4_content3' | transloco }}</li>
+            <li>{{ 'help_export_step_4_content4' | transloco }}</li>
+          </ol>
+        </section>
+
+        <div class="help-tip">
+          <p>{{ 'help_export_tip' | transloco }}</p>
+        </div>
+      }
     }
   </div>
 </div>

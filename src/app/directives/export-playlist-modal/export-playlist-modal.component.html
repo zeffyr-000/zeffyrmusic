@@ -1,0 +1,41 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <span class="material-icons" aria-hidden="true">ios_share</span>
+    {{ 'export_playlist' | transloco }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body">
+  <p class="export-info">
+    <strong>{{ playlistTitle() }}</strong>
+    <span class="text-body-secondary"
+      >&mdash; {{ tracks().length }}
+      {{ 'export_track_count' | transloco: { count: tracks().length } }}</span
+    >
+  </p>
+
+  <div class="export-actions">
+    <button
+      type="button"
+      class="btn btn-outline-primary export-action-btn"
+      (click)="copyToClipboard()"
+    >
+      <span class="material-icons" aria-hidden="true">{{
+        copied() ? 'check' : 'content_copy'
+      }}</span>
+      <span class="export-action-label">{{ 'export_copy_text' | transloco }}</span>
+      <span class="export-action-hint">{{ 'export_copy_hint' | transloco }}</span>
+    </button>
+
+    <button type="button" class="btn btn-primary export-action-btn" (click)="downloadCsv()">
+      <span class="material-icons" aria-hidden="true">download</span>
+      <span class="export-action-label">{{ 'export_download_csv' | transloco }}</span>
+      <span class="export-action-hint">{{ 'export_download_hint' | transloco }}</span>
+    </button>
+  </div>
+</div>

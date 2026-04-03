@@ -12,6 +12,7 @@ import { submit } from '@angular/forms/signals';
 import { CreatePlaylistResponse } from '../models/user.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { UiStore } from '../store/ui/ui.store';
+import { PlaylistService } from '../services/playlist.service';
 import type { MockNgbModal, MockNgbActiveModal } from '../models/test-mocks.model';
 
 describe('MyPlaylistsComponent', () => {
@@ -33,6 +34,7 @@ describe('MyPlaylistsComponent', () => {
   let userDataStore: InstanceType<typeof UserDataStore>;
   let uiStore: InstanceType<typeof UiStore>;
   let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
+  let playlistServiceMock: { getPlaylist: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     userLibraryServiceMock = {
@@ -48,6 +50,7 @@ describe('MyPlaylistsComponent', () => {
     modalServiceMock = { open: vi.fn(), dismissAll: vi.fn() };
     activeModalMock = { close: vi.fn(), dismiss: vi.fn() };
     googleAnalyticsServiceMock = { pageView: vi.fn() };
+    playlistServiceMock = { getPlaylist: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [MyPlaylistsComponent],
@@ -58,6 +61,7 @@ describe('MyPlaylistsComponent', () => {
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: PLATFORM_ID, useValue: 'browser' },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
+        { provide: PlaylistService, useValue: playlistServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -278,6 +282,30 @@ describe('MyPlaylistsComponent', () => {
     const showErrorSpy = vi.spyOn(uiStore, 'showError');
 
     component.onDeletePlaylist(activeModalMock as unknown as NgbActiveModal);
+
+    expect(showErrorSpy).toHaveBeenCalled();
+  });
+
+  // --- Export playlist ---
+
+  it('should open export modal on successful playlist fetch', () => {
+    const mockPlaylist = { tab_video: [{ titre: 'Song', artiste: 'Artist', key: 'k1' }] };
+    playlistServiceMock.getPlaylist.mockReturnValue(of(mockPlaylist));
+    modalServiceMock.open.mockReturnValue({
+      componentInstance: { tracks: { set: vi.fn() }, playlistTitle: { set: vi.fn() } },
+    } as never);
+
+    component.onExportPlaylist('1', 'My Playlist');
+
+    expect(playlistServiceMock.getPlaylist).toHaveBeenCalledWith('', '1');
+    expect(modalServiceMock.open).toHaveBeenCalled();
+  });
+
+  it('should show error toast when export playlist fetch fails', () => {
+    playlistServiceMock.getPlaylist.mockReturnValue(throwError(() => new Error('Network error')));
+    const showErrorSpy = vi.spyOn(uiStore, 'showError');
+
+    component.onExportPlaylist('1', 'My Playlist');
 
     expect(showErrorSpy).toHaveBeenCalled();
   });
