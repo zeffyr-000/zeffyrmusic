@@ -140,6 +140,26 @@
                 </button>
               }
 
+              @if (isOwner() || isLikePage()) {
+                <div class="d-inline-flex" ngbDropdown placement="bottom-end">
+                  <button
+                    class="btn btn-secondary btn-action"
+                    ngbDropdownToggle
+                    [attr.aria-label]="'menu_actions' | transloco"
+                  >
+                    <span class="material-icons" aria-hidden="true">more_vert</span>
+                  </button>
+                  <ul ngbDropdownMenu>
+                    <li ngbDropdownItem>
+                      <button (click)="openExportModal()">
+                        <span class="material-icons" aria-hidden="true">ios_share</span>
+                        {{ 'export_playlist' | transloco }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              }
+
               @if (authStore.isAdmin() && isAlbum()) {
                 <div class="d-inline-flex" ngbDropdown placement="bottom-end">
                   <button

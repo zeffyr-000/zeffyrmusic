@@ -22,6 +22,7 @@ import { UserDataStore } from '../store/user-data/user-data.store';
 import { UiStore } from '../store/ui/ui.store';
 import { AuthStore } from '../store/auth/auth.store';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ExportPlaylistModalComponent } from '../directives/export-playlist-modal/export-playlist-modal.component';
 import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 describe('PlaylistComponent', () => {
@@ -1024,6 +1025,41 @@ describe('PlaylistComponent', () => {
         centered: true,
         size: 'md',
       });
+    });
+  });
+
+  describe('openExportModal', () => {
+    it('should open export modal with playlist data', () => {
+      const modalService = TestBed.inject(NgbModal);
+      const tracksSetter = vi.fn();
+      const titleSetter = vi.fn();
+      const openSpy = vi.spyOn(modalService, 'open').mockReturnValue({
+        componentInstance: {
+          tracks: { set: tracksSetter },
+          playlistTitle: { set: titleSetter },
+        },
+      } as never);
+
+      component.playlist.set([
+        {
+          id_video: '1',
+          titre: 'Song',
+          artiste: 'Artist',
+          artists: [],
+          duree: '120',
+          key: 'k1',
+          id_playlist: 'p1',
+          ordre: '1',
+          titre_album: '',
+        },
+      ]);
+      component.titre.set('My Playlist');
+
+      component.openExportModal();
+
+      expect(openSpy).toHaveBeenCalledWith(ExportPlaylistModalComponent, { size: 'lg' });
+      expect(tracksSetter).toHaveBeenCalledWith(component.playlist());
+      expect(titleSetter).toHaveBeenCalledWith('My Playlist');
     });
   });
 

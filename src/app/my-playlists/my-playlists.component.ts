@@ -24,6 +24,8 @@ import {
 import { UserLibraryService } from '../services/user-library.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { UserService } from '../services/user.service';
+import { PlaylistService } from '../services/playlist.service';
+import { ExportPlaylistModalComponent } from '../directives/export-playlist-modal/export-playlist-modal.component';
 import { UiStore } from '../store/ui/ui.store';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { firstValueFrom } from 'rxjs';
@@ -50,6 +52,7 @@ export class MyPlaylistsComponent implements OnInit {
   private readonly titleService = inject(Title);
   private readonly translocoService = inject(TranslocoService);
   private readonly userService = inject(UserService);
+  private readonly playlistService = inject(PlaylistService);
   private readonly modalService = inject(NgbModal);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -164,6 +167,19 @@ export class MyPlaylistsComponent implements OnInit {
       next: () => {
         modal.dismiss();
         this.uiStore.showSuccess(this.translocoService.translate('playlist_deleted'));
+      },
+      error: () => {
+        this.uiStore.showError(this.translocoService.translate('generic_error'));
+      },
+    });
+  }
+
+  onExportPlaylist(idPlaylist: string, titre: string): void {
+    this.playlistService.getPlaylist('', idPlaylist).subscribe({
+      next: playlist => {
+        const modalRef = this.modalService.open(ExportPlaylistModalComponent, { size: 'lg' });
+        modalRef.componentInstance.tracks.set(playlist.tab_video);
+        modalRef.componentInstance.playlistTitle.set(titre);
       },
       error: () => {
         this.uiStore.showError(this.translocoService.translate('generic_error'));

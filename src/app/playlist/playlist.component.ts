@@ -39,6 +39,7 @@ import { SeoService } from '../services/seo.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { PlaylistThumbnailService } from '../services/playlist-thumbnail.service';
 import { PlaylistThumbnailModalComponent } from './playlist-thumbnail-modal/playlist-thumbnail-modal.component';
+import { ExportPlaylistModalComponent } from '../directives/export-playlist-modal/export-playlist-modal.component';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { AuthStore, PlayerStore, QueueStore, UiStore } from '../store';
 import {
@@ -267,6 +268,15 @@ export class PlaylistComponent {
       centered: true,
       size: 'md',
     });
+  }
+
+  openExportModal(): void {
+    const modalRef = this.modalService.open(ExportPlaylistModalComponent, { size: 'lg' });
+    modalRef.componentInstance.tracks.set(this.playlist());
+    const exportTitle = this.isLikePage()
+      ? this.translocoService.translate('mes_likes')
+      : this.titre() || this.title();
+    modalRef.componentInstance.playlistTitle.set(exportTitle);
   }
 
   openRenameModal(video: Video, tpl: TemplateRef<unknown>): void {

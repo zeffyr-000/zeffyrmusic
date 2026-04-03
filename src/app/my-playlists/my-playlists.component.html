@@ -73,6 +73,12 @@
                   {{ 'modifier_nom' | transloco }}
                 </button>
               </li>
+              <li ngbDropdownItem>
+                <button (click)="onExportPlaylist(playlist.id_playlist, playlist.titre)">
+                  <span class="material-icons" aria-hidden="true">ios_share</span>
+                  {{ 'export_playlist' | transloco }}
+                </button>
+              </li>
               <li ngbDropdownItem class="dropdown-item-danger">
                 <button
                   (click)="

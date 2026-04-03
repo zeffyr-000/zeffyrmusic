@@ -49,6 +49,11 @@ const PAGE_META: Record<string, { title: string; description: string; schema?: '
       description: 'help_settings_description',
       schema: 'howto',
     },
+    export: {
+      title: 'help_export_title',
+      description: 'help_export_description',
+      schema: 'howto',
+    },
   };
 
 /** Compact FAQ definitions: [questionKey, ...answerKeys][] */
