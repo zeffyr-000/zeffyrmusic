@@ -65,7 +65,7 @@
     "@angular/compiler-cli": "^21.2.7",
     "@angular/language-service": "^21.2.7",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.59.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/express-serve-static-core": "^5.1.1",
     "@types/node": "^22.0.0",
