@@ -5,18 +5,19 @@
 
 ## Tech Stack
 
-| Layer            | Technology                          | Version  |
-| ---------------- | ----------------------------------- | -------- |
-| Framework        | Angular (SSR, standalone, zoneless) | 21.1.5   |
-| State Management | @ngrx/signals (Signal Stores)       | 21.0.1   |
-| UI Framework     | Bootstrap + ng-bootstrap            | 5.3 / 20 |
-| Icons            | Material Icons (optimized subset)   | 1.13     |
-| i18n             | Transloco + MessageFormat           | 8.2      |
-| Font             | Nunito (Regular/SemiBold/Bold/800)  | local    |
-| Unit Tests       | Vitest                              | 4.x      |
-| E2E Tests        | Playwright                          | 1.58.x   |
-| Change Detection | OnPush everywhere (zoneless)        |          |
-| Dark Mode        | `data-bs-theme="dark"` on `<body>`  |          |
+| Layer            | Technology                                  | Version  |
+| ---------------- | ------------------------------------------- | -------- |
+| Framework        | Angular (SSR, standalone, zoneless)         | 21.1.5   |
+| State Management | @ngrx/signals (Signal Stores)               | 21.0.1   |
+| UI Framework     | Bootstrap + ng-bootstrap                    | 5.3 / 20 |
+| Icons            | Material Icons (optimized subset)           | 1.13     |
+| i18n             | Transloco + MessageFormat                   | 8.2      |
+| Font             | Nunito (Regular/SemiBold/Bold/800)          | local    |
+| Unit Tests       | Vitest                                      | 4.x      |
+| E2E Tests        | Playwright                                  | 1.58.x   |
+| Change Detection | OnPush everywhere (zoneless)                |          |
+| Dark Mode        | `data-bs-theme="dark"` on `<body>`          |          |
+| Error Tracking   | Sentry (`@sentry/angular` + `@sentry/node`) | 10.x     |
 
 ## Required Reading Before Code Changes
 
@@ -39,6 +40,7 @@ Browser
 │   ├── UserDataStore  — Playlists, follows, liked videos
 │   └── UiStore        — Modals, notifications, mobile state, cross-component events
 ├── Services (HTTP + business logic, NO state holding)
+├── Sentry (error tracking, browser + SSR)
 └── YouTube IFrame API (external player)
 
 SSR Server (Express.js)
@@ -58,7 +60,7 @@ src/app/
 │   ├── queue/               # QueueStore
 │   ├── user-data/           # UserDataStore
 │   └── ui/                  # UiStore
-├── services/                 # 13 services (all with specs)
+├── services/                 # 14 services (all with specs)
 │   ├── init.service.ts      # App bootstrap, session, ping
 │   ├── player.service.ts    # Playback orchestration
 │   ├── youtube-player.service.ts  # YouTube IFrame API wrapper
@@ -71,6 +73,7 @@ src/app/
 │   ├── focus.service.ts     # Focus management
 │   ├── keyboard-shortcut.service.ts  # Keyboard shortcuts
 │   ├── playlist-thumbnail.service.ts # Thumbnail generation
+│   ├── logging.service.ts   # Error reporting (Sentry abstraction)
 │   └── auth-guard.service.ts # Route guard
 ├── models/                   # TypeScript interfaces
 │   ├── album|artist|follow|playlist|video|user|search.model.ts
@@ -407,8 +410,39 @@ withViewTransitions({
 
 ## Performance Budgets
 
-- Initial bundle: warning 1.2MB, error 1.5MB
+- Initial bundle: warning 1.5MB, error 1.7MB
 - Component style: warning 12kb, error 16kb
+
+## Observability (Sentry)
+
+**Browser** (`src/main.ts`): `@sentry/angular` with `browserTracingIntegration` + `httpClientIntegration`. Guarded by `environment.SENTRY_DSN` (empty in dev/e2e).
+
+**SSR** (`src/server.ts`): `@sentry/node` + `Sentry.setupExpressErrorHandler(app)` after all routes.
+
+**Angular ErrorHandler** (`src/app/app.config.browser.ts`): `Sentry.createErrorHandler({ showDialog: false })` catches unhandled template/lifecycle/signal errors. Only registered when `environment.SENTRY_DSN` is set.
+
+**LoggingService** (`src/app/services/logging.service.ts`): Abstraction over Sentry SDK. All error reporting MUST go through this service — never call `Sentry.*` directly from components or services. SSR-safe: `SENTRY_API` token is only provided in browser configs, so all methods are automatic no-ops on the server.
+
+| Method             | Use case                                      |
+| ------------------ | --------------------------------------------- |
+| `captureError()`   | Caught exceptions (HTTP errors, API failures) |
+| `captureWarning()` | Non-fatal issues (YouTube player errors)      |
+| `captureInfo()`    | Informational events                          |
+| `setUser()`        | Associate/clear user on login/logout          |
+| `addBreadcrumb()`  | Manual navigation/interaction breadcrumbs     |
+| `setTag()`         | Custom tags for filtering                     |
+
+**Instrumented locations:**
+
+- `errorInterceptor` — all HTTP errors except 401 (session expiry)
+- `YoutubePlayerService.onError()` — player errors as warnings
+- `InitService` — user association on login/logout
+
+**Release tracking:** `SENTRY_RELEASE` is injected into `environment.prod.ts` via `sed` in CI before the production build. Source maps are uploaded to Sentry with the same release tag.
+
+**Environment tagging:** Each environment file sets `SENTRY_ENVIRONMENT` explicitly (`development`, `e2e`, `staging`, `production`). This avoids staging errors being tagged as production.
+
+**CI secrets required:** `SENTRY_AUTH_TOKEN` (for source map uploads, scoped to the upload step only)
 
 ## Git Conventions
 

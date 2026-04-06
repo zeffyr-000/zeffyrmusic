@@ -39,11 +39,19 @@ export class DefaultImageDirective {
     effect(() => {
       const newSrc = this.src();
       if (!this.isBrowser) {
-        this.renderer.setAttribute(this.el.nativeElement, 'src', newSrc);
+        this.renderer.setAttribute(this.el.nativeElement, 'src', newSrc || this.defaultImage);
         return;
       }
 
-      if (newSrc && newSrc !== this.currentSrc) {
+      if (!newSrc) {
+        this.renderer.setAttribute(this.el.nativeElement, 'src', this.defaultImage);
+        this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
+        this.currentSrc = null;
+        this.pendingSrc = null;
+        return;
+      }
+
+      if (newSrc !== this.currentSrc) {
         if (this.isLoading) {
           // Queue the new src to load after current completes
           this.pendingSrc = newSrc;
