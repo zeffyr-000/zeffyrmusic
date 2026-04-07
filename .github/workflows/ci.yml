@@ -104,7 +104,7 @@ jobs:
             exit 0
           fi
           npx @sentry/cli@2.42.2 sourcemaps upload \
-            --org zeffyrmusic \
+            --org zeffyr \
             --project zeffyrmusic \
             --release "zeffyrmusic@${{ github.sha }}" \
             --url-prefix "~/" \
