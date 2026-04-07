@@ -5,12 +5,8 @@ import { provideShareButtonsOptions, withConfig } from 'ngx-sharebuttons';
 import { shareIcons } from 'ngx-sharebuttons/icons';
 import { httpConfigInterceptor } from './interceptor/httpConfigInterceptor';
 import { errorInterceptor } from './interceptor/errorInterceptor';
-import {
-  provideRouter,
-  withPreloading,
-  PreloadAllModules,
-  withViewTransitions,
-} from '@angular/router';
+import { provideRouter, withPreloading, withViewTransitions } from '@angular/router';
+import { CustomPreloadStrategy } from './routing/custom-preload.strategy';
 import { routes } from './app.routes';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
@@ -24,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(
       routes,
-      withPreloading(PreloadAllModules),
+      withPreloading(CustomPreloadStrategy),
       withViewTransitions({
         skipInitialTransition: true,
         onViewTransitionCreated: () => {

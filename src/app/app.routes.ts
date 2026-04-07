@@ -68,18 +68,21 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [AdminGuard],
+    data: { noPreload: true },
   },
   {
     path: 'admin/merge-album',
     loadComponent: () =>
       import('./admin/merge-album/merge-album.component').then(m => m.MergeAlbumComponent),
     canActivate: [AdminGuard],
+    data: { noPreload: true },
   },
   {
     path: 'admin/merge-artist',
     loadComponent: () =>
       import('./admin/merge-artist/merge-artist.component').then(m => m.MergeArtistComponent),
     canActivate: [AdminGuard],
+    data: { noPreload: true },
   },
   { path: '**', redirectTo: '' },
 ];
