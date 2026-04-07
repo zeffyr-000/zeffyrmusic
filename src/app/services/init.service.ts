@@ -21,6 +21,7 @@ import { AuthStore } from '../store';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { QueueStore } from '../store/queue/queue.store';
 import { UiStore } from '../store/ui/ui.store';
+import { LoggingService } from './logging.service';
 
 const SESSION_CHECK_INTERVAL = 60 * 5 * 1000; // 5 minutes
 
@@ -62,6 +63,7 @@ export class InitService {
   private readonly queueStore = inject(QueueStore);
   private readonly uiStore = inject(UiStore);
   private readonly router = inject(Router);
+  private readonly loggingService = inject(LoggingService);
 
   private isBrowser: boolean;
   private lastSessionCheck = 0;
@@ -113,8 +115,11 @@ export class InitService {
           language: data.language as 'fr' | 'en',
         }
       );
+
+      this.loggingService.setUser({ id: data.id_perso });
     } else {
       this.authStore.initializeAnonymous();
+      this.loggingService.setUser(null);
     }
 
     this.userDataStore.initialize({
@@ -136,6 +141,7 @@ export class InitService {
     this.uiStore.showWarning(this.translocoService.translate('session_expired'), 8000);
     this.authStore.logout();
     this.userDataStore.reset();
+    this.loggingService.setUser(null);
     this.redirectIfProtectedRoute();
   }
 

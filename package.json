@@ -38,6 +38,8 @@
     "@ng-bootstrap/ng-bootstrap": "^20.0.0",
     "@ngrx/signals": "^21.1.0",
     "@popperjs/core": "^2.11.8",
+    "@sentry/angular": "^10.47.0",
+    "@sentry/node": "^10.47.0",
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.1",
     "cookie-parser": "^1.4.7",

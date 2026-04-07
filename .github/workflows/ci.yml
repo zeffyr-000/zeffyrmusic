@@ -90,7 +90,32 @@ jobs:
           retention-days: 30
 
       - name: Build (production)
-        run: npm run build -- --configuration production
+        run: |
+          RELEASE="zeffyrmusic@${{ github.sha }}"
+          sed -i "s/SENTRY_RELEASE: ''/SENTRY_RELEASE: '$RELEASE'/" src/environments/environment.prod.ts
+          grep -q "SENTRY_RELEASE: '$RELEASE'" src/environments/environment.prod.ts || { echo "::error::Failed to inject SENTRY_RELEASE"; exit 1; }
+          npm run build -- --configuration production
+
+      - name: Upload Sentry source maps
+        if: github.ref == 'refs/heads/master'
+        run: |
+          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
+            echo "SENTRY_AUTH_TOKEN not set, skipping source map upload"
+            exit 0
+          fi
+          npx @sentry/cli@2.42.2 sourcemaps upload \
+            --org zeffyrmusic \
+            --project zeffyrmusic \
+            --release "zeffyrmusic@${{ github.sha }}" \
+            --url-prefix "~/" \
+            --strip-common-prefix \
+            --validate \
+            dist/browser/
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Remove source maps
+        run: find dist -type f -name '*.map' -delete
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

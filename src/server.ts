@@ -7,6 +7,33 @@ import bootstrap from './main.server';
 import cookieParser from 'cookie-parser';
 import { REQUEST } from './app/tokens';
 import { environment } from './environments/environment';
+import type * as SentryNode from '@sentry/node';
+
+let Sentry: typeof SentryNode | undefined;
+
+if (environment.SENTRY_DSN) {
+  Sentry = await import('@sentry/node');
+  Sentry.init({
+    dsn: environment.SENTRY_DSN,
+    environment: environment.SENTRY_ENVIRONMENT,
+    release: environment.SENTRY_RELEASE || undefined,
+    tracesSampleRate: 0.2,
+    sendDefaultPii: false,
+    beforeSend(event) {
+      if (event.request?.url) {
+        try {
+          const url = new URL(event.request.url);
+          url.search = '';
+          url.hash = '';
+          event.request.url = url.toString();
+        } catch {
+          event.request.url = event.request.url.split(/[?#]/u, 1)[0];
+        }
+      }
+      return event;
+    },
+  });
+}
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -87,6 +114,11 @@ app.get('/{*path}', (req, res, next) => {
     .then(html => res.send(html))
     .catch(err => next(err));
 });
+
+// Sentry Express error handler — must be after all routes but before app.listen
+if (Sentry) {
+  Sentry.setupExpressErrorHandler(app);
+}
 
 if (isMainModule(import.meta.url) || process.env['PM2_USAGE']) {
   const port = process.env['PORT'] || 4000;

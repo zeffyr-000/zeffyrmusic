@@ -16,10 +16,11 @@ Single workflow file handles all CI steps:
 
 ## Required Secrets
 
-| Secret         | Used by  | Purpose                                 |
-| -------------- | -------- | --------------------------------------- |
-| `SONAR_TOKEN`  | `ci.yml` | SonarCloud CI analysis                  |
-| `GITHUB_TOKEN` | `ci.yml` | Automatic — PR decoration by SonarCloud |
+| Secret              | Used by  | Purpose                                 |
+| ------------------- | -------- | --------------------------------------- |
+| `SONAR_TOKEN`       | `ci.yml` | SonarCloud CI analysis                  |
+| `GITHUB_TOKEN`      | `ci.yml` | Automatic — PR decoration by SonarCloud |
+| `SENTRY_AUTH_TOKEN` | `ci.yml` | Sentry source maps upload (master only) |
 
 > `CODECOV_TOKEN` is no longer used — Codecov has been replaced by SonarCloud.
 

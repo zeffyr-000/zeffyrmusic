@@ -8,6 +8,7 @@ import { UiStore } from '../store/ui/ui.store';
 import { TranslocoService } from '@jsverse/transloco';
 import { provideRouter } from '@angular/router';
 import { InitService } from '../services/init.service';
+import { LoggingService } from '../services/logging.service';
 
 describe('errorInterceptor', () => {
   let http: HttpClient;
@@ -22,7 +23,13 @@ describe('errorInterceptor', () => {
     getActiveLang: vi.fn(() => 'fr'),
   };
 
+  const loggingServiceMock = {
+    captureError: vi.fn(),
+  };
+
   beforeEach(() => {
+    vi.clearAllMocks();
+
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([errorInterceptor])),
@@ -32,6 +39,7 @@ describe('errorInterceptor', () => {
         UiStore,
         InitService,
         { provide: TranslocoService, useValue: translocoMock },
+        { provide: LoggingService, useValue: loggingServiceMock },
       ],
     });
 
@@ -96,6 +104,40 @@ describe('errorInterceptor', () => {
       .flush(null, { status: 500, statusText: 'Internal Server Error' });
 
     expect(showErrorSpy).toHaveBeenCalledWith('generic_error');
+  });
+
+  it('should handle network error (status 0) by showing connection lost toast', () => {
+    const showErrorSpy = vi.spyOn(uiStore, 'showError');
+
+    http.get('/api/test').subscribe({ error: () => undefined });
+
+    httpTesting.expectOne('/api/test').error(new ProgressEvent('error'));
+
+    expect(showErrorSpy).toHaveBeenCalledWith('perte_connexion');
+  });
+
+  it('should report non-401 errors to LoggingService with sanitized URL', () => {
+    http.get('/api/test?token=secret&page=1').subscribe({ error: () => undefined });
+
+    httpTesting
+      .expectOne('/api/test?token=secret&page=1')
+      .flush(null, { status: 500, statusText: 'Internal Server Error' });
+
+    expect(loggingServiceMock.captureError).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        'http.url': '/api/test',
+        'http.status_code': 500,
+      })
+    );
+  });
+
+  it('should NOT report 401 errors to LoggingService', () => {
+    http.get('/api/test').subscribe({ error: () => undefined });
+
+    httpTesting.expectOne('/api/test').flush(null, { status: 401, statusText: 'Unauthorized' });
+
+    expect(loggingServiceMock.captureError).not.toHaveBeenCalled();
   });
 
   it('should skip ping requests', () => {

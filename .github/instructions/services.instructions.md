@@ -64,7 +64,7 @@ this.getData().subscribe(data => {
 });
 ```
 
-## Available Services (13 total)
+## Available Services (14 total)
 
 | Service                    | Purpose                      |
 | -------------------------- | ---------------------------- |
@@ -80,4 +80,5 @@ this.getData().subscribe(data => {
 | `FocusService`             | Focus management             |
 | `KeyboardShortcutService`  | Keyboard shortcuts           |
 | `PlaylistThumbnailService` | Thumbnail generation         |
+| `LoggingService`           | Error reporting (Sentry)     |
 | `AuthGuard`                | Route guard                  |

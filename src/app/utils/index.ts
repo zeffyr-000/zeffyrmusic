@@ -16,4 +16,5 @@
 export { formatTime } from './format-time';
 export { formatPlaylistAsCsv, formatPlaylistAsText } from './export-playlist';
 export { isOnProtectedRoute } from './is-on-protected-route';
+export { sanitizeUrl } from './sanitize-url';
 export { shuffleArray } from './shuffle-array';

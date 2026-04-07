@@ -46,6 +46,7 @@ export class MyFeatureComponent {
 - **Skeleton loaders**: `app-skeleton-card`, `app-skeleton-list`, `app-skeleton-artist`, `app-skeleton-playlist`
 - **Empty state**: `.empty-state` + `.empty-state-icon` + `.empty-state-text` pattern
 - **YouTube player CSS**: MUST be in `styles.scss` (global) — see `css-critical-rules.md`
+- **Error reporting**: Use `LoggingService` — never call `Sentry.*` directly from components/services
 
 ## Architecture
 

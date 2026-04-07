@@ -2,6 +2,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { PlayerStore } from '../store/player/player.store';
+import { LoggingService } from './logging.service';
 
 declare global {
   interface Window {
@@ -21,6 +22,7 @@ declare global {
 export class YoutubePlayerService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly playerStore = inject(PlayerStore);
+  private readonly loggingService = inject(LoggingService);
 
   private player: YT.Player | null = null;
   private readonly isBrowser: boolean;
@@ -125,6 +127,12 @@ export class YoutubePlayerService {
     };
 
     const message = errorMessages[event.data] ?? 'error_unknown';
+
+    this.loggingService.captureWarning(`YouTube Player Error: ${message}`, {
+      'youtube.error_code': event.data,
+      'youtube.video_id': this.pendingVideoKey,
+    });
+
     this.error$.next(message);
     this.playerStore.setError(message);
   }

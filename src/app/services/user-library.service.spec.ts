@@ -50,12 +50,34 @@ describe('UserLibraryService', () => {
       req.flush({ success: true });
     });
 
+    it('should return false when togglePlaylistVisibility fails', () => {
+      let result: boolean | null = null;
+      service.togglePlaylistVisibility('123', true).subscribe(r => (result = r));
+
+      httpMock
+        .expectOne(`${environment.URL_SERVER}switch_publique?id_playlist=123&statut=prive`)
+        .error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
+    });
+
     it('should delete playlist', () => {
       service.deletePlaylist('123').subscribe();
 
       const req = httpMock.expectOne(`${environment.URL_SERVER}playlist-supprimer/123`);
       expect(req.request.method).toBe('GET');
       req.flush({ success: true });
+    });
+
+    it('should return false when deletePlaylist fails', () => {
+      let result: boolean | null = null;
+      service.deletePlaylist('123').subscribe(r => (result = r));
+
+      httpMock
+        .expectOne(`${environment.URL_SERVER}playlist-supprimer/123`)
+        .error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
     });
   });
 
@@ -74,6 +96,17 @@ describe('UserLibraryService', () => {
       const req = httpMock.expectOne(`${environment.URL_SERVER}switch_suivi/123`);
       expect(req.request.method).toBe('GET');
       req.flush({ success: true, est_suivi: false });
+    });
+
+    it('should return failure when toggleFollow fails', () => {
+      let result: { success: boolean; isFollowing: boolean } | null = null;
+      service.toggleFollow('123').subscribe(r => (result = r));
+
+      httpMock
+        .expectOne(`${environment.URL_SERVER}switch_suivi/123`)
+        .error(new ProgressEvent('error'));
+
+      expect(result).toEqual({ success: false, isFollowing: false });
     });
   });
 
@@ -94,6 +127,24 @@ describe('UserLibraryService', () => {
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual({ key: 'abc123' });
       req.flush({ success: true });
+    });
+
+    it('should return false when addLike fails', () => {
+      let result: boolean | null = null;
+      service.addLike('abc123').subscribe(r => (result = r));
+
+      httpMock.expectOne(`${environment.URL_SERVER}add_like`).error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false when removeLike fails', () => {
+      let result: boolean | null = null;
+      service.removeLike('abc123').subscribe(r => (result = r));
+
+      httpMock.expectOne(`${environment.URL_SERVER}remove_like`).error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
     });
   });
 
@@ -119,6 +170,26 @@ describe('UserLibraryService', () => {
       const req = httpMock.expectOne(`${environment.URL_SERVER}supprimer/v123`);
       expect(req.request.method).toBe('GET');
       req.flush({ success: true });
+    });
+
+    it('should return false when addVideoToPlaylist fails', () => {
+      let result: boolean | null = null;
+      service.addVideoToPlaylist('p1', 'key1', 'Title', 'Artist', 180).subscribe(r => (result = r));
+
+      httpMock.expectOne(`${environment.URL_SERVER}insert_video`).error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false when removeVideoFromPlaylist fails', () => {
+      let result: boolean | null = null;
+      service.removeVideoFromPlaylist('v123').subscribe(r => (result = r));
+
+      httpMock
+        .expectOne(`${environment.URL_SERVER}supprimer/v123`)
+        .error(new ProgressEvent('error'));
+
+      expect(result).toBe(false);
     });
 
     it('should rename a track successfully', () => {

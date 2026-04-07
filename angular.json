@@ -32,7 +32,9 @@
               "jsverse-transloco-locale",
               "flat",
               "cookie-parser",
-              "@messageformat/core"
+              "@messageformat/core",
+              "import-in-the-middle",
+              "require-in-the-middle"
             ],
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
@@ -57,14 +59,17 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": {
+                "scripts": true,
+                "hidden": true
+              },
               "namedChunks": false,
               "extractLicenses": false,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.2MB",
-                  "maximumError": "1.5MB"
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "1.7MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -97,7 +102,10 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": {
+                "scripts": true,
+                "hidden": true
+              },
               "namedChunks": false,
               "extractLicenses": false,
               "budgets": [
