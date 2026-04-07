@@ -2,14 +2,31 @@ import { TestBed } from '@angular/core/testing';
 import { PLATFORM_ID } from '@angular/core';
 import { YoutubePlayerService } from './youtube-player.service';
 import { PlayerStore } from '../store/player/player.store';
+import { LoggingService } from './logging.service';
+
+/** Typed accessor for private members used in tests. */
+interface PrivateApi {
+  player: Partial<YT.Player> | null;
+  /** Typed as `unknown` to avoid DOM vs Node `setInterval` return-type conflict. */
+  progressInterval: unknown;
+  onError(event: YT.OnErrorEvent): void;
+  startProgressTracking(): void;
+}
 
 describe('YoutubePlayerService', () => {
   describe('Browser context', () => {
     let service: YoutubePlayerService;
+    let loggingServiceMock: { captureWarning: ReturnType<typeof vi.fn> };
 
     beforeEach(async () => {
+      loggingServiceMock = { captureWarning: vi.fn() };
+
       await TestBed.configureTestingModule({
-        providers: [YoutubePlayerService, { provide: PLATFORM_ID, useValue: 'browser' }],
+        providers: [
+          YoutubePlayerService,
+          { provide: PLATFORM_ID, useValue: 'browser' },
+          { provide: LoggingService, useValue: loggingServiceMock },
+        ],
       }).compileComponents();
 
       service = TestBed.inject(YoutubePlayerService);
@@ -56,9 +73,8 @@ describe('YoutubePlayerService', () => {
 
     it('should stop progress tracking on error', () => {
       // Start a progress interval manually
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const svc = service as any;
-      svc.progressInterval = window.setInterval(vi.fn(), 200);
+      const svc = service as unknown as PrivateApi;
+      svc.progressInterval = globalThis.setInterval(vi.fn(), 200);
       expect(svc.progressInterval).not.toBeNull();
 
       // Trigger onError
@@ -69,9 +85,8 @@ describe('YoutubePlayerService', () => {
     });
 
     it('should stop progress tracking and set error on unknown error code', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const svc = service as any;
-      svc.progressInterval = window.setInterval(vi.fn(), 200);
+      const svc = service as unknown as PrivateApi;
+      svc.progressInterval = globalThis.setInterval(vi.fn(), 200);
 
       svc.onError({ data: 999 } as unknown as YT.OnErrorEvent);
 
@@ -84,8 +99,7 @@ describe('YoutubePlayerService', () => {
       const playerStore = TestBed.inject(PlayerStore);
       const spy = vi.spyOn(playerStore, 'updateProgress');
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const svc = service as any;
+      const svc = service as unknown as PrivateApi;
 
       // Simulate an active player with progress tracking
       svc.player = {
@@ -108,6 +122,33 @@ describe('YoutubePlayerService', () => {
       expect(spy).not.toHaveBeenCalled();
 
       vi.useRealTimers();
+    });
+
+    it('should report warning to Sentry for non-101/150 error codes', () => {
+      const svc = service as unknown as PrivateApi;
+      svc.onError({ data: 2 } as unknown as YT.OnErrorEvent);
+
+      expect(loggingServiceMock.captureWarning).toHaveBeenCalledWith(
+        'YouTube Player Error: error_invalid_parameter',
+        expect.objectContaining({ 'youtube.error_code': 2 })
+      );
+      expect(service.error$.value).toBe('error_invalid_parameter');
+    });
+
+    it('should not report warning to Sentry for error code 101', () => {
+      const svc = service as unknown as PrivateApi;
+      svc.onError({ data: 101 } as unknown as YT.OnErrorEvent);
+
+      expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
+      expect(service.error$.value).toBe('error_request_access_denied');
+    });
+
+    it('should not report warning to Sentry for error code 150', () => {
+      const svc = service as unknown as PrivateApi;
+      svc.onError({ data: 150 } as unknown as YT.OnErrorEvent);
+
+      expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
+      expect(service.error$.value).toBe('error_request_access_denied');
     });
   });
 

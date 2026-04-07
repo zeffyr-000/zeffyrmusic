@@ -128,21 +128,31 @@ export class YoutubePlayerService {
 
     const message = errorMessages[event.data] ?? 'error_unknown';
 
-    this.loggingService.captureWarning(`YouTube Player Error: ${message}`, {
-      'youtube.error_code': event.data,
-      'youtube.video_id': this.pendingVideoKey,
-    });
+    // Codes 101/150 = embedding disabled by the video owner/uploader
+    // These are expected and not actionable — skip Sentry reporting
+    if (event.data !== 101 && event.data !== 150) {
+      const videoId = this.player?.getVideoData?.()?.video_id ?? this.pendingVideoKey;
+      this.loggingService.captureWarning(`YouTube Player Error: ${message}`, {
+        'youtube.error_code': event.data,
+        'youtube.video_id': videoId,
+      });
+    }
 
     this.error$.next(message);
     this.playerStore.setError(message);
   }
 
+  /** Check that the player object exists AND has its API methods loaded. */
+  private isPlayerFunctional(): boolean {
+    return this.player !== null && typeof this.player.getDuration === 'function';
+  }
+
   private initVolume(): void {
-    if (!this.player) return;
+    if (!this.isPlayerFunctional()) return;
 
     let volume = Number.parseInt(localStorage.getItem('volume') ?? '', 10);
     if (Number.isNaN(volume) || volume < 0 || volume > 100) {
-      volume = this.player.getVolume?.() ?? 100;
+      volume = this.player!.getVolume?.() ?? 100;
       localStorage.setItem('volume', volume.toString());
     }
 
@@ -167,17 +177,17 @@ export class YoutubePlayerService {
   }
 
   play(): void {
-    this.player?.playVideo();
+    this.player?.playVideo?.();
   }
 
   pause(): void {
-    this.player?.pauseVideo();
+    this.player?.pauseVideo?.();
   }
 
   togglePlayPause(): boolean {
-    if (!this.player) return false;
+    if (!this.isPlayerFunctional()) return false;
 
-    const state = this.player.getPlayerState();
+    const state = this.player!.getPlayerState();
     if (
       state === YT.PlayerState.PAUSED ||
       state === YT.PlayerState.UNSTARTED ||
@@ -192,46 +202,46 @@ export class YoutubePlayerService {
   }
 
   setVolume(volume: number): void {
-    if (!this.player) return;
+    if (!this.isPlayerFunctional()) return;
 
     const clampedVolume = Math.max(0, Math.min(100, volume));
-    this.player.setVolume(clampedVolume);
+    this.player!.setVolume(clampedVolume);
     localStorage.setItem('volume', clampedVolume.toString());
     this.playerStore.setVolume(clampedVolume);
   }
 
   mute(): void {
-    this.player?.mute();
+    this.player?.mute?.();
   }
 
   unMute(): void {
-    this.player?.unMute();
+    this.player?.unMute?.();
   }
 
   seekTo(seconds: number): void {
-    this.player?.seekTo(seconds, true);
+    this.player?.seekTo?.(seconds, true);
   }
 
   seekToPercent(percent: number): void {
-    if (!this.player) return;
-    const duration = this.player.getDuration() ?? 0;
+    if (!this.isPlayerFunctional()) return;
+    const duration = this.player!.getDuration() ?? 0;
     this.seekTo((percent / 100) * duration);
   }
 
   getPlayerState(): YT.PlayerState | null {
-    return this.player?.getPlayerState() ?? null;
+    return this.player?.getPlayerState?.() ?? null;
   }
 
   getCurrentTime(): number {
-    return this.player?.getCurrentTime() ?? 0;
+    return this.player?.getCurrentTime?.() ?? 0;
   }
 
   getDuration(): number {
-    return this.player?.getDuration() ?? 0;
+    return this.player?.getDuration?.() ?? 0;
   }
 
   getLoadedFraction(): number {
-    return this.player?.getVideoLoadedFraction() ?? 0;
+    return this.player?.getVideoLoadedFraction?.() ?? 0;
   }
 
   clearError(): void {
@@ -243,7 +253,7 @@ export class YoutubePlayerService {
     if (this.progressInterval !== null) return;
 
     this.progressInterval = globalThis.setInterval(() => {
-      if (!this.player) return;
+      if (!this.isPlayerFunctional()) return;
 
       const currentTime = this.getCurrentTime();
       const duration = this.getDuration();
@@ -262,7 +272,7 @@ export class YoutubePlayerService {
 
   destroy(): void {
     this.stopProgressTracking();
-    this.player?.destroy();
+    this.player?.destroy?.();
     this.player = null;
   }
 }
