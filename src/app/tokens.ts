@@ -43,3 +43,9 @@ export interface ServerRequest {
 }
 
 export const REQUEST = new InjectionToken<ServerRequest>('REQUEST');
+
+export interface ServerResponse {
+  status(code: number): ServerResponse;
+}
+
+export const RESPONSE = new InjectionToken<ServerResponse>('RESPONSE');

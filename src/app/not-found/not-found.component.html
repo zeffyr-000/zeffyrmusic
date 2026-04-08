@@ -1,0 +1,11 @@
+<div class="empty-state" data-testid="not-found">
+  <span class="material-icons empty-state-icon" aria-hidden="true">link_off</span>
+  <h1 class="empty-state-title fs-4 fw-bold mb-1">{{ 'page_not_found' | transloco }}</h1>
+  <p class="empty-state-text">{{ 'page_not_found_description' | transloco }}</p>
+  <p class="small text-break text-body-secondary" data-testid="attempted-url">
+    {{ attemptedUrl() }}
+  </p>
+  <a class="btn btn-outline-primary mt-3" data-testid="back-home-link" routerLink="/">{{
+    'back_home' | transloco
+  }}</a>
+</div>

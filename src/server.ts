@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bootstrap from './main.server';
 import cookieParser from 'cookie-parser';
-import { REQUEST } from './app/tokens';
+import { REQUEST, RESPONSE } from './app/tokens';
 import { environment } from './environments/environment';
 import type * as SentryNode from '@sentry/node';
 
@@ -109,6 +109,7 @@ app.get('/{*path}', (req, res, next) => {
       providers: [
         { provide: APP_BASE_HREF, useValue: baseUrlValue },
         { provide: REQUEST, useValue: req },
+        { provide: RESPONSE, useValue: res },
       ],
     })
     .then(html => res.send(html))

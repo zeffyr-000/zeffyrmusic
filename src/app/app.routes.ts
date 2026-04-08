@@ -84,5 +84,8 @@ export const routes: Routes = [
     canActivate: [AdminGuard],
     data: { noPreload: true },
   },
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () => import('./not-found/not-found.component').then(m => m.NotFoundComponent),
+  },
 ];
