@@ -30,20 +30,55 @@ export class HelpComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
 
   ngOnInit() {
-    this.titleService.setTitle(this.translocoService.translate('help_meta_title'));
+    const title = this.translocoService.translate('help_meta_title');
     const description = this.translocoService.translate('help_meta_description');
+    const canonicalUrl = `${environment.URL_BASE}help`;
+
+    this.titleService.setTitle(title);
     if (description) {
-      this.metaService.updateTag({
-        name: 'description',
-        content: description,
-      });
+      this.metaService.updateTag({ name: 'description', content: description });
     }
-    this.seoService.updateCanonicalUrl(`${environment.URL_BASE}help`);
+    this.seoService.updateCanonicalUrl(canonicalUrl);
+
+    this.metaService.updateTag({ name: 'og:title', content: title });
+    this.metaService.updateTag({ name: 'og:description', content: description });
+    this.metaService.updateTag({ name: 'og:url', content: canonicalUrl });
+    this.metaService.updateTag({ name: 'og:type', content: 'website' });
+    this.metaService.updateTag({ name: 'og:site_name', content: 'Zeffyr Music' });
+
+    this.seoService.setBreadcrumbJsonLd([
+      { name: this.translocoService.translate('home'), url: environment.URL_BASE },
+      { name: this.translocoService.translate('help_title_directory'), url: canonicalUrl },
+    ]);
+
+    const helpBase = `${environment.URL_BASE}help`;
     this.seoService.setJsonLd({
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      name: this.translocoService.translate('help_meta_title'),
+      name: title,
       description,
+      url: canonicalUrl,
+      inLanguage: this.translocoService.getActiveLang(),
+      publisher: {
+        '@type': 'Organization',
+        name: 'Zeffyr Music',
+        url: environment.URL_BASE,
+      },
+      hasPart: [
+        'listen',
+        'locked-screen',
+        'playlists',
+        'export',
+        'install-android',
+        'install-ios',
+        'settings',
+        'legal',
+        'download',
+        'issues',
+      ].map(slug => ({
+        '@type': 'WebPage',
+        url: `${helpBase}/${slug}`,
+      })),
     });
 
     if (isPlatformBrowser(this.platformId)) {
@@ -53,5 +88,10 @@ export class HelpComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.seoService.removeJsonLd();
+    this.metaService.removeTag('name="og:title"');
+    this.metaService.removeTag('name="og:description"');
+    this.metaService.removeTag('name="og:url"');
+    this.metaService.removeTag('name="og:type"');
+    this.metaService.removeTag('name="og:site_name"');
   }
 }
