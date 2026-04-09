@@ -199,6 +199,8 @@
   "show_more_extras": "Afficher plus d'extras",
   "artist_not_available": "Artiste non disponible",
   "back_home": "Retour à l'accueil",
+  "page_not_found": "Page non trouvée",
+  "page_not_found_description": "La page que vous cherchez n'existe pas ou a été déplacée.",
   "generic_error": "Une erreur s'est produite. Veuillez réessayer plus tard.",
   "hits_by_decade": "Hits par décennie",
   "top_charts": "Top Charts",

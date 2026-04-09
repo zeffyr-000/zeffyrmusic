@@ -35,6 +35,17 @@ if (environment.SENTRY_DSN) {
       if (event.request?.url) {
         event.request.url = sanitizeUrl(event.request.url);
       }
+      // Drop non-actionable third-party / environment errors
+      const message =
+        event.exception?.values?.[0]?.value ??
+        (typeof event.message === 'string' ? event.message : '');
+      if (
+        message.includes('Java object is gone') ||
+        message.includes('Failed to fetch dynamically imported module') ||
+        message.includes('Access is denied for this document')
+      ) {
+        return null;
+      }
       return event;
     },
   });

@@ -150,10 +150,10 @@ export class YoutubePlayerService {
   private initVolume(): void {
     if (!this.isPlayerFunctional()) return;
 
-    let volume = Number.parseInt(localStorage.getItem('volume') ?? '', 10);
+    let volume = Number.parseInt(this.readStorage('volume') ?? '', 10);
     if (Number.isNaN(volume) || volume < 0 || volume > 100) {
       volume = this.player!.getVolume?.() ?? 100;
-      localStorage.setItem('volume', volume.toString());
+      this.writeStorage('volume', volume.toString());
     }
 
     this.setVolume(volume);
@@ -206,7 +206,7 @@ export class YoutubePlayerService {
 
     const clampedVolume = Math.max(0, Math.min(100, volume));
     this.player!.setVolume(clampedVolume);
-    localStorage.setItem('volume', clampedVolume.toString());
+    this.writeStorage('volume', clampedVolume.toString());
     this.playerStore.setVolume(clampedVolume);
   }
 
@@ -274,5 +274,21 @@ export class YoutubePlayerService {
     this.stopProgressTracking();
     this.player?.destroy?.();
     this.player = null;
+  }
+
+  private readStorage(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  private writeStorage(key: string, value: string): void {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // localStorage blocked on some WebViews
+    }
   }
 }
