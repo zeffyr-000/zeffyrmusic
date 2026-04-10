@@ -545,8 +545,13 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-xs) var(--spacing-lg);
-  background: var(--bs-dark);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: linear-gradient(
+    90deg,
+    var(--bs-dark) 0%,
+    color-mix(in srgb, var(--bs-dark) 92%, var(--bs-primary)) 100%
+  );
+  border-bottom: 2px solid var(--bs-primary);
   color: var(--bs-light);
   font-weight: 600;
   font-size: var(--text-xs);
@@ -555,8 +560,196 @@
 
   .material-icons {
     font-size: 1rem;
-    color: var(--bs-light);
+    color: rgb(var(--bs-primary-rgb));
   }
+}
+
+// =============================================================================
+// ADMIN ICON - Badge shown on context menu items accessible via admin rights
+// =============================================================================
+
+.admin-only-icon {
+  font-size: 1rem;
+  vertical-align: middle;
+  margin-left: var(--spacing-xs);
+  color: rgb(var(--bs-primary-rgb));
+  opacity: 0.85;
+}
+
+// =============================================================================
+// ADMIN PAGES - Shared layout for admin page content
+// =============================================================================
+
+.admin-page {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (max-width: 575.98px) {
+    padding: var(--spacing-md);
+  }
+}
+
+.admin-page--full-width {
+  max-width: 100%;
+}
+
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-md);
+
+  @media (max-width: 575.98px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.admin-page-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--text-2xl);
+  margin: 0 0 var(--spacing-xl);
+
+  .material-icons {
+    color: var(--bs-warning);
+  }
+}
+
+// When title is inside a header row, the header manages spacing
+.admin-page-header .admin-page-title {
+  margin-bottom: 0;
+}
+
+// =============================================================================
+// ADMIN MERGE - Shared styles for merge comparison pages
+// =============================================================================
+
+.merge-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.merge-section-heading {
+  font-size: var(--text-lg);
+  margin-bottom: var(--spacing-xs);
+}
+
+.merge-section-description {
+  font-size: var(--text-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.merge-field {
+  margin-bottom: var(--spacing-md);
+}
+
+.merge-field-label {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--bs-secondary-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.merge-field-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.merge-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--bs-border-color);
+  border-radius: var(--radius-md);
+  background: var(--bs-body-bg);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--bs-primary);
+      background: rgba(var(--bs-primary-rgb), 0.03);
+    }
+  }
+
+  &.selected {
+    border-color: var(--bs-primary);
+    background: rgba(var(--bs-primary-rgb), 0.08);
+  }
+}
+
+.merge-option-check {
+  color: var(--bs-primary);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.merge-option-uncheck {
+  color: var(--bs-secondary-color);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.merge-option-text {
+  font-size: var(--text-sm);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.merge-option-id {
+  font-size: var(--text-xs);
+  color: var(--bs-secondary-color);
+  flex-shrink: 0;
+}
+
+.merge-option-with-img {
+  padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-md);
+
+  .merge-option-check,
+  .merge-option-uncheck {
+    align-self: center;
+  }
+}
+
+.merge-option-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.merge-option-thumb-round {
+  border-radius: 50%;
+}
+
+.merge-option-tracks-icon {
+  font-size: 1.25rem;
+  color: var(--bs-secondary-color);
+  flex-shrink: 0;
+}
+
+.merge-option-tracks.selected .merge-option-tracks-icon {
+  color: var(--bs-primary);
+}
+
+.merge-actions {
+  margin-top: var(--spacing-lg);
+  display: flex;
+  justify-content: flex-end;
 }
 
 // =============================================================================
