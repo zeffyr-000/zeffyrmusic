@@ -11,6 +11,7 @@
   [resultFormatter]="resultFormatter"
   [resultTemplate]="resultTpl"
   (selectItem)="onSelect($event)"
+  (keydown.enter)="onSubmit()"
   [focusFirst]="false"
   #typeaheadInstance="ngbTypeahead"
 />

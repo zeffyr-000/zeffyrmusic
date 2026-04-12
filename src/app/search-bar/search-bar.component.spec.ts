@@ -191,6 +191,74 @@ describe('SearchBarComponent', () => {
     });
   });
 
+  describe('onSubmit', () => {
+    let routerSpy: ReturnType<typeof vi.spyOn>;
+    let dismissSpy: ReturnType<typeof vi.spyOn>;
+    let activeDescendantValue: string | null;
+
+    beforeEach(() => {
+      routerSpy = vi.spyOn(component['router'], 'navigate');
+      dismissSpy = vi.spyOn(component.typeaheadInstance, 'dismissPopup');
+      activeDescendantValue = null;
+      Object.defineProperty(component.typeaheadInstance, 'activeDescendant', {
+        get: () => activeDescendantValue,
+        set: (v: string | null) => {
+          activeDescendantValue = v;
+        },
+        configurable: true,
+      });
+    });
+
+    it('should navigate to /search/:query when query >= 2 chars and no active typeahead item', () => {
+      component.query.set('rock');
+
+      ngZone.run(() => {
+        component.onSubmit();
+      });
+
+      expect(component.query()).toBe('');
+      expect(dismissSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['/search', 'rock']);
+    });
+
+    it('should not navigate when query is less than 2 chars', () => {
+      component.query.set('a');
+
+      ngZone.run(() => {
+        component.onSubmit();
+      });
+
+      expect(routerSpy).not.toHaveBeenCalled();
+      expect(dismissSpy).not.toHaveBeenCalled();
+      expect(component.query()).toBe('a');
+    });
+
+    it('should not navigate when a typeahead item is active', () => {
+      component.query.set('rock');
+      activeDescendantValue = 'ngb-typeahead-0-0';
+
+      ngZone.run(() => {
+        component.onSubmit();
+      });
+
+      expect(routerSpy).not.toHaveBeenCalled();
+      expect(dismissSpy).not.toHaveBeenCalled();
+      expect(component.query()).toBe('rock');
+    });
+
+    it('should trim whitespace from query before navigating', () => {
+      component.query.set('  rock  ');
+
+      ngZone.run(() => {
+        component.onSubmit();
+      });
+
+      expect(component.query()).toBe('');
+      expect(dismissSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['/search', 'rock']);
+    });
+  });
+
   describe('searchTypeahead', () => {
     beforeEach(() => {
       vi.useFakeTimers();

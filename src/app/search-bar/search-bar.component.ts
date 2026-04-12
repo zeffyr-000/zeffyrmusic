@@ -50,6 +50,7 @@ export class SearchBarComponent {
   ) =>
     text$.pipe(
       debounceTime(300),
+      map(term => term.trim()),
       distinctUntilChanged(),
       filter(term => term.length >= 2),
       switchMap(term =>
@@ -124,6 +125,22 @@ export class SearchBarComponent {
 
     this.query.set('');
     this.router.navigate([item.navigateUrl]);
+  }
+
+  /** Handle Enter key — navigate to full search results if no typeahead item is active */
+  onSubmit(): void {
+    if (this.typeaheadInstance.activeDescendant) {
+      return;
+    }
+
+    const trimmed = this.query().trim();
+    if (trimmed.length < 2) {
+      return;
+    }
+
+    this.typeaheadInstance.dismissPopup();
+    this.query.set('');
+    this.router.navigate(['/search', trimmed]);
   }
 
   getQuerystr(): string {
