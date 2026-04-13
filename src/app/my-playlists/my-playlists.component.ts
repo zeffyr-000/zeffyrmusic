@@ -178,7 +178,7 @@ export class MyPlaylistsComponent implements OnInit {
     this.playlistService.getPlaylist('', idPlaylist).subscribe({
       next: playlist => {
         const modalRef = this.modalService.open(ExportPlaylistModalComponent, { size: 'lg' });
-        modalRef.componentInstance.tracks.set(playlist.tab_video);
+        modalRef.componentInstance.tracks.set(playlist.tab_video ?? []);
         modalRef.componentInstance.playlistTitle.set(titre);
       },
       error: () => {

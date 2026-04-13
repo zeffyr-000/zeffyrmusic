@@ -140,6 +140,14 @@ describe('errorInterceptor', () => {
     expect(loggingServiceMock.captureError).not.toHaveBeenCalled();
   });
 
+  it('should NOT report network errors (status 0) to LoggingService', () => {
+    http.get('/api/test').subscribe({ error: () => undefined });
+
+    httpTesting.expectOne('/api/test').error(new ProgressEvent('error'));
+
+    expect(loggingServiceMock.captureError).not.toHaveBeenCalled();
+  });
+
   it('should skip ping requests', () => {
     const showErrorSpy = vi.spyOn(uiStore, 'showError');
     const logoutSpy = vi.spyOn(authStore, 'logout');

@@ -10,7 +10,8 @@ import { sanitizeUrl } from '../utils';
 
 /**
  * Global HTTP error interceptor.
- * Handles 401, 403, 500+ and timeout errors centrally.
+ * Handles 0 (network/aborted failures), 401, 403, 500+ errors centrally.
+ * Skips Sentry reporting for non-actionable statuses (0, 401).
  * Individual services can still add their own catchError for specific handling.
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
@@ -27,8 +28,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      // Report to Sentry — skip 401 (session expiry is a normal flow)
-      if (error.status !== 401) {
+      // Report to Sentry — skip non-actionable statuses:
+      // - 401: session expiry is a normal user flow, not an error
+      // - 0: aborted request (navigation change, tab close, or network offline) — not a server issue
+      if (error.status !== 401 && error.status !== 0) {
         const path = sanitizeUrl(req.url);
         loggingService.captureError(new Error(`HTTP ${error.status} on ${req.method} ${path}`), {
           'http.url': path,
@@ -51,7 +54,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
 
         case 0:
-          // Network error or timeout
+          // Status 0: request aborted — network offline, navigation change, or timeout.
+          // Show user feedback but don't report to Sentry (filtered above).
           uiStore.showError(translocoService.translate('perte_connexion'));
           break;
 

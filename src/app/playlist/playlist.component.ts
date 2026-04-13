@@ -272,7 +272,7 @@ export class PlaylistComponent {
 
   openExportModal(): void {
     const modalRef = this.modalService.open(ExportPlaylistModalComponent, { size: 'lg' });
-    modalRef.componentInstance.tracks.set(this.playlist());
+    modalRef.componentInstance.tracks.set(this.playlist() ?? []);
     const exportTitle = this.isLikePage()
       ? this.translocoService.translate('mes_likes')
       : this.titre() || this.title();
