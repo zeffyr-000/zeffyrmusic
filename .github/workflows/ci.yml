@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.19.x
+          node-version: 22.x
           cache: 'npm'
 
       - name: Install dependencies
@@ -103,14 +103,12 @@ jobs:
             echo "SENTRY_AUTH_TOKEN not set, skipping source map upload"
             exit 0
           fi
+          npx @sentry/cli@2.42.2 sourcemaps inject dist/
           npx @sentry/cli@2.42.2 sourcemaps upload \
             --org zeffyr \
             --project zeffyrmusic \
             --release "zeffyrmusic@${{ github.sha }}" \
-            --url-prefix "~/" \
-            --strip-common-prefix \
-            --validate \
-            dist/browser/
+            dist/
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
