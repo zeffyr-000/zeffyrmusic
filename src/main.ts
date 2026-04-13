@@ -12,6 +12,7 @@ import { AppComponent } from './app/app.component';
 import { InitService } from './app/services/init.service';
 import { PlayerService } from './app/services/player.service';
 import { sanitizeUrl } from './app/utils';
+import { clearChunkRetryFlag } from './app/routing/chunk-error-handler';
 import type * as SentryAngular from '@sentry/angular';
 
 let Sentry: typeof SentryAngular | undefined;
@@ -42,6 +43,7 @@ if (environment.SENTRY_DSN) {
       if (
         message.includes('Java object is gone') ||
         message.includes('Failed to fetch dynamically imported module') ||
+        message.includes('Importing a module script failed') ||
         message.includes('Access is denied for this document')
       ) {
         return null;
@@ -79,4 +81,6 @@ bootstrapApplication(AppComponent, {
     InitService,
     PlayerService,
   ],
-}).catch(err => console.error(err));
+})
+  .then(() => clearChunkRetryFlag())
+  .catch(err => console.error(err));

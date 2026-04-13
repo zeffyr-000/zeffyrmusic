@@ -5,8 +5,14 @@ import { provideShareButtonsOptions, withConfig } from 'ngx-sharebuttons';
 import { shareIcons } from 'ngx-sharebuttons/icons';
 import { httpConfigInterceptor } from './interceptor/httpConfigInterceptor';
 import { errorInterceptor } from './interceptor/errorInterceptor';
-import { provideRouter, withPreloading, withViewTransitions } from '@angular/router';
+import {
+  provideRouter,
+  withNavigationErrorHandler,
+  withPreloading,
+  withViewTransitions,
+} from '@angular/router';
 import { CustomPreloadStrategy } from './routing/custom-preload.strategy';
+import { handleChunkLoadError } from './routing/chunk-error-handler';
 import { routes } from './app.routes';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
@@ -21,6 +27,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       withPreloading(CustomPreloadStrategy),
+      withNavigationErrorHandler(handleChunkLoadError),
       withViewTransitions({
         skipInitialTransition: true,
         onViewTransitionCreated: () => {

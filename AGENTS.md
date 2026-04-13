@@ -365,6 +365,8 @@ Every routed component must set title, meta description, and canonical URL via `
 
 All routes lazy-loaded except `HomeComponent`. Protected by `AuthGuard`: `like`, `settings`, `my-playlists`, `my-selection`.
 
+**Chunk loading error recovery** (`app.config.ts`): `withNavigationErrorHandler()` catches stale chunk errors after deployments (e.g. `TypeError: error loading dynamically imported module`). On first failure, it sets a `chunk-retry` item in `sessionStorage` and reloads the page. On second failure, it removes that item without reloading to prevent infinite loops. The item is also cleared after a successful bootstrap via `clearChunkRetryFlag()` in `main.ts`, so each deployment can benefit from a fresh retry.
+
 ## Design System
 
 CSS custom properties defined in `_custom.scss` `:root`:

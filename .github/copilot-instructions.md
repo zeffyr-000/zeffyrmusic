@@ -16,6 +16,7 @@
 - **English only** for comments — no French
 - **Vitest** for tests — not Jest/Jasmine
 - **Modern control flow**: `@if`, `@for`, `@switch` — not `*ngIf`, `*ngFor`
+- **Chunk error recovery**: `withNavigationErrorHandler()` in `app.config.ts` — auto-reloads once on stale chunk errors (post-deploy)
 
 ## Component Structure
 
