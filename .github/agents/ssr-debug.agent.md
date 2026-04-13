@@ -27,16 +27,15 @@ const commonEngine = new CommonEngine({
 
 ### Browser API Access Rules
 
-| Context           | Safe Pattern                                                  |
-| ----------------- | ------------------------------------------------------------- |
-| Stores            | `withSsrSafety()` — guards browser APIs with platform check   |
-| Components        | `isPlatformBrowser(inject(PLATFORM_ID))`                      |
-| Utility functions | `typeof globalThis.crypto?.getRandomValues === 'function'`    |
-| **NEVER**         | Direct `window.*`, `document.*`, `localStorage.*`, `crypto.*` |
+| Context    | Safe Pattern                                                |
+| ---------- | ----------------------------------------------------------- |
+| Stores     | `withSsrSafety()` — guards browser APIs with platform check |
+| Components | `isPlatformBrowser(inject(PLATFORM_ID))`                    |
+| **NEVER**  | Direct `window.*`, `document.*`, `localStorage.*`           |
 
 ### Node Version Requirement
 
-Node **≥ 20** is required. Node 18 has no `globalThis.crypto`.
+Node **≥ 22** is required (see `package.json` `engines` field).
 After Node upgrade on production: `sudo pm2 kill` then restart.
 
 ### Debugging Checklist
@@ -45,8 +44,7 @@ After Node upgrade on production: `sudo pm2 kill` then restart.
 2. **Hydration mismatch?** → Check for browser-only code running on server
 3. **Store crash on server?** → Verify `withSsrSafety()` is present
 4. **`ReferenceError: window is not defined`?** → Find the offending access, wrap with platform check
-5. **`crypto is not defined`?** → Check Node version (must be ≥ 20)
-6. **PM2 not picking up changes?** → `sudo pm2 kill` then restart
+5. **PM2 not picking up changes?** → `sudo pm2 kill` then restart
 
 ### Production Investigation
 

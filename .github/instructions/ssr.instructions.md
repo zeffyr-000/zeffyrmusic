@@ -54,7 +54,7 @@ const commonEngine = new CommonEngine({
 
 ## Browser API Safety
 
-Node.js has no `window`, `document`, `localStorage`, or full `crypto` API. Code that runs during SSR must not access these directly.
+Node.js does not provide browser DOM APIs such as `window`, `document`, or `localStorage`. While Node 22+ exposes a global `navigator`, it is not a browser `navigator` and must not be relied on for browser behavior during SSR. `globalThis.crypto` is fully available in Node ≥ 22 and requires no fallback. Code that runs during SSR must not access browser-only globals directly.
 
 ### In Stores: use `withSsrSafety()`
 
@@ -89,55 +89,40 @@ ngOnInit(): void {
 }
 ```
 
-### In Utility Functions: defensive checks
+### In Utility Functions: use `globalThis.crypto` directly
+
+`globalThis.crypto` is available in Node ≥ 22 and all modern browsers. No fallback needed.
 
 ```typescript
-// ✅ Correct — deterministic fallback when crypto unavailable (SSR)
+// ✅ Correct — crypto available in Node 22+ and browsers
 function getRandomIntInclusive(max: number, buffer: Uint32Array): number {
-  if (typeof globalThis.crypto?.getRandomValues === 'function') {
-    const range = max + 1;
-    const limit = Math.floor(0x100000000 / range) * range - 1;
-    while (true) {
-      globalThis.crypto.getRandomValues(buffer);
-      if (buffer[0] <= limit) {
-        return buffer[0] % range;
-      }
+  const range = max + 1;
+  const limit = Math.floor(0x100000000 / range) * range - 1;
+  while (true) {
+    globalThis.crypto.getRandomValues(buffer);
+    if (buffer[0] <= limit) {
+      return buffer[0] % range;
     }
   }
-  // Return max so j === i → no swap in Fisher-Yates (array unchanged)
-  return max;
 }
 
-// ✅ Correct — deterministic counter fallback (no Math.random, no Date.now)
-// Counter is scoped inside withMethods closure, not at module level
-export const MyStore = signalStore(
-  { providedIn: 'root' },
-  withMethods(store => {
-    let notificationCounter = 0;
-    return {
-      addNotification(message: string): void {
-        const id = globalThis.crypto?.randomUUID?.() ?? `notification-${++notificationCounter}`;
-        // ...
-      },
-    };
-  })
-);
+// ✅ Correct — globalThis.crypto.randomUUID() available in Node 22+
+const id = globalThis.crypto.randomUUID();
 ```
 
 ### Forbidden in SSR Context
 
 ```typescript
-// ❌ Never access directly — crashes on server
+// ❌ Browser-only globals — unavailable or unreliable in SSR
 window.scrollTo(0, 0);
 document.getElementById('el');
 localStorage.getItem('key');
-navigator.userAgent;
-crypto.getRandomValues(buffer); // Not available in Node < 20
+navigator.userAgent; // Exists in Node 22+ but not a browser navigator
 ```
 
 ## Production Deployment Checklist
 
-1. **Node version**: Must be ≥ 20.x (check `package.json` `engines` field). Node 18 lacks `globalThis.crypto`.
+1. **Node version**: Must be ≥ 22.x (see `package.json` `engines` field).
 2. **Build**: `npm run build` — produces `dist/zeffyr-music/server/` and `dist/zeffyr-music/browser/`
 3. **PM2 restart**: After Node upgrade, `sudo pm2 kill` then restart — PM2 daemon caches the old Node binary
 4. **Verify SSR**:
@@ -148,10 +133,9 @@ crypto.getRandomValues(buffer); // Not available in Node < 20
 
 ## SSR Debugging
 
-| Symptom                                                           | Likely Cause                       | Fix                                                     |
-| ----------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------- |
-| Page loads but no SSR content (empty `<app-root>`)                | Missing hostname in `allowedHosts` | Add hostname to `CommonEngine` config                   |
-| `Cannot read properties of undefined (reading 'getRandomValues')` | Node < 20, no `globalThis.crypto`  | Upgrade Node to ≥ 20 or add fallback                    |
-| `ReferenceError: window is not defined`                           | Direct browser API access in SSR   | Guard with `isPlatformBrowser` or `isBrowser()`         |
-| SSR works locally but not in production                           | PM2 still running old Node binary  | `sudo pm2 kill` then restart                            |
-| `allowedHosts` error in PM2 logs                                  | New domain/IP not in config        | Add domain or IP to `allowedHosts` array in `server.ts` |
+| Symptom                                            | Likely Cause                       | Fix                                                     |
+| -------------------------------------------------- | ---------------------------------- | ------------------------------------------------------- |
+| Page loads but no SSR content (empty `<app-root>`) | Missing hostname in `allowedHosts` | Add hostname to `CommonEngine` config                   |
+| `ReferenceError: window is not defined`            | Direct browser API access in SSR   | Guard with `isPlatformBrowser` or `isBrowser()`         |
+| SSR works locally but not in production            | PM2 still running old Node binary  | `sudo pm2 kill` then restart                            |
+| `allowedHosts` error in PM2 logs                   | New domain/IP not in config        | Add domain or IP to `allowedHosts` array in `server.ts` |

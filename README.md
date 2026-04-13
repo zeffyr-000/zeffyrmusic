@@ -92,7 +92,7 @@
 
 ## 📋 Prerequisites
 
-- **Node.js** >= 20.x
+- **Node.js** >= 22.x
 - **npm** >= 10.x
 - **Angular CLI** >= 21.x
 
