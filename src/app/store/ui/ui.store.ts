@@ -26,8 +26,6 @@ export const UiStore = signalStore(
   })),
 
   withMethods(store => {
-    let notificationCounter = 0;
-
     return {
       expandPlayer(): void {
         patchState(store, { isPlayerExpanded: true });
@@ -80,7 +78,7 @@ export const UiStore = signalStore(
       },
 
       showNotification(notification: Omit<Notification, 'id'>): string {
-        const id = globalThis.crypto?.randomUUID?.() ?? `notification-${++notificationCounter}`;
+        const id = globalThis.crypto.randomUUID();
         const newNotification: Notification = { ...notification, id };
 
         patchState(store, {

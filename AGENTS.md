@@ -169,22 +169,19 @@ message: this.translocoService.translate('validation_minlength', { min: 4 });
 **CommonEngine `allowedHosts`** (since `@angular/ssr` 21.2.2):
 Every production hostname/IP must be listed in `allowedHosts` in `src/server.ts`.
 Missing entries cause **silent fallback to CSR** — no browser-visible error.
-Public server IPs are auto-detected via `os.networkInterfaces()` at startup (private/link-local ranges excluded).
+The server public IP is hardcoded because it sits behind NAT and is not visible via `os.networkInterfaces()`.
 
 ```typescript
-// src/server.ts — domains in code, public server IPs auto-detected
-import { networkInterfaces } from 'node:os';
-import { isIP } from 'node:net';
-
-const privateRanges = [/^10\./, /^172\.(1[6-9]|2\d|3[01])\./, /^192\.168\./, /^169\.254\./];
-const publicIps = Object.values(networkInterfaces())
-  .flat()
-  .filter((info): info is NonNullable<typeof info> => info != null && !info.internal)
-  .map(info => info.address)
-  .filter(addr => isIP(addr) === 4 && !privateRanges.some(re => re.test(addr)));
-
+// src/server.ts — static allowedHosts list
 const commonEngine = new CommonEngine({
-  allowedHosts: ['www.zeffyrmusic.com', 'zeffyrmusic.com', 'localhost', ...publicIps],
+  allowedHosts: [
+    'www.zeffyrmusic.com',
+    'zeffyrmusic.com',
+    'data.zeffyrmusic.com',
+    '146.59.155.20', // Server public IP (NAT — not visible via networkInterfaces())
+    '127.0.0.1',
+    'localhost',
+  ],
 });
 ```
 
@@ -199,15 +196,13 @@ export const MyStore = signalStore(
 );
 
 // ✅ Components: use isPlatformBrowser(platformId)
-// ✅ Utility functions: defensive check (typeof globalThis.crypto?.getRandomValues === 'function')
 
 // ❌ Never access directly — crashes on server
 window.localStorage.getItem('key');
 document.getElementById('el');
-crypto.getRandomValues(buffer); // Node < 20 has no globalThis.crypto
 ```
 
-**Production requirements:** Node ≥ 20 (no `globalThis.crypto` in Node 18). After Node upgrade: `sudo pm2 kill` then restart.
+**Production requirements:** Node ≥ 22. After Node upgrade: `sudo pm2 kill` then restart.
 
 ### 6. CSS — YouTube Player (CRITICAL)
 
