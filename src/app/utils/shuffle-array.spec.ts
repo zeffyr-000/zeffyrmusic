@@ -41,14 +41,14 @@ describe('shuffleArray', () => {
   it('should produce a deterministic shuffle with mocked crypto', () => {
     let callIndex = 0;
     const values = [2, 0, 1, 0];
-    vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(
-      (buffer: ArrayBufferView | null) => {
-        if (buffer instanceof Uint32Array) {
-          buffer[0] = values[callIndex++ % values.length];
-        }
-        return buffer!;
+    vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation((<T extends ArrayBufferView>(
+      buffer: T
+    ): T => {
+      if (buffer instanceof Uint32Array) {
+        buffer[0] = values[callIndex++ % values.length];
       }
-    );
+      return buffer;
+    }) as typeof globalThis.crypto.getRandomValues);
 
     const result = shuffleArray([10, 20, 30, 40, 50]);
 

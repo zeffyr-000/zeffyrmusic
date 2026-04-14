@@ -1,6 +1,18 @@
 {
+  // --- Formatting & Indentation ---
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // --- Angular ---
   "angular.enable-strict-mode-prompt": false,
   "angular.experimental.autoStartMCP": true,
+
+  // --- Prettier ---
   "prettier.prettierPath": "./node_modules/prettier/index.cjs",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -22,5 +34,22 @@
   },
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // --- TypeScript ---
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+
+  // --- Editor ---
+  "editor.linkedEditing": true,
+
+  // --- Search & Explorer ---
+  "search.exclude": {
+    "**/dist": true,
+    "**/coverage": true,
+    "**/playwright-report": true,
+    "**/.angular": true
+  },
+  "files.exclude": {
+    "**/.angular": true
   }
 }

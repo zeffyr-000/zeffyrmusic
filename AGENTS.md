@@ -60,7 +60,7 @@ src/app/
 │   ├── queue/               # QueueStore
 │   ├── user-data/           # UserDataStore
 │   └── ui/                  # UiStore
-├── services/                 # 14 services (all with specs)
+├── services/                 # 19 services (all with specs)
 │   ├── init.service.ts      # App bootstrap, session, ping
 │   ├── player.service.ts    # Playback orchestration
 │   ├── youtube-player.service.ts  # YouTube IFrame API wrapper
