@@ -7,7 +7,7 @@ Music streaming app — Angular 21, SSR, zoneless, OnPush, @ngrx/signals.
 - @ngrx/signals 21.0.1 (Signal Stores for state management)
 - Bootstrap 5.3.8 + ng-bootstrap 20 (UI framework)
 - Transloco 8.2 + MessageFormat (i18n: fr/en)
-- Vitest 4.x (unit tests), Cypress 15.x (E2E)
+- Vitest 4.x (unit tests), Playwright 1.x (E2E)
 - Signal Forms (@angular/forms/signals) for forms
 - YouTube IFrame API (music playback)
 
@@ -26,7 +26,7 @@ Music streaming app — Angular 21, SSR, zoneless, OnPush, @ngrx/signals.
 
 ## Architecture
 - 5 Signal Stores: AuthStore, PlayerStore, QueueStore, UserDataStore, UiStore
-- 13 Services: HTTP calls + business logic only (no state)
+- 19 Services: HTTP calls + business logic only (no state)
 - 4 Skeleton components: skeleton-card, skeleton-list, skeleton-artist, skeleton-playlist
 - Empty state pattern: .empty-state + .empty-state-icon + .empty-state-text
 - Modal alert system: .modal-alert + variants (-danger, -success, -warning, -info)
