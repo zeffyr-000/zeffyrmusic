@@ -45,6 +45,22 @@ interface StatCard {
   value: number;
 }
 
+interface DistributionItem {
+  labelKey: string;
+  count: number;
+  percent: number;
+}
+
+const LANG_LABEL_MAP: Record<string, string> = {
+  fr: 'admin_dashboard_lang_fr_FR',
+  en: 'admin_dashboard_lang_en_US',
+};
+
+const DARK_MODE_LABEL_MAP: Record<string, string> = {
+  enabled: 'admin_dashboard_dark_mode_on',
+  disabled: 'admin_dashboard_dark_mode_off',
+};
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -139,6 +155,32 @@ export class DashboardComponent implements OnInit {
         value: s.likesLast24h,
       },
     ];
+  });
+
+  readonly langItems = computed<DistributionItem[]>(() => {
+    const s = this.stats();
+    if (!s) return [];
+    const total = Object.values(s.usersByLanguage).reduce((sum, v) => sum + v, 0);
+    return Object.entries(s.usersByLanguage)
+      .map(([key, count]) => ({
+        labelKey: LANG_LABEL_MAP[key] ?? key,
+        count,
+        percent: total > 0 ? Math.round((count / total) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
+  });
+
+  readonly darkModeItems = computed<DistributionItem[]>(() => {
+    const s = this.stats();
+    if (!s) return [];
+    const total = Object.values(s.usersByDarkMode).reduce((sum, v) => sum + v, 0);
+    return Object.entries(s.usersByDarkMode)
+      .map(([key, count]) => ({
+        labelKey: DARK_MODE_LABEL_MAP[key] ?? key,
+        count,
+        percent: total > 0 ? Math.round((count / total) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
   });
 
   readonly signupChartData = computed<ChartConfiguration<'line'>['data']>(() => {

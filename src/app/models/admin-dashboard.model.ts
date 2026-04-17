@@ -21,6 +21,10 @@ export interface DashboardStats {
   totalLikes: number; // ← total_likes
   playlistsCreatedLast24h: number; // ← playlists_created_24h
   likesLast24h: number; // ← likes_24h
+
+  // Preferences
+  usersByLanguage: Record<string, number>; // ← users_by_language
+  usersByDarkMode: Record<string, number>; // ← users_by_dark_mode
 }
 
 export interface GrowthPoint {
@@ -51,6 +55,8 @@ export interface DashboardApiResponse {
     total_likes: number;
     playlists_created_24h: number;
     likes_24h: number;
+    users_by_language: Record<string, number>;
+    users_by_dark_mode: Record<string, number>;
   };
   growth: {
     signups: { date: string; count: number }[];

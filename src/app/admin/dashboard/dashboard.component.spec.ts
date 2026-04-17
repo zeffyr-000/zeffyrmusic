@@ -27,6 +27,8 @@ describe('DashboardComponent', () => {
       totalLikes: 15000,
       playlistsCreatedLast24h: 5,
       likesLast24h: 42,
+      usersByLanguage: { fr: 120, en: 45 },
+      usersByDarkMode: { enabled: 80, disabled: 90 },
     },
     growth: {
       signups: [
@@ -162,5 +164,41 @@ describe('DashboardComponent', () => {
     const chartData = component.signupChartData();
     expect(chartData.labels).toEqual([]);
     expect(chartData.datasets).toEqual([]);
+  });
+
+  it('should build langItems with correct percentages and order', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const items = component.langItems();
+    expect(items).toHaveLength(2);
+    // fr has 120 / 165 = 73%
+    expect(items[0].labelKey).toBe('admin_dashboard_lang_fr_FR');
+    expect(items[0].count).toBe(120);
+    expect(items[0].percent).toBe(73);
+    // en has 45 / 165 = 27%
+    expect(items[1].labelKey).toBe('admin_dashboard_lang_en_US');
+    expect(items[1].count).toBe(45);
+    expect(items[1].percent).toBe(27);
+  });
+
+  it('should build darkModeItems with correct label keys', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const items = component.darkModeItems();
+    expect(items).toHaveLength(2);
+    // disabled (90) > enabled (80)
+    expect(items[0].labelKey).toBe('admin_dashboard_dark_mode_off');
+    expect(items[0].count).toBe(90);
+    expect(items[0].percent).toBe(53);
+    expect(items[1].labelKey).toBe('admin_dashboard_dark_mode_on');
+    expect(items[1].count).toBe(80);
+    expect(items[1].percent).toBe(47);
+  });
+
+  it('should return empty distribution items when stats is null', () => {
+    expect(component.langItems()).toEqual([]);
+    expect(component.darkModeItems()).toEqual([]);
   });
 });

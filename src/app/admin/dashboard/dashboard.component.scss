@@ -115,6 +115,49 @@
   }
 }
 
+// Distribution cards (language & dark mode)
+.distribution-card {
+  border-radius: var(--radius-lg);
+  height: 100%;
+
+  .card-body {
+    padding: var(--spacing-md);
+  }
+}
+
+.distribution-card__title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+.distribution-item {
+  margin-bottom: var(--spacing-md);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.distribution-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--text-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.distribution-label__count {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.distribution-label__percent {
+  font-weight: 400;
+  color: var(--bs-secondary-color);
+  margin-left: var(--spacing-xs);
+}
+
 // Responsive
 @media (max-width: 575.98px) {
   .chart-wrapper {
