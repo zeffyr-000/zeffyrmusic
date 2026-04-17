@@ -560,5 +560,12 @@
   "admin_dashboard_total_likes": "Likes",
   "admin_dashboard_playlists_created_24h": "Playlists créées (24h)",
   "admin_dashboard_likes_24h": "Likes (24h)",
-  "admin_dashboard_signups_chart": "Inscriptions (30 derniers jours)"
+  "admin_dashboard_signups_chart": "Inscriptions (30 derniers jours)",
+  "admin_dashboard_section_preferences": "Préférences utilisateurs",
+  "admin_dashboard_preferences_language": "Langue",
+  "admin_dashboard_preferences_dark_mode": "Mode sombre",
+  "admin_dashboard_lang_fr_FR": "Français (fr_FR)",
+  "admin_dashboard_lang_en_US": "Anglais (en_US)",
+  "admin_dashboard_dark_mode_on": "Activé",
+  "admin_dashboard_dark_mode_off": "Désactivé"
 }

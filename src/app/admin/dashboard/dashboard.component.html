@@ -119,6 +119,85 @@
       </div>
     </section>
 
+    <!-- Preferences section -->
+    @if (langItems().length || darkModeItems().length) {
+      <section class="stats-section">
+        <h2 class="section-title">
+          <span class="material-icons" aria-hidden="true">tune</span>
+          {{ 'admin_dashboard_section_preferences' | transloco }}
+        </h2>
+        <div class="row g-3">
+          <!-- Language distribution -->
+          @if (langItems().length) {
+            <div class="col-md-6">
+              <div class="card distribution-card">
+                <div class="card-body">
+                  <h3 class="distribution-card__title">
+                    {{ 'admin_dashboard_preferences_language' | transloco }}
+                  </h3>
+                  @for (item of langItems(); track item.labelKey) {
+                    <div class="distribution-item">
+                      <div class="distribution-label">
+                        <span>{{ item.labelKey | transloco }}</span>
+                        <span class="distribution-label__count">
+                          {{ item.count | number: '' : 'fr' }}
+                          <span class="distribution-label__percent">({{ item.percent }}%)</span>
+                        </span>
+                      </div>
+                      <div
+                        class="progress"
+                        role="progressbar"
+                        [attr.aria-label]="(item.labelKey | transloco) + ' ' + item.percent + '%'"
+                        [attr.aria-valuenow]="item.percent"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
+                        <div class="progress-bar bg-primary" [style.width.%]="item.percent"></div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Dark mode distribution -->
+          @if (darkModeItems().length) {
+            <div class="col-md-6">
+              <div class="card distribution-card">
+                <div class="card-body">
+                  <h3 class="distribution-card__title">
+                    {{ 'admin_dashboard_preferences_dark_mode' | transloco }}
+                  </h3>
+                  @for (item of darkModeItems(); track item.labelKey) {
+                    <div class="distribution-item">
+                      <div class="distribution-label">
+                        <span>{{ item.labelKey | transloco }}</span>
+                        <span class="distribution-label__count">
+                          {{ item.count | number: '' : 'fr' }}
+                          <span class="distribution-label__percent">({{ item.percent }}%)</span>
+                        </span>
+                      </div>
+                      <div
+                        class="progress"
+                        role="progressbar"
+                        [attr.aria-label]="(item.labelKey | transloco) + ' ' + item.percent + '%'"
+                        [attr.aria-valuenow]="item.percent"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
+                        <div class="progress-bar bg-secondary" [style.width.%]="item.percent"></div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
     <!-- Growth chart -->
     @if (growth()) {
       <section class="stats-section">

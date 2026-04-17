@@ -30,6 +30,8 @@ export class AdminDashboardService {
         totalLikes: raw.stats.total_likes,
         playlistsCreatedLast24h: raw.stats.playlists_created_24h,
         likesLast24h: raw.stats.likes_24h,
+        usersByLanguage: raw.stats.users_by_language,
+        usersByDarkMode: raw.stats.users_by_dark_mode,
       },
       growth: {
         signups: raw.growth.signups,

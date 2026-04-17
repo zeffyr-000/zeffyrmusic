@@ -569,11 +569,16 @@
 // =============================================================================
 
 .admin-only-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1rem;
   vertical-align: middle;
   margin-left: var(--spacing-xs);
+  padding: 2px;
   color: rgb(var(--bs-primary-rgb));
-  opacity: 0.85;
+  background-color: var(--bs-dark);
+  border-radius: var(--radius-sm);
 }
 
 // =============================================================================
@@ -1102,6 +1107,11 @@ a.card,
   }
 
   &:hover .material-icons {
+    opacity: 1;
+  }
+
+  // Admin badge: always fully visible regardless of hover state
+  .admin-only-icon {
     opacity: 1;
   }
 

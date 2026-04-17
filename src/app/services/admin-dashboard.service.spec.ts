@@ -23,6 +23,8 @@ describe('AdminDashboardService', () => {
       total_likes: 15000,
       playlists_created_24h: 5,
       likes_24h: 42,
+      users_by_language: { fr: 120, en: 45 },
+      users_by_dark_mode: { enabled: 80, disabled: 90 },
     },
     growth: {
       signups: [
@@ -66,6 +68,8 @@ describe('AdminDashboardService', () => {
       expect(data.stats.totalLikes).toBe(15000);
       expect(data.stats.playlistsCreatedLast24h).toBe(5);
       expect(data.stats.likesLast24h).toBe(42);
+      expect(data.stats.usersByLanguage).toEqual({ fr: 120, en: 45 });
+      expect(data.stats.usersByDarkMode).toEqual({ enabled: 80, disabled: 90 });
       expect(data.growth.signups).toHaveLength(2);
       expect(data.growth.signups[0]).toEqual({ date: '2026-03-01', count: 3 });
     });
