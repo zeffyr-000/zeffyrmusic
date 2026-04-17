@@ -128,13 +128,25 @@ describe('LyricsPanelComponent', () => {
     expect(component.activeLineIndex()).toBe(-1);
   });
 
-  it('should set error on lyrics_not_found', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: { error: 'lyrics_not_found' },
-      status: 404,
-      statusText: 'Not Found',
-    });
-    lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => errorResponse));
+  it('should set error on lyrics_not_found (success: false)', () => {
+    const notAvailableResponse: LyricsResponse = {
+      success: false,
+      error: 'lyrics_not_found',
+    };
+    lyricsServiceMock.getLyrics.mockReturnValue(of(notAvailableResponse));
+    queueStore.setQueue([mockVideo], '1');
+    fixture.detectChanges();
+
+    expect(component.error()).toBe('lyrics_none');
+    expect(component.isLoading()).toBe(false);
+  });
+
+  it('should set error on no_metadata (success: false)', () => {
+    const notAvailableResponse: LyricsResponse = {
+      success: false,
+      error: 'no_metadata',
+    };
+    lyricsServiceMock.getLyrics.mockReturnValue(of(notAvailableResponse));
     queueStore.setQueue([mockVideo], '1');
     fixture.detectChanges();
 
@@ -190,12 +202,11 @@ describe('LyricsPanelComponent', () => {
   });
 
   it('should reset state when no video is present', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: { error: 'lyrics_not_found' },
-      status: 404,
-      statusText: 'Not Found',
-    });
-    lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => errorResponse));
+    const notAvailableResponse: LyricsResponse = {
+      success: false,
+      error: 'lyrics_not_found',
+    };
+    lyricsServiceMock.getLyrics.mockReturnValue(of(notAvailableResponse));
     queueStore.setQueue([mockVideo], '1');
     fixture.detectChanges();
     expect(component.error()).toBe('lyrics_none');

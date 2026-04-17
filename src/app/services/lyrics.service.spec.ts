@@ -45,8 +45,11 @@ describe('LyricsService', () => {
 
     service.getLyrics('12345').subscribe(data => {
       expect(data).toEqual(mockResponse);
-      expect(data.synced).toBe(true);
-      expect(data.lines).toHaveLength(2);
+      expect(data.success).toBe(true);
+      if (data.success) {
+        expect(data.synced).toBe(true);
+        expect(data.lines).toHaveLength(2);
+      }
     });
 
     const req = httpMock.expectOne(environment.URL_SERVER + 'lyrics/12345');
@@ -65,9 +68,12 @@ describe('LyricsService', () => {
     };
 
     service.getLyrics('67890').subscribe(data => {
-      expect(data.synced).toBe(false);
-      expect(data.lines).toBeNull();
-      expect(data.plainLyrics).toBeTruthy();
+      expect(data.success).toBe(true);
+      if (data.success) {
+        expect(data.synced).toBe(false);
+        expect(data.lines).toBeNull();
+        expect(data.plainLyrics).toBeTruthy();
+      }
     });
 
     const req = httpMock.expectOne(environment.URL_SERVER + 'lyrics/67890');
@@ -83,7 +89,31 @@ describe('LyricsService', () => {
     });
 
     const req = httpMock.expectOne(environment.URL_SERVER + 'lyrics/99999');
-    req.flush({ error: 'lyrics_not_found' }, { status: 404, statusText: 'Not Found' });
+    req.flush({ error: 'not_found' }, { status: 404, statusText: 'Not Found' });
+  });
+
+  it('should return and cache success:false responses (lyrics not available)', () => {
+    const notAvailableResponse: LyricsResponse = {
+      success: false,
+      error: 'lyrics_not_found',
+    };
+
+    service.getLyrics('no-lyrics').subscribe(data => {
+      expect(data.success).toBe(false);
+      if (!data.success) {
+        expect(data.error).toBe('lyrics_not_found');
+      }
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'lyrics/no-lyrics');
+    req.flush(notAvailableResponse);
+
+    // Second call — should use cache, no HTTP request
+    service.getLyrics('no-lyrics').subscribe(data => {
+      expect(data.success).toBe(false);
+    });
+
+    httpMock.expectNone(environment.URL_SERVER + 'lyrics/no-lyrics');
   });
 
   it('should encode the video ID in the URL', () => {
@@ -136,7 +166,7 @@ describe('LyricsService', () => {
     });
 
     const req1 = httpMock.expectOne(environment.URL_SERVER + 'lyrics/error-id');
-    req1.flush({ error: 'lyrics_not_found' }, { status: 404, statusText: 'Not Found' });
+    req1.flush({ error: 'not_found' }, { status: 404, statusText: 'Not Found' });
 
     // Second call — should hit HTTP again (not cached)
     service.getLyrics('error-id').subscribe();

@@ -11,9 +11,9 @@ export interface LyricsLine {
   text: string;
 }
 
-/** Successful lyrics response from GET /api/lyrics/:id_video */
-export interface LyricsResponse {
-  success: boolean;
+/** Successful lyrics response with data */
+export interface LyricsSuccessResponse {
+  success: true;
   /** Whether synchronized (timed) lyrics are available */
   synced: boolean;
   /** Pre-parsed synced lines. `null` when `synced` is `false` */
@@ -26,11 +26,11 @@ export interface LyricsResponse {
   artistName: string | null;
 }
 
-/** Error codes returned by the lyrics API */
-export type LyricsErrorCode =
-  | 'invalid_id_video'
-  | 'forbidden'
-  | 'not_found'
-  | 'no_metadata'
-  | 'lyrics_not_found'
-  | 'lrclib_unavailable';
+/** HTTP 200 response indicating lyrics are not available */
+export interface LyricsNotAvailableResponse {
+  success: false;
+  error: 'no_metadata' | 'lyrics_not_found';
+}
+
+/** API response from GET /api/lyrics/:id_video */
+export type LyricsResponse = LyricsSuccessResponse | LyricsNotAvailableResponse;
