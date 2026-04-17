@@ -18,7 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Subject, switchMap, catchError, EMPTY } from 'rxjs';
 import { LyricsService } from '../services/lyrics.service';
-import { LyricsLine, LyricsErrorCode } from '../models/lyrics.model';
+import { LyricsLine } from '../models/lyrics.model';
 import { PlayerStore, QueueStore, UiStore } from '../store';
 
 /**
@@ -130,7 +130,7 @@ export class LyricsPanelComponent {
           return this.lyricsService.getLyrics(idVideo).pipe(
             catchError((err: HttpErrorResponse) => {
               this.isLoading.set(false);
-              this.error.set(this.mapErrorToTranslationKey(err));
+              this.error.set(this.mapErrorToTranslationKey(err.error?.error));
               return EMPTY;
             })
           );
@@ -139,6 +139,10 @@ export class LyricsPanelComponent {
       )
       .subscribe(response => {
         this.isLoading.set(false);
+        if (!response.success) {
+          this.error.set(this.mapErrorToTranslationKey(response.error));
+          return;
+        }
         this.isSynced.set(response.synced);
         this.lines.set(response.lines);
         this.plainLyrics.set(response.plainLyrics);
@@ -255,9 +259,7 @@ export class LyricsPanelComponent {
     this.isLoading.set(false);
   }
 
-  private mapErrorToTranslationKey(err: HttpErrorResponse): string {
-    const code = err.error?.error as LyricsErrorCode | undefined;
-
+  private mapErrorToTranslationKey(code: string | undefined): string {
     switch (code) {
       case 'lyrics_not_found':
       case 'no_metadata':
