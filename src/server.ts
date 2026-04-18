@@ -20,6 +20,16 @@ if (environment.SENTRY_DSN) {
     tracesSampleRate: 0.2,
     sendDefaultPii: false,
     beforeSend(event) {
+      // Drop SSR hostname rejection errors — caused by security scanners (Censys, Shodan)
+      // hitting the VPS hostname directly. The hostname guard middleware handles these at
+      // the Express level; this filter is a defensive fallback for any that slip through.
+      const isHostnameRejection = event.exception?.values?.some(
+        ex => ex.value?.includes('URL with hostname') && ex.value?.includes('is not allowed')
+      );
+      if (isHostnameRejection) {
+        return null;
+      }
+
       if (event.request?.url) {
         try {
           const url = new URL(event.request.url);
@@ -41,19 +51,34 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 
 const app = express();
 
+const ALLOWED_HOSTS = new Set([
+  'www.zeffyrmusic.com',
+  'zeffyrmusic.com',
+  'data.zeffyrmusic.com',
+  '146.59.155.20', // Server public IP (NAT — not visible via networkInterfaces())
+  '127.0.0.1',
+  'localhost',
+]);
+
 const commonEngine = new CommonEngine({
-  allowedHosts: [
-    'www.zeffyrmusic.com',
-    'zeffyrmusic.com',
-    'data.zeffyrmusic.com',
-    '146.59.155.20', // Server public IP (NAT — not visible via networkInterfaces())
-    '127.0.0.1',
-    'localhost',
-  ],
+  allowedHosts: [...ALLOWED_HOSTS],
 });
 
 app.disable('x-powered-by');
 app.set('etag', false);
+
+// Hostname guard — runs before all other middleware to silently drop requests from
+// security scanners (Censys, Shodan, Nmap) that hit the VPS hostname directly or send
+// no Host header (hostname becomes undefined). Destroying the socket avoids confirming
+// that a server is running, preventing technology fingerprinting by scanners.
+app.use((req, _res, next) => {
+  if (ALLOWED_HOSTS.has(req.hostname)) {
+    next();
+    return;
+  }
+  req.socket.destroy();
+});
+
 app.use(cookieParser());
 
 // Hashed static assets (JS, CSS, hashed fonts) — long-lived immutable cache.
