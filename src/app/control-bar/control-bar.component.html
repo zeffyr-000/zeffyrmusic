@@ -71,10 +71,12 @@
         type="button"
         class="cb-btn-icon cb-btn-play"
         (click)="onPlayPause()"
-        [attr.aria-label]="playerStore.isPlaying() ? ('pause' | transloco) : ('lire' | transloco)"
+        [attr.aria-label]="
+          playerStore.showPauseIcon() ? ('pause' | transloco) : ('lire' | transloco)
+        "
       >
         <span class="material-icons" aria-hidden="true">{{
-          playerStore.isPlaying() ? 'pause' : 'play_arrow'
+          playerStore.showPauseIcon() ? 'pause' : 'play_arrow'
         }}</span>
       </button>
       <button

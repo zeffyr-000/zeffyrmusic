@@ -20,6 +20,9 @@ export const PlayerStore = signalStore(
     isPaused: computed(() => state.status() === 'paused'),
     isLoading: computed(() => state.status() === 'loading'),
     hasError: computed(() => state.status() === 'error'),
+    showPauseIcon: computed(
+      () => state.status() === 'playing' || (state.status() === 'loading' && state.wasPlaying())
+    ),
 
     progress: computed(() => {
       const duration = state.duration();
@@ -42,16 +45,16 @@ export const PlayerStore = signalStore(
     },
 
     play(): void {
-      patchState(store, { status: 'playing' });
+      patchState(store, { status: 'playing', wasPlaying: true });
     },
 
     pause(): void {
-      patchState(store, { status: 'paused' });
+      patchState(store, { status: 'paused', wasPlaying: false });
     },
 
     togglePlay(): boolean {
       const isPlaying = store.status() === 'playing';
-      patchState(store, { status: isPlaying ? 'paused' : 'playing' });
+      patchState(store, { status: isPlaying ? 'paused' : 'playing', wasPlaying: !isPlaying });
       return !isPlaying;
     },
 
@@ -60,7 +63,7 @@ export const PlayerStore = signalStore(
     },
 
     setEnded(): void {
-      patchState(store, { status: 'ended' });
+      patchState(store, { status: 'ended', wasPlaying: false });
     },
 
     setIdle(): void {

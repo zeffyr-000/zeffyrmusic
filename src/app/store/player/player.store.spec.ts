@@ -142,6 +142,55 @@ describe('PlayerStore', () => {
     });
   });
 
+  describe('showPauseIcon', () => {
+    it('should be false initially', () => {
+      expect(store.showPauseIcon()).toBe(false);
+    });
+
+    it('should be true when playing', () => {
+      store.play();
+      expect(store.showPauseIcon()).toBe(true);
+    });
+
+    it('should stay true during buffering after play (seek scenario)', () => {
+      store.play();
+      store.setLoading();
+      expect(store.showPauseIcon()).toBe(true);
+    });
+
+    it('should stay true during buffering after track change while playing', () => {
+      store.play();
+      store.setIdle(); // UNSTARTED from YouTube
+      store.setLoading(); // BUFFERING from YouTube
+      expect(store.showPauseIcon()).toBe(true);
+    });
+
+    it('should be false when paused', () => {
+      store.play();
+      store.pause();
+      expect(store.showPauseIcon()).toBe(false);
+    });
+
+    it('should stay false during buffering after track change while paused', () => {
+      store.play();
+      store.pause();
+      store.setIdle(); // UNSTARTED from YouTube
+      store.setLoading(); // BUFFERING from YouTube
+      expect(store.showPauseIcon()).toBe(false);
+    });
+
+    it('should stay false during initial load (never played)', () => {
+      store.setLoading();
+      expect(store.showPauseIcon()).toBe(false);
+    });
+
+    it('should be false after ended', () => {
+      store.play();
+      store.setEnded();
+      expect(store.showPauseIcon()).toBe(false);
+    });
+  });
+
   describe('Progress Controls', () => {
     it('should update progress with time only', () => {
       store.updateProgress(45);

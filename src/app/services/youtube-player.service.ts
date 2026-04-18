@@ -96,6 +96,9 @@ export class YoutubePlayerService {
 
     switch (event.data) {
       case YT.PlayerState.UNSTARTED:
+        this.playerStore.setIdle();
+        this.stopProgressTracking();
+        break;
       case YT.PlayerState.ENDED:
       case YT.PlayerState.PAUSED:
         this.playerStore.pause();
