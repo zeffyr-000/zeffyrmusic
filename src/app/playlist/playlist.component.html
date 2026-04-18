@@ -84,7 +84,7 @@
             }
 
             <div class="playlist-actions">
-              @if (idPlaylist() !== currentIdPlaylistPlaying() || !playerStore.isPlaying()) {
+              @if (idPlaylist() !== currentIdPlaylistPlaying() || !playerStore.showPauseIcon()) {
                 <button
                   type="button"
                   class="btn btn-primary btn-action"

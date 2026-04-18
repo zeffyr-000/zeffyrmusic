@@ -7,6 +7,7 @@ export type PlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'ended' |
 
 export interface PlayerState {
   status: PlayerStatus;
+  wasPlaying: boolean;
   currentTime: number;
   duration: number;
   loadedFraction: number;
@@ -20,6 +21,7 @@ export interface PlayerState {
 
 export const initialPlayerState: PlayerState = {
   status: 'idle',
+  wasPlaying: false,
   currentTime: 0,
   duration: 0,
   loadedFraction: 0,
