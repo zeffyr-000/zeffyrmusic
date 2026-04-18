@@ -42,8 +42,13 @@ if (environment.SENTRY_DSN) {
         (typeof event.message === 'string' ? event.message : '');
       if (
         message.includes('Java object is gone') ||
+        // Chunk load failures after deployments — non-actionable, covered by withNavigationErrorHandler
         message.includes('Failed to fetch dynamically imported module') ||
         message.includes('Importing a module script failed') ||
+        // Transient network loss — handled by errorInterceptor (status 0 shows connection-lost toast).
+        // Sentry serializes this as either the bare message or prefixed with the error type.
+        message === 'Failed to fetch' ||
+        message === 'TypeError: Failed to fetch' ||
         message.includes('Access is denied for this document')
       ) {
         return null;
