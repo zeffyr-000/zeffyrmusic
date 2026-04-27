@@ -19,7 +19,6 @@ import {
   NgbDropdownMenu,
   NgbDropdownItem,
   NgbModal,
-  NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { environment } from '../../environments/environment';
@@ -48,7 +47,6 @@ import { AuthStore } from '../store';
     NgbDropdownToggle,
     NgbDropdownMenu,
     NgbDropdownItem,
-    NgbTooltip,
   ],
 })
 export class ArtistComponent implements OnInit {

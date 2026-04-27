@@ -202,7 +202,7 @@ window.localStorage.getItem('key');
 document.getElementById('el');
 ```
 
-**Production requirements:** Node ≥ 22. After Node upgrade: `sudo pm2 kill` then restart.
+**Production requirements:** Node ≥ 22.12. After Node upgrade: `sudo pm2 kill` then restart.
 
 ### 6. CSS — YouTube Player (CRITICAL)
 
