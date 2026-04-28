@@ -26,7 +26,7 @@ import {
   providedIn: 'root',
 })
 export class UserService {
-  private httpClient = inject(HttpClient);
+  private readonly httpClient = inject(HttpClient);
 
   register(data: IRegister): Observable<UserReponse> {
     return this.httpClient.post<UserReponse>(environment.URL_SERVER + 'inscription', data);

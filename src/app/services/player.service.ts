@@ -29,7 +29,7 @@ export class PlayerService implements OnDestroy {
   private readonly errorSubscription?: Subscription;
   private queueInitialized = false;
 
-  private isBrowser: boolean;
+  private readonly isBrowser: boolean;
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);

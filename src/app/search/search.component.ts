@@ -83,7 +83,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   readonly listExtras = signal<Extra[] | undefined>(undefined);
   readonly limitExtra = signal(5);
 
-  private isBrowser: boolean;
+  private readonly isBrowser: boolean;
   private paramMapSubscription!: Subscription;
 
   constructor() {

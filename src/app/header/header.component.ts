@@ -347,7 +347,7 @@ export class HeaderComponent {
 
   renderGoogleSignInButton() {
     if (!this.isBrowser) return;
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+    if (typeof google !== 'undefined' && google.accounts?.id) {
       google.accounts.id.initialize({
         client_id: environment.GOOGLE_CLIENT_ID,
         callback: this.handleCredentialResponse.bind(this),
@@ -366,7 +366,7 @@ export class HeaderComponent {
 
   renderGoogleRegisterButton() {
     if (!this.isBrowser) return;
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+    if (typeof google !== 'undefined' && google.accounts?.id) {
       google.accounts.id.initialize({
         client_id: environment.GOOGLE_CLIENT_ID,
         callback: this.handleCredentialResponse.bind(this),

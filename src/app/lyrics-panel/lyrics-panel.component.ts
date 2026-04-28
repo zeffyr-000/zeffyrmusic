@@ -108,8 +108,7 @@ export class LyricsPanelComponent {
    */
   readonly scrollLineIndex = computed(() => {
     if (!this.lines()?.length) return -1;
-    const idx = this.activeLineIndex();
-    return idx >= 0 ? idx : 0;
+    return Math.max(this.activeLineIndex(), 0);
   });
 
   // -- ViewChild refs --------------------------------------------------------
@@ -181,8 +180,8 @@ export class LyricsPanelComponent {
       if (idx >= 0 && elements[idx]) {
         const el = elements[idx].nativeElement;
         const prefersReducedMotion =
-          typeof window.matchMedia === 'function' &&
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          typeof globalThis.matchMedia === 'function' &&
+          globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const behavior: ScrollBehavior = prefersReducedMotion ? 'instant' : 'smooth';
         if (typeof el.scrollIntoView === 'function') {
           el.scrollIntoView({ behavior, block: 'center' });
@@ -213,16 +212,16 @@ export class LyricsPanelComponent {
       if (
         this.uiStore.isLyricsPanelClosing() &&
         isPlatformBrowser(this.platformId) &&
-        typeof window.matchMedia === 'function' &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        typeof globalThis.matchMedia === 'function' &&
+        globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches
       ) {
         untracked(() => this.uiStore.closeLyricsPanel());
       }
     });
 
     // Close panel when window is resized below desktop breakpoint
-    if (isPlatformBrowser(this.platformId) && typeof window.matchMedia === 'function') {
-      const mql = window.matchMedia('(min-width: 768px)');
+    if (isPlatformBrowser(this.platformId) && typeof globalThis.matchMedia === 'function') {
+      const mql = globalThis.matchMedia('(min-width: 768px)');
       const onChange = (e: MediaQueryListEvent): void => {
         if (!e.matches) {
           this.uiStore.closeLyricsPanel();

@@ -233,7 +233,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   }
 
   initializeGoogleSignIn() {
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+    if (typeof google !== 'undefined' && google.accounts?.id) {
       google.accounts.id.initialize({
         client_id: environment.GOOGLE_CLIENT_ID,
         callback: this.handleCredentialResponse.bind(this),
@@ -243,7 +243,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
 
   renderGoogleSignInButton() {
     if (!this.isBrowser) return;
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+    if (typeof google !== 'undefined' && google.accounts?.id) {
       google.accounts.id.renderButton(document.getElementById('google-signin-button')!, {
         type: 'standard',
         theme: 'outline',

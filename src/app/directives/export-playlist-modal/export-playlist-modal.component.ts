@@ -9,7 +9,7 @@ import { formatPlaylistAsCsv, formatPlaylistAsText } from '../../utils';
 const UNSAFE_FILENAME_CHARS = /[/\\:*?"<>|]/g;
 
 function sanitizeFilename(name: string): string {
-  return name.replace(UNSAFE_FILENAME_CHARS, '_').trim().slice(0, 200);
+  return name.replaceAll(UNSAFE_FILENAME_CHARS, '_').trim().slice(0, 200);
 }
 
 @Component({

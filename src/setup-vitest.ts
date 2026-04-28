@@ -37,7 +37,7 @@ if (typeof Touch === 'undefined') {
 }
 
 // Mock scrollTo for jsdom (not implemented)
-if (typeof globalThis.scrollTo === 'undefined') {
+if (globalThis.scrollTo === undefined) {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   globalThis.scrollTo = () => {};
 }

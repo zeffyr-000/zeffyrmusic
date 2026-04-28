@@ -11,9 +11,9 @@ const ARTIST_KEY = (id: string) => makeStateKey<ArtistData>(`artist-${id}`);
   providedIn: 'root',
 })
 export class ArtistService {
-  private platformId = inject(PLATFORM_ID);
-  private httpClient = inject(HttpClient);
-  private transferState = inject(TransferState);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly httpClient = inject(HttpClient);
+  private readonly transferState = inject(TransferState);
 
   getArtist(idArtist: string): Observable<ArtistData> {
     const key = ARTIST_KEY(idArtist);

@@ -65,7 +65,7 @@ export class InitService {
   private readonly router = inject(Router);
   private readonly loggingService = inject(LoggingService);
 
-  private isBrowser: boolean;
+  private readonly isBrowser: boolean;
   private lastSessionCheck = 0;
 
   constructor() {

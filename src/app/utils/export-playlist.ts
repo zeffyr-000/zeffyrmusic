@@ -9,7 +9,7 @@ const FORMULA_PREFIXES = ['=', '+', '-', '@'];
 function escapeCsvField(value: string): string {
   let escaped = FORMULA_PREFIXES.some(p => value.trimStart().startsWith(p)) ? `'${value}` : value;
   if (/[",\r\n]/.test(escaped)) {
-    escaped = `"${escaped.replace(/"/g, '""')}"`;
+    escaped = `"${escaped.replaceAll('"', '""')}"`;
   }
   return escaped;
 }

@@ -1,5 +1,5 @@
 export class MockIntersectionObserver implements IntersectionObserver {
-  private callback: IntersectionObserverCallback;
+  private readonly callback: IntersectionObserverCallback;
   public root: Element | null = null;
   public rootMargin = '0px';
   public thresholds: readonly number[] = [0];

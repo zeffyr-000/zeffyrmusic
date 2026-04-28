@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   private readonly seoService = inject(SeoService);
   private readonly route = inject(ActivatedRoute);
   private readonly translocoService = inject(TranslocoService);
-  private transferState = inject(TransferState);
+  private readonly transferState = inject(TransferState);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
 
   readonly isLoading = signal(false);
