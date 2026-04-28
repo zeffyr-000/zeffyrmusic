@@ -131,18 +131,42 @@ export class YoutubePlayerService {
 
     const message = errorMessages[event.data] ?? 'error_unknown';
 
-    // Codes 101/150 = embedding disabled by the video owner/uploader
-    // These are expected and not actionable — skip Sentry reporting
-    if (event.data !== 101 && event.data !== 150) {
-      const videoId = this.player?.getVideoData?.()?.video_id ?? this.pendingVideoKey;
-      this.loggingService.captureWarning(`YouTube Player Error: ${message}`, {
-        'youtube.error_code': event.data,
-        'youtube.video_id': videoId,
-      });
-    }
+    this.reportYoutubeError(event.data, message);
 
     this.error$.next(message);
     this.playerStore.setError(message);
+  }
+
+  /**
+   * Report YouTube player errors to Sentry with severity matching actionability:
+   * - codes 101/150 (embedding disabled by the uploader): skipped — expected user-driven case
+   * - code 5 (HTML5 player failure): warning — real client-side breakage worth investigating
+   * - codes 2 / 100 (invalid id, video unavailable): info — useful stats, not actionable
+   * - unknown codes: warning, with the raw code in the message so new YouTube failure modes
+   *   surface as new issues instead of being absorbed into the generic "error_unknown" group
+   * All events share a stable fingerprint per error code so issues group cleanly.
+   */
+  private reportYoutubeError(code: number, message: string): void {
+    if (code === 101 || code === 150) {
+      return;
+    }
+
+    const videoId = this.player?.getVideoData?.()?.video_id ?? this.pendingVideoKey;
+    const context = {
+      'youtube.error_code': code,
+      'youtube.video_id': videoId,
+    };
+    const fingerprint = ['youtube-error', String(code)];
+    const knownCode = code === 2 || code === 5 || code === 100;
+    const fullMessage = knownCode
+      ? `YouTube Player Error: ${message}`
+      : `YouTube Player Error: code ${code}`;
+
+    if (code === 5 || !knownCode) {
+      this.loggingService.captureWarning(fullMessage, context, fingerprint);
+    } else {
+      this.loggingService.captureInfo(fullMessage, context, fingerprint);
+    }
   }
 
   /** Check that the player object exists AND has its API methods loaded. */
