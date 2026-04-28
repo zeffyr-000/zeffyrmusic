@@ -31,7 +31,7 @@
 
       @if (isLoadingAlbum1()) {
         <div class="d-flex justify-content-center py-4">
-          <output class="spinner-border text-primary" role="status">
+          <output class="spinner-border text-primary">
             <span class="visually-hidden">{{ 'loading' | transloco }}</span>
           </output>
         </div>
@@ -116,7 +116,7 @@
               [disabled]="album1Form().invalid() || isLoadingAlbum1()"
             >
               @if (isLoadingAlbum1()) {
-                <output class="spinner-border spinner-border-sm me-1" role="status">
+                <output class="spinner-border spinner-border-sm me-1">
                   <span class="visually-hidden">{{ 'loading' | transloco }}</span>
                 </output>
               }
@@ -231,7 +231,7 @@
               [disabled]="album2Form().invalid() || isLoadingAlbum2()"
             >
               @if (isLoadingAlbum2()) {
-                <output class="spinner-border spinner-border-sm me-1" role="status">
+                <output class="spinner-border spinner-border-sm me-1">
                   <span class="visually-hidden">{{ 'loading' | transloco }}</span>
                 </output>
               }
@@ -536,7 +536,7 @@
           (click)="openConfirmModal(confirmMergeModal)"
         >
           @if (isSubmitting()) {
-            <output class="spinner-border spinner-border-sm me-1" role="status">
+            <output class="spinner-border spinner-border-sm me-1">
               <span class="visually-hidden">{{ 'loading' | transloco }}</span>
             </output>
           }
@@ -599,7 +599,7 @@
       [disabled]="isSubmitting()"
     >
       @if (isSubmitting()) {
-        <output class="spinner-border spinner-border-sm me-1" role="status">
+        <output class="spinner-border spinner-border-sm me-1">
           <span class="visually-hidden">{{ 'loading' | transloco }}</span>
         </output>
       }
