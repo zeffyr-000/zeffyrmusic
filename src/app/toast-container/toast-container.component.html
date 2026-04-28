@@ -1,5 +1,5 @@
 @if (isBrowser) {
-  <div class="toast-container" aria-live="polite" role="status">
+  <div class="toast-container" role="status" aria-live="polite" aria-atomic="true">
     @for (notification of notifications(); track notification.id) {
       <ngb-toast
         [class]="getToastClass(notification)"

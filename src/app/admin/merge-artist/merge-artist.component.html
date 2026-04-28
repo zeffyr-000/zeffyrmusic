@@ -31,9 +31,9 @@
 
       @if (isLoadingArtist1()) {
         <div class="d-flex justify-content-center py-4">
-          <span class="spinner-border text-primary" role="status">
+          <output class="spinner-border text-primary">
             <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-          </span>
+          </output>
         </div>
       } @else if (artist1(); as a1) {
         <div class="artist-card">
@@ -99,9 +99,9 @@
               [disabled]="artist1Form().invalid() || isLoadingArtist1()"
             >
               @if (isLoadingArtist1()) {
-                <span class="spinner-border spinner-border-sm me-1" role="status">
+                <output class="spinner-border spinner-border-sm me-1">
                   <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-                </span>
+                </output>
               }
               {{ 'admin_merge_load' | transloco }}
             </button>
@@ -135,9 +135,9 @@
 
       @if (isLoadingArtist2()) {
         <div class="d-flex justify-content-center py-4">
-          <span class="spinner-border text-primary" role="status">
+          <output class="spinner-border text-primary">
             <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-          </span>
+          </output>
         </div>
       } @else if (artist2(); as a2) {
         <div class="artist-card">
@@ -203,9 +203,9 @@
               [disabled]="artist2Form().invalid() || isLoadingArtist2()"
             >
               @if (isLoadingArtist2()) {
-                <span class="spinner-border spinner-border-sm me-1" role="status">
+                <output class="spinner-border spinner-border-sm me-1">
                   <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-                </span>
+                </output>
               }
               {{ 'admin_merge_load' | transloco }}
             </button>
@@ -377,9 +377,9 @@
           (click)="openConfirmModal(confirmMergeModal)"
         >
           @if (isSubmitting()) {
-            <span class="spinner-border spinner-border-sm me-1" role="status">
+            <output class="spinner-border spinner-border-sm me-1">
               <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-            </span>
+            </output>
           }
           {{ 'admin_merge_artist_submit' | transloco }}
         </button>
@@ -432,9 +432,9 @@
       [disabled]="isSubmitting()"
     >
       @if (isSubmitting()) {
-        <span class="spinner-border spinner-border-sm me-1" role="status">
+        <output class="spinner-border spinner-border-sm me-1">
           <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-        </span>
+        </output>
       }
       {{ 'admin_merge_confirm' | transloco }}
     </button>

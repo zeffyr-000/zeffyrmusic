@@ -86,11 +86,11 @@ export class AppComponent implements OnInit {
           this.initService.checkSessionIfNeeded();
         });
 
-      window.addEventListener('offline', () => {
+      globalThis.addEventListener('offline', () => {
         this.isOnline.set(false);
       });
 
-      window.addEventListener('online', () => {
+      globalThis.addEventListener('online', () => {
         this.isOnline.set(true);
       });
 
@@ -167,6 +167,6 @@ export class AppComponent implements OnInit {
   }
 
   reload() {
-    window.location.reload();
+    globalThis.location.reload();
   }
 }

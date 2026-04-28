@@ -12,14 +12,14 @@ import { environment } from 'src/environments/environment';
 
 @Directive({ selector: 'img[appDefaultImage]' })
 export class DefaultImageDirective {
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
-  private platformId = inject(PLATFORM_ID);
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly src = input<string>('');
-  private defaultImage: string;
-  private loadingImage: string;
-  private isBrowser: boolean;
+  private readonly defaultImage: string;
+  private readonly loadingImage: string;
+  private readonly isBrowser: boolean;
   private currentSrc: string | null = null;
   private isLoading = false;
   private pendingSrc: string | null = null;

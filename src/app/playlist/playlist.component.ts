@@ -78,7 +78,7 @@ import {
 })
 export class PlaylistComponent {
   private readonly platformId = inject(PLATFORM_ID);
-  private baseHref = inject(APP_BASE_HREF, { optional: true });
+  private readonly baseHref = inject(APP_BASE_HREF, { optional: true });
   private readonly playlistService = inject(PlaylistService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly playerService = inject(PlayerService);

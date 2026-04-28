@@ -16,9 +16,9 @@ const SEARCH1_KEY = (query: string) => makeStateKey<SearchResults1>(`search1-${q
   providedIn: 'root',
 })
 export class SearchService {
-  private platformId = inject(PLATFORM_ID);
-  private httpClient = inject(HttpClient);
-  private transferState = inject(TransferState);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly httpClient = inject(HttpClient);
+  private readonly transferState = inject(TransferState);
 
   fullSearch1(query: string): Observable<SearchResults1> {
     const key = SEARCH1_KEY(query);

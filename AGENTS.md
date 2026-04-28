@@ -220,6 +220,18 @@ document.getElementById('el');
 - No dead code — remove unused imports/variables/methods
 - Method length ≤ 30 lines, cyclomatic complexity ≤ 10
 - `readonly` on injected dependencies and signals
+- Prefer `globalThis` over `window` for standard browser APIs (`matchMedia`, `addEventListener`, `location`) — keeps `window.YT` / `window.onYouTubeIframeAPIReady` because of `Window` interface augmentations
+- Prefer `Promise.resolve(x)` over `new Promise(resolve => resolve(x))`
+- Prefer `String.replaceAll()` over `String.replace(/regex/g)` for plain string replacements
+- Prefer optional chains (`a?.b`) over `a && a.b` when both falsy and undefined are equivalent — verify semantics first
+- Prefer `Math.max(idx, 0)` over `idx >= 0 ? idx : 0`
+
+### 8. Accessibility & Semantic HTML
+
+- Use `<div role="status">` for live status regions that contain block-level or complex markup (skeleton loaders, spinners with wrapper divs, result lists, grids). `role="status"` implies `aria-live="polite"` and `aria-atomic="true"`. Add `aria-busy="true"` while loading.
+- Use `<output>` only for **phrasing-only** status text — when the element's entire content is inline/phrasing content (e.g. a Bootstrap `<output class="spinner-border">` with a single `<span class="visually-hidden">Loading...</span>` inside). `<output>` has an **implicit `role="status"`** per the ARIA in HTML spec, so do not add it explicitly (SonarQube flags redundant roles). `<output>`'s content model is phrasing content — putting `<div>` elements inside is invalid HTML.
+- Use native `<progress>` (not `<div role="progressbar">`) for determinate progress, **except** Bootstrap's `.progress` component where the role attribute is part of the design system.
+- Do not add redundant `tabindex`, `role`, or `(keydown.*)` handlers on ng-bootstrap directives — they handle keyboard/ARIA automatically.
 
 ## Component Pattern
 

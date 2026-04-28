@@ -12,12 +12,12 @@ import {
 
 @Directive({ selector: '[appLazyLoadImage]' })
 export class LazyLoadImageDirective implements OnInit, OnDestroy {
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   readonly src = input<string>(undefined, { alias: 'appLazyLoadImage' });
   private observer!: IntersectionObserver;
-  private isBrowser: boolean;
+  private readonly isBrowser: boolean;
 
   constructor() {
     const platformId = inject(PLATFORM_ID);

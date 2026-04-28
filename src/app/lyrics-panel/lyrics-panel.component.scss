@@ -218,6 +218,7 @@
     color: var(--bs-primary-text-emphasis, color-mix(in srgb, var(--bs-primary) 70%, black));
     transform: scale(1.05) translateX(4px);
     will-change: transform;
+    animation: lyrics-line-enter 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
     &::before {
       opacity: 1;
@@ -240,6 +241,7 @@
       pointer-events: none;
       opacity: 0.7;
       will-change: opacity;
+      animation: lyrics-glow-pulse 2.5s ease-in-out 400ms infinite;
     }
   }
 }
@@ -276,14 +278,6 @@
   50% {
     opacity: 1;
   }
-}
-
-.lyrics-line.active {
-  animation: lyrics-line-enter 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.lyrics-line.active::after {
-  animation: lyrics-glow-pulse 2.5s ease-in-out 400ms infinite;
 }
 
 // -- Interlude (instrumental break) — dancing music notes -------------------

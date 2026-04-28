@@ -37,7 +37,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           'http.url': path,
           'http.method': req.method,
           'http.status_code': error.status,
-          'http.status_text': error.statusText,
         });
       }
 

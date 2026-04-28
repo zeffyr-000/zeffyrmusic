@@ -36,11 +36,10 @@ if (typeof Touch === 'undefined') {
   };
 }
 
-// Mock scrollTo for jsdom (not implemented)
-if (typeof globalThis.scrollTo === 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  globalThis.scrollTo = () => {};
-}
+// Mock scrollTo for jsdom — jsdom defines it but throws "Not implemented",
+// so always override to a no-op for tests.
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+globalThis.scrollTo = () => {};
 
 // Ensure there's at least one script tag in the document for player.service.ts
 if (typeof document !== 'undefined' && document.getElementsByTagName('script').length === 0) {

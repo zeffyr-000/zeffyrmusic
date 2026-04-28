@@ -31,9 +31,9 @@
 
       @if (isLoadingAlbum1()) {
         <div class="d-flex justify-content-center py-4">
-          <span class="spinner-border text-primary" role="status">
+          <output class="spinner-border text-primary">
             <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-          </span>
+          </output>
         </div>
       } @else if (album1(); as a1) {
         <div class="album-card">
@@ -116,9 +116,9 @@
               [disabled]="album1Form().invalid() || isLoadingAlbum1()"
             >
               @if (isLoadingAlbum1()) {
-                <span class="spinner-border spinner-border-sm me-1" role="status">
+                <output class="spinner-border spinner-border-sm me-1">
                   <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-                </span>
+                </output>
               }
               {{ 'admin_merge_load_album' | transloco }}
             </button>
@@ -231,9 +231,9 @@
               [disabled]="album2Form().invalid() || isLoadingAlbum2()"
             >
               @if (isLoadingAlbum2()) {
-                <span class="spinner-border spinner-border-sm me-1" role="status">
+                <output class="spinner-border spinner-border-sm me-1">
                   <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-                </span>
+                </output>
               }
               {{ 'admin_merge_load_album' | transloco }}
             </button>
@@ -536,9 +536,9 @@
           (click)="openConfirmModal(confirmMergeModal)"
         >
           @if (isSubmitting()) {
-            <span class="spinner-border spinner-border-sm me-1" role="status">
+            <output class="spinner-border spinner-border-sm me-1">
               <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-            </span>
+            </output>
           }
           {{ 'admin_merge_submit' | transloco }}
         </button>
@@ -599,9 +599,9 @@
       [disabled]="isSubmitting()"
     >
       @if (isSubmitting()) {
-        <span class="spinner-border spinner-border-sm me-1" role="status">
+        <output class="spinner-border spinner-border-sm me-1">
           <span class="visually-hidden">{{ 'loading' | transloco }}</span>
-        </span>
+        </output>
       }
       {{ 'admin_merge_confirm' | transloco }}
     </button>

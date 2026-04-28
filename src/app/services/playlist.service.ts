@@ -11,11 +11,11 @@ const PLAYLIST_KEY = (id: string) => makeStateKey<Playlist>(`playlist-${id}`);
   providedIn: 'root',
 })
 export class PlaylistService {
-  private platformId = inject(PLATFORM_ID);
-  private httpClient = inject(HttpClient);
-  private transferState = inject(TransferState);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly httpClient = inject(HttpClient);
+  private readonly transferState = inject(TransferState);
 
-  private isBrowser: boolean;
+  private readonly isBrowser: boolean;
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
