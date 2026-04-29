@@ -148,6 +148,32 @@ describe('errorInterceptor', () => {
     expect(loggingServiceMock.captureError).not.toHaveBeenCalled();
   });
 
+  it('should NOT report 404 GET errors to LoggingService (resource removed by user)', () => {
+    http.get('/api/playlist/99999').subscribe({ error: () => undefined });
+
+    httpTesting
+      .expectOne('/api/playlist/99999')
+      .flush(null, { status: 404, statusText: 'Not Found' });
+
+    expect(loggingServiceMock.captureError).not.toHaveBeenCalled();
+  });
+
+  it('should report 404 errors on POST to LoggingService (likely a real bug)', () => {
+    http.post('/api/playlist/save', {}).subscribe({ error: () => undefined });
+
+    httpTesting
+      .expectOne('/api/playlist/save')
+      .flush(null, { status: 404, statusText: 'Not Found' });
+
+    expect(loggingServiceMock.captureError).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        'http.method': 'POST',
+        'http.status_code': 404,
+      })
+    );
+  });
+
   it('should skip ping requests', () => {
     const showErrorSpy = vi.spyOn(uiStore, 'showError');
     const logoutSpy = vi.spyOn(authStore, 'logout');

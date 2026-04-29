@@ -31,7 +31,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       // Report to Sentry — skip non-actionable statuses:
       // - 401: session expiry is a normal user flow, not an error
       // - 0: aborted request (navigation change, tab close, or network offline) — not a server issue
-      if (error.status !== 401 && error.status !== 0) {
+      // - 404 on GET: resource removed by user/owner (deleted playlists, missing search results) —
+      //   the backend already serves a clean 404 and the UI shows the appropriate empty/not-found
+      //   state. POST/PUT/DELETE 404s remain reported because they typically indicate a real bug.
+      const isUnreportable404 = error.status === 404 && req.method === 'GET';
+      if (error.status !== 401 && error.status !== 0 && !isUnreportable404) {
         const path = sanitizeUrl(req.url);
         loggingService.captureError(new Error(`HTTP ${error.status} on ${req.method} ${path}`), {
           'http.url': path,
