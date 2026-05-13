@@ -16,13 +16,10 @@ interface PrivateApi {
 describe('YoutubePlayerService', () => {
   describe('Browser context', () => {
     let service: YoutubePlayerService;
-    let loggingServiceMock: {
-      captureWarning: ReturnType<typeof vi.fn>;
-      captureInfo: ReturnType<typeof vi.fn>;
-    };
+    let loggingServiceMock: { captureWarning: ReturnType<typeof vi.fn> };
 
     beforeEach(async () => {
-      loggingServiceMock = { captureWarning: vi.fn(), captureInfo: vi.fn() };
+      loggingServiceMock = { captureWarning: vi.fn() };
 
       await TestBed.configureTestingModule({
         providers: [
@@ -127,72 +124,30 @@ describe('YoutubePlayerService', () => {
       vi.useRealTimers();
     });
 
-    it('should report code 2 (invalid parameter) as info — not actionable', () => {
+    it('should report warning to Sentry for non-101/150 error codes', () => {
       const svc = service as unknown as PrivateApi;
       svc.onError({ data: 2 } as unknown as YT.OnErrorEvent);
 
-      expect(loggingServiceMock.captureInfo).toHaveBeenCalledWith(
+      expect(loggingServiceMock.captureWarning).toHaveBeenCalledWith(
         'YouTube Player Error: error_invalid_parameter',
-        expect.objectContaining({ 'youtube.error_code': 2 }),
-        ['youtube-error', '2']
+        expect.objectContaining({ 'youtube.error_code': 2 })
       );
-      expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
       expect(service.error$.value).toBe('error_invalid_parameter');
     });
 
-    it('should report code 5 (HTML5 player failure) as warning — real breakage', () => {
-      const svc = service as unknown as PrivateApi;
-      svc.onError({ data: 5 } as unknown as YT.OnErrorEvent);
-
-      expect(loggingServiceMock.captureWarning).toHaveBeenCalledWith(
-        'YouTube Player Error: error_html_player',
-        expect.objectContaining({ 'youtube.error_code': 5 }),
-        ['youtube-error', '5']
-      );
-      expect(loggingServiceMock.captureInfo).not.toHaveBeenCalled();
-      expect(service.error$.value).toBe('error_html_player');
-    });
-
-    it('should report code 100 (video not found) as info — not actionable', () => {
-      const svc = service as unknown as PrivateApi;
-      svc.onError({ data: 100 } as unknown as YT.OnErrorEvent);
-
-      expect(loggingServiceMock.captureInfo).toHaveBeenCalledWith(
-        'YouTube Player Error: error_request_not_found',
-        expect.objectContaining({ 'youtube.error_code': 100 }),
-        ['youtube-error', '100']
-      );
-      expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
-      expect(service.error$.value).toBe('error_request_not_found');
-    });
-
-    it('should report unknown codes as warning with raw code in message', () => {
-      const svc = service as unknown as PrivateApi;
-      svc.onError({ data: 999 } as unknown as YT.OnErrorEvent);
-
-      expect(loggingServiceMock.captureWarning).toHaveBeenCalledWith(
-        'YouTube Player Error: code 999',
-        expect.objectContaining({ 'youtube.error_code': 999 }),
-        ['youtube-error', '999']
-      );
-      expect(service.error$.value).toBe('error_unknown');
-    });
-
-    it('should not report to Sentry for error code 101', () => {
+    it('should not report warning to Sentry for error code 101', () => {
       const svc = service as unknown as PrivateApi;
       svc.onError({ data: 101 } as unknown as YT.OnErrorEvent);
 
       expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
-      expect(loggingServiceMock.captureInfo).not.toHaveBeenCalled();
       expect(service.error$.value).toBe('error_request_access_denied');
     });
 
-    it('should not report to Sentry for error code 150', () => {
+    it('should not report warning to Sentry for error code 150', () => {
       const svc = service as unknown as PrivateApi;
       svc.onError({ data: 150 } as unknown as YT.OnErrorEvent);
 
       expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
-      expect(loggingServiceMock.captureInfo).not.toHaveBeenCalled();
       expect(service.error$.value).toBe('error_request_access_denied');
     });
   });

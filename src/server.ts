@@ -17,20 +17,8 @@ if (environment.SENTRY_DSN) {
     dsn: environment.SENTRY_DSN,
     environment: environment.SENTRY_ENVIRONMENT,
     release: environment.SENTRY_RELEASE || undefined,
-    // SSR generates one transaction per request; sample lower than the browser to keep
-    // the Performance dashboard signal/noise ratio reasonable.
-    tracesSampleRate: 0.05,
+    tracesSampleRate: 0.2,
     sendDefaultPii: false,
-    // Transient socket / abort failures from clients closing connections mid-render —
-    // common with crawlers and flaky mobile networks, not actionable.
-    ignoreErrors: [
-      /fetch failed/u,
-      'ECONNRESET',
-      'EPIPE',
-      'ECONNABORTED',
-      'request aborted',
-      'Client network socket disconnected',
-    ],
     beforeSend(event) {
       // Drop SSR hostname rejection errors — caused by security scanners (Censys, Shodan)
       // hitting the VPS hostname directly. The hostname guard middleware handles these at

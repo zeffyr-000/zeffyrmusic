@@ -13,12 +13,7 @@ export interface SentryApi {
     level: SentryLevel;
   }): void;
   setTag(key: string, value: string): void;
-  withScope(
-    callback: (scope: {
-      setExtra(key: string, value: unknown): void;
-      setFingerprint(fingerprint: string[]): void;
-    }) => void
-  ): void;
+  withScope(callback: (scope: { setExtra(key: string, value: unknown): void }) => void): void;
 }
 
 export const SENTRY_API = new InjectionToken<SentryApi>('Sentry API');

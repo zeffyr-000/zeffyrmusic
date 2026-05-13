@@ -4,7 +4,7 @@ import { LoggingService } from './logging.service';
 import { SENTRY_API } from '../tokens';
 
 function createSentryMock() {
-  const scopeSpy = { setExtra: vi.fn(), setFingerprint: vi.fn() };
+  const scopeSpy = { setExtra: vi.fn() };
   return {
     scopeSpy,
     withScope: vi.fn((callback: (scope: unknown) => void) => {
@@ -51,26 +51,6 @@ describe('LoggingService', () => {
       expect(sentryMock.withScope).toHaveBeenCalled();
       expect(sentryMock.scopeSpy.setExtra).toHaveBeenCalledWith('http.url', '/api/test');
       expect(sentryMock.scopeSpy.setExtra).toHaveBeenCalledWith('http.status_code', 500);
-    });
-  });
-
-  describe('captureWarning fingerprint', () => {
-    it('should pass fingerprint to scope when provided', () => {
-      service.captureWarning('YouTube Player Error: code 5', undefined, ['youtube-error', '5']);
-
-      expect(sentryMock.scopeSpy.setFingerprint).toHaveBeenCalledWith(['youtube-error', '5']);
-    });
-
-    it('should not call setFingerprint when fingerprint is undefined', () => {
-      service.captureWarning('plain warning');
-
-      expect(sentryMock.scopeSpy.setFingerprint).not.toHaveBeenCalled();
-    });
-
-    it('should not call setFingerprint when fingerprint is an empty array', () => {
-      service.captureWarning('plain warning', undefined, []);
-
-      expect(sentryMock.scopeSpy.setFingerprint).not.toHaveBeenCalled();
     });
   });
 

@@ -424,36 +424,27 @@ withViewTransitions({
 
 ## Observability (Sentry)
 
-**Browser** (`src/main.ts`): `@sentry/angular` with `browserTracingIntegration` only. `httpClientIntegration` is intentionally disabled — the `errorInterceptor` already reports HTTP errors with richer context (sanitized URL, method, status_code) and avoids duplicate events. Guarded by `environment.SENTRY_DSN` (empty in dev/e2e).
+**Browser** (`src/main.ts`): `@sentry/angular` with `browserTracingIntegration` + `httpClientIntegration`. Guarded by `environment.SENTRY_DSN` (empty in dev/e2e).
 
 **SSR** (`src/server.ts`): `@sentry/node` + `Sentry.setupExpressErrorHandler(app)` after all routes.
 
 **Angular ErrorHandler** (`src/app/app.config.browser.ts`): `Sentry.createErrorHandler({ showDialog: false })` catches unhandled template/lifecycle/signal errors. Only registered when `environment.SENTRY_DSN` is set.
 
-**Noise filtering** — four layers, in order of priority:
-
-1. `allowUrls` (browser only): only events whose top frame matches `zeffyrmusic.com` are captured. Drops everything from extensions, injected ad/tracking scripts, and YouTube iframes before reaching Sentry.
-2. `denyUrls`: defensive list for `chrome-extension://`, `moz-extension://`, `safari-(web)?-extension://`, `googletagmanager.com`, `google-analytics.com`, and YouTube embed/iframe_api/player URLs.
-3. `ignoreErrors`: pattern list (strings + regex) for known non-actionable messages — Safari `Load failed`, Firefox `NetworkError when attempting to fetch resource.`, `AbortError`, stale chunk loads (`error loading dynamically imported module`), `requestFullscreen is not a function`, `invalid origin`, browser extension globals. SSR has its own list for `ECONNRESET`, `EPIPE`, `ECONNABORTED`, `request aborted`, `Client network socket disconnected`, `fetch failed`.
-4. `beforeSend`: drops only known cross-origin `Script error.` payloads (exact-match on `Script error.` / `Script error` / `Javascript error: Script error. on line 0`) when they arrive with no stacktrace frames. Other frame-less exceptions are kept so we don't suppress real Safari/iOS or minified-bundle errors.
-
-**Performance tracing:** `tracesSampleRate: 0.1` (browser), `0.05` (SSR). `tracePropagationTargets: []` — the PHP/Jelix backend has no Sentry SDK to correlate distributed traces, so propagating `sentry-trace`/`baggage` headers is wasted and may trip CORS.
-
 **LoggingService** (`src/app/services/logging.service.ts`): Abstraction over Sentry SDK. All error reporting MUST go through this service — never call `Sentry.*` directly from components or services. SSR-safe: `SENTRY_API` token is only provided in browser configs, so all methods are automatic no-ops on the server.
 
-| Method                                            | Use case                                                                                                                                         |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `captureError(error, context?)`                   | Caught exceptions. Callers (e.g. `errorInterceptor`) pass a clean `Error` plus a context object (`http.url`, `http.method`, `http.status_code`). |
-| `captureWarning(message, context?, fingerprint?)` | Non-fatal issues (YouTube code 5, unknown YouTube codes)                                                                                         |
-| `captureInfo(message, context?, fingerprint?)`    | Informational / non-actionable events (YouTube codes 2 and 100)                                                                                  |
-| `setUser()`                                       | Associate/clear user on login/logout                                                                                                             |
-| `addBreadcrumb()`                                 | Manual navigation/interaction breadcrumbs                                                                                                        |
-| `setTag()`                                        | Custom tags for filtering                                                                                                                        |
+| Method             | Use case                                      |
+| ------------------ | --------------------------------------------- |
+| `captureError()`   | Caught exceptions (HTTP errors, API failures) |
+| `captureWarning()` | Non-fatal issues (YouTube player errors)      |
+| `captureInfo()`    | Informational events                          |
+| `setUser()`        | Associate/clear user on login/logout          |
+| `addBreadcrumb()`  | Manual navigation/interaction breadcrumbs     |
+| `setTag()`         | Custom tags for filtering                     |
 
 **Instrumented locations:**
 
-- `errorInterceptor` — HTTP errors, except: 401 (session expiry), 0 (aborted/offline), 404 on `GET` (resource removed by user — backend already serves a clean 404). 404 on POST/PUT/DELETE is still reported (likely a real bug).
-- `YoutubePlayerService.onError()` — severity routed by code: 5 → warning (real HTML5 player breakage); 2 / 100 → info (invalid id / video unavailable, not actionable); 101 / 150 → skipped (embedding disabled by uploader); unknown codes → warning with raw `event.data` in the message. All events use `setFingerprint(['youtube-error', code])` so Sentry groups them per YouTube error code.
+- `errorInterceptor` — all HTTP errors except 401 (session expiry)
+- `YoutubePlayerService.onError()` — player errors as warnings
 - `InitService` — user association on login/logout
 
 **Release tracking:** `SENTRY_RELEASE` is injected into `environment.prod.ts` via `sed` in CI before the production build. Source maps are uploaded to Sentry with the same release tag.
