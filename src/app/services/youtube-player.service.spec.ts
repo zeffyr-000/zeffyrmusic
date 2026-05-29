@@ -7,6 +7,7 @@ import { LoggingService } from './logging.service';
 /** Typed accessor for private members used in tests. */
 interface PrivateApi {
   player: Partial<YT.Player> | null;
+  pendingVideoKey: string | null;
   /** Typed as `unknown` to avoid DOM vs Node `setInterval` return-type conflict. */
   progressInterval: unknown;
   onError(event: YT.OnErrorEvent): void;
@@ -16,10 +17,13 @@ interface PrivateApi {
 describe('YoutubePlayerService', () => {
   describe('Browser context', () => {
     let service: YoutubePlayerService;
-    let loggingServiceMock: { captureWarning: ReturnType<typeof vi.fn> };
+    let loggingServiceMock: {
+      captureWarning: ReturnType<typeof vi.fn>;
+      captureInfo: ReturnType<typeof vi.fn>;
+    };
 
     beforeEach(async () => {
-      loggingServiceMock = { captureWarning: vi.fn() };
+      loggingServiceMock = { captureWarning: vi.fn(), captureInfo: vi.fn() };
 
       await TestBed.configureTestingModule({
         providers: [
@@ -124,15 +128,29 @@ describe('YoutubePlayerService', () => {
       vi.useRealTimers();
     });
 
-    it('should report warning to Sentry for non-101/150 error codes', () => {
+    it('should report warning to Sentry for non-101/150/151/152 error codes', () => {
       const svc = service as unknown as PrivateApi;
+      // Simulate a known video id so the warning path is taken (not info)
+      svc.pendingVideoKey = 'abc123';
       svc.onError({ data: 2 } as unknown as YT.OnErrorEvent);
 
       expect(loggingServiceMock.captureWarning).toHaveBeenCalledWith(
         'YouTube Player Error: error_invalid_parameter',
-        expect.objectContaining({ 'youtube.error_code': 2 })
+        expect.objectContaining({ 'youtube.error_code': 2, 'youtube.video_id': 'abc123' })
       );
       expect(service.error$.value).toBe('error_invalid_parameter');
+    });
+
+    it('should downgrade to info when no video id is available', () => {
+      const svc = service as unknown as PrivateApi;
+      svc.pendingVideoKey = null;
+      svc.onError({ data: 2 } as unknown as YT.OnErrorEvent);
+
+      expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
+      expect(loggingServiceMock.captureInfo).toHaveBeenCalledWith(
+        'YouTube Player Error: error_invalid_parameter',
+        expect.objectContaining({ 'youtube.error_code': 2 })
+      );
     });
 
     it('should not report warning to Sentry for error code 101', () => {
@@ -148,6 +166,24 @@ describe('YoutubePlayerService', () => {
       svc.onError({ data: 150 } as unknown as YT.OnErrorEvent);
 
       expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
+      expect(service.error$.value).toBe('error_request_access_denied');
+    });
+
+    it('should not report warning to Sentry for error code 151', () => {
+      const svc = service as unknown as PrivateApi;
+      svc.onError({ data: 151 } as unknown as YT.OnErrorEvent);
+
+      expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
+      expect(loggingServiceMock.captureInfo).not.toHaveBeenCalled();
+      expect(service.error$.value).toBe('error_request_access_denied');
+    });
+
+    it('should not report warning to Sentry for error code 152', () => {
+      const svc = service as unknown as PrivateApi;
+      svc.onError({ data: 152 } as unknown as YT.OnErrorEvent);
+
+      expect(loggingServiceMock.captureWarning).not.toHaveBeenCalled();
+      expect(loggingServiceMock.captureInfo).not.toHaveBeenCalled();
       expect(service.error$.value).toBe('error_request_access_denied');
     });
   });
