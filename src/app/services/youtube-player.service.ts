@@ -127,18 +127,27 @@ export class YoutubePlayerService {
       100: 'error_request_not_found',
       101: 'error_request_access_denied',
       150: 'error_request_access_denied',
+      151: 'error_request_access_denied',
+      152: 'error_request_access_denied',
     };
 
     const message = errorMessages[event.data] ?? 'error_unknown';
 
-    // Codes 101/150 = embedding disabled by the video owner/uploader
-    // These are expected and not actionable — skip Sentry reporting
-    if (event.data !== 101 && event.data !== 150) {
+    // Non-actionable error codes — skip Sentry reporting:
+    // - 101/150/151/152: embedding disabled or region-restricted by the video owner/uploader
+    const silentCodes = new Set([101, 150, 151, 152]);
+    if (!silentCodes.has(event.data)) {
       const videoId = this.player?.getVideoData?.()?.video_id ?? this.pendingVideoKey;
-      this.loggingService.captureWarning(`YouTube Player Error: ${message}`, {
+      const context = {
         'youtube.error_code': event.data,
         'youtube.video_id': videoId,
-      });
+      };
+      // Without a video id, the warning is not actionable — downgrade to info to reduce noise
+      if (videoId) {
+        this.loggingService.captureWarning(`YouTube Player Error: ${message}`, context);
+      } else {
+        this.loggingService.captureInfo(`YouTube Player Error: ${message}`, context);
+      }
     }
 
     this.error$.next(message);
@@ -163,20 +172,20 @@ export class YoutubePlayerService {
   }
 
   cueVideo(videoKey: string): void {
-    if (!this.player || !this.playerReady$.value) {
+    if (!this.isPlayerFunctional() || !this.playerReady$.value) {
       this.pendingVideoKey = videoKey;
       return;
     }
-    this.player.cueVideoById(videoKey);
+    this.player!.cueVideoById(videoKey);
   }
 
   loadVideo(videoKey: string): void {
-    if (!this.player || !this.playerReady$.value) {
+    if (!this.isPlayerFunctional() || !this.playerReady$.value) {
       this.pendingVideoKey = videoKey;
       return;
     }
     this.clearError();
-    this.player.loadVideoById(videoKey, 0);
+    this.player!.loadVideoById(videoKey, 0);
   }
 
   play(): void {

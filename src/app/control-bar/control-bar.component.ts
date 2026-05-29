@@ -115,7 +115,19 @@ export class ControlBarComponent {
 
   goFullscreen(id: string): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    document.getElementById(id)?.requestFullscreen();
+    // Skip when fullscreen is unsupported (e.g. iOS Safari uses the proprietary
+    // `webkitEnterFullscreen` on the inner <video> element, which is not exposed
+    // by the YouTube iframe — calling requestFullscreen there throws a TypeError).
+    if (!this.document.fullscreenEnabled) return;
+    // requestFullscreen returns a Promise that rejects when the user denies the
+    // request or when the gesture is no longer trusted. Swallow it silently to
+    // avoid noisy "TypeError: not granted" entries in Sentry.
+    this.document
+      .getElementById(id)
+      ?.requestFullscreen()
+      .catch(() => {
+        // Permission denied or unsupported — non-actionable
+      });
   }
 
   /** Toggles like on the current track. */

@@ -9,6 +9,7 @@ import {
   signal,
   TemplateRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
@@ -208,7 +209,7 @@ export class PlaylistComponent {
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
 
-    this.activatedRoute.params.subscribe(() => {
+    this.activatedRoute.params.pipe(takeUntilDestroyed()).subscribe(() => {
       this.isLoading.set(true);
       this.initLoad();
     });
@@ -682,13 +683,21 @@ export class PlaylistComponent {
   }
 
   adjustPlaylistDuration(totalTime: number) {
-    const currentKey = this.queueStore.currentKey();
-    const updatedPlaylist = this.playlist().map(video => {
-      if (video.key === currentKey) {
-        return { ...video, duree: totalTime.toString() };
-      }
-      return video;
-    });
+    const currentKey = untracked(() => this.queueStore.currentKey());
+    const currentPlaylist = untracked(this.playlist);
+    const target = currentPlaylist.find(video => video.key === currentKey);
+    // Skip write if current track isn't in this playlist or duration already matches.
+    // Prevents NG0101 (infinite change detection) from cascading signal writes.
+    if (!target) {
+      return;
+    }
+    const newDuree = totalTime.toString();
+    if (target.duree === newDuree) {
+      return;
+    }
+    const updatedPlaylist = currentPlaylist.map(video =>
+      video.key === currentKey ? { ...video, duree: newDuree } : video
+    );
     this.playlist.set(updatedPlaylist);
   }
 }

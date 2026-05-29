@@ -107,10 +107,14 @@ describe('ControlBarComponent', () => {
     });
 
     it('should call requestFullscreen when goFullscreen is called', () => {
-      const element = { requestFullscreen: vi.fn() };
+      const element = { requestFullscreen: vi.fn().mockResolvedValue(undefined) };
       const getElementByIdSpy = vi
         .spyOn(document, 'getElementById')
         .mockReturnValue(element as unknown as HTMLElement);
+      Object.defineProperty(document, 'fullscreenEnabled', {
+        configurable: true,
+        get: () => true,
+      });
 
       component.goFullscreen('testId');
 
@@ -118,6 +122,45 @@ describe('ControlBarComponent', () => {
       expect(element.requestFullscreen).toHaveBeenCalled();
 
       getElementByIdSpy.mockRestore();
+      delete (document as unknown as Record<string, unknown>).fullscreenEnabled;
+    });
+
+    it('should not call requestFullscreen when fullscreen is unsupported', () => {
+      const element = { requestFullscreen: vi.fn() };
+      const getElementByIdSpy = vi
+        .spyOn(document, 'getElementById')
+        .mockReturnValue(element as unknown as HTMLElement);
+      Object.defineProperty(document, 'fullscreenEnabled', {
+        configurable: true,
+        get: () => false,
+      });
+
+      component.goFullscreen('testId');
+
+      expect(element.requestFullscreen).not.toHaveBeenCalled();
+
+      getElementByIdSpy.mockRestore();
+      delete (document as unknown as Record<string, unknown>).fullscreenEnabled;
+    });
+
+    it('should swallow requestFullscreen promise rejection', async () => {
+      const element = {
+        requestFullscreen: vi.fn().mockRejectedValue(new TypeError('not granted')),
+      };
+      const getElementByIdSpy = vi
+        .spyOn(document, 'getElementById')
+        .mockReturnValue(element as unknown as HTMLElement);
+      Object.defineProperty(document, 'fullscreenEnabled', {
+        configurable: true,
+        get: () => true,
+      });
+
+      expect(() => component.goFullscreen('testId')).not.toThrow();
+      // Let the rejected promise settle
+      await Promise.resolve();
+
+      getElementByIdSpy.mockRestore();
+      delete (document as unknown as Record<string, unknown>).fullscreenEnabled;
     });
   });
 
