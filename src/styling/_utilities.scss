@@ -483,6 +483,55 @@
 }
 
 // =============================================================================
+// FLY TO QUEUE - Visual feedback when adding tracks to the playback queue
+// =============================================================================
+
+// Floating thumbnail that flies from the clicked button to the queue target.
+// Positioned and animated imperatively by QueueAnimationService.
+.fly-ghost {
+  position: fixed;
+  z-index: var(--z-tooltip);
+  width: var(--fly-ghost-size);
+  height: var(--fly-ghost-size);
+  border-radius: var(--radius-md, 8px);
+  overflow: visible;
+  pointer-events: none;
+  box-shadow: var(--shadow-lg);
+  will-change: transform, opacity;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+}
+
+// "+N" badge shown on the ghost for a bulk add.
+.fly-ghost-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--bs-primary);
+  color: var(--bs-white);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fly-ghost {
+    display: none;
+  }
+}
+
+// =============================================================================
 // SKELETON LOADERS - Shared pulse animation and placeholder lines
 // =============================================================================
 

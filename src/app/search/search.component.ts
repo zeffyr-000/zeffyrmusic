@@ -20,6 +20,7 @@ import { Video } from '../models/video.model';
 import { SearchService } from '../services/search.service';
 import { isPlatformBrowser, SlicePipe } from '@angular/common';
 import { DefaultImageDirective } from '../directives/default-image.directive';
+import { FlyToQueueDirective } from '../directives/fly-to-queue.directive';
 import { SkeletonCardComponent } from '../directives/skeleton-card/skeleton-card.component';
 import { SkeletonListComponent } from '../directives/skeleton-list/skeleton-list.component';
 import { ToMMSSPipe } from 'src/app/pipes/to-mmss.pipe';
@@ -51,6 +52,7 @@ import { AuthStore, QueueStore } from '../store';
     NgbDropdownMenu,
     NgbDropdownItem,
     NgbTooltip,
+    FlyToQueueDirective,
   ],
 })
 export class SearchComponent implements OnInit, OnDestroy {

@@ -26,6 +26,7 @@ import { DefaultImageDirective } from '../directives/default-image.directive';
 import { SkeletonPlaylistComponent } from '../directives/skeleton-playlist/skeleton-playlist.component';
 import { ShareButtons } from 'ngx-sharebuttons/buttons';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
+import { FlyToQueueDirective } from '../directives/fly-to-queue.directive';
 import { ArtistListComponent } from './artist-list/artist-list.component';
 import {
   NgbDropdown,
@@ -62,6 +63,7 @@ import {
     RouterLink,
     ShareButtons,
     LazyLoadImageDirective,
+    FlyToQueueDirective,
     ArtistListComponent,
     FormField,
     FormRoot,
