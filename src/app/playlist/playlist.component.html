@@ -122,6 +122,8 @@
               <button
                 type="button"
                 class="btn btn-secondary btn-action"
+                [appFlyToQueue]="playlist()[0]?.key ?? ''"
+                [flyCount]="playlist().length"
                 (click)="addInCurrentList()"
                 [disabled]="playlist().length === 0"
               >
@@ -305,13 +307,21 @@
                   </button>
                   <ul ngbDropdownMenu>
                     <li ngbDropdownItem>
-                      <button (click)="addVideoAfterCurrentInList(video)">
+                      <button
+                        type="button"
+                        [appFlyToQueue]="video.key"
+                        (click)="addVideoAfterCurrentInList(video)"
+                      >
                         <span class="material-icons">queue_music</span>
                         {{ 'ajouter_apres_courant' | transloco }}
                       </button>
                     </li>
                     <li ngbDropdownItem>
-                      <button (click)="addVideoInEndCurrentList(video)">
+                      <button
+                        type="button"
+                        [appFlyToQueue]="video.key"
+                        (click)="addVideoInEndCurrentList(video)"
+                      >
                         <span class="material-icons">playlist_add</span>
                         {{ 'ajouter_liste_en_cours' | transloco }}
                       </button>
