@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   OnInit,
@@ -36,7 +35,6 @@ import { AuthStore } from '../store';
   selector: 'app-artist',
   templateUrl: './artist.component.html',
   styleUrl: './artist.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ShareButtons,
     RouterLink,

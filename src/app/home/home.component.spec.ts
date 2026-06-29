@@ -8,7 +8,7 @@ import { of, throwError } from 'rxjs';
 import { HomeAlbum } from '../models/album.model';
 import { HomeComponent } from './home.component';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID, StateKey, makeStateKey } from '@angular/core';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -118,7 +118,7 @@ describe('HomeComponent', () => {
 
       component.ngOnInit();
 
-      expect(component['listTopDecade']().length).toBe(3);
+      expect(component['listTopDecade']()).toHaveLength(3);
 
       expect(component['listTopDecade']()[0].id).toBe('1');
       expect(component['listTopDecade']()[1].id).toBe('2');
@@ -161,7 +161,7 @@ describe('HomeComponent', () => {
           { provide: GoogleAnalyticsService, useValue: googleAnalyticsService },
           { provide: ActivatedRoute, useValue: { snapshot: { url: [] } } },
           { provide: PLATFORM_ID, useValue: 'browser' },
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       }).compileComponents();
@@ -227,7 +227,7 @@ describe('HomeComponent', () => {
 
       expect(component['transferState'].get).toHaveBeenCalled();
 
-      expect(component['listTop']().length).toBe(1);
+      expect(component['listTop']()).toHaveLength(1);
       expect(component['listTop']()[0].titre).toBe('TransferState Album');
 
       expect(initServiceSpy).toHaveBeenCalled();
@@ -259,7 +259,7 @@ describe('HomeComponent', () => {
           { provide: GoogleAnalyticsService, useValue: googleAnalyticsService },
           { provide: ActivatedRoute, useValue: { snapshot: { url: [] } } },
           { provide: PLATFORM_ID, useValue: 'server' },
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       }).compileComponents();

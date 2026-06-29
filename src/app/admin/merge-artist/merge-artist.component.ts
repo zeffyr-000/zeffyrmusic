@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  TemplateRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, TemplateRef, computed, inject, signal } from '@angular/core';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -27,7 +19,6 @@ type ArtistChoice = 'artist1' | 'artist2';
   selector: 'app-merge-artist',
   templateUrl: './merge-artist.component.html',
   styleUrl: './merge-artist.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormField, FormRoot, TranslocoPipe, DefaultImageDirective],
 })
 export class MergeArtistComponent implements OnInit {

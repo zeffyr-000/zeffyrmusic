@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   PLATFORM_ID,
   inject,
@@ -56,7 +55,6 @@ import {
   selector: 'app-playlist',
   templateUrl: './playlist.component.html',
   styleUrl: './playlist.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DefaultImageDirective,
     SkeletonPlaylistComponent,

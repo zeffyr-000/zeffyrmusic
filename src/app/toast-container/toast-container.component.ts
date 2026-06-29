@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { NgbToast } from '@ng-bootstrap/ng-bootstrap';
 
 import { UiStore } from '../store/ui/ui.store';
@@ -12,7 +12,6 @@ import { Notification } from '../store/ui/ui.models';
   imports: [NgbToast],
   templateUrl: './toast-container.component.html',
   styleUrl: './toast-container.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToastContainerComponent {
   private readonly uiStore = inject(UiStore);

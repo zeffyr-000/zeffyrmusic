@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  PLATFORM_ID,
-  signal,
-} from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import { form, FormField, FormRoot, required, minLength, validate } from '@angular/forms/signals';
@@ -22,7 +15,6 @@ import { firstValueFrom } from 'rxjs';
   imports: [FormField, FormRoot, RouterLink, TranslocoPipe],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

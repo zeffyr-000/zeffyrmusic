@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { InitService, PingResponse } from './init.service';
 import { HomeAlbum } from '../models/album.model';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { AuthStore } from '../store';
@@ -55,7 +55,7 @@ describe('InitService', () => {
         providers: [
           getTranslocoTestingProviders(),
           InitService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
           provideRouter(routes),
           { provide: PLATFORM_ID, useValue: 'browser' },
@@ -369,7 +369,7 @@ describe('InitService', () => {
         providers: [
           getTranslocoTestingProviders(),
           InitService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
           { provide: PLATFORM_ID, useValue: 'server' },
         ],

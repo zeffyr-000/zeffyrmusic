@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   PLATFORM_ID,
   TemplateRef,
@@ -45,7 +44,6 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgbDropdown,
     NgbDropdownToggle,

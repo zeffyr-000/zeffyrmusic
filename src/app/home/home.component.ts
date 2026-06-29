@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   makeStateKey,
   OnInit,
@@ -27,7 +26,6 @@ const RANDOM_TOP_KEY = makeStateKey<HomeAlbum[]>('randomTop');
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, DefaultImageDirective, SkeletonCardComponent, TranslocoPipe],
 })
 export class HomeComponent implements OnInit {

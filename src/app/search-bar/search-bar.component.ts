@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { ArtistResult } from '../models/artist.model';
@@ -32,7 +32,6 @@ export interface SearchResultItem {
   selector: 'app-search-bar',
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, TranslocoPipe, DefaultImageDirective, NgbTypeahead],
 })
 export class SearchBarComponent {

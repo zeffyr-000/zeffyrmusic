@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Component, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -16,7 +16,6 @@ function sanitizeFilename(name: string): string {
   selector: 'app-export-playlist-modal',
   templateUrl: './export-playlist-modal.component.html',
   styleUrl: './export-playlist-modal.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslocoPipe],
 })
 export class ExportPlaylistModalComponent {

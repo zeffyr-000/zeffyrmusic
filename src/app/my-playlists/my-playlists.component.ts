@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  PLATFORM_ID,
-  TemplateRef,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, TemplateRef, inject, signal } from '@angular/core';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { Title } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
@@ -34,7 +26,6 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-my-playlists',
   templateUrl: './my-playlists.component.html',
   styleUrl: './my-playlists.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     FormRoot,

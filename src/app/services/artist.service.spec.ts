@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ArtistService } from './artist.service';
 import { environment } from '../../environments/environment';
 import { ArtistData } from '../models/artist.model';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { makeStateKey, PLATFORM_ID, StateKey, TransferState } from '@angular/core';
 
 describe('ArtistService', () => {
@@ -23,7 +23,7 @@ describe('ArtistService', () => {
         imports: [],
         providers: [
           ArtistService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
           { provide: PLATFORM_ID, useValue: 'browser' },
         ],
@@ -101,7 +101,7 @@ describe('ArtistService', () => {
         imports: [],
         providers: [
           ArtistService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
           { provide: PLATFORM_ID, useValue: 'server' },
         ],

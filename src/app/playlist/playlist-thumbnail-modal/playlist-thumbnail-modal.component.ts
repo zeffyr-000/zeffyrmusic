@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ImageCropperComponent, ImageCroppedEvent, OutputFormat } from 'ngx-image-cropper';
@@ -19,7 +19,6 @@ const MIME_TO_FORMAT: Partial<Record<string, OutputFormat>> = {
   imports: [TranslocoPipe, ImageCropperComponent],
   templateUrl: './playlist-thumbnail-modal.component.html',
   styleUrl: './playlist-thumbnail-modal.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlaylistThumbnailModalComponent {
   readonly modal = inject(NgbActiveModal);

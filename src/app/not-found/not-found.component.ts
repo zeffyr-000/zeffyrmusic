@@ -1,6 +1,5 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   OnDestroy,
@@ -22,7 +21,6 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-not-found',
   templateUrl: './not-found.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe],
 })
 export class NotFoundComponent implements OnInit, OnDestroy {

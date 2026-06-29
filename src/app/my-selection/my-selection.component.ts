@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  PLATFORM_ID,
-  TemplateRef,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, TemplateRef, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { UserLibraryService } from '../services/user-library.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -22,7 +14,6 @@ import { UiStore } from '../store/ui/ui.store';
   selector: 'app-my-selection',
   templateUrl: './my-selection.component.html',
   styleUrl: './my-selection.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, DefaultImageDirective, TranslocoPipe],
 })
 export class MySelectionComponent implements OnInit {

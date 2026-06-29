@@ -1,10 +1,7 @@
 import 'zone.js';
 import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
 // Define global fail function for Vitest
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +46,7 @@ if (typeof document !== 'undefined' && document.getElementsByTagName('script').l
 
 // First, initialize the Angular testing environment only once
 try {
-  getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+  getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting());
 } catch {
   // Platform already initialized, ignore
 }

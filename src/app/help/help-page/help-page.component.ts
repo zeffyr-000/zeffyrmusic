@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  OnDestroy,
-  PLATFORM_ID,
-  inject,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -252,7 +245,6 @@ const HOWTO_IMAGES: Record<string, string> = {
   selector: 'app-help-page',
   templateUrl: './help-page.component.html',
   styleUrl: './help-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslocoPipe, RouterLink],
 })
 export class HelpPageComponent implements OnInit, OnDestroy {
