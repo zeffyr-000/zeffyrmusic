@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  TemplateRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, TemplateRef, computed, inject, signal } from '@angular/core';
 import { form, FormField, FormRoot, required, validate } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -28,7 +20,6 @@ type AlbumChoice = 'album1' | 'album2';
   selector: 'app-merge-album',
   templateUrl: './merge-album.component.html',
   styleUrl: './merge-album.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormField, FormRoot, TranslocoPipe, DefaultImageDirective, ToMMSSPipe],
 })
 export class MergeAlbumComponent implements OnInit {

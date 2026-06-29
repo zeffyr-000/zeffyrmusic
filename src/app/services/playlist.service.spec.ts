@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { PlaylistService } from './playlist.service';
 import { Playlist } from '../models/playlist.model';
 import { Video } from '../models/video.model';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
@@ -21,7 +21,7 @@ describe('PlaylistService', () => {
             useValue: 'browser',
           },
           PlaylistService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       });
@@ -164,7 +164,7 @@ describe('PlaylistService', () => {
             useValue: 'server',
           },
           PlaylistService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       });

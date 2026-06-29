@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-  PLATFORM_ID,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -38,7 +30,6 @@ import { AuthStore, QueueStore } from '../store';
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     DefaultImageDirective,

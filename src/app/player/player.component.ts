@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PlayerService } from '../services/player.service';
 import { LazyLoadImageDirective } from '../directives/lazy-load-image.directive';
 import {
@@ -14,7 +14,6 @@ import { QueueStore, AuthStore } from '../store';
   selector: 'app-player',
   templateUrl: './player.component.html',
   styleUrl: './player.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     LazyLoadImageDirective,
     NgbDropdown,

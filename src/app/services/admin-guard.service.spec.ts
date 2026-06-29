@@ -2,7 +2,7 @@ import type { MockedObject } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { AdminGuard } from './admin-guard.service';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthStore } from '../store';
@@ -19,7 +19,7 @@ describe('AdminGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         getTranslocoTestingProviders(),
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         AdminGuard,
         { provide: Router, useValue: routerSpy },
         { provide: PLATFORM_ID, useValue: 'browser' },
@@ -73,7 +73,7 @@ describe('AdminGuard', () => {
     TestBed.configureTestingModule({
       providers: [
         getTranslocoTestingProviders(),
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         AdminGuard,
         { provide: Router, useValue: routerSpy },
         { provide: PLATFORM_ID, useValue: 'server' },

@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
@@ -31,7 +30,6 @@ import { PlayerStore, QueueStore, UiStore } from '../store';
   selector: 'app-lyrics-panel',
   templateUrl: './lyrics-panel.component.html',
   styleUrl: './lyrics-panel.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslocoPipe],
   host: {
     role: 'complementary',

@@ -6,7 +6,7 @@ import { PlayerService } from './player.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Video } from '../models/video.model';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { PLATFORM_ID } from '@angular/core';
 import { YoutubePlayerService } from './youtube-player.service';
@@ -95,7 +95,7 @@ describe('PlayerService', () => {
             useValue: {},
           },
           PlayerService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       }).compileComponents();
@@ -328,7 +328,7 @@ describe('PlayerService', () => {
 
       service.removeVideoFromQueue('2');
 
-      expect(queueStore.items().length).toBe(2);
+      expect(queueStore.items()).toHaveLength(2);
       expect(queueStore.items().find(v => v.id_video === '2')).toBeUndefined();
     });
 
@@ -340,7 +340,7 @@ describe('PlayerService', () => {
 
       service.removeVideoFromQueue('999');
 
-      expect(queueStore.items().length).toBe(1);
+      expect(queueStore.items()).toHaveLength(1);
     });
 
     it('should set empty artist when not provided on lecture', () => {
@@ -725,7 +725,7 @@ describe('PlayerService', () => {
             useValue: {},
           },
           PlayerService,
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       }).compileComponents();

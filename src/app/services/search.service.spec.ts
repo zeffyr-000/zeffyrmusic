@@ -8,7 +8,7 @@ import {
   SearchResults2,
   SearchResults3,
 } from '../models/search.model';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 
 describe('SearchService', () => {
@@ -22,7 +22,7 @@ describe('SearchService', () => {
         providers: [
           SearchService,
           { provide: PLATFORM_ID, useValue: 'browser' },
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       });
@@ -234,7 +234,7 @@ describe('SearchService', () => {
         providers: [
           SearchService,
           { provide: PLATFORM_ID, useValue: 'server' },
-          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
           provideHttpClientTesting(),
         ],
       });

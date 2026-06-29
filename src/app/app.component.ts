@@ -1,6 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   OnInit,
   PLATFORM_ID,
@@ -35,7 +34,6 @@ import { LyricsPanelComponent } from './lyrics-panel/lyrics-panel.component';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HeaderComponent,
     ControlBarComponent,

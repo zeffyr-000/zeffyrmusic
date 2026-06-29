@@ -122,7 +122,7 @@ describe('ControlBarComponent', () => {
       expect(element.requestFullscreen).toHaveBeenCalled();
 
       getElementByIdSpy.mockRestore();
-      delete (document as unknown as Record<string, unknown>).fullscreenEnabled;
+      delete (document as unknown as Record<string, unknown>)['fullscreenEnabled'];
     });
 
     it('should not call requestFullscreen when fullscreen is unsupported', () => {
@@ -140,7 +140,7 @@ describe('ControlBarComponent', () => {
       expect(element.requestFullscreen).not.toHaveBeenCalled();
 
       getElementByIdSpy.mockRestore();
-      delete (document as unknown as Record<string, unknown>).fullscreenEnabled;
+      delete (document as unknown as Record<string, unknown>)['fullscreenEnabled'];
     });
 
     it('should swallow requestFullscreen promise rejection', async () => {
@@ -160,7 +160,7 @@ describe('ControlBarComponent', () => {
       await Promise.resolve();
 
       getElementByIdSpy.mockRestore();
-      delete (document as unknown as Record<string, unknown>).fullscreenEnabled;
+      delete (document as unknown as Record<string, unknown>)['fullscreenEnabled'];
     });
   });
 

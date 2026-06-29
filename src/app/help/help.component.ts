@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  OnDestroy,
-  PLATFORM_ID,
-  inject,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -18,7 +11,6 @@ import { environment } from 'src/environments/environment';
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrl: './help.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe],
 })
 export class HelpComponent implements OnInit, OnDestroy {

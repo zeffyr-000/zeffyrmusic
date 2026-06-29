@@ -1,6 +1,5 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   OnInit,
   PLATFORM_ID,
@@ -35,7 +34,6 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormField, FormRoot, TranslocoPipe],
 })
 export class SettingsComponent implements OnInit, AfterViewInit {

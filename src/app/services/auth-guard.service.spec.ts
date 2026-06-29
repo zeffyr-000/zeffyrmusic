@@ -2,7 +2,7 @@ import type { MockedObject } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { AuthGuard } from './auth-guard.service';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthStore } from '../store';
@@ -19,7 +19,7 @@ describe('AuthGuardService', () => {
     TestBed.configureTestingModule({
       providers: [
         getTranslocoTestingProviders(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         withInterceptorsFromDi(),
         AuthGuard,
         { provide: Router, useValue: routerSpy },

@@ -5,5 +5,13 @@
     "types": ["vitest/globals", "node", "youtube"]
   },
   "include": ["**/*.ts", "**/*.d.ts"],
-  "exclude": ["../dist/**/*", "../node_modules/**/*"]
+  "exclude": ["../dist/**/*", "../node_modules/**/*"],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }

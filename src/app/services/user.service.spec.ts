@@ -15,7 +15,7 @@ import {
   SendPassResponse,
   UserReponse,
 } from '../models/user.model';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 describe('UserService', () => {
   let service: UserService;
@@ -26,7 +26,7 @@ describe('UserService', () => {
       imports: [],
       providers: [
         UserService,
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     });

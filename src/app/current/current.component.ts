@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -19,7 +19,6 @@ import { environment } from 'src/environments/environment';
   selector: 'app-current',
   templateUrl: './current.component.html',
   styleUrl: './current.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     LazyLoadImageDirective,
     NgbDropdown,

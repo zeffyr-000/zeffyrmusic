@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideHttpClient, withInterceptorsFromDi, HttpErrorResponse } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+  HttpErrorResponse,
+  withXhr,
+} from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of, throwError, Subject } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
@@ -60,7 +65,7 @@ describe('LyricsPanelComponent', () => {
       imports: [LyricsPanelComponent],
       providers: [
         getTranslocoTestingProviders(),
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
         { provide: LyricsService, useValue: lyricsServiceMock },
       ],

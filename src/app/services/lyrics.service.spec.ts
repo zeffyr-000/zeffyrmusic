@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { LyricsService } from './lyrics.service';
 import { environment } from '../../environments/environment';
 import { LyricsResponse } from '../models/lyrics.model';
@@ -13,7 +13,7 @@ describe('LyricsService', () => {
     TestBed.configureTestingModule({
       providers: [
         LyricsService,
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     });

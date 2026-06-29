@@ -12,7 +12,12 @@ import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { FollowItem } from '../models/follow.model';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  HttpClient,
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withXhr,
+} from '@angular/common/http';
 import { UserVideo, Video } from '../models/video.model';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { getTranslocoTestingProviders } from '../transloco-testing';
@@ -139,7 +144,7 @@ describe('PlaylistComponent', () => {
           provide: NgbModal,
           useValue: { open: vi.fn(), dismissAll: vi.fn() },
         },
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
@@ -462,7 +467,7 @@ describe('PlaylistComponent', () => {
     fixture.detectChanges();
 
     expect(component.isLikePage()).toBe(true);
-    expect(component.playlist().length).toEqual(2);
+    expect(component.playlist()).toHaveLength(2);
     expect(component.playlist()[0].artists[0].label).toEqual('Artist 1');
 
     // Reset
@@ -581,7 +586,7 @@ describe('PlaylistComponent', () => {
     );
     const disabledButtons = Array.from(buttons).filter(btn => btn.disabled);
 
-    expect(disabledButtons.length).toBe(2);
+    expect(disabledButtons).toHaveLength(2);
 
     // Verify click handlers are not invoked on disabled buttons
     const spyRunPlaylist = vi.spyOn(playerService, 'runPlaylist');
@@ -843,41 +848,6 @@ describe('PlaylistComponent', () => {
         { id_video: '1', titre: 'Billie Jean' },
         { id_video: '2', titre: 'Beat It' },
         { id_video: '3', titre: 'Wanna Be Startin' },
-        { id_video: '4', titre: 'The Girl Is Mine' },
-        { id_video: '5', titre: 'Thriller' },
-        { id_video: '6', titre: 'Baby Be Mine' },
-        { id_video: '7', titre: 'Human Nature' },
-        { id_video: '8', titre: 'P.Y.T. (Pretty Young Thing)' },
-        { id_video: '9', titre: 'The Lady in My Life' },
-      ],
-    } as Playlist;
-
-    const result = component.getMetaDescription(data);
-
-    expect(translocoService.translate).toHaveBeenCalledWith('description_album_artist', {
-      title: 'Thriller',
-      artist: 'Michael Jackson',
-      year: 1982,
-      count: 9,
-    });
-
-    expect(result).toBe('Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks');
-  });
-
-  it('should generate album metadata description with artist', () => {
-    vi.spyOn(translocoService, 'translate').mockReturnValue(
-      'Album "Thriller" by Michael Jackson from 1982 featuring 9 tracks'
-    );
-
-    const data: Playlist = {
-      id_playlist: '1',
-      titre: 'Thriller',
-      artiste: 'Michael Jackson',
-      year: 1982,
-      tab_video: [
-        { id_video: '1', titre: 'Billie Jean' },
-        { id_video: '2', titre: 'Beat It' },
-        { id_video: '3', titre: "Wanna Be Startin'" },
         { id_video: '4', titre: 'The Girl Is Mine' },
         { id_video: '5', titre: 'Thriller' },
         { id_video: '6', titre: 'Baby Be Mine' },
@@ -1324,7 +1294,7 @@ describe('PlaylistComponent (Server context)', () => {
           provide: NgbModal,
           useValue: { open: vi.fn(), dismissAll: vi.fn() },
         },
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();

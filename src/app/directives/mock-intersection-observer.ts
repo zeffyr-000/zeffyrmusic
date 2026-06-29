@@ -2,6 +2,7 @@ export class MockIntersectionObserver implements IntersectionObserver {
   private readonly callback: IntersectionObserverCallback;
   public root: Element | null = null;
   public rootMargin = '0px';
+  public scrollMargin = '0px';
   public thresholds: readonly number[] = [0];
 
   constructor(callback: (entries: IntersectionObserverEntry[]) => void) {

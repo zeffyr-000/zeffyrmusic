@@ -4,6 +4,7 @@ import {
   provideClientHydration,
   withEventReplay,
   withHttpTransferCacheOptions,
+  withNoIncrementalHydration,
 } from '@angular/platform-browser';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 import { appConfig } from './app.config';
@@ -31,7 +32,8 @@ export function createBrowserConfig(sentry?: SentryModule): ApplicationConfig {
         withEventReplay(),
         // Exclude POST requests from transfer cache to avoid caching non-idempotent operations
         // (e.g., form submits, mutations, analytics/auth payloads)
-        withHttpTransferCacheOptions({ includePostRequests: false })
+        withHttpTransferCacheOptions({ includePostRequests: false }),
+        withNoIncrementalHydration()
       ),
       importProvidersFrom(
         // Disable automatic page_view on gtag config — components send pageView() manually

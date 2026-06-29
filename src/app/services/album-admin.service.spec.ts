@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { AlbumAdminService } from './album-admin.service';
 import { environment } from '../../environments/environment';
 import { Playlist } from '../models/playlist.model';
@@ -30,7 +30,7 @@ describe('AlbumAdminService', () => {
     TestBed.configureTestingModule({
       providers: [
         AlbumAdminService,
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     });

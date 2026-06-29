@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { Meta, Title } from '@angular/platform-browser';
@@ -65,7 +58,6 @@ const DARK_MODE_LABEL_MAP: Record<string, string> = {
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslocoPipe, DecimalPipe, BaseChartDirective],
 })
 export class DashboardComponent implements OnInit {

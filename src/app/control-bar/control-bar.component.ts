@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   PLATFORM_ID,
@@ -23,7 +22,6 @@ import { SwipeDownDirective } from '../directives/swipe-down.directive';
   selector: 'app-control-bar',
   templateUrl: './control-bar.component.html',
   styleUrl: './control-bar.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SwipeDownDirective, NgbTooltip, NgbPopover, TranslocoPipe],
 })
 export class ControlBarComponent {
