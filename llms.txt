@@ -1,18 +1,18 @@
 # Zeffyr Music — LLM Context
 
-Music streaming app — Angular 21, SSR, zoneless, OnPush, @ngrx/signals.
+Music streaming app — Angular 22, SSR, zoneless, OnPush, @ngrx/signals.
 
 ## Stack
-- Angular 21.1.5 (SSR, standalone, zoneless via provideZonelessChangeDetection)
-- @ngrx/signals 21.0.1 (Signal Stores for state management)
-- Bootstrap 5.3.8 + ng-bootstrap 20 (UI framework)
-- Transloco 8.2 + MessageFormat (i18n: fr/en)
+- Angular 22.0.4 (SSR, standalone, zoneless via provideZonelessChangeDetection)
+- @ngrx/signals 21.1.1 (Signal Stores for state management)
+- Bootstrap 5.3.8 + ng-bootstrap 21 (UI framework)
+- Transloco 8.3 + MessageFormat (i18n: fr/en)
 - Vitest 4.x (unit tests), Playwright 1.x (E2E)
 - Signal Forms (@angular/forms/signals) for forms
 - YouTube IFrame API (music playback)
 
 ## Key Rules
-- OnPush change detection on ALL components
+- OnPush on ALL components via the Angular 22 zoneless default — omit changeDetection (set ChangeDetectionStrategy.Eager only if genuinely needed)
 - signal() for local state, computed() for derived — call as functions: this.value()
 - inject() function only — no constructor injection
 - readonly on all injected dependencies and signals
@@ -36,7 +36,7 @@ Music streaming app — Angular 21, SSR, zoneless, OnPush, @ngrx/signals.
 
 ## Critical CSS Rule
 YouTube #player styles MUST be in styles.scss (global) — iframe has no Angular encapsulation.
-Mobile #player { height: 1px } MUST be global. See .github/instructions/css-critical-rules.md.
+Mobile #player { height: 1px } MUST be global. See the css-critical-rules skill (.claude/skills/css-critical-rules/).
 
 ## Signal Forms + Transloco
 Use arrow functions for validation messages (deferred evaluation):
@@ -60,7 +60,7 @@ For up-to-date Angular best practices and LLM context, see:
 - Full LLM context: https://angular.dev/assets/context/llms-full.txt
 - Angular llms.txt index: https://angular.dev/llms.txt
 
-## Angular 21+ Rules (from official best-practices)
+## Angular 22+ Rules (from official best-practices)
 - Must NOT set `standalone: true` in decorators — it is the default since Angular 19+
 - For new or refactored components/directives, prefer the `host` object in @Component/@Directive over @HostBinding/@HostListener decorators
 - For new or refactored code, prefer `input()` and `output()` functions over @Input/@Output decorators
@@ -71,9 +71,10 @@ For up-to-date Angular best practices and LLM context, see:
 - Use `inject()` function instead of constructor injection
 - Use `providedIn: 'root'` for singleton services
 - Use Reactive Forms instead of Template-driven Forms
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in all components
+- Do NOT set `changeDetection` — OnPush is the Angular 22 zoneless default (use `ChangeDetectionStrategy.Eager` only if eager checking is needed)
 
-## MCP Tools Available
-Angular CLI MCP server is configured with experimental tools enabled.
-Default: ai_tutor, find_examples, get_best_practices, list_projects, onpush_zoneless_migration, search_documentation.
-Experimental: build, test, e2e, devserver (start/stop/wait_for_build), modernize.
+## AI Tooling
+Primary agent: Claude Code. Config under .claude/ (see CLAUDE.md): skills (.claude/skills/*), subagents
+(.claude/agents/*), slash commands (.claude/commands/*), and a PostToolUse prettier+eslint hook (.claude/settings.json).
+Optional MCP: Angular CLI MCP (npx @angular/cli mcp) and Playwright MCP (npx @playwright/mcp) can be registered
+via `claude mcp add` or a project .mcp.json.

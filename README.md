@@ -1,9 +1,9 @@
 # ZeffyrMusic
 
-🎵 **ZeffyrMusic** is a modern music streaming web application built with **Angular 21**. It allows users to explore and listen to music online while managing playlists and favorites.
+🎵 **ZeffyrMusic** is a modern music streaming web application built with **Angular 22**. It allows users to explore and listen to music online while managing playlists and favorites.
 
 [![codecov](https://codecov.io/github/zeffyr-000/zeffyrmusic/graph/badge.svg?token=HU7ROB7BDP)](https://codecov.io/github/zeffyr-000/zeffyrmusic)
-[![Angular](https://img.shields.io/badge/Angular-21-red.svg)](https://angular.dev/)
+[![Angular](https://img.shields.io/badge/Angular-22-red.svg)](https://angular.dev/)
 
 🌐 **[Production server](https://www.zeffyrmusic.com/)**
 
@@ -27,10 +27,10 @@
 
 | Technology        | Version | Purpose                       |
 | ----------------- | ------- | ----------------------------- |
-| **Angular**       | 21.x    | Frontend framework            |
+| **Angular**       | 22.x    | Frontend framework            |
 | **@ngrx/signals** | 21.x    | State management with signals |
 | **RxJS**          | 7.x     | Reactive programming          |
-| **TypeScript**    | 5.7     | Type-safe JavaScript          |
+| **TypeScript**    | 6.0     | Type-safe JavaScript          |
 
 ### UI & Styling
 
@@ -94,7 +94,7 @@
 
 - **Node.js** >= 22.x
 - **npm** >= 10.x
-- **Angular CLI** >= 21.x
+- **Angular CLI** >= 22.x
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## System Overview
 
-Music streaming app built with **Angular 21** (SSR, zoneless, OnPush). Plays YouTube videos via IFrame API with a custom UI, centralized state via `@ngrx/signals`.
+Music streaming app built with **Angular 22** (SSR, zoneless, OnPush). Plays YouTube videos via IFrame API with a custom UI, centralized state via `@ngrx/signals`.
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -111,7 +111,7 @@ Smaller bundle, native signals integration, simpler boilerplate, type-safe.
 
 ### Standalone Components
 
-100% standalone (Angular 21 default). No NgModules. Better tree-shaking and lazy loading.
+100% standalone (Angular 22 default). No NgModules. Better tree-shaking and lazy loading.
 
 ## Routing
 

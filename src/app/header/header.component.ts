@@ -6,6 +6,7 @@ import {
   inject,
   effect,
   signal,
+  computed,
 } from '@angular/core';
 import {
   form,
@@ -70,6 +71,12 @@ export class HeaderComponent {
   private readonly translocoService = inject(TranslocoService);
 
   readonly isBrowser = isPlatformBrowser(this.platformId);
+
+  /** First letter of the pseudo, used as avatar fallback when no photo is available. */
+  readonly userInitial = computed(() => this.authStore.pseudo()?.charAt(0).toUpperCase() ?? '');
+
+  /** Set when the avatar photo fails to load, so we fall back to the initial. */
+  readonly photoLoadError = signal(false);
 
   @ViewChild('contentModalLogin') contentModalLogin!: TemplateRef<unknown>;
   @ViewChild('contentModalRegister') contentModalRegister!: TemplateRef<unknown>;
@@ -260,7 +267,13 @@ export class HeaderComponent {
       if (data.success !== undefined && data.success) {
         // Login via AuthStore
         this.authStore.login(
-          { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail, isAdmin: data.is_admin },
+          {
+            pseudo: data.pseudo,
+            idPerso: data.id_perso,
+            mail: data.mail,
+            isAdmin: data.is_admin,
+            photo: data.photo,
+          },
           {
             darkModeEnabled: data.dark_mode_enabled,
             language: data.language as 'fr' | 'en',

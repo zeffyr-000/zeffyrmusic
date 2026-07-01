@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); [ -n \"$f\" ] || exit 0; printf '%s' \"$f\" | grep -qE '\\.(ts|html|scss|css|json|md)$' && npx prettier --write \"$f\" >/dev/null 2>&1; printf '%s' \"$f\" | grep -qE '\\.(ts|html)$' && npx eslint --fix \"$f\" >/dev/null 2>&1; exit 0",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

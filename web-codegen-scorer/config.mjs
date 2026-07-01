@@ -2,7 +2,7 @@ import { getBuiltInRatings } from 'web-codegen-scorer';
 
 /** @type {import('web-codegen-scorer').EnvironmentConfig} */
 export default {
-  displayName: 'Zeffyr Music — Angular 21',
+  displayName: 'Zeffyr Music — Angular 22',
   id: 'zeffyr-music-angular',
   clientSideFramework: 'angular',
   packageManager: 'npm',
