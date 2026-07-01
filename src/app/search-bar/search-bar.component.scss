@@ -7,6 +7,47 @@
   position: relative;
 }
 
+// Search field as a Bootstrap input-group with a leading magnifier icon.
+// Border + focus ring live on the group (:focus-within) so the icon stays
+// visible and aligned — the global `.form-control:focus { transform }` would
+// otherwise paint the input over an absolutely-positioned icon.
+.search-input-group {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius-full, 9999px);
+  background-color: var(--bs-body-bg);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+
+  &:focus-within {
+    border-color: rgb(var(--bs-primary-rgb));
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.1);
+  }
+
+  .input-group-text {
+    background: transparent;
+    border: none;
+    padding-right: 0;
+    color: var(--bs-secondary-color);
+
+    .material-icons {
+      font-size: 20px;
+    }
+  }
+
+  .form-control {
+    border: none;
+    background: transparent;
+
+    // Neutralize global form-control focus chrome; the group handles it
+    &:focus {
+      border: none;
+      box-shadow: none;
+      transform: none;
+    }
+  }
+}
+
 // Typeahead dropdown container
 :host ::ng-deep .dropdown-menu {
   width: 100%;

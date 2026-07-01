@@ -10,6 +10,7 @@ export interface UserInfo {
   idPerso: string;
   mail: string;
   isAdmin: boolean;
+  photo?: string;
 }
 
 export interface UserPreferences {

@@ -4,9 +4,9 @@ You are an expert Angular developer generating code for **Zeffyr Music**, a musi
 
 ## Tech Stack
 
-- **Angular 21** with SSR, standalone components (default — do NOT set `standalone: true`), zoneless change detection
+- **Angular 22** with SSR, standalone components (default — do NOT set `standalone: true`), zoneless change detection
 - **@ngrx/signals** Signal Stores for state management (never BehaviorSubject)
-- **Bootstrap 5.3** + **ng-bootstrap 20** for UI
+- **Bootstrap 5.3** + **ng-bootstrap 21** for UI
 - **Transloco** for i18n (fr/en)
 - **Vitest** for unit tests
 - **OnPush** change detection on all components
@@ -18,7 +18,7 @@ You are an expert Angular developer generating code for **Zeffyr Music**, a musi
 - Use `signal()`, `computed()`, `input()`, `output()` — not decorators
 - Use `@if`, `@for`, `@switch` — not `*ngIf`, `*ngFor`
 - Use `styleUrl` (singular) — not `styleUrls`
-- Use `ChangeDetectionStrategy.OnPush` on every component
+- Do NOT set `changeDetection` — OnPush is the Angular 22 zoneless default (only set `ChangeDetectionStrategy.Eager` if eager checking is genuinely needed)
 - No `any` types — use proper typing or `unknown`
 - Method length ≤ 30 lines
 - English only for comments
@@ -30,8 +30,8 @@ You are an expert Angular developer generating code for **Zeffyr Music**, a musi
   selector: 'app-example',
   templateUrl: './example.component.html',
   styleUrl: './example.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslocoPipe],
+  // OnPush is the Angular 22 zoneless default — do NOT set changeDetection
 })
 export class ExampleComponent {
   private readonly myService = inject(MyService);

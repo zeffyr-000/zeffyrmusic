@@ -1,6 +1,6 @@
 # CSS Architecture
 
-> **CRITICAL**: Read `.github/instructions/css-critical-rules.md` FIRST before any CSS change.
+> **CRITICAL**: Read the `css-critical-rules` skill (`.claude/skills/css-critical-rules/`) FIRST before any CSS change.
 
 ## File Structure
 

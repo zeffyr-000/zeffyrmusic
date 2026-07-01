@@ -31,6 +31,7 @@ export interface PingResponse {
   pseudo: string;
   id_perso: string;
   mail: string;
+  photo?: string;
   dark_mode_enabled: boolean;
   language: string;
   liste_playlist: UserPlaylist[];
@@ -109,7 +110,13 @@ export class InitService {
       listLikeVideo = data.like_video;
 
       this.authStore.login(
-        { pseudo: data.pseudo, idPerso: data.id_perso, mail: data.mail, isAdmin: data.is_admin },
+        {
+          pseudo: data.pseudo,
+          idPerso: data.id_perso,
+          mail: data.mail,
+          isAdmin: data.is_admin,
+          photo: data.photo,
+        },
         {
           darkModeEnabled: data.dark_mode_enabled,
           language: data.language as 'fr' | 'en',

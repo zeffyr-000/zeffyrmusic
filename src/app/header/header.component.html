@@ -45,8 +45,26 @@
   <ul class="nav col-5 d-none d-lg-flex" id="header-nav">
     @if (authStore.isAuthenticated()) {
       <li class="nav-item align-self-center d-flex" ngbDropdown>
-        <a id="header-toggle-big" class="btn btn-light" ngbDropdownToggle>
-          {{ authStore.pseudo() }} <span class="caret"></span>
+        <a
+          id="header-toggle-big"
+          class="btn btn-light d-flex align-items-center gap-2"
+          ngbDropdownToggle
+        >
+          @if (authStore.photo() && !photoLoadError()) {
+            <img
+              class="user-avatar"
+              [src]="authStore.photo()"
+              [alt]="authStore.pseudo()"
+              referrerpolicy="no-referrer"
+              (error)="photoLoadError.set(true)"
+            />
+          } @else {
+            <span class="user-avatar user-avatar--initial" aria-hidden="true">{{
+              userInitial()
+            }}</span>
+          }
+          <span class="user-pseudo">{{ authStore.pseudo() }}</span>
+          <span class="caret"></span>
         </a>
         <ul ngbDropdownMenu>
           <li ngbDropdownItem routerLinkActive="active">
@@ -90,28 +108,54 @@
         </ul>
       </li>
     } @else {
+      <li id="header-li-connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
+        <button
+          type="button"
+          class="btn btn-outline-secondary d-inline-flex align-items-center gap-1"
+          (click)="openModalLogin()"
+        >
+          <span class="material-icons" aria-hidden="true">login</span>
+          {{ 'connexion' | transloco }}
+        </button>
+      </li>
       <li id="header-li-inscription" class="nav-item align-self-center d-flex d-none d-lg-block">
         <button
           type="button"
-          class="btn btn-warning btn-outline-warning text-light"
+          class="btn btn-primary text-light d-inline-flex align-items-center gap-1"
           (click)="openModalRegister()"
         >
-          {{ 'inscription' | transloco }}
-        </button>
-      </li>
-      <li id="header-li-connexion" class="nav-item align-self-center d-flex d-none d-lg-block">
-        <button type="button" class="btn btn-primary text-light" (click)="openModalLogin()">
-          {{ 'connexion' | transloco }}
+          <span class="material-icons" aria-hidden="true">person_add</span>
+          <span class="d-none d-xxl-inline">{{ 's_inscrire_gratuitement' | transloco }}</span>
+          <span class="d-xxl-none">{{ 'inscription' | transloco }}</span>
         </button>
       </li>
     }
 
     <li id="header-li-help" class="nav-item align-self-center d-flex">
-      <a class="btn btn-light" data-testid="header-help-link" routerLink="/help">
-        <span class="material-icons">help</span>
+      <a
+        class="btn"
+        data-testid="header-help-link"
+        routerLink="/help"
+        [attr.aria-label]="'help_title' | transloco"
+        [attr.title]="'help_title' | transloco"
+      >
+        <span class="material-icons" aria-hidden="true">help</span>
       </a>
     </li>
   </ul>
+
+  @if (!authStore.isAuthenticated()) {
+    <div id="header-mobile-cta" class="d-flex d-lg-none align-items-center justify-content-center">
+      <button
+        type="button"
+        class="btn btn-primary btn-sm text-light d-inline-flex align-items-center gap-1"
+        (click)="openModalRegister()"
+      >
+        <span class="material-icons" aria-hidden="true">person_add</span>
+        <span class="header-mobile-cta-label">{{ 's_inscrire' | transloco }}</span>
+      </button>
+    </div>
+  }
 
   <div id="header-recherche" class="navbar-form navbar-right col-4 my-auto">
     <app-search-bar></app-search-bar>
@@ -514,7 +558,22 @@
       @if (authStore.isAuthenticated()) {
         <hr class="my-2" />
 
-        <div class="nav-link bg-body-secondary rounded px-3 py-2 fw-bold">
+        <div
+          class="nav-link bg-body-secondary rounded px-3 py-2 fw-bold d-flex align-items-center gap-2"
+        >
+          @if (authStore.photo() && !photoLoadError()) {
+            <img
+              class="user-avatar"
+              [src]="authStore.photo()"
+              [alt]="authStore.pseudo()"
+              referrerpolicy="no-referrer"
+              (error)="photoLoadError.set(true)"
+            />
+          } @else {
+            <span class="user-avatar user-avatar--initial" aria-hidden="true">{{
+              userInitial()
+            }}</span>
+          }
           {{ authStore.pseudo() }}
         </div>
 

@@ -43,7 +43,8 @@
 }
 
 #header-toggle-big {
-  display: block;
+  display: flex;
+  border-radius: var(--radius-full, 9999px);
   // Override btn-light static colors with Bootstrap adaptive tokens
   --bs-btn-bg: var(--bs-tertiary-bg);
   --bs-btn-border-color: transparent;
@@ -56,9 +57,36 @@
   --bs-btn-active-border-color: var(--bs-border-color);
 }
 
+// User avatar pill — photo (Google) or initial fallback
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full, 9999px);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-avatar--initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bs-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--text-sm, 0.875rem);
+  line-height: 1;
+}
+
+// Hide the pseudo label on tighter desktop widths, keep just the avatar
+@media (max-width: 1199.98px) {
+  #header-toggle-big .user-pseudo {
+    display: none;
+  }
+}
+
 #header-li-connexion > button,
 #header-li-inscription > button {
-  border-radius: 20px;
+  border-radius: var(--radius-full, 9999px);
   padding: var(--spacing-xs) var(--spacing-lg);
   margin: 4px;
   min-height: 44px;
@@ -66,6 +94,40 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+// Connexion = readable secondary button.
+// The theme's $secondary (#e8e7e7) is too light for text, so use adaptive
+// Bootstrap tokens (body color + visible border) instead of btn-outline-secondary.
+#header-li-connexion > button {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-border-color: var(--bs-border-color);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--bs-tertiary-bg);
+  --bs-btn-hover-border-color: var(--bs-secondary-color);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-bg: var(--bs-secondary-bg);
+  --bs-btn-active-border-color: var(--bs-secondary-color);
+}
+
+// Persistent signup CTA shown in the mobile header (logged-out only)
+#header-mobile-cta > .btn {
+  border-radius: var(--radius-full, 9999px);
+  white-space: nowrap;
+}
+
+// Help = discreet tertiary icon button, adaptive (dark mode safe) like the avatar
+#header-li-help > .btn {
+  border-radius: var(--radius-full, 9999px);
+  --bs-btn-bg: var(--bs-tertiary-bg);
+  --bs-btn-border-color: transparent;
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--bs-secondary-bg);
+  --bs-btn-hover-border-color: var(--bs-border-color);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-active-bg: var(--bs-secondary-bg);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-border-color: var(--bs-border-color);
 }
 
 // Responsive styles - use Bootstrap breakpoints
@@ -78,35 +140,32 @@
 }
 
 @media (max-width: 767.98px) {
-  #header-toggle-big {
-    display: none;
+  // Single-row flex layout: burger | logo | signup CTA | search (fills the rest).
+  // Avoids the wrapping caused by fixed-% grid columns + an extra item.
+  #header-top {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--spacing-xs, 0.25rem);
   }
-  #header-logo {
-    width: 16.666%;
-  }
-  #header-nav {
-    width: 33.333%;
-  }
-  #header-nav > li,
-  #header-nav > li > a {
-    padding-left: 0;
-    padding-right: 2px;
+  #header-burger,
+  #header-logo,
+  #header-mobile-cta {
+    flex: 0 0 auto;
+    width: auto;
   }
   #header-recherche {
-    width: 50%;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
     margin: 0;
     padding: 0;
   }
-  #header-li-connexion,
-  #header-li-inscription {
-    width: 45%;
-    overflow: hidden;
-    float: left;
-  }
-  #header-li-connexion > button,
-  #header-li-inscription > button {
-    overflow: hidden;
-    text-align: center;
+}
+
+// On the smallest screens, keep the signup CTA icon-only to save room
+@media (max-width: 575.98px) {
+  #header-mobile-cta .header-mobile-cta-label {
+    display: none;
   }
 }
 

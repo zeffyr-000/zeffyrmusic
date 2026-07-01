@@ -7,14 +7,14 @@
 
 | Layer            | Technology                                  | Version  |
 | ---------------- | ------------------------------------------- | -------- |
-| Framework        | Angular (SSR, standalone, zoneless)         | 21.1.5   |
-| State Management | @ngrx/signals (Signal Stores)               | 21.0.1   |
-| UI Framework     | Bootstrap + ng-bootstrap                    | 5.3 / 20 |
+| Framework        | Angular (SSR, standalone, zoneless)         | 22.0.4   |
+| State Management | @ngrx/signals (Signal Stores)               | 21.1.1   |
+| UI Framework     | Bootstrap + ng-bootstrap                    | 5.3 / 21 |
 | Icons            | Material Icons (optimized subset)           | 1.13     |
-| i18n             | Transloco + MessageFormat                   | 8.2      |
+| i18n             | Transloco + MessageFormat                   | 8.3      |
 | Font             | Nunito (Regular/SemiBold/Bold/800)          | local    |
 | Unit Tests       | Vitest                                      | 4.x      |
-| E2E Tests        | Playwright                                  | 1.58.x   |
+| E2E Tests        | Playwright                                  | 1.60.x   |
 | Change Detection | OnPush everywhere (zoneless)                |          |
 | Dark Mode        | `data-bs-theme="dark"` on `<body>`          |          |
 | Error Tracking   | Sentry (`@sentry/angular` + `@sentry/node`) | 10.x     |
@@ -22,9 +22,9 @@
 ## Required Reading Before Code Changes
 
 1. **This file** — Architecture, rules, patterns
-2. **`.github/instructions/css-critical-rules.md`** — YouTube player CSS (BREAKING if violated)
-3. **`.github/instructions/ssr.instructions.md`** — SSR config, allowedHosts, browser API safety
-4. Relevant `.github/instructions/*.md` file for the domain you're modifying
+2. **`css-critical-rules` skill** — YouTube player CSS (BREAKING if violated)
+3. **`ssr-safety` skill** — SSR config, allowedHosts, browser API safety
+4. The relevant **`.claude/skills/*`** skill for the domain you're modifying (see `CLAUDE.md`)
 
 ## Architecture Overview
 
@@ -164,7 +164,7 @@ message: this.translocoService.translate('validation_minlength', { min: 4 });
 
 ### 5. SSR Safety
 
-> **Full guide: `.github/instructions/ssr.instructions.md`**
+> **Full guide: the `ssr-safety` skill**
 
 **CommonEngine `allowedHosts`** (since `@angular/ssr` 21.2.2):
 Every production hostname/IP must be listed in `allowedHosts` in `src/server.ts`.
@@ -206,7 +206,7 @@ document.getElementById('el');
 
 ### 6. CSS — YouTube Player (CRITICAL)
 
-> **Read `.github/instructions/css-critical-rules.md` before ANY CSS change.**
+> **Read the `css-critical-rules` skill before ANY CSS change.**
 
 - `#player` styles MUST be in `styles.scss` (global) — YouTube iframe has no Angular encapsulation
 - Mobile `#player { height: 1px }` MUST be global — avoids "not attached to DOM" error
@@ -240,8 +240,8 @@ document.getElementById('el');
   selector: 'app-my-feature',
   templateUrl: './my-feature.component.html',
   styleUrl: './my-feature.component.scss',    // singular styleUrl
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe, NgbTooltip, ...],  // standalone by default in Angular 21
+  imports: [TranslocoPipe, NgbTooltip, ...],  // standalone by default in Angular 22
+  // OnPush is the Angular 22 zoneless default — do NOT set changeDetection
 })
 export class MyFeatureComponent {
   // 1. Injected dependencies
@@ -463,7 +463,7 @@ feat|fix|refactor|test|docs: short description
 
 ```bash
 npm start                    # Dev server
-npm run serve:ssr           # SSR dev server
+npm run serve:ssr:zeffyrmusic # SSR server (serves dist after npm run build)
 npm test                    # Vitest watch mode
 npx vitest run              # Single run
 npx vitest run --coverage   # With coverage
@@ -473,11 +473,25 @@ npm run e2e                 # Playwright E2E tests
 npm run e2e:ui              # Playwright interactive UI mode
 ```
 
-## Angular CLI MCP Server
+## AI Tooling — Claude Code
 
-The project uses the Angular CLI MCP server for AI-assisted development.
-Configuration: `.vscode/settings.json` with `"angular.experimental.autoStartMCP": true`.
-MCP servers are defined in `.vscode/mcp.json`.
+The primary AI agent for this repo is **Claude Code**. Its configuration lives under `.claude/`
+and is documented in **[`CLAUDE.md`](CLAUDE.md)**:
+
+- **`.claude/skills/*/SKILL.md`** — domain guides loaded on demand (components, templates, services,
+  stores, SSR, CSS critical rules, styling, testing, e2e, SEO, CI, API mapping, player lifecycle)
+- **`.claude/agents/*.md`** — subagents (`angular-migration`, `player-debug`, `ssr-debug`)
+- **`.claude/commands/*.md`** — slash commands (`/create-component`, `/refactor-to-signals`, …)
+- **`.claude/settings.json`** — `PostToolUse` hook running `prettier --write` + `eslint --fix` on edits
+
+## Angular CLI MCP Server (optional)
+
+The Angular CLI ships an MCP server that gives AI agents Angular-aware tools. It is **optional**.
+
+- **Claude Code:** register it with `claude mcp add angular -- npx @angular/cli mcp` (or add it to a
+  project-level `.mcp.json`), then enable experimental tools with the `-E` flag.
+- **VS Code (Angular Language Service):** `.vscode/settings.json` sets
+  `"angular.experimental.autoStartMCP": true`.
 
 ### Default Tools
 
@@ -506,13 +520,15 @@ MCP servers are defined in `.vscode/mcp.json`.
 
 - `devserver.start` consumes a port — avoid if a dev server is already running
 - `modernize` is read-only safe and can suggest migration steps
-- All tools are available to AI agents in VS Code via the MCP protocol
+- Once registered, these tools are available to any MCP-capable agent, including Claude Code
 
-## Playwright MCP Server
+## Playwright MCP Server (optional)
 
-The project uses `@playwright/mcp` for AI-assisted visual validation.
-The agent can pilot a real browser to navigate, interact, take screenshots, and verify UI after code changes.
-Configuration: `.vscode/mcp.json`.
+`@playwright/mcp` lets an agent pilot a real browser to navigate, interact, take screenshots, and
+verify UI after code changes. It is **optional**.
+
+- **Claude Code:** register it with `claude mcp add playwright -- npx @playwright/mcp@latest`
+  (or add it to a project-level `.mcp.json`).
 
 ### Available Capabilities
 
@@ -556,11 +572,11 @@ export ANTHROPIC_API_KEY="..."   # or GEMINI_API_KEY / OPENAI_API_KEY
 npx web-codegen-scorer eval --env=web-codegen-scorer
 
 # Run with a specific model
-npx web-codegen-scorer eval --env=web-codegen-scorer --model=claude-sonnet-4-20250514
+npx web-codegen-scorer eval --env=web-codegen-scorer --model=claude-sonnet-5
 
 # Compare models
 npx web-codegen-scorer eval --env=web-codegen-scorer --model=gemini-2.5-flash
-npx web-codegen-scorer eval --env=web-codegen-scorer --model=claude-sonnet-4-20250514
+npx web-codegen-scorer eval --env=web-codegen-scorer --model=claude-sonnet-5
 
 # View reports
 npx web-codegen-scorer report
@@ -576,7 +592,7 @@ Project-specific config: `web-codegen-scorer/config.mjs`
 
 ### When to Use
 
-- After modifying `copilot-instructions.md`, `AGENTS.md`, or `llms.txt`
+- After modifying `CLAUDE.md`, `AGENTS.md`, `llms.txt`, or any `.claude/skills/*`
 - When upgrading Angular or core dependencies
 - When comparing AI models for the team
 - Before/after prompt engineering changes

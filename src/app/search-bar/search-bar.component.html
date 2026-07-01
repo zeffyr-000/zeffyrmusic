@@ -1,20 +1,25 @@
-<input
-  class="form-control"
-  type="search"
-  placeholder="{{ 'rechercher' | transloco }}"
-  id="input-search-header"
-  data-testid="search-input"
-  [ngModel]="query()"
-  (ngModelChange)="query.set($event)"
-  [ngbTypeahead]="searchTypeahead"
-  [inputFormatter]="inputFormatter"
-  [resultFormatter]="resultFormatter"
-  [resultTemplate]="resultTpl"
-  (selectItem)="onSelect($event)"
-  (keydown.enter)="onSubmit()"
-  [focusFirst]="false"
-  #typeaheadInstance="ngbTypeahead"
-/>
+<div class="input-group search-input-group">
+  <span class="input-group-text" aria-hidden="true">
+    <span class="material-icons">search</span>
+  </span>
+  <input
+    class="form-control"
+    type="search"
+    placeholder="{{ 'rechercher' | transloco }}"
+    id="input-search-header"
+    data-testid="search-input"
+    [ngModel]="query()"
+    (ngModelChange)="query.set($event)"
+    [ngbTypeahead]="searchTypeahead"
+    [inputFormatter]="inputFormatter"
+    [resultFormatter]="resultFormatter"
+    [resultTemplate]="resultTpl"
+    (selectItem)="onSelect($event)"
+    (keydown.enter)="onSubmit()"
+    [focusFirst]="false"
+    #typeaheadInstance="ngbTypeahead"
+  />
+</div>
 
 <ng-template #resultTpl let-item="result">
   @if (item.type === 'all') {

@@ -18,6 +18,7 @@ export const AuthStore = signalStore(
 
   withComputed(state => ({
     pseudo: computed(() => state.user()?.pseudo ?? ''),
+    photo: computed(() => state.user()?.photo ?? ''),
     mail: computed(() => state.user()?.mail ?? ''),
     idPerso: computed(() => state.user()?.idPerso ?? ''),
     isAdmin: computed(() => state.user()?.isAdmin ?? false),

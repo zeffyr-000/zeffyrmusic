@@ -2,9 +2,10 @@
 
 ## Reading Order for AI Agents
 
-1. **[/AGENTS.md](../AGENTS.md)** — Main AI guide: rules, patterns, architecture (START HERE)
-2. **[css-critical-rules.md](../.github/instructions/css-critical-rules.md)** — YouTube player CSS (BREAKING if violated)
-3. **Domain-specific** `.github/instructions/*.md` for the files you're modifying
+1. **[/CLAUDE.md](../CLAUDE.md)** — Claude Code entry point: maps skills, agents, commands, hooks
+2. **[/AGENTS.md](../AGENTS.md)** — Main AI guide: rules, patterns, architecture (source of truth)
+3. **`css-critical-rules` skill** — YouTube player CSS (BREAKING if violated)
+4. **Domain-specific** `.claude/skills/*` for the files you're modifying
 
 ## Architecture
 
@@ -13,26 +14,31 @@
 | [ARCHITECTURE.md](ARCHITECTURE.md)         | System overview, data flows, stores, routing, performance    |
 | [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md) | CSS file structure, naming, dropdowns, modals, mobile layout |
 
-## Instruction Files (`.github/instructions/`)
+## Skills (`.claude/skills/`)
 
-Auto-applied by VS Code based on file patterns:
+Domain guides for Claude Code, loaded on demand from their `description`:
 
-| File                         | Applied To                  |
-| ---------------------------- | --------------------------- |
-| `css-critical-rules.md`      | `**/*.scss, **/*.css`       |
-| `bootstrap.instructions.md`  | `**/*.html, **/*.scss`      |
-| `components.instructions.md` | `src/app/**/*.component.ts` |
-| `services.instructions.md`   | `src/app/services/**/*.ts`  |
-| `stores.instructions.md`     | `src/app/store/**/*.ts`     |
-| `styles.instructions.md`     | `**/*.scss, **/*.css`       |
-| `templates.instructions.md`  | `**/*.html`                 |
-| `tests.instructions.md`      | `**/*.spec.ts`              |
-| `typescript.instructions.md` | `**/*.ts`                   |
-| `workflows.instructions.md`  | `.github/workflows/**`      |
+| Skill                      | Domain                            |
+| -------------------------- | --------------------------------- |
+| `css-critical-rules`       | YouTube player CSS (BREAKING)     |
+| `scss-styling`             | SCSS architecture, design system  |
+| `bootstrap-ui`             | Bootstrap / ng-bootstrap          |
+| `angular-components`       | `*.component.ts`                  |
+| `angular-templates`        | `*.html` templates                |
+| `angular-services`         | `src/app/services/**`             |
+| `signal-store-patterns`    | `@ngrx/signals` stores            |
+| `typescript-conventions`   | `*.ts`                            |
+| `vitest-testing`           | `*.spec.ts`                       |
+| `e2e-playwright`           | `e2e/**`                          |
+| `api-data-mapping`         | Backend snake_case ↔ models       |
+| `youtube-player-lifecycle` | Player playback / iframe          |
+| `ssr-safety`               | SSR, allowedHosts, browser APIs   |
+| `seo-help-pages`           | `src/app/help/**` structured data |
+| `github-actions`           | `.github/workflows/**`            |
 
 ## Documentation Update Triggers
 
-- **Critical rule change** → Update `css-critical-rules.md` immediately
-- **New pattern** → Update relevant `.github/instructions/*.md`
+- **Critical rule change** → Update the `css-critical-rules` skill immediately
+- **New pattern** → Update the relevant `.claude/skills/*` skill
 - **Breaking change** → Update `AGENTS.md` + relevant docs
 - **New store/service** → Update `AGENTS.md` folder structure + store/service tables
