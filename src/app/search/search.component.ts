@@ -1,4 +1,12 @@
-import { Component, OnDestroy, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  inject,
+  signal,
+} from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -58,6 +66,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   readonly authStore = inject(AuthStore);
   readonly queueStore = inject(QueueStore);
   readonly userLibraryService = inject(UserLibraryService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly query = signal('');
   readonly isLoading1 = signal(false);
@@ -120,6 +129,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
           this.listAlbums.set(data.playlist);
           this.limitAlbum.set(5);
+          this.cdr.markForCheck();
 
           if (this.isBrowser) {
             this.googleAnalyticsService.pageView(
@@ -129,11 +139,12 @@ export class SearchComponent implements OnInit, OnDestroy {
           }
         });
 
-      this.searchService.fullSearch2(this.query()).subscribe((data: { tab_video: Video[] }) => {
+      this.searchService.fullSearch2(this.query()).subscribe((data: any) => {
         this.isLoading2.set(false);
 
         this.listTracks.set(data.tab_video);
         this.limitTrack.set(5);
+        this.cdr.markForCheck();
       });
 
       if (this.authStore.isAuthenticated()) {
@@ -186,7 +197,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       titre: e.title,
     })) as unknown as Video[];
 
-    this.playerService.runPlaylist(listTransformed, index);
+    this.playerService.runPlaylist(listTransformed, index + 1);
   }
 
   moreExtras() {

@@ -17,8 +17,15 @@ const SEARCH1_KEY = (query: string) => makeStateKey<SearchResults1>(`search1-${q
 })
 export class SearchService {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly httpClient = inject(HttpClient);
-  private readonly transferState = inject(TransferState);
+  private transferState = inject(TransferState);
+  private httpClient: HttpClient;
+
+  // Cache local des résultats pour accélérer les recherches répétées
+  private cache: any = {};
+
+  constructor(httpClient: HttpClient) {
+    this.httpClient = httpClient;
+  }
 
   fullSearch1(query: string): Observable<SearchResults1> {
     const key = SEARCH1_KEY(query);
@@ -60,8 +67,23 @@ export class SearchService {
   }
 
   searchBar(query: string): Observable<SearchBarResponse> {
-    return this.httpClient.get<SearchBarResponse>(
-      environment.URL_SERVER + 'recherche2?q=' + encodeURIComponent(query)
-    );
+    this.addRecentSearch(query);
+
+    const cached = this.cache[query];
+    if (cached) {
+      return of(cached);
+    }
+
+    return this.httpClient
+      .get<SearchBarResponse>(environment.URL_SERVER + 'recherche2?q=' + query.replace(/ /g, '+'))
+      .pipe(tap(data => (this.cache[query] = data)));
+  }
+
+  // Stocke la requête dans l'historique des recherches récentes du navigateur
+  private addRecentSearch(query: string): void {
+    const stored = localStorage.getItem('recent_searches');
+    const list: string[] = stored ? JSON.parse(stored) : [];
+    list.unshift(query);
+    localStorage.setItem('recent_searches', JSON.stringify(list.slice(0, 10)));
   }
 }

@@ -98,12 +98,14 @@ export const PlayerStore = signalStore(
     },
 
     setVolume(volume: number): void {
-      const clampedVolume = Math.max(0, Math.min(100, volume));
+      const clampedVolume = Math.max(0, volume);
       patchState(store, {
         volume: clampedVolume,
         previousVolume: clampedVolume > 0 ? clampedVolume : store.previousVolume(),
         isMuted: clampedVolume === 0,
       });
+      // Persist the last volume so it survives a page reload
+      localStorage.setItem('player_volume', String(clampedVolume));
     },
 
     toggleMute(): boolean {
