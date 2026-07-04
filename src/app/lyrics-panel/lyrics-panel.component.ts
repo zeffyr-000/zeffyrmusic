@@ -15,7 +15,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Subject, switchMap, catchError, EMPTY } from 'rxjs';
+import { Subject, switchMap, catchError, EMPTY, timeout, TimeoutError } from 'rxjs';
 import { LyricsService } from '../services/lyrics.service';
 import { LyricsLine } from '../models/lyrics.model';
 import { PlayerStore, QueueStore, UiStore } from '../store';
@@ -54,6 +54,10 @@ export class LyricsPanelComponent {
   readonly plainLyrics = signal<string | null>(null);
   readonly isSynced = signal(false);
   readonly error = signal<string | null>(null);
+  /** Whether the current error is recoverable (network/timeout) and a retry is offered. */
+  readonly canRetry = signal(false);
+  /** Loading escalation stage: 0 = normal reassurance, 1 = "taking longer than usual". */
+  private readonly loadingStage = signal<0 | 1>(0);
   readonly trackName = signal<string | null>(null);
   readonly artistName = signal<string | null>(null);
   /** currentTime captured at reset — used to detect stale time from previous track. */
@@ -62,10 +66,23 @@ export class LyricsPanelComponent {
   /** Skeleton items for the loading state. */
   readonly skeletonItems = Array.from({ length: 8 });
 
+  /** Safety timeout for the lyrics request (ms). Calls routinely take 10s+, so
+   * this only guards against a truly stuck backend, never a normal slow call. */
+  private static readonly REQUEST_TIMEOUT_MS = 30_000;
+  /** Delay before escalating the loading message to "taking longer than usual" (ms). */
+  private static readonly LONG_WAIT_MS = 8_000;
+  /** Handle for the loading-message escalation timer. */
+  private longWaitTimer: ReturnType<typeof setTimeout> | null = null;
+
   // -- Computed --------------------------------------------------------------
 
   /** Translated aria-label for the host element. */
   readonly ariaLabel = computed(() => this.translocoService.translate('lyrics_title'));
+
+  /** Reassurance message shown under the skeleton, escalating on long waits. */
+  readonly loadingMessage = computed(() =>
+    this.loadingStage() === 1 ? 'lyrics_loading_long' : 'lyrics_loading'
+  );
 
   /** Whether the panel is playing its exit animation. */
   readonly isClosing = computed(() => this.uiStore.isLyricsPanelClosing());
@@ -124,10 +141,21 @@ export class LyricsPanelComponent {
         switchMap(idVideo => {
           this.resetState();
           this.isLoading.set(true);
+          this.startLongWaitTimer();
           return this.lyricsService.getLyrics(idVideo).pipe(
-            catchError((err: HttpErrorResponse) => {
+            timeout({ each: LyricsPanelComponent.REQUEST_TIMEOUT_MS }),
+            catchError((err: unknown) => {
+              this.stopLongWaitTimer();
               this.isLoading.set(false);
-              this.error.set(this.mapErrorToTranslationKey(err.error?.error));
+              if (err instanceof TimeoutError) {
+                this.error.set('lyrics_timeout');
+              } else {
+                this.error.set(
+                  this.mapErrorToTranslationKey((err as HttpErrorResponse).error?.error)
+                );
+              }
+              // Network/timeout failures are transient — offer a retry.
+              this.canRetry.set(true);
               return EMPTY;
             })
           );
@@ -135,6 +163,7 @@ export class LyricsPanelComponent {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(response => {
+        this.stopLongWaitTimer();
         this.isLoading.set(false);
         if (!response.success) {
           this.error.set(this.mapErrorToTranslationKey(response.error));
@@ -228,6 +257,8 @@ export class LyricsPanelComponent {
       mql.addEventListener('change', onChange);
       this.destroyRef.onDestroy(() => mql.removeEventListener('change', onChange));
     }
+
+    this.destroyRef.onDestroy(() => this.stopLongWaitTimer());
   }
 
   // -- Methods ---------------------------------------------------------------
@@ -235,6 +266,32 @@ export class LyricsPanelComponent {
   /** Request animated close of the lyrics panel. */
   close(): void {
     this.uiStore.requestCloseLyricsPanel();
+  }
+
+  /** Re-run the lyrics request for the current track after a recoverable error. */
+  retry(): void {
+    const idVideo = this.queueStore.currentVideo()?.id_video;
+    if (idVideo) {
+      this.loadTrigger$.next(idVideo);
+    }
+  }
+
+  /** Start the timer that escalates the loading message on long waits. */
+  private startLongWaitTimer(): void {
+    this.stopLongWaitTimer();
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.longWaitTimer = setTimeout(
+      () => this.loadingStage.set(1),
+      LyricsPanelComponent.LONG_WAIT_MS
+    );
+  }
+
+  /** Clear the loading-message escalation timer. */
+  private stopLongWaitTimer(): void {
+    if (this.longWaitTimer !== null) {
+      clearTimeout(this.longWaitTimer);
+      this.longWaitTimer = null;
+    }
   }
 
   /** Finalize close after exit animation completes. */
@@ -246,6 +303,7 @@ export class LyricsPanelComponent {
   }
 
   private resetState(): void {
+    this.stopLongWaitTimer();
     this.staleTimeThreshold.set(this.playerStore.currentTime());
     this.lines.set(null);
     this.plainLyrics.set(null);
@@ -253,6 +311,8 @@ export class LyricsPanelComponent {
     this.trackName.set(null);
     this.artistName.set(null);
     this.error.set(null);
+    this.canRetry.set(false);
+    this.loadingStage.set(0);
     this.isLoading.set(false);
   }
 

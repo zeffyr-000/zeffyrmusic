@@ -21,6 +21,12 @@
     </div>
   }
 
+  @if (isLoading()) {
+    <div class="lyrics-progress" aria-hidden="true">
+      <div class="lyrics-progress-bar"></div>
+    </div>
+  }
+
   <div class="lyrics-content" #contentRef>
     @if (isLoading()) {
       <div role="status" class="lyrics-loading" aria-busy="true">
@@ -28,11 +34,23 @@
         @for (_ of skeletonItems; track $index) {
           <div class="skeleton-pulse skeleton-line--title"></div>
         }
+        <p class="lyrics-loading-message">
+          {{ loadingMessage() | transloco }}
+        </p>
       </div>
     } @else if (error()) {
       <div class="empty-state">
         <span class="material-icons empty-state-icon" aria-hidden="true">music_off</span>
         <p class="empty-state-text">{{ error()! | transloco }}</p>
+        @if (canRetry()) {
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm lyrics-retry"
+            (click)="retry()"
+          >
+            {{ 'lyrics_retry' | transloco }}
+          </button>
+        }
       </div>
     } @else if (isSynced() && lines()) {
       <div class="lyrics-synced">

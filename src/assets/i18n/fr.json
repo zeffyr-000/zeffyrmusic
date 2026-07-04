@@ -482,6 +482,10 @@
   "lyrics_error": "Impossible de charger les paroles",
   "lyrics_service_unavailable": "Service temporairement indisponible",
   "lyrics_forbidden": "Accès non autorisé",
+  "lyrics_loading": "Recherche des paroles en cours…",
+  "lyrics_loading_long": "C'est un peu plus long que d'habitude, merci de patienter…",
+  "lyrics_timeout": "La recherche des paroles prend trop de temps",
+  "lyrics_retry": "Réessayer",
   "aria_toggle_lyrics": "Afficher ou masquer les paroles",
 
   "data_secure": "Vos données sont protégées",
