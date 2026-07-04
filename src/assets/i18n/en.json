@@ -482,6 +482,10 @@
   "lyrics_error": "Unable to load lyrics",
   "lyrics_service_unavailable": "Service temporarily unavailable",
   "lyrics_forbidden": "Access denied",
+  "lyrics_loading": "Searching for lyrics…",
+  "lyrics_loading_long": "This is taking longer than usual, please wait…",
+  "lyrics_timeout": "Lyrics search is taking too long",
+  "lyrics_retry": "Retry",
   "aria_toggle_lyrics": "Toggle lyrics",
 
   "data_secure": "Your data is protected",

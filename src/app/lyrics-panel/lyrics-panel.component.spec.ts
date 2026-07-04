@@ -7,7 +7,7 @@ import {
   withXhr,
 } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of, throwError, Subject } from 'rxjs';
+import { of, throwError, Subject, TimeoutError } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { LyricsPanelComponent } from './lyrics-panel.component';
 import { LyricsService } from '../services/lyrics.service';
@@ -196,6 +196,131 @@ describe('LyricsPanelComponent', () => {
     fixture.detectChanges();
 
     expect(component.error()).toBe('lyrics_error');
+  });
+
+  describe('long-wait feedback', () => {
+    it('should show the reassurance message while loading', () => {
+      const pending = new Subject<LyricsResponse>();
+      lyricsServiceMock.getLyrics.mockReturnValue(pending.asObservable());
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      expect(component.isLoading()).toBe(true);
+      expect(component.loadingMessage()).toBe('lyrics_loading');
+    });
+
+    it('should render the indeterminate progress bar while loading and remove it after', () => {
+      const pending = new Subject<LyricsResponse>();
+      lyricsServiceMock.getLyrics.mockReturnValue(pending.asObservable());
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.lyrics-progress')).toBeTruthy();
+
+      pending.next(syncedResponse);
+      pending.complete();
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.lyrics-progress')).toBeNull();
+    });
+
+    it('should escalate the message after a long wait', () => {
+      vi.useFakeTimers();
+      try {
+        const pending = new Subject<LyricsResponse>();
+        lyricsServiceMock.getLyrics.mockReturnValue(pending.asObservable());
+        queueStore.setQueue([mockVideo], '1');
+        fixture.detectChanges();
+
+        expect(component.loadingMessage()).toBe('lyrics_loading');
+        vi.advanceTimersByTime(8000);
+        expect(component.loadingMessage()).toBe('lyrics_loading_long');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('should reset the escalation when a fresh load starts', () => {
+      vi.useFakeTimers();
+      try {
+        const pending = new Subject<LyricsResponse>();
+        lyricsServiceMock.getLyrics.mockReturnValue(pending.asObservable());
+        queueStore.setQueue([mockVideo], '1');
+        fixture.detectChanges();
+        vi.advanceTimersByTime(8000);
+        expect(component.loadingMessage()).toBe('lyrics_loading_long');
+
+        pending.next(syncedResponse);
+        pending.complete();
+        expect(component.isLoading()).toBe(false);
+
+        // A new track resets the escalation back to the non-escalated message.
+        const pending2 = new Subject<LyricsResponse>();
+        lyricsServiceMock.getLyrics.mockReturnValue(pending2.asObservable());
+        const mockVideo2: Video = { ...mockVideo, id_video: '456', key: 'def456' };
+        queueStore.setQueue([mockVideo2], '1');
+        fixture.detectChanges();
+
+        expect(component.isLoading()).toBe(true);
+        expect(component.loadingMessage()).toBe('lyrics_loading');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
+  describe('recoverable errors and retry', () => {
+    it('should set lyrics_timeout and offer a retry on request timeout', () => {
+      lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => new TimeoutError()));
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      expect(component.error()).toBe('lyrics_timeout');
+      expect(component.canRetry()).toBe(true);
+      expect(component.isLoading()).toBe(false);
+    });
+
+    it('should offer a retry on network/server errors', () => {
+      const errorResponse = new HttpErrorResponse({
+        error: { error: 'unknown_error' },
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+      lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => errorResponse));
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      expect(component.canRetry()).toBe(true);
+    });
+
+    it('should not offer a retry when lyrics are definitively unavailable', () => {
+      const notAvailableResponse: LyricsResponse = {
+        success: false,
+        error: 'lyrics_not_found',
+      };
+      lyricsServiceMock.getLyrics.mockReturnValue(of(notAvailableResponse));
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+
+      expect(component.error()).toBe('lyrics_none');
+      expect(component.canRetry()).toBe(false);
+    });
+
+    it('should re-request lyrics for the current track on retry()', () => {
+      lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => new TimeoutError()));
+      queueStore.setQueue([mockVideo], '1');
+      fixture.detectChanges();
+      expect(component.canRetry()).toBe(true);
+
+      lyricsServiceMock.getLyrics.mockReturnValue(of(syncedResponse));
+      component.retry();
+      fixture.detectChanges();
+
+      expect(lyricsServiceMock.getLyrics).toHaveBeenLastCalledWith('123');
+      expect(component.isSynced()).toBe(true);
+      expect(component.error()).toBeNull();
+      expect(component.canRetry()).toBe(false);
+    });
   });
 
   it('should request animated close of the lyrics panel via UiStore', () => {

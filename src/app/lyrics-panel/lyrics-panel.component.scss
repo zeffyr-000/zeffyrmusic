@@ -119,6 +119,58 @@
   color: var(--bs-secondary-color);
 }
 
+// -- Indeterminate progress bar (long-running fetch) -------------------------
+
+.lyrics-progress {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--bs-primary) 15%, transparent);
+}
+
+.lyrics-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--bs-primary);
+  animation: lyrics-progress-slide 1.4s ease-in-out infinite;
+}
+
+@keyframes lyrics-progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+// Opacity pulse (no positional motion) for reduced-motion users — still reads
+// as "busy" without the misleading look of a full/complete bar.
+@keyframes lyrics-progress-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lyrics-progress-bar {
+    width: 100%;
+    animation: lyrics-progress-pulse 1.6s ease-in-out infinite;
+  }
+}
+
 // -- Lyrics content (full-width scroll, centered inner content) --------------
 
 .lyrics-content {
@@ -148,6 +200,19 @@
   .skeleton-pulse:nth-child(even) {
     width: 50%;
   }
+}
+
+.lyrics-loading-message {
+  margin: var(--spacing-md, 1rem) 0 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--bs-secondary-color);
+  text-align: center;
+}
+
+// -- Retry action (recoverable errors) --------------------------------------
+
+.lyrics-retry {
+  margin-top: var(--spacing-md, 1rem);
 }
 
 // -- Empty state (centered in scroll area) -----------------------------------
