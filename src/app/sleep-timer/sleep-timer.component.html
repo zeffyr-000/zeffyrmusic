@@ -1,0 +1,33 @@
+<div ngbDropdown class="sleep-timer" placement="top-end">
+  <button
+    type="button"
+    class="sleep-timer-btn"
+    ngbDropdownToggle
+    [ngbTooltip]="'sleep_timer_title' | transloco"
+  >
+    <span class="material-icons" aria-hidden="true">bedtime</span>
+    @if (isActive()) {
+      <span class="sleep-timer-remaining">{{ remainingLabel() }}</span>
+    }
+  </button>
+
+  <div ngbDropdownMenu class="sleep-timer-menu">
+    @if (isActive()) {
+      <div class="sleep-timer-status">
+        {{ 'sleep_timer_remaining' | transloco: { time: remainingLabel() } }}
+      </div>
+      <button type="button" ngbDropdownItem (click)="extend()">
+        {{ 'sleep_timer_extend' | transloco }}
+      </button>
+      <button type="button" ngbDropdownItem (click)="cancel()">
+        {{ 'sleep_timer_cancel' | transloco }}
+      </button>
+    } @else {
+      @for (preset of presets; track preset) {
+        <button type="button" ngbDropdownItem (click)="start(preset)">
+          {{ 'sleep_timer_minutes' | transloco: { count: preset } }}
+        </button>
+      }
+    }
+  </div>
+</div>

@@ -573,5 +573,10 @@
   "admin_dashboard_lang_fr_FR": "Français (fr_FR)",
   "admin_dashboard_lang_en_US": "Anglais (en_US)",
   "admin_dashboard_dark_mode_on": "Activé",
-  "admin_dashboard_dark_mode_off": "Désactivé"
+  "admin_dashboard_dark_mode_off": "Désactivé",
+  "sleep_timer_title": "Minuteur de veille",
+  "sleep_timer_minutes": "{count} minutes",
+  "sleep_timer_remaining": "Pause dans {time}",
+  "sleep_timer_extend": "Ajouter 5 minutes",
+  "sleep_timer_cancel": "Annuler le minuteur"
 }

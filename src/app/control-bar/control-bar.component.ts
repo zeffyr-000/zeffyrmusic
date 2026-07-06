@@ -17,12 +17,13 @@ import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { AuthStore, PlayerStore, QueueStore, UiStore } from '../store';
 import { SwipeDownDirective } from '../directives/swipe-down.directive';
+import { SleepTimerComponent } from '../sleep-timer/sleep-timer.component';
 
 @Component({
   selector: 'app-control-bar',
   templateUrl: './control-bar.component.html',
   styleUrl: './control-bar.component.scss',
-  imports: [SwipeDownDirective, NgbTooltip, NgbPopover, TranslocoPipe],
+  imports: [SwipeDownDirective, NgbTooltip, NgbPopover, TranslocoPipe, SleepTimerComponent],
 })
 export class ControlBarComponent {
   // -- Dependencies ----------------------------------------------------------
