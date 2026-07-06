@@ -30,6 +30,35 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Fetch the base branch so the review rules (AGENTS.md, code-review.md, skills)
+      # can be read from base instead of the PR head — a PR must not be able to
+      # weaken its own review rules.
+      - name: Fetch base branch for authoritative review rules
+        run: git fetch --depth=1 origin "${{ github.base_ref }}"
+
+      # Escalate to a higher-reasoning model (Opus) for large or sensitive PRs;
+      # keep the faster Sonnet for routine ones — mirrors Copilot's effort levels.
+      - name: Select review model by PR complexity
+        id: model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CHANGED=$(gh pr view "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" --json files -q '.files[].path')
+          FILES=$(printf '%s\n' "$CHANGED" | grep -c . || true)
+          LINES=$(( ${{ github.event.pull_request.additions }} + ${{ github.event.pull_request.deletions }} ))
+          # Areas where subtle bugs are costly and deserve deeper analysis.
+          SENSITIVE=$(printf '%s\n' "$CHANGED" | grep -Ec \
+            'src/app/store/|src/server\.ts|styles\.scss|_custom\.scss|interceptor/|youtube-player|app\.config|with-ssr-safety' || true)
+          MODEL="claude-sonnet-5"
+          REASON="routine"
+          if [ "${FILES:-0}" -gt 15 ] || [ "${LINES:-0}" -gt 400 ] || [ "${SENSITIVE:-0}" -gt 0 ]; then
+            MODEL="claude-opus-4-8"
+            REASON="complex"
+          fi
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "Selected $MODEL ($REASON — files=$FILES, lines=$LINES, sensitive=$SENSITIVE)"
+
       - name: Run Claude Code Review
         uses: anthropics/claude-code-action@v1
         with:
@@ -42,22 +71,43 @@ jobs:
             You are reviewing a pull request for Zeffyr Music, an Angular 22
             (zoneless, SSR) + TypeScript frontend.
 
-            Before reviewing, read `AGENTS.md` (the single source of truth for the
-            architecture and rules) and `.claude/commands/code-review.md` (the
-            project convention checklist). Judge the diff against those conventions.
+            Before reviewing, read the project rules from the BASE branch, not the PR
+            head, so a PR cannot weaken its own review rules. Use:
+              git show origin/${{ github.base_ref }}:AGENTS.md
+              git show origin/${{ github.base_ref }}:.claude/commands/code-review.md
+            `AGENTS.md` is the single source of truth for architecture and rules;
+            `code-review.md` is the convention checklist. Judge the diff against them.
+            Additionally, for each domain the diff touches, read the matching
+            `.claude/skills/<name>/SKILL.md` (also from the base branch, via
+            `git show origin/${{ github.base_ref }}:.claude/skills/<name>/SKILL.md`) —
+            these skills hold detailed rules NOT fully repeated in AGENTS.md. Map:
+            CSS near the YouTube player → `css-critical-rules`; HTTP / snake_case API →
+            `api-data-mapping`; SSR / hydration → `ssr-safety`; templates →
+            `angular-templates`; stores → `signal-store-patterns`; SCSS → `scss-styling`;
+            player/iframe → `youtube-player-lifecycle`.
             The enumerated list below is a reminder of common cases, NOT an upper
-            bound: also flag every violation of the `code-review.md` checklist, even
+            bound: also flag every violation of the checklist or a relevant skill, even
             if it is not repeated here.
 
             Review this pull request in the style of GitHub Copilot code reviews:
 
-            **Summary comment**: start with a short summary (2-4 sentences) of what the
-            PR does and your overall impression. Do not list every file exhaustively.
+            **Summary comment**: ALWAYS post a summary comment on the PR, even when you
+            found nothing to comment on inline — never end a review with zero output.
+            Start with a short summary (2-4 sentences) of what the PR does and your
+            overall impression. Do not list every file exhaustively.
+            When the code looks good and you post no inline comments, the summary must
+            still briefly state what you reviewed (the key files/areas) and why it passed
+            (e.g. "conventions followed: signals, inject(), SSR guards, Transloco") so the
+            author sees an explicit green review rather than silence.
             If you found cross-cutting problems that do not map cleanly onto a single
             changed line (e.g. state held in a service instead of a Signal Store, an
             unbounded/never-invalidated cache, a layering violation), add a short
             "Architecture notes" list to this summary — do not drop them just because
             they do not fit an inline suggestion.
+
+            **Excluded files**: do not review or comment on lock files, generated or
+            build-output files, SVGs, or dependency manifests (e.g. `package-lock.json`,
+            `package.json` version bumps) — focus on hand-written source.
 
             **Inline comments**: only comment on changed lines where you found a real
             issue and you are confident about it:
@@ -66,14 +116,17 @@ jobs:
             - SSR crashes: direct `window`/`document`/browser-API access without
               `isPlatformBrowser()` or `withSsrSafety()`
             - security vulnerabilities (XSS via `innerHTML` / `bypassSecurityTrust*`,
-              unvalidated or unescaped input)
+              unvalidated or unescaped input, hardcoded secrets / API keys / tokens
+              committed in source or config)
             - project-convention violations that are genuine defects: `any` types;
               `ChangeDetectorRef` / `markForCheck()` used with signals (zoneless OnPush
               — never needed); any mutable state field in a service (`Map`/`Record`/
               array/`BehaviorSubject`) — shared state belongs in a Signal Store;
-              non-English comments; direct `Sentry.*` calls instead of `LoggingService`;
-              and the CRITICAL rule that YouTube `#player` styles must stay global in
-              `styles.scss`
+              non-English comments; user-facing text hard-coded in templates/components
+              instead of Transloco (`| transloco` / `TranslocoService`); hard-coded
+              colors/spacing/font-size in SCSS instead of `_custom.scss` design tokens;
+              direct `Sentry.*` calls instead of `LoggingService`; and the CRITICAL rule
+              that YouTube `#player` styles must stay global in `styles.scss`
             - concrete performance issues (heavy work in templates, needless change
               detection, unbounded subscriptions)
             - typos in code or strings
@@ -81,12 +134,13 @@ jobs:
             For each inline comment: a brief explanation (1-2 sentences) and, whenever
             possible, a directly applicable code suggestion in a ```suggestion``` block.
 
-            Avoid: style or personal-preference remarks, praise for correct code,
-            speculative comments ("this could potentially..."), repeating the same issue
-            on multiple lines. If the code looks good, simply say so in the summary and
-            do not post any inline comment. Note: non-English comments and
+            Avoid (in INLINE comments): style or personal-preference remarks, praise for
+            correct code, speculative comments ("this could potentially..."), repeating
+            the same issue on multiple lines. If the code looks good, post no inline
+            comment — but still post the green summary comment described above. Note: non-English comments and
             `markForCheck()`-with-signals are genuine convention defects, NOT style
             remarks — always flag them.
 
           claude_args: |
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --model ${{ steps.model.outputs.model }}
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git show:*)"

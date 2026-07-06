@@ -6,6 +6,12 @@ description: Review code changes against Zeffyr Music project conventions
 
 Review code changes against Zeffyr Music project conventions.
 
+For domain-specific rules not detailed below, consult the matching
+`.claude/skills/<name>/SKILL.md` for the areas the diff touches — e.g.
+`css-critical-rules` (player CSS), `api-data-mapping` (HTTP/snake_case),
+`ssr-safety`, `angular-templates`, `signal-store-patterns`, `scss-styling`,
+`youtube-player-lifecycle`. These skills hold rules not fully repeated here.
+
 ## Checklist
 
 ### Architecture
@@ -28,6 +34,7 @@ Review code changes against Zeffyr Music project conventions.
 
 - [ ] Modern control flow: `@if`, `@for`, `@switch` — not `*ngIf`, `*ngFor`
 - [ ] No redundant `tabindex`, `(keydown.enter)`, `role="button"` on ng-bootstrap directives
+- [ ] All user-facing text uses Transloco (`| transloco`) — no hard-coded strings in templates
 - [ ] Skeleton loaders for loading states
 - [ ] Empty state pattern when no data
 
