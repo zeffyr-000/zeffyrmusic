@@ -45,11 +45,19 @@ jobs:
             Before reviewing, read `AGENTS.md` (the single source of truth for the
             architecture and rules) and `.claude/commands/code-review.md` (the
             project convention checklist). Judge the diff against those conventions.
+            The enumerated list below is a reminder of common cases, NOT an upper
+            bound: also flag every violation of the `code-review.md` checklist, even
+            if it is not repeated here.
 
             Review this pull request in the style of GitHub Copilot code reviews:
 
             **Summary comment**: start with a short summary (2-4 sentences) of what the
             PR does and your overall impression. Do not list every file exhaustively.
+            If you found cross-cutting problems that do not map cleanly onto a single
+            changed line (e.g. state held in a service instead of a Signal Store, an
+            unbounded/never-invalidated cache, a layering violation), add a short
+            "Architecture notes" list to this summary — do not drop them just because
+            they do not fit an inline suggestion.
 
             **Inline comments**: only comment on changed lines where you found a real
             issue and you are confident about it:
@@ -59,10 +67,13 @@ jobs:
               `isPlatformBrowser()` or `withSsrSafety()`
             - security vulnerabilities (XSS via `innerHTML` / `bypassSecurityTrust*`,
               unvalidated or unescaped input)
-            - project-convention violations that are genuine defects: `any` types,
-              `BehaviorSubject` for shared state instead of a Signal Store, direct
-              `Sentry.*` calls instead of `LoggingService`, and the CRITICAL rule that
-              YouTube `#player` styles must stay global in `styles.scss`
+            - project-convention violations that are genuine defects: `any` types;
+              `ChangeDetectorRef` / `markForCheck()` used with signals (zoneless OnPush
+              — never needed); any mutable state field in a service (`Map`/`Record`/
+              array/`BehaviorSubject`) — shared state belongs in a Signal Store;
+              non-English comments; direct `Sentry.*` calls instead of `LoggingService`;
+              and the CRITICAL rule that YouTube `#player` styles must stay global in
+              `styles.scss`
             - concrete performance issues (heavy work in templates, needless change
               detection, unbounded subscriptions)
             - typos in code or strings
@@ -73,7 +84,9 @@ jobs:
             Avoid: style or personal-preference remarks, praise for correct code,
             speculative comments ("this could potentially..."), repeating the same issue
             on multiple lines. If the code looks good, simply say so in the summary and
-            do not post any inline comment.
+            do not post any inline comment. Note: non-English comments and
+            `markForCheck()`-with-signals are genuine convention defects, NOT style
+            remarks — always flag them.
 
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
