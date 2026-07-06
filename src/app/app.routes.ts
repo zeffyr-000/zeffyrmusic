@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
+import { TrendingComponent } from './trending/trending.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { AdminGuard } from './services/admin-guard.service';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'trending', component: TrendingComponent },
   { path: 'top', component: HomeComponent },
   { path: 'albums', component: HomeComponent },
   {

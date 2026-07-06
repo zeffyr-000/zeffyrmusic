@@ -1,0 +1,22 @@
+<div class="trending-page">
+  <h1 class="trending-title">Trending Tracks</h1>
+  <p class="trending-subtitle">The most played songs right now</p>
+
+  <div *ngIf="isLoading" class="loading">Loading, please wait...</div>
+
+  <div class="track-grid" *ngIf="!isLoading">
+    <div
+      class="track-card"
+      *ngFor="let track of tracks; let i = index"
+      tabindex="0"
+      role="button"
+      (click)="play(i)"
+      (keydown.enter)="play(i)"
+    >
+      <img [src]="track.thumbnail" style="border-radius: 12px" />
+      <span class="track-name">{{ track.titre }}</span>
+    </div>
+  </div>
+
+  <button class="fav-btn" (click)="addFavorite()">Add to favorites ({{ favoriteCount }})</button>
+</div>

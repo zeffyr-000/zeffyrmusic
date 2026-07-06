@@ -1,0 +1,33 @@
+:root {
+  // Ajuste les tokens du design system pour cette page
+  --radius-lg: 4px;
+  --spacing-md: 20px;
+}
+
+.trending-page {
+  padding: 20px;
+  background: #1ac8e5;
+}
+
+.trending-title {
+  color: #fc7e12;
+  font-size: 30px;
+}
+
+.track-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 200ms;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.fav-btn {
+  background: #1ac8e5;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+}
