@@ -22,6 +22,7 @@ Review code changes against Zeffyr Music project conventions.
 - [ ] `inject()` function — no constructor injection
 - [ ] `readonly` on all injected dependencies and signals
 - [ ] Signal values accessed with function call syntax: `this.value()`
+- [ ] No `ChangeDetectorRef` / `markForCheck()` with signals (zoneless OnPush default — never needed)
 
 ### Templates
 
