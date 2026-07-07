@@ -30,7 +30,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/setup-vitest.ts'],
-    exclude: [...configDefaults.exclude, 'e2e/**', '.web-codegen-scorer/**'],
+    exclude: [...configDefaults.exclude, 'e2e/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
