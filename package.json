@@ -73,7 +73,7 @@
     "@types/node": "^22.19.19",
     "@types/youtube": "^0.1.2",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
-    "@typescript-eslint/parser": "^8.59.4",
+    "@typescript-eslint/parser": "^8.63.0",
     "@typescript-eslint/utils": "^8.62.1",
     "@vitest/coverage-v8": "^4.1.9",
     "angular-eslint": "^22.0.0",
