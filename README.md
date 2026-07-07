@@ -152,10 +152,10 @@ npm run test:coverage
 
 ```bash
 # Run Playwright E2E tests
-npm run e2e
+npm run e2e        # or: ng e2e
 
 # Open Playwright interactive UI
-npm run e2e:ui
+npm run e2e:ui     # or: ng e2e --ui
 ```
 
 ---

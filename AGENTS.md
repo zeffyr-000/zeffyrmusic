@@ -469,8 +469,8 @@ npx vitest run              # Single run
 npx vitest run --coverage   # With coverage
 npm run lint                # ESLint
 npm run build               # Production build
-npm run e2e                 # Playwright E2E tests
-npm run e2e:ui              # Playwright interactive UI mode
+npm run e2e                 # Playwright E2E tests (alias: ng e2e)
+npm run e2e:ui              # Playwright interactive UI mode (alias: ng e2e --ui)
 ```
 
 ## AI Tooling — Claude Code
