@@ -178,6 +178,12 @@
           "options": {
             "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
+        },
+        "e2e": {
+          "builder": "playwright-ng-schematics:playwright",
+          "options": {
+            "config": "playwright.config.ts"
+          }
         }
       }
     }
@@ -210,9 +216,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@schematics/angular"
-    ],
+    "schematicCollections": ["@schematics/angular"],
     "analytics": false
   }
 }
