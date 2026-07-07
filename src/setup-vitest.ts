@@ -1,7 +1,12 @@
-import 'zone.js';
-import 'zone.js/testing';
+import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
+
+// The app runs zoneless (provideZonelessChangeDetection in app.config.ts), so
+// tests do too — no zone.js import. This module provides zoneless change
+// detection to every TestBed via the test environment.
+@NgModule({ providers: [provideZonelessChangeDetection()] })
+class ZonelessTestModule {}
 
 // Define global fail function for Vitest
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +51,10 @@ if (typeof document !== 'undefined' && document.getElementsByTagName('script').l
 
 // First, initialize the Angular testing environment only once
 try {
-  getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting());
+  getTestBed().initTestEnvironment(
+    [BrowserTestingModule, ZonelessTestModule],
+    platformBrowserTesting()
+  );
 } catch {
   // Platform already initialized, ignore
 }
