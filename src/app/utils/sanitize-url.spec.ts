@@ -2,6 +2,16 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { sanitizeUrl } from './sanitize-url';
 
+// A regular function (not an arrow) so Vitest can treat it as a constructor —
+// sanitizeUrl calls `new URL(...)`, and arrow functions are not constructible.
+function throwingUrl(): never {
+  throw new Error('Invalid URL');
+}
+
+function mockUrlConstructorThrow(): void {
+  vi.spyOn(globalThis, 'URL').mockImplementation(throwingUrl as unknown as typeof URL);
+}
+
 describe('sanitizeUrl', () => {
   it('should strip query string from absolute URL', () => {
     expect(sanitizeUrl('https://example.com/api/test?token=secret&id=1')).toBe('/api/test');
@@ -40,33 +50,25 @@ describe('sanitizeUrl', () => {
   });
 
   it('should use fallback when URL constructor throws', () => {
-    vi.spyOn(globalThis, 'URL').mockImplementation(() => {
-      throw new Error('Invalid URL');
-    });
+    mockUrlConstructorThrow();
     expect(sanitizeUrl('/api/data?secret=123')).toBe('/api/data');
     vi.restoreAllMocks();
   });
 
   it('should strip scheme and host in fallback for absolute URL', () => {
-    vi.spyOn(globalThis, 'URL').mockImplementation(() => {
-      throw new Error('Invalid URL');
-    });
+    mockUrlConstructorThrow();
     expect(sanitizeUrl('https://example.com/api/data?token=secret')).toBe('/api/data');
     vi.restoreAllMocks();
   });
 
   it('should return root in fallback for domain-only URL', () => {
-    vi.spyOn(globalThis, 'URL').mockImplementation(() => {
-      throw new Error('Invalid URL');
-    });
+    mockUrlConstructorThrow();
     expect(sanitizeUrl('https://example.com')).toBe('/');
     vi.restoreAllMocks();
   });
 
   it('should return root in fallback for empty string', () => {
-    vi.spyOn(globalThis, 'URL').mockImplementation(() => {
-      throw new Error('Invalid URL');
-    });
+    mockUrlConstructorThrow();
     expect(sanitizeUrl('')).toBe('/');
     vi.restoreAllMocks();
   });
