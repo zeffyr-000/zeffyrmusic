@@ -29,7 +29,7 @@
 
   <div class="lyrics-content" #contentRef>
     @if (isLoading()) {
-      <output class="lyrics-loading" aria-busy="true">
+      <div role="status" class="lyrics-loading" aria-busy="true">
         <span class="visually-hidden">Loading...</span>
         @for (_ of skeletonItems; track $index) {
           <div class="skeleton-pulse skeleton-line--title"></div>
@@ -37,7 +37,7 @@
         <p class="lyrics-loading-message">
           {{ loadingMessage() | transloco }}
         </p>
-      </output>
+      </div>
     } @else if (error()) {
       <div class="empty-state">
         <span class="material-icons empty-state-icon" aria-hidden="true">music_off</span>
