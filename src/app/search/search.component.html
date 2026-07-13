@@ -147,19 +147,11 @@
           track video.id_video;
           let index = $index
         ) {
-          <div
-            class="track-item"
-            role="button"
-            [class.active]="video.key === queueStore.currentKey()"
-            tabindex="0"
-            (click)="runPlaylistTrack(index)"
-            (keydown.enter)="runPlaylistTrack(index)"
-            (keydown.space)="runPlaylistTrack(index); $event.preventDefault()"
-          >
+          <div class="track-item" [class.active]="video.key === queueStore.currentKey()">
             <button
               type="button"
               class="track-item-btn"
-              tabindex="-1"
+              (click)="runPlaylistTrack(index)"
               [attr.aria-label]="video.titre"
             >
               <span class="track-number">
@@ -319,19 +311,11 @@
           track extra.key;
           let index = $index
         ) {
-          <div
-            class="track-item"
-            role="button"
-            [class.active]="extra.key === queueStore.currentKey()"
-            tabindex="0"
-            (click)="runPlaylistExtra(index)"
-            (keydown.enter)="runPlaylistExtra(index)"
-            (keydown.space)="runPlaylistExtra(index); $event.preventDefault()"
-          >
+          <div class="track-item" [class.active]="extra.key === queueStore.currentKey()">
             <button
               type="button"
               class="track-item-btn"
-              tabindex="-1"
+              (click)="runPlaylistExtra(index)"
               [attr.aria-label]="extra.title"
             >
               <span class="track-number">

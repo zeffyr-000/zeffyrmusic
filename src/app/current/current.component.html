@@ -1,18 +1,10 @@
 <div class="tracks-list">
   @for (video of queueStore.items(); track video.key; let index = $index) {
-    <div
-      class="track-item"
-      role="button"
-      [class.active]="video.key === queueStore.currentKey()"
-      tabindex="0"
-      (click)="play(index, true)"
-      (keydown.enter)="play(index, true)"
-      (keydown.space)="play(index, true); $event.preventDefault()"
-    >
+    <div class="track-item" [class.active]="video.key === queueStore.currentKey()">
       <button
         type="button"
         class="track-item-btn"
-        tabindex="-1"
+        (click)="play(index, true)"
         [attr.aria-label]="video.titre + ' — ' + video.artiste"
       >
         <span class="track-number">
