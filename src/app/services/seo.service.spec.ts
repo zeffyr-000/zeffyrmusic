@@ -37,7 +37,7 @@ describe('SeoService', () => {
       service.setJsonLd({ '@type': 'FAQPage' });
       service.setJsonLd({ '@type': 'HowTo' });
       const scripts = document.querySelectorAll('#structured-data-json-ld');
-      expect(scripts.length).toBe(1);
+      expect(scripts).toHaveLength(1);
       expect(JSON.parse(scripts[0].textContent!)).toEqual({ '@type': 'HowTo' });
     });
 
@@ -108,7 +108,7 @@ describe('SeoService', () => {
       service.setBreadcrumbJsonLd([{ name: 'A', url: 'https://a.com' }]);
       service.setBreadcrumbJsonLd([{ name: 'B', url: 'https://b.com' }]);
       const scripts = document.querySelectorAll('#structured-data-breadcrumb');
-      expect(scripts.length).toBe(1);
+      expect(scripts).toHaveLength(1);
       const data = JSON.parse(scripts[0].textContent!);
       expect(data.itemListElement[0].name).toBe('B');
     });

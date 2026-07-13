@@ -145,7 +145,7 @@ describe('ArtistComponent', () => {
       component.initLoad();
 
       expect(component.relatedArtists()).toEqual(relatedArtists);
-      expect(component.relatedArtists().length).toBe(2);
+      expect(component.relatedArtists()).toHaveLength(2);
     });
 
     it('should return English biography when language is en', () => {
@@ -253,7 +253,7 @@ describe('ArtistComponent', () => {
 
       expect(component.biographyNeedsTruncation()).toBe(true);
       // Should be 120 chars + ellipsis = 121
-      expect(component.biographyTruncated().length).toBe(121);
+      expect(component.biographyTruncated()).toHaveLength(121);
       expect(component.biographyTruncated()).toBe('A'.repeat(120) + '…');
     });
 

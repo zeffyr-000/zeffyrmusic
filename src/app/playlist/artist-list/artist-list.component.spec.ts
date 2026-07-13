@@ -42,7 +42,7 @@ describe('ArtistListComponent', () => {
     await fixture.whenStable();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelectorAll('a').length).toEqual(2);
+    expect(compiled.querySelectorAll('a')).toHaveLength(2);
     expect(compiled.textContent).toContain('Artist 1');
     expect(compiled.textContent).toContain('Artist 2');
   });
@@ -55,7 +55,7 @@ describe('ArtistListComponent', () => {
     await fixture.whenStable();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelectorAll('a').length).toEqual(0);
+    expect(compiled.querySelectorAll('a')).toHaveLength(0);
     expect(compiled.textContent).toContain('Artist 1');
     expect(compiled.textContent).toContain('Artist 2');
   });

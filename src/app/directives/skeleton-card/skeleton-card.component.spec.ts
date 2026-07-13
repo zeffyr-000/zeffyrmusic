@@ -22,7 +22,7 @@ describe('SkeletonCardComponent', () => {
 
   it('should default to 6 items', () => {
     expect(component.count()).toBe(6);
-    expect(component.items.length).toBe(6);
+    expect(component.items).toHaveLength(6);
   });
 
   it('should render Bootstrap row-cols grid with cards', () => {
@@ -30,14 +30,14 @@ describe('SkeletonCardComponent', () => {
     const grid = el.querySelector('.row');
     expect(grid).toBeTruthy();
     expect(grid?.getAttribute('aria-busy')).toBe('true');
-    expect(el.querySelectorAll('.col').length).toBe(6);
-    expect(el.querySelectorAll('.skeleton-card-img').length).toBe(6);
+    expect(el.querySelectorAll('.col')).toHaveLength(6);
+    expect(el.querySelectorAll('.skeleton-card-img')).toHaveLength(6);
   });
 
   it('should respect custom count', () => {
     fixture.componentRef.setInput('count', 3);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('.col').length).toBe(3);
+    expect(fixture.nativeElement.querySelectorAll('.col')).toHaveLength(3);
   });
 
   it('should include visually-hidden loading text for accessibility', () => {

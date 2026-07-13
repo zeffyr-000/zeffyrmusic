@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { UserLibraryService } from './user-library.service';
+import { UserDataStore } from '../store/user-data/user-data.store';
 import { environment } from 'src/environments/environment';
 
 describe('UserLibraryService', () => {
@@ -31,13 +32,26 @@ describe('UserLibraryService', () => {
 
   describe('Playlist operations', () => {
     it('should add a new playlist', () => {
+      const store = TestBed.inject(UserDataStore);
+
       service.addPlaylist('123', 'Test Playlist');
+
       // No HTTP call expected, store is updated directly
+      expect(store.playlists()).toContainEqual({
+        id_playlist: '123',
+        titre: 'Test Playlist',
+        prive: false,
+      });
     });
 
     it('should update playlist title', () => {
+      const store = TestBed.inject(UserDataStore);
+      service.addPlaylist('123', 'Old Title');
+
       service.updatePlaylistTitle('123', 'New Title');
+
       // No HTTP call expected, store is updated directly
+      expect(store.playlists().find(p => p.id_playlist === '123')?.titre).toBe('New Title');
     });
 
     it('should toggle playlist visibility', () => {

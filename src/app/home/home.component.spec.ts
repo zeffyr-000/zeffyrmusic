@@ -62,22 +62,14 @@ describe('HomeComponent', () => {
       expect(component.isLoading()).toBe(false);
     });
 
-    it('should set page to "top" when url is "top"', () => {
-      route.snapshot.url = [new UrlSegment('top', {})];
+    it.each([
+      ['top', 'top'],
+      ['albums', 'albums'],
+      ['not-top-or-albums', 'home'],
+    ])('should set page correctly when url segment is "%s"', (segment, expectedPage) => {
+      route.snapshot.url = [new UrlSegment(segment, {})];
       component.ngOnInit();
-      expect(component['page']).toEqual('top');
-    });
-
-    it('should set page to "albums" when url is "albums"', () => {
-      route.snapshot.url = [new UrlSegment('albums', {})];
-      component.ngOnInit();
-      expect(component['page']).toEqual('albums');
-    });
-
-    it('should set page to "home" when url is not "top" or "albums"', () => {
-      route.snapshot.url = [new UrlSegment('not-top-or-albums', {})];
-      component.ngOnInit();
-      expect(component['page']).toEqual('home');
+      expect(component['page']).toEqual(expectedPage);
     });
 
     it('should correctly filter and sort albums by decade', () => {

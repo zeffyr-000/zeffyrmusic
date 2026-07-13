@@ -40,39 +40,19 @@ describe('PlaylistThumbnailService', () => {
       req.flush(mockResult);
     });
 
-    it('should set the correct filename extension for jpeg', () => {
-      const mockBlob = new Blob(['data'], { type: 'image/jpeg' });
+    it.each([
+      ['image/jpeg', 'thumbnail.jpeg'],
+      ['image/png', 'thumbnail.png'],
+      ['image/gif', 'thumbnail.gif'],
+    ])('should set the correct filename extension for %s', (mimeType, expectedName) => {
+      const mockBlob = new Blob(['data'], { type: mimeType });
 
-      service.uploadThumbnail('abc', mockBlob, 'image/jpeg').subscribe();
-
-      const req = httpMock.expectOne(`${environment.URL_SERVER}playlist-image/abc`);
-      const formData: FormData = req.request.body;
-      const file = formData.get('image') as File;
-      expect(file.name).toBe('thumbnail.jpeg');
-      req.flush({ img_big: '' });
-    });
-
-    it('should set the correct filename extension for png', () => {
-      const mockBlob = new Blob(['data'], { type: 'image/png' });
-
-      service.uploadThumbnail('abc', mockBlob, 'image/png').subscribe();
+      service.uploadThumbnail('abc', mockBlob, mimeType).subscribe();
 
       const req = httpMock.expectOne(`${environment.URL_SERVER}playlist-image/abc`);
       const formData: FormData = req.request.body;
       const file = formData.get('image') as File;
-      expect(file.name).toBe('thumbnail.png');
-      req.flush({ img_big: '' });
-    });
-
-    it('should set the correct filename extension for gif', () => {
-      const mockBlob = new Blob(['data'], { type: 'image/gif' });
-
-      service.uploadThumbnail('abc', mockBlob, 'image/gif').subscribe();
-
-      const req = httpMock.expectOne(`${environment.URL_SERVER}playlist-image/abc`);
-      const formData: FormData = req.request.body;
-      const file = formData.get('image') as File;
-      expect(file.name).toBe('thumbnail.gif');
+      expect(file.name).toBe(expectedName);
       req.flush({ img_big: '' });
     });
   });

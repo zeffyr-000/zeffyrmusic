@@ -229,10 +229,6 @@
               [class.track-item--reorderable]="isReorderable()"
               [attr.data-id-video]="video.key"
               [class.active]="video.key === queueStore.currentKey()"
-              tabindex="0"
-              (click)="runPlaylist(i)"
-              (keydown.enter)="runPlaylist(i)"
-              (keydown.space)="runPlaylist(i); $event.preventDefault()"
               itemprop="track"
               itemscope
               itemtype="http://schema.org/MusicRecording"
@@ -243,7 +239,7 @@
               <button
                 type="button"
                 class="track-item-btn"
-                tabindex="-1"
+                (click)="runPlaylist(i)"
                 [attr.aria-label]="video.titre"
               >
                 <span class="track-number" itemprop="position">

@@ -90,7 +90,7 @@ describe('PlayerComponent', () => {
         null
       );
 
-      expect(component.queueStore.items().length).toBe(2);
+      expect(component.queueStore.items()).toHaveLength(2);
     });
 
     it('should reflect current key from store', () => {

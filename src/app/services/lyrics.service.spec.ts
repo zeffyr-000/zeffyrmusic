@@ -171,7 +171,8 @@ describe('LyricsService', () => {
     // Second call — should hit HTTP again (not cached)
     service.getLyrics('error-id').subscribe();
 
-    httpMock.expectOne(environment.URL_SERVER + 'lyrics/error-id');
+    const req2 = httpMock.expectOne(environment.URL_SERVER + 'lyrics/error-id');
+    expect(req2.request.url).toBe(environment.URL_SERVER + 'lyrics/error-id');
   });
 
   it('should clear the cache', () => {
@@ -194,6 +195,7 @@ describe('LyricsService', () => {
 
     // Should hit HTTP again
     service.getLyrics('clear-id').subscribe();
-    httpMock.expectOne(environment.URL_SERVER + 'lyrics/clear-id');
+    const req2 = httpMock.expectOne(environment.URL_SERVER + 'lyrics/clear-id');
+    expect(req2.request.url).toBe(environment.URL_SERVER + 'lyrics/clear-id');
   });
 });
