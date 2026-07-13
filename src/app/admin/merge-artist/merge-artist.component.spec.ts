@@ -312,7 +312,7 @@ describe('MergeArtistComponent', () => {
       await component.confirmMerge();
 
       const kept = component.artist1();
-      expect(kept!.list_albums.length).toBe(3);
+      expect(kept!.list_albums).toHaveLength(3);
     });
 
     it('should show error on merge failure', async () => {

@@ -22,7 +22,7 @@ describe('SkeletonArtistComponent', () => {
 
   it('should default to 6 items', () => {
     expect(component.count()).toBe(6);
-    expect(component.items.length).toBe(6);
+    expect(component.items).toHaveLength(6);
   });
 
   it('should render artist header with avatar', () => {
@@ -34,13 +34,13 @@ describe('SkeletonArtistComponent', () => {
 
   it('should render album grid cards', () => {
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelectorAll('.skeleton-card-img').length).toBe(6);
+    expect(el.querySelectorAll('.skeleton-card-img')).toHaveLength(6);
   });
 
   it('should respect custom count for album cards', () => {
     fixture.componentRef.setInput('count', 3);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('.skeleton-card-img').length).toBe(3);
+    expect(fixture.nativeElement.querySelectorAll('.skeleton-card-img')).toHaveLength(3);
   });
 
   it('should include visually-hidden loading text for accessibility', () => {

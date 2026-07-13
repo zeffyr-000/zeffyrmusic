@@ -8,8 +8,15 @@ describe('PlayerRunning', () => {
   const defaultLoadVideo = 1;
   const defaultTotalTime = 225; // 3:45 in seconds
 
-  it('should create an instance', () => {
-    expect(new PlayerRunning('XXX', '0:00', '5:00', 400, 200, 300)).toBeTruthy();
+  it('should create an instance with the provided values', () => {
+    const player = new PlayerRunning('XXX', '0:00', '5:00', 400, 200, 300);
+
+    expect(player.key).toBe('XXX');
+    expect(player.currentTimeStr).toBe('0:00');
+    expect(player.totalTimeStr).toBe('5:00');
+    expect(player.slideLength).toBe(400);
+    expect(player.loadVideo).toBe(200);
+    expect(player.totalTime).toBe(300);
   });
 
   describe('equals method', () => {

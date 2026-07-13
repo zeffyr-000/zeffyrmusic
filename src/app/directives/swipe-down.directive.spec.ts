@@ -77,69 +77,51 @@ describe('SwipeDownDirective', () => {
   });
 
   describe('touchmove behavior', () => {
-    it('should call preventDefault when moving down from near the top and event is cancelable', () => {
-      // Simulate touchstart near the top
-      const touchStartEvent = new TouchEvent('touchstart', {
-        touches: [
-          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
-        ],
-      });
-      divEl.nativeElement.dispatchEvent(touchStartEvent);
-
-      // Simulate touchmove downwards
-      const touchMoveEvent = new TouchEvent('touchmove', {
+    it.each([
+      {
+        desc: 'call preventDefault when moving down from near the top and event is cancelable',
+        startY: 50,
+        moveY: 150,
         cancelable: true,
-        touches: [
-          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 150 }),
-        ],
-      });
-      const preventDefaultSpy = vi.spyOn(touchMoveEvent, 'preventDefault');
-
-      divEl.nativeElement.dispatchEvent(touchMoveEvent);
-
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should NOT call preventDefault when moving down but event is NOT cancelable', () => {
-      const touchStartEvent = new TouchEvent('touchstart', {
-        touches: [
-          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
-        ],
-      });
-      divEl.nativeElement.dispatchEvent(touchStartEvent);
-
-      const touchMoveEvent = new TouchEvent('touchmove', {
+        shouldPrevent: true,
+      },
+      {
+        desc: 'NOT call preventDefault when moving down but event is NOT cancelable',
+        startY: 50,
+        moveY: 150,
         cancelable: false,
-        touches: [
-          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 150 }),
-        ],
-      });
-      const preventDefaultSpy = vi.spyOn(touchMoveEvent, 'preventDefault');
-
-      divEl.nativeElement.dispatchEvent(touchMoveEvent);
-
-      expect(preventDefaultSpy).not.toHaveBeenCalled();
-    });
-
-    it('should NOT call preventDefault when moving upwards', () => {
+        shouldPrevent: false,
+      },
+      {
+        desc: 'NOT call preventDefault when moving upwards',
+        startY: 150,
+        moveY: 50,
+        cancelable: true,
+        shouldPrevent: false,
+      },
+    ])('should $desc', ({ startY, moveY, cancelable, shouldPrevent }) => {
       const touchStartEvent = new TouchEvent('touchstart', {
         touches: [
-          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 150 }),
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: startY }),
         ],
       });
       divEl.nativeElement.dispatchEvent(touchStartEvent);
 
       const touchMoveEvent = new TouchEvent('touchmove', {
-        cancelable: true,
+        cancelable,
         touches: [
-          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: 50 }),
+          new Touch({ identifier: 0, target: divEl.nativeElement, clientX: 100, clientY: moveY }),
         ],
       });
       const preventDefaultSpy = vi.spyOn(touchMoveEvent, 'preventDefault');
 
       divEl.nativeElement.dispatchEvent(touchMoveEvent);
 
-      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      if (shouldPrevent) {
+        expect(preventDefaultSpy).toHaveBeenCalled();
+      } else {
+        expect(preventDefaultSpy).not.toHaveBeenCalled();
+      }
     });
 
     it('should NOT call preventDefault when starting touch is NOT near the top', () => {

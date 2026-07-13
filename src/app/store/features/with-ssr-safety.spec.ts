@@ -81,10 +81,6 @@ describe('withSsrSafety — browser', () => {
     expect(document.body.hasAttribute('data-bs-theme')).toBe(false);
   });
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it('checkIsMobile() should return a boolean', () => {
     vi.stubGlobal(
       'matchMedia',
@@ -95,6 +91,10 @@ describe('withSsrSafety — browser', () => {
     );
     const result = store.checkIsMobile();
     expect(typeof result).toBe('boolean');
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 });
 

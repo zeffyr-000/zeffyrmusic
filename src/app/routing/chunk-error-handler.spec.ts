@@ -32,33 +32,21 @@ describe('handleChunkLoadError', () => {
     }
   });
 
-  it('should reload on first Chrome chunk error', () => {
-    handleChunkLoadError(
-      new TypeError('Failed to fetch dynamically imported module: https://example.com/chunk-ABC.js')
-    );
-
-    expect(sessionStorage.getItem('chunk-retry')).toBe('1');
-    expect(navigation.reload).toHaveBeenCalledOnce();
-  });
-
-  it('should reload on first Firefox chunk error', () => {
-    handleChunkLoadError(
-      new TypeError('error loading dynamically imported module: https://example.com/chunk-ABC.js')
-    );
-
-    expect(sessionStorage.getItem('chunk-retry')).toBe('1');
-    expect(navigation.reload).toHaveBeenCalledOnce();
-  });
-
-  it('should reload on first Safari chunk error', () => {
-    handleChunkLoadError(new TypeError('Importing a module script failed.'));
-
-    expect(sessionStorage.getItem('chunk-retry')).toBe('1');
-    expect(navigation.reload).toHaveBeenCalledOnce();
-  });
-
-  it('should reload on first webpack chunk error', () => {
-    handleChunkLoadError(new Error('Loading chunk 123 failed'));
+  it.each([
+    [
+      'Chrome',
+      new TypeError(
+        'Failed to fetch dynamically imported module: https://example.com/chunk-ABC.js'
+      ),
+    ],
+    [
+      'Firefox',
+      new TypeError('error loading dynamically imported module: https://example.com/chunk-ABC.js'),
+    ],
+    ['Safari', new TypeError('Importing a module script failed.')],
+    ['webpack', new Error('Loading chunk 123 failed')],
+  ])('should reload on first %s chunk error', (_browser, error) => {
+    handleChunkLoadError(error);
 
     expect(sessionStorage.getItem('chunk-retry')).toBe('1');
     expect(navigation.reload).toHaveBeenCalledOnce();

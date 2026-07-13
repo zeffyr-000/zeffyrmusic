@@ -49,27 +49,18 @@ describe('sanitizeUrl', () => {
     expect(sanitizeUrl('')).toBe('/');
   });
 
-  it('should use fallback when URL constructor throws', () => {
+  it.each([
+    ['relative path with query string', '/api/data?secret=123', '/api/data'],
+    [
+      'absolute URL (strips scheme and host)',
+      'https://example.com/api/data?token=secret',
+      '/api/data',
+    ],
+    ['domain-only URL', 'https://example.com', '/'],
+    ['empty string', '', '/'],
+  ])('should use fallback for %s when URL constructor throws', (_desc, input, expected) => {
     mockUrlConstructorThrow();
-    expect(sanitizeUrl('/api/data?secret=123')).toBe('/api/data');
-    vi.restoreAllMocks();
-  });
-
-  it('should strip scheme and host in fallback for absolute URL', () => {
-    mockUrlConstructorThrow();
-    expect(sanitizeUrl('https://example.com/api/data?token=secret')).toBe('/api/data');
-    vi.restoreAllMocks();
-  });
-
-  it('should return root in fallback for domain-only URL', () => {
-    mockUrlConstructorThrow();
-    expect(sanitizeUrl('https://example.com')).toBe('/');
-    vi.restoreAllMocks();
-  });
-
-  it('should return root in fallback for empty string', () => {
-    mockUrlConstructorThrow();
-    expect(sanitizeUrl('')).toBe('/');
+    expect(sanitizeUrl(input)).toBe(expected);
     vi.restoreAllMocks();
   });
 });

@@ -100,7 +100,7 @@ describe('InitService', () => {
         expect(handlePingResponseSpy).toHaveBeenCalledWith(mockPingResponse);
         expect(initializeSpy).toHaveBeenCalled();
 
-        httpMock.expectNone(environment.URL_SERVER + 'ping');
+        expect(httpMock.match(environment.URL_SERVER + 'ping')).toHaveLength(0);
       });
 
       it('should call authStore.initializeAnonymous when not connected', () => {
@@ -289,7 +289,7 @@ describe('InitService', () => {
 
         service.checkSessionIfNeeded();
 
-        httpMock.expectNone(environment.URL_SERVER + 'ping');
+        expect(httpMock.match(environment.URL_SERVER + 'ping')).toHaveLength(0);
       });
 
       it('should not ping if last check was recent', () => {
@@ -301,7 +301,7 @@ describe('InitService', () => {
         // Immediately check again — should be throttled
         service.checkSessionIfNeeded();
 
-        httpMock.expectNone(environment.URL_SERVER + 'ping');
+        expect(httpMock.match(environment.URL_SERVER + 'ping')).toHaveLength(0);
       });
 
       it('should ping and call onMessageUnlog when est_connecte is false', () => {
@@ -336,7 +336,7 @@ describe('InitService', () => {
 
         // A second call immediately after should be throttled (lastSessionCheck was updated)
         service.checkSessionIfNeeded();
-        httpMock.expectNone(environment.URL_SERVER + 'ping');
+        expect(httpMock.match(environment.URL_SERVER + 'ping')).toHaveLength(0);
       });
 
       it('should not force logout on network error but update throttle', () => {
@@ -357,7 +357,7 @@ describe('InitService', () => {
 
         // A second call immediately after should be throttled (lastSessionCheck was updated on error)
         service.checkSessionIfNeeded();
-        httpMock.expectNone(environment.URL_SERVER + 'ping');
+        expect(httpMock.match(environment.URL_SERVER + 'ping')).toHaveLength(0);
       });
     });
   });

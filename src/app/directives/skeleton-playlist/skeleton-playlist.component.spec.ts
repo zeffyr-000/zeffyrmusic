@@ -22,7 +22,7 @@ describe('SkeletonPlaylistComponent', () => {
 
   it('should default to 8 tracks', () => {
     expect(component.count()).toBe(8);
-    expect(component.items.length).toBe(8);
+    expect(component.items).toHaveLength(8);
   });
 
   it('should render playlist header with image placeholder', () => {
@@ -35,19 +35,19 @@ describe('SkeletonPlaylistComponent', () => {
   it('should render action button placeholders', () => {
     const el: HTMLElement = fixture.nativeElement;
     expect(el.querySelector('.skeleton-playlist-actions')).toBeTruthy();
-    expect(el.querySelectorAll('.skeleton-line--pl-btn').length).toBe(2);
+    expect(el.querySelectorAll('.skeleton-line--pl-btn')).toHaveLength(2);
     expect(el.querySelector('.skeleton-line--pl-btn-primary')).toBeTruthy();
   });
 
   it('should render track rows', () => {
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.querySelectorAll('.skeleton-track').length).toBe(8);
+    expect(el.querySelectorAll('.skeleton-track')).toHaveLength(8);
   });
 
   it('should respect custom count', () => {
     fixture.componentRef.setInput('count', 4);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('.skeleton-track').length).toBe(4);
+    expect(fixture.nativeElement.querySelectorAll('.skeleton-track')).toHaveLength(4);
   });
 
   it('should include visually-hidden loading text for accessibility', () => {

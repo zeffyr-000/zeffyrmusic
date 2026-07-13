@@ -88,7 +88,7 @@ describe('QueueAnimationService', () => {
       service.flyToQueue(source, 'abc123');
 
       const ghosts = document.querySelectorAll('.fly-ghost');
-      expect(ghosts.length).toBe(1);
+      expect(ghosts).toHaveLength(1);
       expect(ghosts[0].querySelector('img')?.getAttribute('src')).toContain('abc123');
       expect(animateMock).toHaveBeenCalledTimes(1);
     });
@@ -100,7 +100,7 @@ describe('QueueAnimationService', () => {
 
       service.flyToQueue(source, 'abc123');
 
-      expect(document.querySelectorAll('.fly-ghost').length).toBe(0);
+      expect(document.querySelectorAll('.fly-ghost')).toHaveLength(0);
       expect(animateMock).not.toHaveBeenCalled();
     });
 
@@ -109,7 +109,7 @@ describe('QueueAnimationService', () => {
 
       service.flyToQueue(source, 'abc123');
 
-      expect(document.querySelectorAll('.fly-ghost').length).toBe(0);
+      expect(document.querySelectorAll('.fly-ghost')).toHaveLength(0);
       expect(animateMock).not.toHaveBeenCalled();
     });
 
@@ -122,7 +122,7 @@ describe('QueueAnimationService', () => {
       service.flyToQueue(source, 'abc123');
 
       expect(rectSpy).toHaveBeenCalled();
-      expect(document.querySelectorAll('.fly-ghost').length).toBe(1);
+      expect(document.querySelectorAll('.fly-ghost')).toHaveLength(1);
     });
 
     it('should add a "+N" badge on the ghost for a bulk add', () => {

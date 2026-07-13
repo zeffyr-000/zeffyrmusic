@@ -149,6 +149,7 @@
         ) {
           <div
             class="track-item"
+            role="button"
             [class.active]="video.key === queueStore.currentKey()"
             tabindex="0"
             (click)="runPlaylistTrack(index)"
@@ -320,6 +321,7 @@
         ) {
           <div
             class="track-item"
+            role="button"
             [class.active]="extra.key === queueStore.currentKey()"
             tabindex="0"
             (click)="runPlaylistExtra(index)"

@@ -1,8 +1,4 @@
-<div
-  role="status"
-  class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-xl-6"
-  aria-busy="true"
->
+<output class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-xl-6" aria-busy="true">
   <span class="visually-hidden">Loading...</span>
   @for (_ of items; track $index) {
     <div class="col mb-2">
@@ -18,4 +14,4 @@
       </div>
     </div>
   }
-</div>
+</output>

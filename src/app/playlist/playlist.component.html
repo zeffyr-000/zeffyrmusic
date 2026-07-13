@@ -229,6 +229,7 @@
               [class.track-item--reorderable]="isReorderable()"
               [attr.data-id-video]="video.key"
               [class.active]="video.key === queueStore.currentKey()"
+              role="button"
               tabindex="0"
               (click)="runPlaylist(i)"
               (keydown.enter)="runPlaylist(i)"

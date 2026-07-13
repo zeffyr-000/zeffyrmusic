@@ -2,6 +2,7 @@
   @for (video of queueStore.items(); track video.key; let index = $index) {
     <div
       class="track-item"
+      role="button"
       [class.active]="video.key === queueStore.currentKey()"
       tabindex="0"
       (click)="play(index, true)"

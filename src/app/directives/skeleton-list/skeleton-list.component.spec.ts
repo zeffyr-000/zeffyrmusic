@@ -22,7 +22,7 @@ describe('SkeletonListComponent', () => {
 
   it('should default to 8 items', () => {
     expect(component.count()).toBe(8);
-    expect(component.items.length).toBe(8);
+    expect(component.items).toHaveLength(8);
   });
 
   it('should render track skeleton rows', () => {
@@ -30,13 +30,13 @@ describe('SkeletonListComponent', () => {
     const list = el.querySelector('.skeleton-tracks');
     expect(list).toBeTruthy();
     expect(list?.getAttribute('aria-busy')).toBe('true');
-    expect(el.querySelectorAll('.skeleton-track').length).toBe(8);
+    expect(el.querySelectorAll('.skeleton-track')).toHaveLength(8);
   });
 
   it('should respect custom count', () => {
     fixture.componentRef.setInput('count', 4);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('.skeleton-track').length).toBe(4);
+    expect(fixture.nativeElement.querySelectorAll('.skeleton-track')).toHaveLength(4);
   });
 
   it('should include visually-hidden loading text for accessibility', () => {
