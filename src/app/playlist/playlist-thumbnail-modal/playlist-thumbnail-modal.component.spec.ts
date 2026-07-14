@@ -76,6 +76,15 @@ describe('PlaylistThumbnailModalComponent', () => {
       expect(component.outputFormat()).toBe('png');
     });
 
+    it('should move to crop step on valid webp file', () => {
+      const event = makeFileEvent('photo.webp', 'image/webp', 100);
+      component.onFileSelected(event);
+
+      expect(component.step()).toBe('crop');
+      expect(component.outputFormat()).toBe('webp');
+      expect(component.gifWarning()).toBe(false);
+    });
+
     it('should show gif warning for GIF files and output as jpeg', () => {
       const event = makeFileEvent('anim.gif', 'image/gif', 100);
       component.onFileSelected(event);

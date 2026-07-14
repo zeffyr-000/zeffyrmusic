@@ -467,7 +467,7 @@
   "playlist_thumbnail_file_too_large": "The file exceeds the maximum allowed size (10 MB).",
   "playlist_thumbnail_error_format": "Unsupported file format. Use JPEG, PNG or GIF.",
   "playlist_thumbnail_confirm": "Save",
-  "playlist_thumbnail_accepted_formats": "JPEG, PNG, GIF — max 10 MB",
+  "playlist_thumbnail_accepted_formats": "JPEG, PNG, GIF, WebP — max 10 MB",
   "playlist_thumbnail_error": "An error occurred while updating the thumbnail.",
   "skip_to_content": "Skip to main content",
   "route_announced": "Page loaded: {title}",
