@@ -6,11 +6,12 @@ import { PlaylistThumbnailService } from 'src/app/services/playlist-thumbnail.se
 import { UiStore } from 'src/app/store';
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
-const ACCEPTED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif']);
+const ACCEPTED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 const MIME_TO_FORMAT: Partial<Record<string, OutputFormat>> = {
   'image/jpeg': 'jpeg',
   'image/png': 'png',
   'image/gif': 'jpeg',
+  'image/webp': 'webp',
 };
 
 @Component({
