@@ -16,10 +16,6 @@ describe('SkeletonListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should default to 8 items', () => {
     expect(component.count()).toBe(8);
     expect(component.items).toHaveLength(8);

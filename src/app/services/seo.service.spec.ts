@@ -13,10 +13,6 @@ describe('SeoService', () => {
     document = TestBed.inject(DOCUMENT);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   describe('setJsonLd', () => {
     afterEach(() => {
       service.removeJsonLd();

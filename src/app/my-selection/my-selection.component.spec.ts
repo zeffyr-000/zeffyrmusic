@@ -10,7 +10,8 @@ import { UserDataStore } from '../store/user-data/user-data.store';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { UiStore } from '../store/ui/ui.store';
-import type { MockNgbActiveModal, MockNgbModal } from '../models/test-mocks.model';
+import type { MockedObject } from 'vitest';
+import { createNgbActiveModalMock, createNgbModalMock } from '../testing/mock-factories';
 
 describe('MySelectionComponent', () => {
   let component: MySelectionComponent;
@@ -20,7 +21,7 @@ describe('MySelectionComponent', () => {
   };
   let translocoService: TranslocoService;
   let userDataStore: InstanceType<typeof UserDataStore>;
-  let modalServiceMock: MockNgbModal;
+  let modalServiceMock: MockedObject<NgbModal>;
   let uiStore: InstanceType<typeof UiStore>;
   let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
@@ -30,7 +31,7 @@ describe('MySelectionComponent', () => {
     };
 
     const authGuardMock = { canActivate: vi.fn() };
-    modalServiceMock = { open: vi.fn() };
+    modalServiceMock = createNgbModalMock();
     googleAnalyticsServiceMock = { pageView: vi.fn() };
 
     await TestBed.configureTestingModule({
@@ -61,10 +62,6 @@ describe('MySelectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should set the title on init', () => {
     component.ngOnInit();
     expect(component['titleService'].getTitle()).toBe('My lightbox - Zeffyr Music');
@@ -87,9 +84,9 @@ describe('MySelectionComponent', () => {
 
   it('should call removeFollow on userLibraryService when onDeleteFollow is called', () => {
     const idPlaylist = '1';
-    const activeModalMock: MockNgbActiveModal = { close: vi.fn(), dismiss: vi.fn() };
+    const activeModalMock = createNgbActiveModalMock();
     component['pendingDeleteId'].set(idPlaylist);
-    component.onDeleteFollow(activeModalMock as unknown as NgbActiveModal);
+    component.onDeleteFollow(activeModalMock as NgbActiveModal);
     expect(userLibraryServiceMock.removeFollow).toHaveBeenCalledWith(idPlaylist);
     expect(activeModalMock.dismiss).toHaveBeenCalled();
   });
@@ -105,10 +102,10 @@ describe('MySelectionComponent', () => {
 
   it('should show error toast when removeFollow fails', () => {
     userLibraryServiceMock.removeFollow.mockReturnValue(throwError(() => new Error('fail')));
-    const activeModalMock: MockNgbActiveModal = { close: vi.fn(), dismiss: vi.fn() };
+    const activeModalMock = createNgbActiveModalMock();
     vi.spyOn(uiStore, 'showError');
     component['pendingDeleteId'].set('1');
-    component.onDeleteFollow(activeModalMock as unknown as NgbActiveModal);
+    component.onDeleteFollow(activeModalMock as NgbActiveModal);
     expect(uiStore.showError).toHaveBeenCalled();
     expect(activeModalMock.dismiss).not.toHaveBeenCalled();
   });

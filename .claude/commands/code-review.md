@@ -63,7 +63,7 @@ For domain-specific rules not detailed below, consult the matching
 
 - [ ] Vitest (not Jest/Jasmine)
 - [ ] Signal assertions use function call: `expect(signal()).toBe(value)`
-- [ ] Typed mocks from `test-mocks.model.ts`
+- [ ] Typed mock factories from `src/app/testing/mock-factories.ts`
 
 ### SEO (routed components)
 

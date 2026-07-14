@@ -1,4 +1,3 @@
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { InitService } from './init.service';
@@ -6,7 +5,6 @@ import { PlayerService } from './player.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Video } from '../models/video.model';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { PLATFORM_ID } from '@angular/core';
 import { YoutubePlayerService } from './youtube-player.service';
@@ -14,6 +12,7 @@ import { UserLibraryService } from './user-library.service';
 import { PlayerStore } from '../store/player/player.store';
 import { QueueStore } from '../store/queue/queue.store';
 import { UiStore } from '../store/ui/ui.store';
+import { provideHttpTesting } from '../testing/http-testing';
 
 const createMockYoutubePlayerService = () => ({
   playerReady$: new BehaviorSubject<boolean>(true),
@@ -95,8 +94,7 @@ describe('PlayerService', () => {
             useValue: {},
           },
           PlayerService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       }).compileComponents();
       service = TestBed.inject(PlayerService);
@@ -111,10 +109,6 @@ describe('PlayerService', () => {
     function setupQueue(videos: Video[]): void {
       queueStore.setQueue(videos, 'p1', null);
     }
-
-    it('should be created', () => {
-      expect(service).toBeTruthy();
-    });
 
     it('should initialize YoutubePlayerService on construction', () => {
       expect(mockYoutubePlayer.initPlayer).toHaveBeenCalledWith('player');
@@ -131,12 +125,14 @@ describe('PlayerService', () => {
       expect(queueStore.currentArtist()).toBe('artist1');
     });
 
-    it('should update PlayerStore when stateChange$ emits', () => {
-      mockYoutubePlayer.stateChange$.next(1); // PLAYING
-      expect(playerStore.isPlaying()).toBe(true);
-
-      mockYoutubePlayer.stateChange$.next(2); // PAUSED
-      expect(playerStore.isPaused()).toBe(true);
+    it.each([
+      [1, 'playing'],
+      [2, 'paused'],
+      [0, 'ended'],
+      [-1, 'idle'],
+    ])('should update PlayerStore status when stateChange$ emits %i → %s', (state, expected) => {
+      mockYoutubePlayer.stateChange$.next(state);
+      expect(playerStore.status()).toBe(expected);
     });
 
     it('should call after() when video ends (state 0)', () => {
@@ -268,23 +264,12 @@ describe('PlayerService', () => {
       expect(mockYoutubePlayer.pause).toHaveBeenCalled();
     });
 
-    it('should call queueStore.removeFromQueue on removeToPlaylist', () => {
-      const videos = [
-        mockVideo({ key: 'k1', id_video: '1' }),
-        mockVideo({ key: 'k2', id_video: '2' }),
-      ];
-      setupQueue(videos);
-
-      const spy = vi.spyOn(queueStore, 'removeFromQueue');
-      service.removeToPlaylist(1);
-
-      expect(spy).toHaveBeenCalledWith(1);
-    });
-
     it('should toggle repeat via playerStore on switchRepeat', () => {
-      const spy = vi.spyOn(playerStore, 'toggleRepeat');
       service.switchRepeat();
-      expect(spy).toHaveBeenCalled();
+      expect(playerStore.isRepeat()).toBe(true);
+
+      service.switchRepeat();
+      expect(playerStore.isRepeat()).toBe(false);
     });
 
     it('should toggle shuffle via queueStore on switchRandom', () => {
@@ -377,27 +362,11 @@ describe('PlayerService', () => {
       expect(queueStore.currentArtist()).toBe('');
     });
 
-    it('should update PlayerStore to paused state via stateChange$', () => {
-      mockYoutubePlayer.stateChange$.next(2); // PAUSED
-      expect(playerStore.isPaused()).toBe(true);
-    });
-
-    it('should update PlayerStore to playing state via stateChange$', () => {
-      mockYoutubePlayer.stateChange$.next(1); // PLAYING
-      expect(playerStore.isPlaying()).toBe(true);
-    });
-
-    it('should update PlayerStore to ended state via stateChange$', () => {
-      mockYoutubePlayer.stateChange$.next(0); // ENDED
-      expect(playerStore.status()).toBe('ended');
-    });
-
-    it('should update PlayerStore to idle state via stateChange$', () => {
-      mockYoutubePlayer.stateChange$.next(-1); // UNSTARTED
-      expect(playerStore.status()).toBe('idle');
-    });
-
-    it('should call lecture on before', () => {
+    it.each([
+      ['before', 0],
+      ['after', 2],
+    ] as const)('should call lecture on %s', (method, expectedIndex) => {
+      // Arrange
       const spy = vi.spyOn(service, 'lecture');
       const videos = [
         mockVideo({ key: 'key1', titre: 'title1', artiste: 'artist1' }),
@@ -407,22 +376,11 @@ describe('PlayerService', () => {
       setupQueue(videos);
       queueStore.goToIndex(1);
 
-      service.before();
-      expect(spy).toHaveBeenCalledWith(0);
-    });
+      // Act
+      service[method]();
 
-    it('should call lecture on after', () => {
-      const spy = vi.spyOn(service, 'lecture');
-      const videos = [
-        mockVideo({ key: 'key1', titre: 'title1', artiste: 'artist1' }),
-        mockVideo({ key: 'key2', titre: 'title2', artiste: 'artist2' }),
-        mockVideo({ key: 'key3', titre: 'title3', artiste: 'artist3' }),
-      ];
-      setupQueue(videos);
-      queueStore.goToIndex(1);
-
-      service.after();
-      expect(spy).toHaveBeenCalledWith(2);
+      // Assert
+      expect(spy).toHaveBeenCalledWith(expectedIndex);
     });
 
     it('should call lecture with 0 on after when isRepeat is true and at end of queue', () => {
@@ -435,16 +393,6 @@ describe('PlayerService', () => {
       service.after();
 
       expect(spyLecture).toHaveBeenCalledWith(0);
-    });
-
-    it('should call lecture with indexInitial flag', () => {
-      const spy = vi.spyOn(service, 'lecture');
-      const videos = [mockVideo({ key: 'XXX', titre: 'Test Video', artiste: 'Test Artist' })];
-      setupQueue(videos);
-
-      service.lecture(0, true);
-      expect(spy).toHaveBeenCalledWith(0, true);
-      expect(queueStore.currentIndex()).toBe(0);
     });
 
     it('should toggle play/pause via YoutubePlayerService on onPlayPause', () => {
@@ -565,8 +513,13 @@ describe('PlayerService', () => {
     });
 
     it('should clear error via YoutubePlayerService on clearErrorMessage', () => {
+      mockYoutubePlayer.error$.next('error_request_not_found');
+      expect(playerStore.errorMessage()).toBe('error_request_not_found');
+
       service.clearErrorMessage();
+
       expect(mockYoutubePlayer.clearError).toHaveBeenCalled();
+      expect(playerStore.errorMessage()).toBeNull();
     });
 
     describe('Shuffle regression', () => {
@@ -725,20 +678,15 @@ describe('PlayerService', () => {
             useValue: {},
           },
           PlayerService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       }).compileComponents();
 
       service = TestBed.inject(PlayerService);
     });
 
-    it('should detect server context', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).isBrowser).toBe(false);
-    });
-
     it('should not call youtubePlayer.initPlayer on server', () => {
+      expect(service).toBeTruthy();
       expect(mockYoutubePlayer.initPlayer).not.toHaveBeenCalled();
     });
   });

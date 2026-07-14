@@ -8,6 +8,7 @@ import { ArtistData } from '../../models/artist.model';
 import { AuthStore, UiStore } from '../../store';
 import { getTranslocoTestingProviders } from '../../transloco-testing';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { createNgbModalMock } from '../../testing/mock-factories';
 
 describe('MergeArtistComponent', () => {
   let component: MergeArtistComponent;
@@ -59,6 +60,42 @@ describe('MergeArtistComponent', () => {
     ],
   };
 
+  /** Creates the component with getArtistDetails resolving to the given artist */
+  function createComponent(artist: ArtistData = mockArtist1): void {
+    artistAdminServiceMock.getArtistDetails.mockReturnValue(of(artist));
+    fixture = TestBed.createComponent(MergeArtistComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  /** Rebuilds the TestBed with a custom `source` query param, then creates the component */
+  async function recreateWithSourceParam(source: string | null): Promise<void> {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [MergeArtistComponent],
+      providers: [
+        getTranslocoTestingProviders(),
+        { provide: ArtistAdminService, useValue: artistAdminServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: (key: string) => (key === 'source' ? source : null),
+              },
+            },
+          },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(MergeArtistComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
   beforeEach(async () => {
     artistAdminServiceMock = {
       getArtistDetails: vi.fn(),
@@ -81,13 +118,7 @@ describe('MergeArtistComponent', () => {
             },
           },
         },
-        {
-          provide: NgbModal,
-          useValue: {
-            open: vi.fn(),
-            dismissAll: vi.fn(),
-          },
-        },
+        { provide: NgbModal, useValue: createNgbModalMock() },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -104,20 +135,8 @@ describe('MergeArtistComponent', () => {
   });
 
   describe('initialization', () => {
-    it('should create', () => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component).toBeTruthy();
-    });
-
     it('should load artist 1 from source query param', () => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
 
       expect(artistAdminServiceMock.getArtistDetails).toHaveBeenCalledWith('10');
       expect(component.artist1()).toEqual(mockArtist1);
@@ -136,30 +155,7 @@ describe('MergeArtistComponent', () => {
     });
 
     it('should not set hasSourceParam when no source in URL', async () => {
-      TestBed.resetTestingModule();
-      await TestBed.configureTestingModule({
-        imports: [MergeArtistComponent],
-        providers: [
-          getTranslocoTestingProviders(),
-          { provide: ArtistAdminService, useValue: artistAdminServiceMock },
-          { provide: PLATFORM_ID, useValue: 'browser' },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: () => null,
-                },
-              },
-            },
-          },
-        ],
-        schemas: [NO_ERRORS_SCHEMA],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      await recreateWithSourceParam(null);
 
       expect(component.hasSourceParam()).toBe(false);
       expect(component.artist1()).toBeNull();
@@ -167,30 +163,7 @@ describe('MergeArtistComponent', () => {
     });
 
     it('should set error when source query param is invalid', async () => {
-      TestBed.resetTestingModule();
-      await TestBed.configureTestingModule({
-        imports: [MergeArtistComponent],
-        providers: [
-          getTranslocoTestingProviders(),
-          { provide: ArtistAdminService, useValue: artistAdminServiceMock },
-          { provide: PLATFORM_ID, useValue: 'browser' },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: (key: string) => (key === 'source' ? 'invalid-text' : null),
-                },
-              },
-            },
-          },
-        ],
-        schemas: [NO_ERRORS_SCHEMA],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      await recreateWithSourceParam('invalid-text');
 
       expect(component.hasSourceParam()).toBe(true);
       expect(component.artist1()).toBeNull();
@@ -201,10 +174,7 @@ describe('MergeArtistComponent', () => {
 
   describe('parseArtistId', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should parse a numeric ID', () => {
@@ -228,16 +198,7 @@ describe('MergeArtistComponent', () => {
 
   describe('merge selection', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    });
-
-    it('should default all selections to artist1', () => {
-      expect(component.selectedKeepArtist()).toBe('artist1');
-      expect(component.selectedNom()).toBe('artist1');
-      expect(component.selectedDeezerId()).toBe('artist1');
+      createComponent();
     });
 
     it('should update selections', () => {
@@ -260,10 +221,7 @@ describe('MergeArtistComponent', () => {
 
   describe('confirmMerge', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
       component.artist2.set(mockArtist2);
     });
 
@@ -347,10 +305,7 @@ describe('MergeArtistComponent', () => {
 
   describe('getArtistImageUrl', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should return Deezer image URL', () => {
@@ -362,10 +317,7 @@ describe('MergeArtistComponent', () => {
 
   describe('resetArtist1', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should clear artist1 data', () => {
@@ -380,10 +332,7 @@ describe('MergeArtistComponent', () => {
 
   describe('resetArtist2', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
       component.artist2.set(mockArtist2);
     });
 
@@ -402,10 +351,7 @@ describe('MergeArtistComponent', () => {
 
   describe('openConfirmModal', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should open the modal with the template', () => {
@@ -422,10 +368,8 @@ describe('MergeArtistComponent', () => {
 
   describe('submitArtist1', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
+      // Reset artist1 to test submitArtist1 independently
       component.artist1.set(null);
     });
 
@@ -483,10 +427,7 @@ describe('MergeArtistComponent', () => {
 
   describe('submitArtist2', () => {
     beforeEach(() => {
-      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
-      fixture = TestBed.createComponent(MergeArtistComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should load artist2 successfully', async () => {

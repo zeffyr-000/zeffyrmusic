@@ -1,6 +1,6 @@
 ---
 name: vitest-testing
-description: Unit testing with Vitest for Zeffyr Music — TestBed setup, typed mocks from test-mocks.model.ts, signal assertions (function-call syntax), the AAA pattern, and the ≥80% coverage target. Use when creating or editing *.spec.ts unit tests.
+description: Unit testing with Vitest for Zeffyr Music — TestBed setup, typed mock factories from src/app/testing/, signal assertions (function-call syntax), the AAA pattern, and the ≥80% coverage target. Use when creating or editing *.spec.ts unit tests.
 ---
 
 # Test Instructions (Vitest)
@@ -50,14 +50,25 @@ describe('ComponentName', () => {
 
 - Use **Vitest**, not Jest or Jasmine
 - Access signal values with function call: `component.value()`
-- Use typed mocks from `src/app/models/test-mocks.model.ts`
+- Use the shared test helpers from `src/app/testing/`:
+  - `mock-factories.ts` — typed mock factories (`createPlayerServiceMock()`, `createUserServiceMock()`, `createInitServiceMock()`, `createNgbModalMock()`, …) returning `MockedObject<Service>`
+  - `http-testing.ts` — `provideHttpTesting()` instead of hand-wiring `provideHttpClient` + `provideHttpClientTesting`
+  - `fixtures.ts` — shared data fixtures (`createMockVideo()`, `createMockVideos(n)`)
 - Follow AAA pattern: Arrange, Act, Assert
 
 ## Mocking
 
 ```typescript
-// Service mock
-serviceMock.getData.mockReturnValue(of(response));
+// Service mock — from factory, configured per test
+serviceMock = createUserServiceMock();
+serviceMock.login.mockReturnValue(of(response));
+
+// HTTP service spec
+TestBed.configureTestingModule({
+  providers: [MyService, ...provideHttpTesting()],
+});
+const httpMock = TestBed.inject(HttpTestingController);
+afterEach(() => httpMock.verify());
 
 // Store mock
 const authStoreMock = {

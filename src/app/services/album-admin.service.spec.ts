@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { AlbumAdminService } from './album-admin.service';
 import { environment } from '../../environments/environment';
 import { Playlist } from '../models/playlist.model';
 import { MergeAlbumsPayload, MergeAlbumsResponse } from '../models/album-admin.model';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('AlbumAdminService', () => {
   let service: AlbumAdminService;
@@ -28,11 +28,7 @@ describe('AlbumAdminService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        AlbumAdminService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [AlbumAdminService, ...provideHttpTesting()],
     });
 
     service = TestBed.inject(AlbumAdminService);
@@ -41,10 +37,6 @@ describe('AlbumAdminService', () => {
 
   afterEach(() => {
     httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
   });
 
   it('should fetch album details', () => {

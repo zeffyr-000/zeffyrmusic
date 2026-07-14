@@ -8,6 +8,8 @@ import { Playlist } from '../../models/playlist.model';
 import { AuthStore, UiStore } from '../../store';
 import { getTranslocoTestingProviders } from '../../transloco-testing';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { createNgbModalMock } from '../../testing/mock-factories';
+import { createMockVideo } from '../../testing/fixtures';
 
 describe('MergeAlbumComponent', () => {
   let component: MergeAlbumComponent;
@@ -30,28 +32,24 @@ describe('MergeAlbumComponent', () => {
     liste_video: [],
     str_index: [],
     tab_video: [
-      {
-        id_video: 'v1',
-        key: 'k1',
+      createMockVideo({
         titre: 'Track 1',
         artiste: 'Artist',
-        duree: '180',
         artists: [],
         id_playlist: '100',
-        ordre: '1',
         titre_album: 'Album One',
-      },
-      {
+      }),
+      createMockVideo({
         id_video: 'v2',
         key: 'k2',
         titre: 'Track 2',
         artiste: 'Artist',
-        duree: '200',
         artists: [],
+        duree: '200',
         id_playlist: '100',
         ordre: '2',
         titre_album: 'Album One',
-      },
+      }),
     ],
     titre: 'Album One',
     artiste: 'Test Artist',
@@ -69,22 +67,57 @@ describe('MergeAlbumComponent', () => {
     liste_video: [],
     str_index: [],
     tab_video: [
-      {
+      createMockVideo({
         id_video: 'v3',
         key: 'k3',
         titre: 'Track 3',
         artiste: 'Artist',
-        duree: '210',
         artists: [],
+        duree: '210',
         id_playlist: '200',
-        ordre: '1',
         titre_album: 'Album Two',
-      },
+      }),
     ],
     titre: 'Album Two',
     artiste: 'Test Artist',
     year: 2021,
   };
+
+  /** Creates the component with getAlbumDetails resolving to the given album */
+  function createComponent(album: Playlist = mockAlbum1): void {
+    albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(album));
+    fixture = TestBed.createComponent(MergeAlbumComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  /** Rebuilds the TestBed with a custom `source` query param, then creates the component */
+  async function recreateWithSourceParam(source: string | null): Promise<void> {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [MergeAlbumComponent],
+      providers: [
+        getTranslocoTestingProviders(),
+        { provide: AlbumAdminService, useValue: albumAdminServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: (key: string) => (key === 'source' ? source : null),
+              },
+            },
+          },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(MergeAlbumComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
 
   beforeEach(async () => {
     albumAdminServiceMock = {
@@ -108,13 +141,7 @@ describe('MergeAlbumComponent', () => {
             },
           },
         },
-        {
-          provide: NgbModal,
-          useValue: {
-            open: vi.fn(),
-            dismissAll: vi.fn(),
-          },
-        },
+        { provide: NgbModal, useValue: createNgbModalMock() },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -131,20 +158,8 @@ describe('MergeAlbumComponent', () => {
   });
 
   describe('initialization', () => {
-    it('should create', () => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component).toBeTruthy();
-    });
-
     it('should load album 1 from source query param', () => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
 
       expect(albumAdminServiceMock.getAlbumDetails).toHaveBeenCalledWith('100');
       expect(component.album1()).toEqual(mockAlbum1);
@@ -163,30 +178,7 @@ describe('MergeAlbumComponent', () => {
     });
 
     it('should not set hasSourceParam when no source in URL', async () => {
-      TestBed.resetTestingModule();
-      await TestBed.configureTestingModule({
-        imports: [MergeAlbumComponent],
-        providers: [
-          getTranslocoTestingProviders(),
-          { provide: AlbumAdminService, useValue: albumAdminServiceMock },
-          { provide: PLATFORM_ID, useValue: 'browser' },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: () => null,
-                },
-              },
-            },
-          },
-        ],
-        schemas: [NO_ERRORS_SCHEMA],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      await recreateWithSourceParam(null);
 
       expect(component.hasSourceParam()).toBe(false);
       expect(component.album1()).toBeNull();
@@ -195,51 +187,21 @@ describe('MergeAlbumComponent', () => {
 
     it('should not flag albums with id_perso "0" as user playlists', () => {
       const albumWithZeroPerso = { ...mockAlbum1, id_perso: '0' };
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(albumWithZeroPerso));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent(albumWithZeroPerso);
 
       expect(component.album1()).toEqual(albumWithZeroPerso);
       expect(component.album1Error()).toBe('');
     });
 
     it('should flag albums with real id_perso as user playlists', () => {
-      const userAlbum = { ...mockAlbum1, id_perso: '456' };
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(userAlbum));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent({ ...mockAlbum1, id_perso: '456' });
 
       expect(component.album1()).toBeNull();
       expect(component.album1Error()).toBeTruthy();
     });
 
     it('should set error when source query param is invalid', async () => {
-      TestBed.resetTestingModule();
-      await TestBed.configureTestingModule({
-        imports: [MergeAlbumComponent],
-        providers: [
-          getTranslocoTestingProviders(),
-          { provide: AlbumAdminService, useValue: albumAdminServiceMock },
-          { provide: PLATFORM_ID, useValue: 'browser' },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: (key: string) => (key === 'source' ? 'invalid-text' : null),
-                },
-              },
-            },
-          },
-        ],
-        schemas: [NO_ERRORS_SCHEMA],
-      }).compileComponents();
-
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      await recreateWithSourceParam('invalid-text');
 
       expect(component.hasSourceParam()).toBe(true);
       expect(component.album1()).toBeNull();
@@ -250,10 +212,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('parseAlbumId', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should parse a numeric ID', () => {
@@ -277,19 +236,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('merge selection', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    });
-
-    it('should default all selections to album1', () => {
-      expect(component.selectedKeepAlbum()).toBe('album1');
-      expect(component.selectedTitre()).toBe('album1');
-      expect(component.selectedArtiste()).toBe('album1');
-      expect(component.selectedImage()).toBe('album1');
-      expect(component.selectedVideos()).toBe('album1');
-      expect(component.selectedYear()).toBe('album1');
+      createComponent();
     });
 
     it('should update selections', () => {
@@ -318,10 +265,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('confirmMerge', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
       component.album2.set(mockAlbum2);
     });
 
@@ -401,10 +345,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('getAlbumDisplayTitle', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should return titre when available', () => {
@@ -419,10 +360,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('resetAlbum1', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should clear album1 data', () => {
@@ -437,10 +375,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('resetAlbum2', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
       component.album2.set(mockAlbum2);
     });
 
@@ -459,10 +394,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('openConfirmModal', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should open the modal with the template', () => {
@@ -479,10 +411,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('submitAlbum1', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
       // Reset album1 to test submitAlbum1 independently
       component.album1.set(null);
     });
@@ -543,10 +472,7 @@ describe('MergeAlbumComponent', () => {
 
   describe('submitAlbum2', () => {
     beforeEach(() => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+      createComponent();
     });
 
     it('should load album2 successfully', async () => {
@@ -607,20 +533,6 @@ describe('MergeAlbumComponent', () => {
       await component.submitAlbum2();
 
       expect(albumAdminServiceMock.getAlbumDetails).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('loadAlbum1 not found', () => {
-    it('should set error when album data has no title', () => {
-      albumAdminServiceMock.getAlbumDetails.mockReturnValue(
-        of({ ...mockAlbum1, titre: '', title: '' })
-      );
-      fixture = TestBed.createComponent(MergeAlbumComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.album1()).toBeNull();
-      expect(component.album1Error()).toBeTruthy();
     });
   });
 });

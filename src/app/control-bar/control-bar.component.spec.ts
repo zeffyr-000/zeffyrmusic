@@ -1,36 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
+import type { MockedObject } from 'vitest';
 import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { ControlBarComponent } from './control-bar.component';
 import { getTranslocoTestingProviders } from '../transloco-testing';
-import type { MockPlayerService, MockUserLibraryService } from '../models/test-mocks.model';
+import { createPlayerServiceMock, createUserLibraryServiceMock } from '../testing/mock-factories';
 import type { Video } from '../models/video.model';
 
 describe('ControlBarComponent', () => {
   let component: ControlBarComponent;
   let fixture: ComponentFixture<ControlBarComponent>;
   let playerService: PlayerService;
-  let playerServiceMock: Partial<MockPlayerService>;
-  let userLibraryServiceMock: Pick<MockUserLibraryService, 'isLiked' | 'addLike' | 'removeLike'>;
+  let playerServiceMock: MockedObject<PlayerService>;
+  let userLibraryServiceMock: MockedObject<UserLibraryService>;
 
   beforeEach(async () => {
-    playerServiceMock = {
-      switchRepeat: vi.fn(),
-      switchRandom: vi.fn(),
-      updatePositionSlider: vi.fn(),
-      updateVolume: vi.fn(),
-      onPlayPause: vi.fn(),
-      before: vi.fn(),
-      after: vi.fn(),
-      toggleMute: vi.fn(),
-    };
-    userLibraryServiceMock = {
-      isLiked: vi.fn<(key: string) => boolean>().mockReturnValue(false),
-      addLike: vi.fn<(key: string) => Observable<boolean>>().mockReturnValue(of(true)),
-      removeLike: vi.fn<(key: string) => Observable<boolean>>().mockReturnValue(of(true)),
-    };
+    playerServiceMock = createPlayerServiceMock();
+    userLibraryServiceMock = createUserLibraryServiceMock();
+    userLibraryServiceMock.isLiked.mockReturnValue(false);
+    userLibraryServiceMock.addLike.mockReturnValue(of(true));
+    userLibraryServiceMock.removeLike.mockReturnValue(of(true));
 
     await TestBed.configureTestingModule({
       imports: [ControlBarComponent],
@@ -46,10 +37,6 @@ describe('ControlBarComponent', () => {
     component = fixture.componentInstance;
     playerService = TestBed.inject(PlayerService);
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   describe('Computed signals', () => {

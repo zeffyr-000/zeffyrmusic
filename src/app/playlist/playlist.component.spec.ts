@@ -1,5 +1,5 @@
 import type { MockedObject, Mock } from 'vitest';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
@@ -12,12 +12,7 @@ import { InitService } from '../services/init.service';
 import { PlayerService } from '../services/player.service';
 import { UserLibraryService } from '../services/user-library.service';
 import { FollowItem } from '../models/follow.model';
-import {
-  HttpClient,
-  provideHttpClient,
-  withInterceptorsFromDi,
-  withXhr,
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UserVideo, Video } from '../models/video.model';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { getTranslocoTestingProviders } from '../transloco-testing';
@@ -29,6 +24,108 @@ import { AuthStore } from '../store/auth/auth.store';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ExportPlaylistModalComponent } from '../directives/export-playlist-modal/export-playlist-modal.component';
 import type { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { provideHttpTesting } from '../testing/http-testing';
+import {
+  createGoogleAnalyticsServiceMock,
+  createInitServiceMock,
+  createNgbModalMock,
+  createPlayerServiceMock,
+  createUserLibraryServiceMock,
+} from '../testing/mock-factories';
+import { createMockVideo, createMockVideos } from '../testing/fixtures';
+
+const mockPlaylistData = {
+  id_playlist: '1',
+  title: 'title',
+  description: 'description',
+  est_suivi: false,
+  id_top: '1',
+  img_big: 'img_big',
+  liste_video: ['1', '2', '3'],
+  str_index: [1, 2, 3],
+  tab_video: [
+    {
+      id_video: '1',
+      title: 'title',
+      artist: 'artist',
+      id_artist: '1',
+      img: 'img',
+      duration: 'duration',
+    },
+  ],
+  est_prive: undefined as unknown as boolean,
+  titre: 'titre',
+  artiste: 'artiste',
+  id_artiste: '1',
+};
+
+interface PlaylistTestMocks {
+  activatedRouteMock: MockedObject<ActivatedRoute>;
+  metaServiceMock: { updateTag: Mock };
+  initServiceMock: MockedObject<InitService>;
+  playerServiceMock: MockedObject<PlayerService>;
+  userLibraryServiceMock: MockedObject<UserLibraryService>;
+}
+
+async function configurePlaylistTestBed(
+  platformId: 'browser' | 'server',
+  urlPath: string
+): Promise<PlaylistTestMocks> {
+  const metaServiceMock = { updateTag: vi.fn() };
+  const initServiceMock = createInitServiceMock();
+  const playerServiceMock = createPlayerServiceMock();
+  const userLibraryServiceMock = createUserLibraryServiceMock();
+  userLibraryServiceMock.toggleFollow.mockReturnValue(of({ success: true, isFollowing: true }));
+  userLibraryServiceMock.removeVideoFromPlaylist.mockReturnValue(of(true));
+  userLibraryServiceMock.reorderPlaylistTracks.mockReturnValue(of(true));
+  userLibraryServiceMock.reorderLikes.mockReturnValue(of(true));
+  userLibraryServiceMock.isLiked.mockReturnValue(false);
+  userLibraryServiceMock.addLike.mockReturnValue(of(true));
+  userLibraryServiceMock.removeLike.mockReturnValue(of(true));
+  userLibraryServiceMock.renameTrack.mockReturnValue(
+    of({ success: true, titre: 'T', artiste: 'A', artists: [] })
+  );
+  const activatedRouteMock = {
+    snapshot: {
+      paramMap: { get: () => '1' },
+      url: [{ path: urlPath }],
+    },
+    params: new BehaviorSubject({ id: '1' }),
+  } as unknown as MockedObject<ActivatedRoute>;
+
+  await TestBed.configureTestingModule({
+    schemas: [NO_ERRORS_SCHEMA],
+    imports: [PlaylistComponent],
+    providers: [
+      getTranslocoTestingProviders(),
+      { provide: PLATFORM_ID, useValue: platformId },
+      { provide: ActivatedRoute, useValue: activatedRouteMock },
+      { provide: GoogleAnalyticsService, useValue: createGoogleAnalyticsServiceMock() },
+      { provide: InitService, useValue: initServiceMock },
+      { provide: PlayerService, useValue: playerServiceMock },
+      { provide: UserLibraryService, useValue: userLibraryServiceMock },
+      { provide: Meta, useValue: metaServiceMock },
+      { provide: NgbModal, useValue: createNgbModalMock() },
+      ...provideHttpTesting(),
+    ],
+  }).compileComponents();
+
+  TestBed.inject(TranslocoService).setDefaultLang('en');
+
+  return {
+    activatedRouteMock,
+    metaServiceMock,
+    initServiceMock,
+    playerServiceMock,
+    userLibraryServiceMock,
+  };
+}
+
+function expectOgMetaTags(metaServiceSpy: Mock): void {
+  for (const name of ['og:title', 'og:description', 'og:image', 'og:url']) {
+    expect(metaServiceSpy).toHaveBeenCalledWith(expect.objectContaining({ name }));
+  }
+}
 
 describe('PlaylistComponent', () => {
   let component: PlaylistComponent;
@@ -36,121 +133,16 @@ describe('PlaylistComponent', () => {
   let titleService: Title;
   let translocoService: TranslocoService;
   let googleAnalyticsService: GoogleAnalyticsService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let initService: InitService;
   let playerService: PlayerService;
   let metaService: Meta;
   let activatedRouteMock: MockedObject<ActivatedRoute>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let metaServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let initServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let playerServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let userLibraryServiceMock: any;
-  const mockPlaylistData = {
-    id_playlist: '1',
-    title: 'title',
-    description: 'description',
-    est_suivi: false,
-    id_top: '1',
-    img_big: 'img_big',
-    liste_video: ['1', '2', '3'],
-    str_index: [1, 2, 3],
-    tab_video: [
-      {
-        id_video: '1',
-        title: 'title',
-        artist: 'artist',
-        id_artist: '1',
-        img: 'img',
-        duration: 'duration',
-      },
-    ],
-    est_prive: undefined as unknown as boolean,
-    titre: 'titre',
-    artiste: 'artiste',
-    id_artiste: '1',
-  };
+  let userLibraryServiceMock: MockedObject<UserLibraryService>;
 
   beforeEach(async () => {
-    metaServiceMock = { updateTag: vi.fn() };
-    initServiceMock = { init: vi.fn() };
-    playerServiceMock = {
-      lecture: vi.fn(),
-      removeToPlaylist: vi.fn(),
-      runPlaylist: vi.fn(),
-      addInCurrentList: vi.fn(),
-      addVideoInPlaylist: vi.fn(),
-      removeVideoFromQueue: vi.fn(),
-      addVideoAfterCurrentInList: vi.fn(),
-      onPlayPause: vi.fn(),
-    };
-    userLibraryServiceMock = {
-      toggleFollow: vi.fn().mockReturnValue(of({ success: true, isFollowing: true })),
-      removeVideoFromPlaylist: vi.fn().mockReturnValue(of(true)),
-      reorderPlaylistTracks: vi.fn().mockReturnValue(of(true)),
-      reorderLikes: vi.fn().mockReturnValue(of(true)),
-      isLiked: vi.fn().mockReturnValue(false),
-      addLike: vi.fn().mockReturnValue(of(true)),
-      removeLike: vi.fn().mockReturnValue(of(true)),
-      renameTrack: vi
-        .fn()
-        .mockReturnValue(of({ success: true, titre: 'T', artiste: 'A', artists: [] })),
-    };
-    // BehaviorSubjects are now managed by Signal Stores
-    activatedRouteMock = {
-      snapshot: {
-        paramMap: { get: () => '1' },
-        url: [{ path: 'top' }],
-      },
-      params: new BehaviorSubject({ id: '1' }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
-
-    await TestBed.configureTestingModule({
-      schemas: [NO_ERRORS_SCHEMA],
-      imports: [PlaylistComponent],
-      providers: [
-        getTranslocoTestingProviders(),
-        { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: ActivatedRoute, useValue: activatedRouteMock },
-        {
-          provide: GoogleAnalyticsService,
-          useValue: {
-            pageView: () => {
-              // Mock pageView
-            },
-          },
-        },
-        {
-          provide: InitService,
-          useValue: initServiceMock,
-        },
-        {
-          provide: PlayerService,
-          useValue: playerServiceMock,
-        },
-        {
-          provide: UserLibraryService,
-          useValue: userLibraryServiceMock,
-        },
-        {
-          provide: Meta,
-          useValue: metaServiceMock,
-        },
-        {
-          provide: NgbModal,
-          useValue: { open: vi.fn(), dismissAll: vi.fn() },
-        },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
-    }).compileComponents();
-
-    translocoService = TestBed.inject(TranslocoService);
-    translocoService.setDefaultLang('en');
+    ({ activatedRouteMock, userLibraryServiceMock } = await configurePlaylistTestBed(
+      'browser',
+      'top'
+    ));
   });
 
   beforeEach(() => {
@@ -159,14 +151,9 @@ describe('PlaylistComponent', () => {
     titleService = TestBed.inject(Title);
     translocoService = TestBed.inject(TranslocoService);
     googleAnalyticsService = TestBed.inject(GoogleAnalyticsService);
-    initService = TestBed.inject(InitService);
     playerService = TestBed.inject(PlayerService);
     metaService = TestBed.inject(Meta);
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should compute isFollower based on userDataStore.follows()', () => {
@@ -501,51 +488,23 @@ describe('PlaylistComponent', () => {
     httpMock.verify();
   });
 
-  it('should call playerService.runPlaylist with correct arguments when runPlaylist is called', () => {
-    const playlistData = [
-      {
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [{ id_artist: '1', label: 'Artiste 1' }],
-        duree: '100',
-        id_playlist: '1',
-        key: 'XXX-XXX',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Titre album 1',
-      },
-    ] as Video[];
+  it.each([
+    ['with an explicit index', 0],
+    ['without arguments (defaults to 0)', undefined],
+  ])('should call playerService.runPlaylist %s', (_label, index) => {
+    // Arrange
+    const playlistData = [createMockVideo()];
     component.playlist.set(playlistData);
     component.idPlaylist.set('test-playlist-id');
 
-    component.runPlaylist(0);
+    // Act
+    if (index === undefined) {
+      component.runPlaylist();
+    } else {
+      component.runPlaylist(index);
+    }
 
-    expect(playerService.runPlaylist).toHaveBeenCalledWith(
-      playlistData,
-      0,
-      null,
-      'test-playlist-id'
-    );
-  });
-
-  it('should call playerService.runPlaylist without arguments', () => {
-    const playlistData = [
-      {
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [{ id_artist: '1', label: 'Artiste 1' }],
-        duree: '100',
-        id_playlist: '1',
-        key: 'XXX-XXX',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Titre album 1',
-      },
-    ] as Video[];
-    component.playlist.set(playlistData);
-    component.idPlaylist.set('test-playlist-id');
-    component.runPlaylist();
-
+    // Assert
     expect(playerService.runPlaylist).toHaveBeenCalledWith(
       playlistData,
       0,
@@ -555,19 +514,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should call playerService.addInCurrentList with correct arguments when addInCurrentList is called', () => {
-    const playlistData = [
-      {
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [{ id_artist: '1', label: 'Artiste 1' }],
-        duree: '100',
-        id_playlist: '1',
-        key: 'XXX-XXX',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Titre album 1',
-      },
-    ] as Video[];
+    const playlistData = [createMockVideo()];
     component.playlist.set(playlistData);
 
     component.addInCurrentList();
@@ -600,19 +547,7 @@ describe('PlaylistComponent', () => {
   it('should enable play and add-to-list buttons when playlist has items', () => {
     component.isLoading.set(false);
     component.isPrivate.set(false);
-    component.playlist.set([
-      {
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [{ id_artist: '1', label: 'Artiste 1' }],
-        duree: '100',
-        id_playlist: '1',
-        key: 'XXX-XXX',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Titre album 1',
-      },
-    ] as Video[]);
+    component.playlist.set([createMockVideo()]);
     fixture.detectChanges();
 
     const playBtn: HTMLButtonElement = fixture.nativeElement.querySelector(
@@ -645,17 +580,7 @@ describe('PlaylistComponent', () => {
   });
 
   it('should call playerService.addVideoAfterCurrentInList with correct arguments when addVideoAfterCurrentInList is called', () => {
-    const videoData = {
-      id_video: '1',
-      artiste: 'Artiste 1',
-      artists: [{ id_artist: '1', label: 'Artiste 1' }],
-      duree: '100',
-      id_playlist: '1',
-      key: 'XXX-XXX',
-      ordre: '1',
-      titre: 'Titre 1',
-      titre_album: 'Titre album 1',
-    } as Video;
+    const videoData = createMockVideo();
 
     component.addVideoAfterCurrentInList(videoData);
 
@@ -663,49 +588,26 @@ describe('PlaylistComponent', () => {
   });
 
   it('should call playerService.addInCurrentList with correct arguments when addVideoInEndCurrentList is called', () => {
-    const videoData = {
-      id_video: '1',
-      artiste: 'Artiste 1',
-      artists: [{ id_artist: '1', label: 'Artiste 1' }],
-      duree: '100',
-      id_playlist: '1',
-      key: 'XXX-XXX',
-      ordre: '1',
-      titre: 'Titre 1',
-      titre_album: 'Titre album 1',
-    } as Video;
+    const videoData = createMockVideo();
 
     component.addVideoInEndCurrentList(videoData);
 
     expect(playerService.addInCurrentList).toHaveBeenCalledWith([videoData], null);
   });
 
-  it('should return correct duration when sumDurationPlaylist is called with playlist', () => {
-    component.playlist.set([
-      { duree: '120' } as Video,
-      { duree: '240' } as Video,
-      { duree: '3600' } as Video,
-    ]);
+  it.each([
+    ['with hours', ['120', '240', '3600'], '1 h 6 min'],
+    ['without hours', ['120', '240'], '6 min'],
+    ['empty playlist', [], ''],
+  ])('should return correct duration from sumDurationPlaylist (%s)', (_label, durees, expected) => {
+    // Arrange
+    component.playlist.set(durees.map(duree => ({ duree }) as Video));
 
+    // Act
     const result = component.sumDurationPlaylist();
 
-    expect(result).toEqual('1 h 6 min');
-  });
-
-  it('should return empty string when sumDurationPlaylist is called without playlist', () => {
-    component.playlist.set([]);
-
-    const result = component.sumDurationPlaylist();
-
-    expect(result).toEqual('');
-  });
-
-  it('should return correct duration when sumDurationPlaylist is called with playlist without hours', () => {
-    component.playlist.set([{ duree: '120' } as Video, { duree: '240' } as Video]);
-
-    const result = component.sumDurationPlaylist();
-
-    expect(result).toEqual('6 min');
+    // Assert
+    expect(result).toEqual(expected);
   });
 
   it('should pause the playlist', () => {
@@ -900,40 +802,10 @@ describe('PlaylistComponent', () => {
     const newDuration = 240;
 
     component.playlist.set([
-      {
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [],
-        duree: initialDuration,
-        id_playlist: '1',
-        key: 'another-key',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Album 1',
-      },
-      {
-        id_video: '2',
-        artiste: 'Artiste 2',
-        artists: [],
-        duree: initialDuration,
-        id_playlist: '1',
-        key: videoKey,
-        ordre: '2',
-        titre: 'Titre 2',
-        titre_album: 'Album 2',
-      },
-      {
-        id_video: '3',
-        artiste: 'Artiste 3',
-        artists: [],
-        duree: initialDuration,
-        id_playlist: '1',
-        key: 'yet-another-key',
-        ordre: '3',
-        titre: 'Titre 3',
-        titre_album: 'Album 3',
-      },
-    ] as Video[]);
+      createMockVideo({ id_video: '1', key: 'another-key', duree: initialDuration }),
+      createMockVideo({ id_video: '2', key: videoKey, duree: initialDuration }),
+      createMockVideo({ id_video: '3', key: 'yet-another-key', duree: initialDuration }),
+    ]);
 
     // Mock queueStore.currentKey() to return videoKey
     vi.spyOn(component.queueStore, 'currentKey').mockReturnValue(videoKey);
@@ -950,29 +822,9 @@ describe('PlaylistComponent', () => {
     const newDuration = 240;
 
     component.playlist.set([
-      {
-        id_video: '1',
-        artiste: 'Artiste 1',
-        artists: [],
-        duree: initialDuration,
-        id_playlist: '1',
-        key: 'key1',
-        ordre: '1',
-        titre: 'Titre 1',
-        titre_album: 'Album 1',
-      },
-      {
-        id_video: '2',
-        artiste: 'Artiste 2',
-        artists: [],
-        duree: initialDuration,
-        id_playlist: '1',
-        key: 'key2',
-        ordre: '2',
-        titre: 'Titre 2',
-        titre_album: 'Album 2',
-      },
-    ] as Video[]);
+      createMockVideo({ id_video: '1', key: 'key1', duree: initialDuration }),
+      createMockVideo({ id_video: '2', key: 'key2', duree: initialDuration }),
+    ]);
 
     // Mock queueStore.currentKey() to return a non-existent key
     vi.spyOn(component.queueStore, 'currentKey').mockReturnValue('non-existent-key');
@@ -1010,19 +862,7 @@ describe('PlaylistComponent', () => {
         },
       } as never);
 
-      component.playlist.set([
-        {
-          id_video: '1',
-          titre: 'Song',
-          artiste: 'Artist',
-          artists: [],
-          duree: '120',
-          key: 'k1',
-          id_playlist: 'p1',
-          ordre: '1',
-          titre_album: '',
-        },
-      ]);
+      component.playlist.set([createMockVideo({ titre: 'Song', artiste: 'Artist', artists: [] })]);
       component.titre.set('My Playlist');
 
       component.openExportModal();
@@ -1034,17 +874,12 @@ describe('PlaylistComponent', () => {
   });
 
   describe('renameTrackForm', () => {
-    const video: Video = {
+    const video: Video = createMockVideo({
       id_video: 'v1',
       titre: 'Old Title',
       artiste: 'Old Artist',
       artists: [],
-      duree: '180',
-      id_playlist: 'p1',
-      key: 'k1',
-      ordre: '1',
-      titre_album: '',
-    };
+    });
 
     beforeEach(() => {
       component.playlist.set([video]);
@@ -1117,17 +952,12 @@ describe('PlaylistComponent', () => {
       const modalService = TestBed.inject(NgbModal);
       const openSpy = vi.spyOn(modalService, 'open');
       const mockTemplate = {} as TemplateRef<unknown>;
-      const video: Video = {
+      const video: Video = createMockVideo({
         id_video: 'v1',
         titre: 'Old Title',
         artiste: 'Old Artist',
         artists: [],
-        duree: '180',
-        id_playlist: 'p1',
-        key: 'k1',
-        ordre: '1',
-        titre_album: '',
-      };
+      });
 
       component.openRenameModal(video, mockTemplate);
 
@@ -1142,17 +972,7 @@ describe('PlaylistComponent', () => {
       const modalService = TestBed.inject(NgbModal);
       const openSpy = vi.spyOn(modalService, 'open');
       const mockTemplate = {} as TemplateRef<unknown>;
-      const video: Video = {
-        id_video: 'v1',
-        titre: 'Title',
-        artiste: 'Artist',
-        artists: [],
-        duree: '180',
-        id_playlist: 'p1',
-        key: 'k1',
-        ordre: '1',
-        titre_album: '',
-      };
+      const video: Video = createMockVideo({ artists: [] });
 
       component.openDeleteModal(video, mockTemplate);
 
@@ -1206,7 +1026,6 @@ describe('PlaylistComponent', () => {
   });
 });
 
-// Tests for server context - to be added in a new describe block
 describe('PlaylistComponent (Server context)', () => {
   let component: PlaylistComponent;
   let fixture: ComponentFixture<PlaylistComponent>;
@@ -1214,93 +1033,10 @@ describe('PlaylistComponent (Server context)', () => {
   let translocoService: TranslocoService;
   let googleAnalyticsService: GoogleAnalyticsService;
   let metaService: Meta;
-  let activatedRouteMock: MockedObject<ActivatedRoute>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let metaServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let initServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let playerServiceMock: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let userLibraryServiceMock: any;
+  let userLibraryServiceMock: MockedObject<UserLibraryService>;
 
   beforeEach(async () => {
-    metaServiceMock = { updateTag: vi.fn() };
-    initServiceMock = { init: vi.fn() };
-    playerServiceMock = {
-      lecture: vi.fn(),
-      removeToPlaylist: vi.fn(),
-      runPlaylist: vi.fn(),
-      addInCurrentList: vi.fn(),
-      addVideoInPlaylist: vi.fn(),
-      removeVideoFromQueue: vi.fn(),
-      addVideoAfterCurrentInList: vi.fn(),
-      onPlayPause: vi.fn(),
-    };
-    userLibraryServiceMock = {
-      toggleFollow: vi.fn().mockReturnValue(of({ success: true, isFollowing: true })),
-      removeVideoFromPlaylist: vi.fn().mockReturnValue(of(true)),
-      reorderPlaylistTracks: vi.fn().mockReturnValue(of(true)),
-      reorderLikes: vi.fn().mockReturnValue(of(true)),
-      isLiked: vi.fn().mockReturnValue(false),
-      addLike: vi.fn().mockReturnValue(of(true)),
-      removeLike: vi.fn().mockReturnValue(of(true)),
-      renameTrack: vi
-        .fn()
-        .mockReturnValue(of({ success: true, titre: 'T', artiste: 'A', artists: [] })),
-    };
-    // BehaviorSubjects are now managed by Signal Stores
-    activatedRouteMock = {
-      snapshot: {
-        paramMap: { get: () => '1' },
-        url: [{ path: 'like' }],
-      },
-      params: new BehaviorSubject({ id: '1' }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
-
-    await TestBed.configureTestingModule({
-      schemas: [NO_ERRORS_SCHEMA],
-      imports: [PlaylistComponent],
-      providers: [
-        getTranslocoTestingProviders(),
-        { provide: PLATFORM_ID, useValue: 'server' },
-        { provide: ActivatedRoute, useValue: activatedRouteMock },
-        {
-          provide: GoogleAnalyticsService,
-          useValue: {
-            pageView: () => {
-              // Mock pageView
-            },
-          },
-        },
-        {
-          provide: InitService,
-          useValue: initServiceMock,
-        },
-        {
-          provide: PlayerService,
-          useValue: playerServiceMock,
-        },
-        {
-          provide: UserLibraryService,
-          useValue: userLibraryServiceMock,
-        },
-        {
-          provide: Meta,
-          useValue: metaServiceMock,
-        },
-        {
-          provide: NgbModal,
-          useValue: { open: vi.fn(), dismissAll: vi.fn() },
-        },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
-    }).compileComponents();
-
-    translocoService = TestBed.inject(TranslocoService);
-    translocoService.setDefaultLang('en');
+    ({ userLibraryServiceMock } = await configurePlaylistTestBed('server', 'like'));
   });
 
   beforeEach(() => {
@@ -1315,8 +1051,7 @@ describe('PlaylistComponent (Server context)', () => {
 
   it('should set meta tags and title correctly when loadLike is called in server context', () => {
     const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const metaServiceSpy = metaService.updateTag as Mock<any>;
+    const metaServiceSpy = metaService.updateTag as Mock;
     const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
 
     expect(TestBed.inject(PLATFORM_ID)).toBe('server');
@@ -1327,29 +1062,7 @@ describe('PlaylistComponent (Server context)', () => {
       translocoService.translate('mes_likes') + ' - Zeffyr Music'
     );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:title',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:description',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:image',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:url',
-      })
-    );
+    expectOgMetaTags(metaServiceSpy);
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
@@ -1360,36 +1073,15 @@ describe('PlaylistComponent (Server context)', () => {
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context', () => {
     const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const metaServiceSpy = metaService.updateTag as Mock<any>;
+    const metaServiceSpy = metaService.updateTag as Mock;
     const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
 
     expect(TestBed.inject(PLATFORM_ID)).toBe('server');
 
     const httpClient = TestBed.inject(HttpClient);
-    const mockPlaylistData = {
-      id_playlist: '1',
-      title: 'title',
-      description: 'description',
-      est_suivi: false,
-      id_top: '1',
-      img_big: 'img_big',
-      liste_video: ['1', '2', '3'],
-      str_index: [1, 2, 3],
-      tab_video: [
-        {
-          id_video: '1',
-          title: 'title',
-          artist: 'artist',
-          id_artist: '1',
-          img: 'img',
-          duration: 'duration',
-        },
-      ],
-      artiste: 'artiste',
-      id_artiste: '1',
-    };
-    vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
+    vi.spyOn(httpClient, 'get').mockReturnValue(
+      of({ ...mockPlaylistData, titre: undefined as unknown as string })
+    );
 
     component.loadPlaylist(environment.URL_SERVER + 'json/playlist/1');
 
@@ -1397,29 +1089,7 @@ describe('PlaylistComponent (Server context)', () => {
       'title - The Must-Haves of the Moment | Zeffyr Music'
     );
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:title',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:description',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:image',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:url',
-      })
-    );
+    expectOgMetaTags(metaServiceSpy);
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
 
@@ -1432,94 +1102,31 @@ describe('PlaylistComponent (Server context)', () => {
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context not id top', () => {
     const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const metaServiceSpy = metaService.updateTag as Mock<any>;
+    const metaServiceSpy = metaService.updateTag as Mock;
     const googleAnalyticsServiceSpy = vi.spyOn(googleAnalyticsService, 'pageView');
 
     expect(TestBed.inject(PLATFORM_ID)).toBe('server');
 
     const httpClient = TestBed.inject(HttpClient);
-    const mockPlaylistData = {
-      id_playlist: '1',
-      title: 'title',
-      description: 'description',
-      est_suivi: false,
-      img_big: 'img_big',
-      liste_video: ['1', '2', '3'],
-      str_index: [1, 2, 3],
-      tab_video: [
-        {
-          id_video: '1',
-          title: 'title',
-          artist: 'artist',
-          id_artist: '1',
-          img: 'img',
-          duration: 'duration',
-        },
-      ],
-      artiste: 'artiste',
-      id_artiste: '1',
-    };
-    vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
+    vi.spyOn(httpClient, 'get').mockReturnValue(
+      of({
+        ...mockPlaylistData,
+        id_top: undefined as unknown as string,
+        titre: undefined as unknown as string,
+      })
+    );
 
     component.loadPlaylist(environment.URL_SERVER + 'json/playlist/1');
 
     expect(titleServiceSpy).toHaveBeenCalledWith('title');
 
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:title',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:description',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:image',
-      })
-    );
-
-    expect(metaServiceSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'og:url',
-      })
-    );
+    expectOgMetaTags(metaServiceSpy);
 
     expect(googleAnalyticsServiceSpy).not.toHaveBeenCalled();
   });
 
   describe('onTrackDrop', () => {
-    const mockVideos: Video[] = [
-      {
-        id_video: 'v1',
-        key: 'k1',
-        titre: 'Song 1',
-        duree: '180',
-        artiste: 'A1',
-        artists: [{ label: 'A1', id_artist: '' }],
-      } as Video,
-      {
-        id_video: 'v2',
-        key: 'k2',
-        titre: 'Song 2',
-        duree: '200',
-        artiste: 'A2',
-        artists: [{ label: 'A2', id_artist: '' }],
-      } as Video,
-      {
-        id_video: 'v3',
-        key: 'k3',
-        titre: 'Song 3',
-        duree: '220',
-        artiste: 'A3',
-        artists: [{ label: 'A3', id_artist: '' }],
-      } as Video,
-    ];
+    const mockVideos: Video[] = createMockVideos(3);
 
     it('should do nothing when previousIndex equals currentIndex', () => {
       component.playlist.set(mockVideos);

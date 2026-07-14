@@ -155,10 +155,6 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should set title and load data on init', () => {
     vi.spyOn(titleService, 'setTitle');
 

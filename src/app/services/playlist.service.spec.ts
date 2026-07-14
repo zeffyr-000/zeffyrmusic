@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { PlaylistService } from './playlist.service';
 import { Playlist } from '../models/playlist.model';
 import { Video } from '../models/video.model';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('PlaylistService', () => {
   describe('Browser context', () => {
@@ -21,8 +21,7 @@ describe('PlaylistService', () => {
             useValue: 'browser',
           },
           PlaylistService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       });
 
@@ -87,9 +86,6 @@ describe('PlaylistService', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (service as any).transferState = transferStateMock;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).isBrowser).toBe(true);
 
       const testUrl = 'test_url';
 
@@ -164,8 +160,7 @@ describe('PlaylistService', () => {
             useValue: 'server',
           },
           PlaylistService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       });
 
@@ -175,10 +170,6 @@ describe('PlaylistService', () => {
 
     afterEach(() => {
       httpMock.verify();
-    });
-
-    it('should create the service', () => {
-      expect(service).toBeTruthy();
     });
 
     it('should store playlist data in transferState when in server context', () => {
@@ -213,9 +204,6 @@ describe('PlaylistService', () => {
       req.flush(mockPlaylistData);
 
       expect(transferStateMock.set).toHaveBeenCalledWith('playlist-' + testUrl, mockPlaylistData);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).isBrowser).toBe(false);
       expect(transferStateMock.remove).not.toHaveBeenCalled();
     });
 

@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { LyricsService } from './lyrics.service';
 import { environment } from '../../environments/environment';
 import { LyricsResponse } from '../models/lyrics.model';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('LyricsService', () => {
   let service: LyricsService;
@@ -11,11 +11,7 @@ describe('LyricsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        LyricsService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [LyricsService, ...provideHttpTesting()],
     });
 
     service = TestBed.inject(LyricsService);
@@ -24,10 +20,6 @@ describe('LyricsService', () => {
 
   afterEach(() => {
     httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
   });
 
   it('should fetch synced lyrics', () => {

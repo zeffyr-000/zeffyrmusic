@@ -76,10 +76,6 @@ describe('QueueAnimationService', () => {
     vi.unstubAllGlobals();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   describe('flyToQueue', () => {
     it('should spawn one ghost and animate it', () => {
       addTarget('sidebar');

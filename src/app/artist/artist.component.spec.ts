@@ -107,10 +107,6 @@ describe('ArtistComponent', () => {
       fixture.detectChanges();
     });
 
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('should set title and track pageview on init', () => {
       component.initLoad();
       expect(titleService.setTitle).toHaveBeenCalledWith(

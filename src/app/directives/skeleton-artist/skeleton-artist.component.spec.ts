@@ -16,10 +16,6 @@ describe('SkeletonArtistComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should default to 6 items', () => {
     expect(component.count()).toBe(6);
     expect(component.items).toHaveLength(6);

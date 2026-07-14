@@ -43,10 +43,6 @@ describe('NotFoundComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should set page title and meta description on init', () => {
     fixture.detectChanges();
     const titleService = TestBed.inject(Title);

@@ -36,10 +36,6 @@ describe('YoutubePlayerService', () => {
       service = TestBed.inject(YoutubePlayerService);
     });
 
-    it('should be created', () => {
-      expect(service).toBeTruthy();
-    });
-
     it('should start with playerReady$ as false', () => {
       expect(service.playerReady$.value).toBe(false);
     });
@@ -197,10 +193,6 @@ describe('YoutubePlayerService', () => {
       }).compileComponents();
 
       service = TestBed.inject(YoutubePlayerService);
-    });
-
-    it('should be created', () => {
-      expect(service).toBeTruthy();
     });
 
     it('should not load API on server', () => {

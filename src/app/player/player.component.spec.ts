@@ -4,22 +4,18 @@ import { PlayerComponent } from './player.component';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { QueueStore, AuthStore } from '../store';
 import { getTranslocoTestingProviders } from '../transloco-testing';
+import { createPlayerServiceMock } from '../testing/mock-factories';
+import type { MockedObject } from 'vitest';
 
 describe('PlayerComponent', () => {
   let component: PlayerComponent;
   let fixture: ComponentFixture<PlayerComponent>;
-  let playerServiceMock: {
-    lecture: ReturnType<typeof vi.fn>;
-    removeToPlaylist: ReturnType<typeof vi.fn>;
-  };
+  let playerServiceMock: MockedObject<PlayerService>;
   let queueStore: InstanceType<typeof QueueStore>;
   let authStore: InstanceType<typeof AuthStore>;
 
   beforeEach(async () => {
-    playerServiceMock = {
-      lecture: vi.fn(),
-      removeToPlaylist: vi.fn(),
-    };
+    playerServiceMock = createPlayerServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [PlayerComponent],
@@ -44,10 +40,6 @@ describe('PlayerComponent', () => {
     fixture = TestBed.createComponent(PlayerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   describe('Store integration', () => {

@@ -68,10 +68,6 @@ describe('SearchBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should have a searchTypeahead function', () => {
     expect(component.searchTypeahead).toBeDefined();
     expect(typeof component.searchTypeahead).toBe('function');

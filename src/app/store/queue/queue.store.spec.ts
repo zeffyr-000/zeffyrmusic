@@ -49,19 +49,10 @@ describe('QueueStore', () => {
   });
 
   describe('Initial State', () => {
-    it('should have empty items initially', () => {
+    it('should start with an empty, unshuffled queue at index 0', () => {
       expect(store.items()).toEqual([]);
-    });
-
-    it('should have currentIndex at 0', () => {
       expect(store.currentIndex()).toBe(0);
-    });
-
-    it('should not be shuffled initially', () => {
       expect(store.isShuffled()).toBe(false);
-    });
-
-    it('should have no current video initially', () => {
       expect(store.currentVideo()).toBeNull();
     });
   });

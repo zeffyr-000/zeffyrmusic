@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { UserLibraryService } from './user-library.service';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { environment } from 'src/environments/environment';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('UserLibraryService', () => {
   let service: UserLibraryService;
@@ -11,11 +11,7 @@ describe('UserLibraryService', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [
-        UserLibraryService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [UserLibraryService, ...provideHttpTesting()],
     }).compileComponents();
 
     service = TestBed.inject(UserLibraryService);
@@ -24,10 +20,6 @@ describe('UserLibraryService', () => {
 
   afterEach(() => {
     httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
   });
 
   describe('Playlist operations', () => {

@@ -1,9 +1,8 @@
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { InitService, PingResponse } from './init.service';
 import { HomeAlbum } from '../models/album.model';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { makeStateKey, PLATFORM_ID, TransferState } from '@angular/core';
 import { AuthStore } from '../store';
@@ -12,6 +11,7 @@ import { QueueStore } from '../store/queue/queue.store';
 import { UiStore } from '../store/ui/ui.store';
 import { provideRouter, Router } from '@angular/router';
 import { routes } from '../app.routes';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('InitService', () => {
   let service: InitService;
@@ -55,8 +55,7 @@ describe('InitService', () => {
         providers: [
           getTranslocoTestingProviders(),
           InitService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
           provideRouter(routes),
           { provide: PLATFORM_ID, useValue: 'browser' },
         ],
@@ -72,10 +71,6 @@ describe('InitService', () => {
 
     afterEach(() => {
       httpMock.verify();
-    });
-
-    it('should be created', () => {
-      expect(service).toBeTruthy();
     });
 
     describe('getPing', () => {
@@ -369,8 +364,7 @@ describe('InitService', () => {
         providers: [
           getTranslocoTestingProviders(),
           InitService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
           { provide: PLATFORM_ID, useValue: 'server' },
         ],
       });
@@ -382,10 +376,6 @@ describe('InitService', () => {
 
     afterEach(() => {
       httpMock.verify();
-    });
-
-    it('should be created', () => {
-      expect(service).toBeTruthy();
     });
 
     describe('getHomeInit', () => {

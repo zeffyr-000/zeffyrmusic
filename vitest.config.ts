@@ -36,7 +36,15 @@ export default defineConfig({
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: './coverage',
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'src/setup-vitest.ts', 'src/test.ts'],
+      exclude: ['src/**/*.spec.ts', 'src/setup-vitest.ts', 'src/test.ts', 'src/app/testing/**'],
+      // Documented target is >= 80%; branches were at 72.78% when thresholds were
+      // introduced — raising that floor to 80 is tracked as follow-up work.
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        statements: 80,
+        branches: 72,
+      },
     },
     environmentOptions: {
       jsdom: {
