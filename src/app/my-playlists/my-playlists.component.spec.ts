@@ -13,7 +13,8 @@ import { CreatePlaylistResponse } from '../models/user.model';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { UiStore } from '../store/ui/ui.store';
 import { PlaylistService } from '../services/playlist.service';
-import type { MockNgbModal, MockNgbActiveModal } from '../models/test-mocks.model';
+import type { MockedObject } from 'vitest';
+import { createNgbActiveModalMock, createNgbModalMock } from '../testing/mock-factories';
 
 describe('MyPlaylistsComponent', () => {
   let component: MyPlaylistsComponent;
@@ -29,8 +30,8 @@ describe('MyPlaylistsComponent', () => {
     deletePlaylist: ReturnType<typeof vi.fn>;
     updatePlaylistTitle: ReturnType<typeof vi.fn>;
   };
-  let modalServiceMock: MockNgbModal;
-  let activeModalMock: MockNgbActiveModal;
+  let modalServiceMock: MockedObject<NgbModal>;
+  let activeModalMock: MockedObject<NgbActiveModal>;
   let userDataStore: InstanceType<typeof UserDataStore>;
   let uiStore: InstanceType<typeof UiStore>;
   let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
@@ -47,8 +48,8 @@ describe('MyPlaylistsComponent', () => {
       createPlaylist: vi.fn(),
       editTitlePlaylist: vi.fn(),
     };
-    modalServiceMock = { open: vi.fn(), dismissAll: vi.fn() };
-    activeModalMock = { close: vi.fn(), dismiss: vi.fn() };
+    modalServiceMock = createNgbModalMock();
+    activeModalMock = createNgbActiveModalMock();
     googleAnalyticsServiceMock = { pageView: vi.fn() };
     playlistServiceMock = { getPlaylist: vi.fn() };
 
@@ -79,10 +80,6 @@ describe('MyPlaylistsComponent', () => {
     fixture = TestBed.createComponent(MyPlaylistsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should set the title on init', () => {
@@ -268,7 +265,7 @@ describe('MyPlaylistsComponent', () => {
   it('should call deletePlaylist and dismiss modal on success', () => {
     component.currentIdPlaylistEdit.set('1');
 
-    component.onDeletePlaylist(activeModalMock as unknown as NgbActiveModal);
+    component.onDeletePlaylist(activeModalMock as NgbActiveModal);
 
     expect(userLibraryServiceMock.deletePlaylist).toHaveBeenCalledWith('1');
     expect(activeModalMock.dismiss).toHaveBeenCalled();
@@ -281,7 +278,7 @@ describe('MyPlaylistsComponent', () => {
     );
     const showErrorSpy = vi.spyOn(uiStore, 'showError');
 
-    component.onDeletePlaylist(activeModalMock as unknown as NgbActiveModal);
+    component.onDeletePlaylist(activeModalMock as NgbActiveModal);
 
     expect(showErrorSpy).toHaveBeenCalled();
   });

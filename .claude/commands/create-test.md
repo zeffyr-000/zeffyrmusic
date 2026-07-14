@@ -9,7 +9,7 @@ Create a unit test file following project conventions with Vitest.
 ## Requirements
 
 - Use Vitest (not Jest or Jasmine)
-- Use typed mocks from `src/app/models/test-mocks.model.ts`
+- Use typed mock factories from `src/app/testing/mock-factories.ts` (and `provideHttpTesting()` from `src/app/testing/http-testing.ts` for HTTP services)
 - Follow AAA pattern (Arrange, Act, Assert)
 - Access signal values with function call syntax
 

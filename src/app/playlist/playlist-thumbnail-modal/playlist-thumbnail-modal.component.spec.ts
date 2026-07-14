@@ -6,31 +6,27 @@ import { PlaylistThumbnailModalComponent } from './playlist-thumbnail-modal.comp
 import { PlaylistThumbnailService } from 'src/app/services/playlist-thumbnail.service';
 import { UiStore } from 'src/app/store';
 import { getTranslocoTestingProviders } from 'src/app/transloco-testing';
-import type {
-  MockNgbActiveModal,
-  MockPlaylistThumbnailService,
-} from 'src/app/models/test-mocks.model';
+import type { MockedObject } from 'vitest';
+import {
+  createNgbActiveModalMock,
+  createPlaylistThumbnailServiceMock,
+} from 'src/app/testing/mock-factories';
 
 describe('PlaylistThumbnailModalComponent', () => {
   let component: PlaylistThumbnailModalComponent;
   let fixture: ComponentFixture<PlaylistThumbnailModalComponent>;
-  let activeModalMock: MockNgbActiveModal;
+  let activeModalMock: MockedObject<NgbActiveModal>;
   let uiStoreMock: { showError: ReturnType<typeof vi.fn> };
-  let thumbnailServiceMock: MockPlaylistThumbnailService;
+  let thumbnailServiceMock: MockedObject<PlaylistThumbnailService>;
 
   beforeEach(async () => {
-    activeModalMock = { close: vi.fn(), dismiss: vi.fn() };
+    activeModalMock = createNgbActiveModalMock();
     uiStoreMock = { showError: vi.fn() };
-    thumbnailServiceMock = {
-      uploadThumbnail: vi
-        .fn()
-        .mockReturnValue(
-          of({ img_big: 'https://cdn.example.com/custom.jpg' })
-        ) as MockPlaylistThumbnailService['uploadThumbnail'],
-      resetThumbnail: vi
-        .fn()
-        .mockReturnValue(of({ img_big: '' })) as MockPlaylistThumbnailService['resetThumbnail'],
-    };
+    thumbnailServiceMock = createPlaylistThumbnailServiceMock();
+    thumbnailServiceMock.uploadThumbnail.mockReturnValue(
+      of({ img_big: 'https://cdn.example.com/custom.jpg' })
+    );
+    thumbnailServiceMock.resetThumbnail.mockReturnValue(of({ img_big: '' }));
 
     await TestBed.configureTestingModule({
       imports: [PlaylistThumbnailModalComponent],

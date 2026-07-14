@@ -21,7 +21,7 @@ import { environment } from 'src/environments/environment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockTestComponent } from '../mock-test.component';
 import { UiStore } from '../store/ui/ui.store';
-import type { MockInitService } from '../models/test-mocks.model';
+import { createInitServiceMock } from '../testing/mock-factories';
 
 import { SearchService } from '../services/search.service';
 import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
@@ -49,7 +49,7 @@ describe('HeaderComponent', () => {
   let userServiceMock: MockedObject<UserService>;
   let modalServiceSpyObj: MockedObject<NgbModal>;
   let googleAnalyticsServiceSpyObj: MockedObject<GoogleAnalyticsService>;
-  let initServiceMock: Partial<MockInitService>;
+  let initServiceMock: MockedObject<InitService>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let userLibraryServiceMock: any;
   let searchServiceMock: Partial<SearchService>;
@@ -90,8 +90,7 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     // Create service mocks
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initServiceMock = { onMessageUnlog: vi.fn() } as any;
+    initServiceMock = createInitServiceMock();
     userLibraryServiceMock = {
       initializeFromLogin: vi.fn(),
       addVideoToPlaylist: vi.fn().mockReturnValue(of(true)),
@@ -178,10 +177,6 @@ describe('HeaderComponent', () => {
     component.isSuccess.set(false);
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should update values when uiStore.addVideoData changes', () => {
     // Prepare test data
     const data = {
@@ -217,54 +212,50 @@ describe('HeaderComponent', () => {
     expect(modalService.open).toHaveBeenCalledWith(content, { size: 'lg' });
   });
 
-  it('should call userLibraryService.addVideoToPlaylist and modal.dismiss when onAddVideo is called', () => {
-    const idPlaylist = '123';
-    const modal = { dismiss: vi.fn(), update: vi.fn(), close: vi.fn() };
-    component.addKey = 'key';
-    component.addTitle = 'title';
-    component.addArtist = 'artist';
-    component.addDuration = 100;
+  describe('onAddVideo', () => {
+    const createModalMock = () => ({ dismiss: vi.fn(), update: vi.fn(), close: vi.fn() });
+    let modal: ReturnType<typeof createModalMock>;
 
-    component.onAddVideo(idPlaylist, modal);
+    beforeEach(() => {
+      modal = createModalMock();
+      component.addKey = 'key';
+      component.addTitle = 'title';
+      component.addArtist = 'artist';
+      component.addDuration = 100;
+    });
 
-    expect(userLibraryService.addVideoToPlaylist).toHaveBeenCalledWith(
-      idPlaylist,
-      'key',
-      'title',
-      'artist',
-      100
-    );
-    expect(modal.dismiss).toHaveBeenCalled();
-  });
+    it('should call userLibraryService.addVideoToPlaylist and modal.dismiss on success', () => {
+      component.onAddVideo('123', modal);
 
-  it('should set addVideoError when addVideoToPlaylist returns false', () => {
-    userLibraryServiceMock.addVideoToPlaylist = vi.fn().mockReturnValue(of(false));
-    const modal = { dismiss: vi.fn(), update: vi.fn(), close: vi.fn() };
-    component.addKey = 'key';
-    component.addTitle = 'title';
-    component.addArtist = 'artist';
-    component.addDuration = 100;
+      expect(userLibraryService.addVideoToPlaylist).toHaveBeenCalledWith(
+        '123',
+        'key',
+        'title',
+        'artist',
+        100
+      );
+      expect(modal.dismiss).toHaveBeenCalled();
+    });
 
-    component.onAddVideo('123', modal);
+    it('should set addVideoError when addVideoToPlaylist returns false', () => {
+      userLibraryServiceMock.addVideoToPlaylist = vi.fn().mockReturnValue(of(false));
 
-    expect(component.addVideoError()).toBeTruthy();
-    expect(modal.dismiss).not.toHaveBeenCalled();
-  });
+      component.onAddVideo('123', modal);
 
-  it('should set addVideoError when addVideoToPlaylist errors', () => {
-    userLibraryServiceMock.addVideoToPlaylist = vi
-      .fn()
-      .mockReturnValue(throwError(() => new Error('fail')));
-    const modal = { dismiss: vi.fn(), update: vi.fn(), close: vi.fn() };
-    component.addKey = 'key';
-    component.addTitle = 'title';
-    component.addArtist = 'artist';
-    component.addDuration = 100;
+      expect(component.addVideoError()).toBeTruthy();
+      expect(modal.dismiss).not.toHaveBeenCalled();
+    });
 
-    component.onAddVideo('123', modal);
+    it('should set addVideoError when addVideoToPlaylist errors', () => {
+      userLibraryServiceMock.addVideoToPlaylist = vi
+        .fn()
+        .mockReturnValue(throwError(() => new Error('fail')));
 
-    expect(component.addVideoError()).toBeTruthy();
-    expect(modal.dismiss).not.toHaveBeenCalled();
+      component.onAddVideo('123', modal);
+
+      expect(component.addVideoError()).toBeTruthy();
+      expect(modal.dismiss).not.toHaveBeenCalled();
+    });
   });
 
   describe('onSubmitRegister', () => {
@@ -439,7 +430,11 @@ describe('HeaderComponent', () => {
     });
   });
 
-  it('should initialize and render Google Sign-In button', () => {
+  it.each([
+    ['renderGoogleSignInButton', 'google-signin-button-header'],
+    ['renderGoogleRegisterButton', 'google-register-button-header'],
+  ] as const)('should initialize and render the Google button via %s', (method, elementId) => {
+    // Arrange
     const google = {
       accounts: {
         id: {
@@ -452,42 +447,13 @@ describe('HeaderComponent', () => {
     (window as any).google = google;
 
     const mockElement = document.createElement('div');
-    mockElement.id = 'google-signin-button-header';
+    mockElement.id = elementId;
     document.body.appendChild(mockElement);
 
-    component.renderGoogleSignInButton();
+    // Act
+    component[method]();
 
-    expect(google.accounts.id.initialize).toHaveBeenCalledWith({
-      client_id: environment.GOOGLE_CLIENT_ID,
-      callback: expect.any(Function),
-    });
-    expect(google.accounts.id.renderButton).toHaveBeenCalledWith(mockElement, {
-      type: 'standard',
-      theme: 'outline',
-      size: 'large',
-    });
-
-    document.body.removeChild(mockElement);
-  });
-
-  it('should initialize and render Google Register button', () => {
-    const google = {
-      accounts: {
-        id: {
-          initialize: vi.fn(),
-          renderButton: vi.fn(),
-        },
-      },
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).google = google;
-
-    const mockElement = document.createElement('div');
-    mockElement.id = 'google-register-button-header';
-    document.body.appendChild(mockElement);
-
-    component.renderGoogleRegisterButton();
-
+    // Assert
     expect(google.accounts.id.initialize).toHaveBeenCalledWith({
       client_id: environment.GOOGLE_CLIENT_ID,
       callback: expect.any(Function),

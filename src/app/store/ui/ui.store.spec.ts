@@ -20,19 +20,10 @@ describe('UiStore', () => {
   });
 
   describe('Initial State', () => {
-    it('should have player collapsed initially', () => {
+    it('should start collapsed, not mobile, without modal or notifications', () => {
       expect(store.isPlayerExpanded()).toBe(false);
-    });
-
-    it('should not be mobile initially', () => {
       expect(store.isMobile()).toBe(false);
-    });
-
-    it('should have no active modal initially', () => {
       expect(store.activeModal()).toBeNull();
-    });
-
-    it('should have no notifications initially', () => {
       expect(store.notifications()).toEqual([]);
     });
   });

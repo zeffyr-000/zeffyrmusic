@@ -16,10 +16,6 @@ describe('SkeletonPlaylistComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should default to 8 tracks', () => {
     expect(component.count()).toBe(8);
     expect(component.items).toHaveLength(8);

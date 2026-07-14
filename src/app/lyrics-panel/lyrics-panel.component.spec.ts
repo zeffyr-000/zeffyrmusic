@@ -1,12 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {
-  provideHttpClient,
-  withInterceptorsFromDi,
-  HttpErrorResponse,
-  withXhr,
-} from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError, Subject, TimeoutError } from 'rxjs';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { LyricsPanelComponent } from './lyrics-panel.component';
@@ -14,6 +8,7 @@ import { LyricsService } from '../services/lyrics.service';
 import { LyricsResponse } from '../models/lyrics.model';
 import { QueueStore, PlayerStore, UiStore } from '../store';
 import { Video } from '../models/video.model';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('LyricsPanelComponent', () => {
   let component: LyricsPanelComponent;
@@ -65,8 +60,7 @@ describe('LyricsPanelComponent', () => {
       imports: [LyricsPanelComponent],
       providers: [
         getTranslocoTestingProviders(),
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
+        ...provideHttpTesting(),
         { provide: LyricsService, useValue: lyricsServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -80,11 +74,6 @@ describe('LyricsPanelComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LyricsPanelComponent);
     component = fixture.componentInstance;
-  });
-
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
   });
 
   it('should load lyrics when a video is in the queue', () => {
@@ -133,69 +122,42 @@ describe('LyricsPanelComponent', () => {
     expect(component.activeLineIndex()).toBe(-1);
   });
 
-  it('should set error on lyrics_not_found (success: false)', () => {
-    const notAvailableResponse: LyricsResponse = {
-      success: false,
-      error: 'lyrics_not_found',
-    };
+  it.each([
+    ['lyrics_not_found', 'lyrics_none'],
+    ['no_metadata', 'lyrics_none'],
+  ] as const)('should set error on %s (success: false)', (apiError, expectedError) => {
+    // Arrange
+    const notAvailableResponse: LyricsResponse = { success: false, error: apiError };
     lyricsServiceMock.getLyrics.mockReturnValue(of(notAvailableResponse));
+
+    // Act
     queueStore.setQueue([mockVideo], '1');
     fixture.detectChanges();
 
-    expect(component.error()).toBe('lyrics_none');
+    // Assert
+    expect(component.error()).toBe(expectedError);
     expect(component.isLoading()).toBe(false);
   });
 
-  it('should set error on no_metadata (success: false)', () => {
-    const notAvailableResponse: LyricsResponse = {
-      success: false,
-      error: 'no_metadata',
-    };
-    lyricsServiceMock.getLyrics.mockReturnValue(of(notAvailableResponse));
-    queueStore.setQueue([mockVideo], '1');
-    fixture.detectChanges();
-
-    expect(component.error()).toBe('lyrics_none');
-    expect(component.isLoading()).toBe(false);
-  });
-
-  it('should set error on lrclib_unavailable', () => {
+  it.each([
+    ['lrclib_unavailable', 502, 'Bad Gateway', 'lyrics_service_unavailable'],
+    ['forbidden', 403, 'Forbidden', 'lyrics_forbidden'],
+    ['unknown_error', 500, 'Internal Server Error', 'lyrics_error'],
+  ])('should set error on HTTP failure %s (%i)', (apiError, status, statusText, expectedError) => {
+    // Arrange
     const errorResponse = new HttpErrorResponse({
-      error: { error: 'lrclib_unavailable' },
-      status: 502,
-      statusText: 'Bad Gateway',
+      error: { error: apiError },
+      status,
+      statusText,
     });
     lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => errorResponse));
+
+    // Act
     queueStore.setQueue([mockVideo], '1');
     fixture.detectChanges();
 
-    expect(component.error()).toBe('lyrics_service_unavailable');
-  });
-
-  it('should set error on forbidden', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: { error: 'forbidden' },
-      status: 403,
-      statusText: 'Forbidden',
-    });
-    lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => errorResponse));
-    queueStore.setQueue([mockVideo], '1');
-    fixture.detectChanges();
-
-    expect(component.error()).toBe('lyrics_forbidden');
-  });
-
-  it('should set generic error on unknown error', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: { error: 'unknown_error' },
-      status: 500,
-      statusText: 'Internal Server Error',
-    });
-    lyricsServiceMock.getLyrics.mockReturnValue(throwError(() => errorResponse));
-    queueStore.setQueue([mockVideo], '1');
-    fixture.detectChanges();
-
-    expect(component.error()).toBe('lyrics_error');
+    // Assert
+    expect(component.error()).toBe(expectedError);
   });
 
   describe('long-wait feedback', () => {

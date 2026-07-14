@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { ArtistAdminService } from './artist-admin.service';
 import { environment } from '../../environments/environment';
 import { ArtistData } from '../models/artist.model';
 import { MergeArtistsPayload, MergeArtistsResponse } from '../models/artist-admin.model';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('ArtistAdminService', () => {
   let service: ArtistAdminService;
@@ -19,11 +19,7 @@ describe('ArtistAdminService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        ArtistAdminService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [ArtistAdminService, ...provideHttpTesting()],
     });
 
     service = TestBed.inject(ArtistAdminService);
@@ -32,10 +28,6 @@ describe('ArtistAdminService', () => {
 
   afterEach(() => {
     httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
   });
 
   it('should fetch artist details', () => {

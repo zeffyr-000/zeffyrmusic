@@ -35,10 +35,6 @@ describe('HelpPageComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should track pageView on init', () => {
     expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
       '/help/listen',

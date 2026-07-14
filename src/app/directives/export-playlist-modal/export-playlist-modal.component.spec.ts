@@ -63,10 +63,6 @@ describe('ExportPlaylistModalComponent', () => {
     component.playlistTitle.set('My Playlist');
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should copy text to clipboard and show success toast', async () => {
     const writeTextMock = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {

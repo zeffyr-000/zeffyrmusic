@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { environment } from '../../environments/environment';
 import { DashboardApiResponse } from '../models/admin-dashboard.model';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('AdminDashboardService', () => {
   let service: AdminDashboardService;
@@ -36,11 +36,7 @@ describe('AdminDashboardService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        AdminDashboardService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [AdminDashboardService, ...provideHttpTesting()],
     });
 
     service = TestBed.inject(AdminDashboardService);

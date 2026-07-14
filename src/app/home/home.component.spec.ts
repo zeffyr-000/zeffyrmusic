@@ -1,4 +1,3 @@
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
@@ -8,18 +7,14 @@ import { of, throwError } from 'rxjs';
 import { HomeAlbum } from '../models/album.model';
 import { HomeComponent } from './home.component';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID, StateKey, makeStateKey } from '@angular/core';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { getTranslocoTestingProviders } from '../transloco-testing';
+import { provideHttpTesting } from '../testing/http-testing';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const HOME_DATA_KEY = makeStateKey<any>('randomTop');
 
 describe('HomeComponent', () => {
   function runCommonTests() {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
-
     it('should set isLoading to false after http request', () => {
       vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(
         of({ top: [], top_albums: [] })
@@ -153,8 +148,7 @@ describe('HomeComponent', () => {
           { provide: GoogleAnalyticsService, useValue: googleAnalyticsService },
           { provide: ActivatedRoute, useValue: { snapshot: { url: [] } } },
           { provide: PLATFORM_ID, useValue: 'browser' },
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       }).compileComponents();
 
@@ -251,8 +245,7 @@ describe('HomeComponent', () => {
           { provide: GoogleAnalyticsService, useValue: googleAnalyticsService },
           { provide: ActivatedRoute, useValue: { snapshot: { url: [] } } },
           { provide: PLATFORM_ID, useValue: 'server' },
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       }).compileComponents();
 

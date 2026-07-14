@@ -56,10 +56,6 @@ describe('ResetPasswordComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('ngOnInit', () => {
     it('should initialize form with empty fields', () => {
       expect(component.resetForm).toBeDefined();

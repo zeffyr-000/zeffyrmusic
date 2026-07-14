@@ -71,23 +71,11 @@ describe('UserDataStore', () => {
   });
 
   describe('Initial State', () => {
-    it('should have empty playlists initially', () => {
+    it('should start with empty data, not loading and no error', () => {
       expect(store.playlists()).toEqual([]);
-    });
-
-    it('should have empty follows initially', () => {
       expect(store.follows()).toEqual([]);
-    });
-
-    it('should have empty liked videos initially', () => {
       expect(store.likedVideos()).toEqual([]);
-    });
-
-    it('should not be loading initially', () => {
       expect(store.loading()).toBe(false);
-    });
-
-    it('should have no error initially', () => {
       expect(store.error()).toBeNull();
     });
   });

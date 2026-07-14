@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { ArtistService } from './artist.service';
 import { environment } from '../../environments/environment';
 import { ArtistData } from '../models/artist.model';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { makeStateKey, PLATFORM_ID, StateKey, TransferState } from '@angular/core';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('ArtistService', () => {
   let service: ArtistService;
@@ -23,8 +23,7 @@ describe('ArtistService', () => {
         imports: [],
         providers: [
           ArtistService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
           { provide: PLATFORM_ID, useValue: 'browser' },
         ],
       });
@@ -49,8 +48,7 @@ describe('ArtistService', () => {
 
     it('should handle errors in browser', () => {
       service.getArtist('invalid').subscribe({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        next: () => (globalThis as any).fail('should have failed with a 404'),
+        next: () => expect.unreachable('should have failed with a 404'),
         error: error => {
           expect(error.status).toBe(404);
         },
@@ -101,8 +99,7 @@ describe('ArtistService', () => {
         imports: [],
         providers: [
           ArtistService,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
           { provide: PLATFORM_ID, useValue: 'server' },
         ],
       });

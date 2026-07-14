@@ -31,10 +31,6 @@ describe('LoggingService', () => {
     service = TestBed.inject(LoggingService);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   describe('captureError', () => {
     it('should call Sentry.captureException', () => {
       const error = new Error('test error');

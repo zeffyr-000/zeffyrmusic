@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { SearchService } from './search.service';
 import { environment } from '../../environments/environment';
 import {
@@ -8,8 +8,8 @@ import {
   SearchResults2,
   SearchResults3,
 } from '../models/search.model';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('SearchService', () => {
   describe('Browser context', () => {
@@ -22,8 +22,7 @@ describe('SearchService', () => {
         providers: [
           SearchService,
           { provide: PLATFORM_ID, useValue: 'browser' },
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       });
 
@@ -234,8 +233,7 @@ describe('SearchService', () => {
         providers: [
           SearchService,
           { provide: PLATFORM_ID, useValue: 'server' },
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
+          ...provideHttpTesting(),
         ],
       });
 

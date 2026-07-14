@@ -1,21 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
+import type { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { environment } from '../../environments/environment';
-import {
-  CreatePlaylistResponse,
-  ICreatePlaylist,
-  IEditMail,
-  IEditPass,
-  IEditTitlePlaylist,
-  ILogin,
-  IPass,
-  ISendPass,
-  LoginResponse,
-  SendPassResponse,
-  UserReponse,
-} from '../models/user.model';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { provideHttpTesting } from '../testing/http-testing';
+import { CreatePlaylistResponse, LoginResponse, UserReponse } from '../models/user.model';
 
 describe('UserService', () => {
   let service: UserService;
@@ -24,11 +13,7 @@ describe('UserService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [
-        UserService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [UserService, ...provideHttpTesting()],
     });
 
     service = TestBed.inject(UserService);
@@ -39,274 +24,154 @@ describe('UserService', () => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+  // Every UserService method is a thin HTTP call: one table entry per endpoint.
+  interface EndpointCase {
+    name: string;
+    path: string;
+    method: 'GET' | 'POST';
+    /** When set, the request body must equal this value */
+    body?: unknown;
+    response: UserReponse | LoginResponse | CreatePlaylistResponse;
+    act: () => Observable<unknown>;
+  }
 
-  it('should perform a POST request for registration', () => {
-    const mockData = {
-      pseudo: 'test_pseudo',
-      mail: 'test_mail',
-      password: 'test_password',
-    };
+  const okResponse: UserReponse = { success: true, error: '' };
 
-    service.register(mockData).subscribe();
+  const endpointCases: EndpointCase[] = [
+    {
+      name: 'register',
+      path: 'inscription',
+      method: 'POST',
+      response: okResponse,
+      act: () =>
+        service.register({ pseudo: 'test_pseudo', mail: 'test_mail', password: 'test_password' }),
+    },
+    {
+      name: 'login',
+      path: 'login',
+      method: 'POST',
+      response: {
+        success: true,
+        pseudo: 'test_pseudo',
+        id_perso: 'test_id_perso',
+        mail: 'test_mail',
+        is_admin: false,
+        dark_mode_enabled: false,
+        language: 'en',
+        liste_playlist: [],
+        liste_suivi: [],
+        like_video: [],
+        error: '',
+      } as LoginResponse,
+      act: () => service.login({ pseudo: 'test_pseudo', password: 'test_password' }, ''),
+    },
+    {
+      name: 'logout',
+      path: 'deconnexion',
+      method: 'GET',
+      response: okResponse,
+      act: () => service.logout(),
+    },
+    {
+      name: 'resetPass',
+      path: 'pass',
+      method: 'POST',
+      response: okResponse,
+      act: () => service.resetPass({ mail: 'test_mail' }),
+    },
+    {
+      name: 'sendResetPass',
+      path: 'send_reset_pass',
+      method: 'POST',
+      body: { id_perso: '12345', key: 'abcde', password: 'test_password' },
+      response: okResponse,
+      act: () =>
+        service.sendResetPass({ id_perso: '12345', key: 'abcde', password: 'test_password' }),
+    },
+    {
+      name: 'editPass',
+      path: 'options/passe',
+      method: 'POST',
+      response: okResponse,
+      act: () =>
+        service.editPass({ passwordold: 'test_passwordold', passwordnew: 'test_passwordnew' }),
+    },
+    {
+      name: 'editMail',
+      path: 'options/mail',
+      method: 'POST',
+      response: okResponse,
+      act: () => service.editMail({ mail: 'test_mail' }),
+    },
+    {
+      name: 'editDarkMode',
+      path: 'options/dark_mode',
+      method: 'POST',
+      body: { dark_mode_enabled: true },
+      response: okResponse,
+      act: () => service.editDarkMode({ dark_mode_enabled: true }),
+    },
+    {
+      name: 'editLanguage',
+      path: 'options/language',
+      method: 'POST',
+      body: { language: 'en' },
+      response: okResponse,
+      act: () => service.editLanguage({ language: 'en' }),
+    },
+    {
+      name: 'deleteAccount',
+      path: 'options/delete',
+      method: 'POST',
+      body: { password: 'test_password' },
+      response: okResponse,
+      act: () => service.deleteAccount({ password: 'test_password' }),
+    },
+    {
+      name: 'createPlaylist',
+      path: 'playlist-creer',
+      method: 'POST',
+      response: {
+        success: true,
+        id_playlist: 'test_id_playlist',
+        titre: 'test_titre',
+        error: '',
+      } as CreatePlaylistResponse,
+      act: () => service.createPlaylist({ titre: 'test_titre' }),
+    },
+    {
+      name: 'editTitlePlaylist',
+      path: 'edit_title',
+      method: 'POST',
+      response: okResponse,
+      act: () =>
+        service.editTitlePlaylist({ id_playlist: 'test_id_playlist', titre: 'test_titre' }),
+    },
+    {
+      name: 'associateGoogleAccount',
+      path: 'options/associate_google_account',
+      method: 'POST',
+      body: { id_token: 'test_id_token' },
+      response: okResponse,
+      act: () => service.associateGoogleAccount({ id_token: 'test_id_token' }),
+    },
+  ];
 
-    const req = httpMock.expectOne(environment.URL_SERVER + 'inscription');
-    expect(req.request.method).toBe('POST');
-    req.flush({});
-  });
-
-  it('should perform a POST request for login', () => {
-    const mockLoginData: ILogin = {
-      pseudo: 'test_pseudo',
-      password: 'test_password',
-    };
-
-    const mockLoginResponse: LoginResponse = {
-      success: true,
-      pseudo: 'test_pseudo',
-      id_perso: 'test_id_perso',
-      mail: 'test_mail',
-      is_admin: false,
-      dark_mode_enabled: false,
-      language: 'en',
-      liste_playlist: [],
-      liste_suivi: [],
-      like_video: [],
-      error: '',
-    };
-
-    service.login(mockLoginData, '').subscribe(data => {
-      expect(data).toEqual(mockLoginResponse);
+  it.each(endpointCases)('$name should $method to "$path" and forward the response', tc => {
+    // Arrange / Act
+    let received: unknown;
+    tc.act().subscribe(data => {
+      received = data;
     });
 
-    const req = httpMock.expectOne(environment.URL_SERVER + 'login');
+    // Assert
+    const req = httpMock.expectOne(environment.URL_SERVER + tc.path);
+    expect(req.request.method).toBe(tc.method);
+    if (tc.body !== undefined) {
+      expect(req.request.body).toEqual(tc.body);
+    }
 
-    expect(req.request.method).toBe('POST');
-
-    req.flush(mockLoginResponse);
-  });
-
-  it('should perform a GET request for logout', () => {
-    const mockLogoutResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-
-    service.logout().subscribe(data => {
-      expect(data).toEqual(mockLogoutResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'deconnexion');
-
-    expect(req.request.method).toBe('GET');
-
-    req.flush(mockLogoutResponse);
-  });
-
-  it('should perform a POST request for reset password', () => {
-    const mockResetPassData: IPass = {
-      mail: 'test_mail',
-    };
-
-    const mockResetPassResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-
-    service.resetPass(mockResetPassData).subscribe(data => {
-      expect(data).toEqual(mockResetPassResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'pass');
-
-    expect(req.request.method).toBe('POST');
-
-    req.flush(mockResetPassResponse);
-  });
-
-  it('should perform a POST request for sending reset password link', () => {
-    const mockSendPassData: ISendPass = {
-      id_perso: '12345',
-      key: 'abcde',
-      password: 'test_password',
-    };
-
-    const mockSendPassResponse: SendPassResponse = {
-      success: true,
-      error: '',
-    };
-
-    service.sendResetPass(mockSendPassData).subscribe(data => {
-      expect(data).toEqual(mockSendPassResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'send_reset_pass');
-
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(mockSendPassData);
-
-    req.flush(mockSendPassResponse);
-  });
-
-  it('should perform a POST request for edit password', () => {
-    const mockEditPassData: IEditPass = {
-      passwordold: 'test_passwordold',
-      passwordnew: 'test_passwordnew',
-    };
-
-    const mockEditPassResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-
-    service.editPass(mockEditPassData).subscribe(data => {
-      expect(data).toEqual(mockEditPassResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'options/passe');
-
-    expect(req.request.method).toBe('POST');
-
-    req.flush(mockEditPassResponse);
-  });
-
-  it('should perform a POST request for edit mail', () => {
-    const mockEditMailData: IEditMail = {
-      mail: 'test_mail',
-    };
-
-    const mockEditMailResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-
-    service.editMail(mockEditMailData).subscribe(data => {
-      expect(data).toEqual(mockEditMailResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'options/mail');
-
-    expect(req.request.method).toBe('POST');
-
-    req.flush(mockEditMailResponse);
-  });
-
-  it('should send a POST request to edit dark mode', () => {
-    const mockResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-    const data = { dark_mode_enabled: true };
-
-    service.editDarkMode(data).subscribe(response => {
-      expect(response).toEqual(mockResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'options/dark_mode');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(data);
-
-    req.flush(mockResponse);
-  });
-
-  it('should send a POST request to edit language', () => {
-    const mockResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-    const data = { language: 'en' };
-
-    service.editLanguage(data).subscribe(response => {
-      expect(response).toEqual(mockResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'options/language');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(data);
-
-    req.flush(mockResponse);
-  });
-
-  it('should send a POST request to delete account', () => {
-    const mockResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-    const data = { password: 'test_password' };
-
-    service.deleteAccount(data).subscribe(response => {
-      expect(response).toEqual(mockResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'options/delete');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(data);
-
-    req.flush(mockResponse);
-  });
-
-  it('should perform a POST request for create playlist', () => {
-    const mockCreatePlaylistData: ICreatePlaylist = {
-      titre: 'test_titre',
-    };
-
-    const mockCreatePlaylistResponse: CreatePlaylistResponse = {
-      success: true,
-      id_playlist: 'test_id_playlist',
-      titre: 'test_titre',
-      error: '',
-    };
-
-    service.createPlaylist(mockCreatePlaylistData).subscribe(data => {
-      expect(data).toEqual(mockCreatePlaylistResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'playlist-creer');
-
-    expect(req.request.method).toBe('POST');
-
-    req.flush(mockCreatePlaylistResponse);
-  });
-
-  it('should perform a POST request for edit title playlist', () => {
-    const mockEditTitlePlaylistData: IEditTitlePlaylist = {
-      id_playlist: 'test_id_playlist',
-      titre: 'test_titre',
-    };
-
-    const mockEditTitlePlaylistResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-
-    service.editTitlePlaylist(mockEditTitlePlaylistData).subscribe(data => {
-      expect(data).toEqual(mockEditTitlePlaylistResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'edit_title');
-
-    expect(req.request.method).toBe('POST');
-
-    req.flush(mockEditTitlePlaylistResponse);
-  });
-
-  it('should send a POST request to associate Google account', () => {
-    const mockResponse: UserReponse = {
-      success: true,
-      error: '',
-    };
-    const data = { id_token: 'test_id_token' };
-
-    service.associateGoogleAccount(data).subscribe(response => {
-      expect(response).toEqual(mockResponse);
-    });
-
-    const req = httpMock.expectOne(environment.URL_SERVER + 'options/associate_google_account');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(data);
-
-    req.flush(mockResponse);
+    req.flush(tc.response);
+    expect(received).toEqual(tc.response);
   });
 });

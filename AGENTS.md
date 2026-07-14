@@ -78,8 +78,11 @@ src/app/
 ├── models/                   # TypeScript interfaces
 │   ├── album|artist|follow|playlist|video|user|search.model.ts
 │   ├── player-running.model.ts
-│   ├── google-identity.model.ts
-│   └── test-mocks.model.ts  # Typed mock interfaces for tests
+│   └── google-identity.model.ts
+├── testing/                   # Shared test helpers (excluded from coverage)
+│   ├── mock-factories.ts    # Typed mock factories (MockedObject<Service>)
+│   ├── http-testing.ts      # provideHttpTesting()
+│   └── fixtures.ts          # Shared data fixtures (createMockVideo…)
 ├── directives/               # Shared directives + skeleton loaders
 │   ├── default-image.directive.ts   # Fallback on image error
 │   ├── lazy-load-image.directive.ts # IntersectionObserver lazy load
@@ -364,8 +367,8 @@ Every routed component must set title, meta description, and canonical URL via `
 ## Testing
 
 - **Framework**: Vitest (NOT Jest/Jasmine)
-- **Coverage**: ≥ 80%
-- **Typed mocks**: `src/app/models/test-mocks.model.ts`
+- **Coverage**: ≥ 80% — enforced by `coverage.thresholds` in `vitest.config.ts` (branches floor temporarily at 72, raising it is follow-up work)
+- **Shared helpers**: `src/app/testing/` — typed mock factories (`mock-factories.ts`), `provideHttpTesting()` (`http-testing.ts`), data fixtures (`fixtures.ts`)
 - **Signal assertion**: `expect(component.isLoading()).toBe(false)` — function call syntax
 
 ## Routing

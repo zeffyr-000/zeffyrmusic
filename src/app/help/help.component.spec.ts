@@ -45,10 +45,6 @@ describe('HelpComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should set page title', () => {
     const titleService = TestBed.inject(Title);
     expect(titleService.getTitle()).toBe('Directory of Tips and Tutorials - Zeffyr Music');

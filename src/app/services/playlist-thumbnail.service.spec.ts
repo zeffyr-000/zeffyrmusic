@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { PlaylistThumbnailService } from './playlist-thumbnail.service';
 import { environment } from 'src/environments/environment';
+import { provideHttpTesting } from '../testing/http-testing';
 
 describe('PlaylistThumbnailService', () => {
   let service: PlaylistThumbnailService;
@@ -10,11 +10,7 @@ describe('PlaylistThumbnailService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        PlaylistThumbnailService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [PlaylistThumbnailService, ...provideHttpTesting()],
     });
 
     service = TestBed.inject(PlaylistThumbnailService);

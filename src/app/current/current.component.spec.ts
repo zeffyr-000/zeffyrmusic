@@ -5,23 +5,19 @@ import { PlayerService } from '../services/player.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { QueueStore, AuthStore } from '../store';
 import { getTranslocoTestingProviders } from '../transloco-testing';
+import { createPlayerServiceMock } from '../testing/mock-factories';
+import type { MockedObject } from 'vitest';
 
 describe('CurrentComponent', () => {
   let component: CurrentComponent;
   let fixture: ComponentFixture<CurrentComponent>;
-  let playerServiceMock: {
-    lecture: ReturnType<typeof vi.fn>;
-    removeToPlaylist: ReturnType<typeof vi.fn>;
-  };
+  let playerServiceMock: MockedObject<PlayerService>;
   let queueStore: InstanceType<typeof QueueStore>;
   let authStore: InstanceType<typeof AuthStore>;
   let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    playerServiceMock = {
-      lecture: vi.fn(),
-      removeToPlaylist: vi.fn(),
-    };
+    playerServiceMock = createPlayerServiceMock();
     googleAnalyticsServiceMock = { pageView: vi.fn() };
 
     await TestBed.configureTestingModule({
@@ -46,10 +42,6 @@ describe('CurrentComponent', () => {
     fixture = TestBed.createComponent(CurrentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should track pageView on init', () => {

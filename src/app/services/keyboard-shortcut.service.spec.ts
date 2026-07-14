@@ -8,15 +8,13 @@ import { PlayerStore } from '../store/player/player.store';
 import { UiStore } from '../store/ui/ui.store';
 import { YoutubePlayerService } from './youtube-player.service';
 import { signal } from '@angular/core';
+import { createPlayerServiceMock } from '../testing/mock-factories';
+import type { MockedObject } from 'vitest';
 
 describe('KeyboardShortcutService', () => {
   let service: KeyboardShortcutService;
   let doc: Document;
-  let playerServiceMock: {
-    onPlayPause: ReturnType<typeof vi.fn>;
-    updateVolume: ReturnType<typeof vi.fn>;
-    toggleMute: ReturnType<typeof vi.fn>;
-  };
+  let playerServiceMock: MockedObject<PlayerService>;
   let playerStoreMock: {
     seekTo: ReturnType<typeof vi.fn>;
     volume: ReturnType<typeof signal>;
@@ -36,11 +34,7 @@ describe('KeyboardShortcutService', () => {
   };
 
   beforeEach(() => {
-    playerServiceMock = {
-      onPlayPause: vi.fn(),
-      updateVolume: vi.fn(),
-      toggleMute: vi.fn(),
-    };
+    playerServiceMock = createPlayerServiceMock();
     playerStoreMock = {
       seekTo: vi.fn(),
       volume: signal(50),
@@ -82,10 +76,6 @@ describe('KeyboardShortcutService', () => {
     }
     doc.dispatchEvent(event);
   }
-
-  it('should create', () => {
-    expect(service).toBeTruthy();
-  });
 
   it('should toggle play/pause on Space', () => {
     dispatchKey(' ');

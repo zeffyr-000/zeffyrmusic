@@ -62,11 +62,6 @@ describe('DashboardComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
-
   it('should load dashboard data on init', async () => {
     fixture.detectChanges();
     await fixture.whenStable();

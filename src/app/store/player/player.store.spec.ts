@@ -11,27 +11,12 @@ describe('PlayerStore', () => {
   });
 
   describe('Initial State', () => {
-    it('should have idle status initially', () => {
+    it('should start idle, unmuted, at full volume, without repeat or error', () => {
       expect(store.status()).toBe('idle');
-    });
-
-    it('should not be playing initially', () => {
       expect(store.isPlaying()).toBe(false);
-    });
-
-    it('should have volume at 100', () => {
       expect(store.volume()).toBe(100);
-    });
-
-    it('should not have repeat enabled', () => {
       expect(store.isRepeat()).toBe(false);
-    });
-
-    it('should not be muted', () => {
       expect(store.isMuted()).toBe(false);
-    });
-
-    it('should have no error', () => {
       expect(store.errorMessage()).toBeNull();
     });
   });

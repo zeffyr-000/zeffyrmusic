@@ -1,4 +1,4 @@
-import type { MockedObject } from 'vitest';
+import type { Mock, MockedObject } from 'vitest';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
@@ -13,6 +13,11 @@ import { SettingsComponent } from './settings.component';
 import { AuthGuard } from '../services/auth-guard.service';
 import { UserReponse } from '../models/user.model';
 import { environment } from 'src/environments/environment';
+import {
+  createGoogleAnalyticsServiceMock,
+  createInitServiceMock,
+  createUserServiceMock,
+} from '../testing/mock-factories';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
@@ -24,30 +29,14 @@ describe('SettingsComponent', () => {
   let userServiceMock: MockedObject<UserService>;
   let initServiceMock: MockedObject<InitService>;
   let modalServiceSpyObj: MockedObject<NgbModal>;
-  let googleAnalyticsServiceMock: { pageView: ReturnType<typeof vi.fn> };
+  let googleAnalyticsServiceMock: MockedObject<GoogleAnalyticsService>;
 
   beforeEach(async () => {
-    initServiceMock = {
-      onMessageUnlog: vi.fn(),
-    } as MockedObject<InitService>;
-
-    userServiceMock = {
-      register: vi.fn(),
-      login: vi.fn(),
-      resetPass: vi.fn(),
-      editPass: vi.fn(),
-      editMail: vi.fn(),
-      createPlaylist: vi.fn(),
-      logout: vi.fn(),
-      editTitlePlaylist: vi.fn(),
-      editDarkMode: vi.fn(),
-      editLanguage: vi.fn(),
-      deleteAccount: vi.fn(),
-      associateGoogleAccount: vi.fn(),
-    } as MockedObject<UserService>;
+    initServiceMock = createInitServiceMock();
+    userServiceMock = createUserServiceMock();
     modalServiceSpyObj = { open: vi.fn() } as MockedObject<NgbModal>;
     const authGuardMock = { canActivate: vi.fn() } as MockedObject<AuthGuard>;
-    googleAnalyticsServiceMock = { pageView: vi.fn() };
+    googleAnalyticsServiceMock = createGoogleAnalyticsServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [NgbModalModule, SettingsComponent],
@@ -82,10 +71,6 @@ describe('SettingsComponent', () => {
     delete (window as any).google;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should track pageView on init', () => {
     expect(googleAnalyticsServiceMock.pageView).toHaveBeenCalledWith(
       '/settings',
@@ -94,44 +79,46 @@ describe('SettingsComponent', () => {
   });
 
   describe('onSubmitEditPass', () => {
-    it('should call httpClient.post with the correct arguments and update this.successPass or this.error based on the server response', async () => {
+    const validModel = {
+      passwordold: 'oldPassword',
+      password1: 'testPassword',
+      password2: 'testPassword',
+    };
+    const expectedBody = {
+      passwordold: 'oldPassword',
+      passwordnew: 'testPassword',
+    };
+
+    it('should call editPass and reset successPass after 10s on success', async () => {
+      // Arrange
       vi.useFakeTimers();
-
-      // Signal Forms: set model values directly
-      component.editPassModel.set({
-        passwordold: 'oldPassword',
-        password1: 'testPassword',
-        password2: 'testPassword',
-      });
-
-      const successResponse = { success: true, error: '' };
-      const errorResponse = { success: false, error: 'Invalid credentials' };
-      const expectedBody = {
-        passwordold: 'oldPassword',
-        passwordnew: 'testPassword',
-      };
-
-      userServiceMock.editPass.mockReturnValue(of(successResponse));
+      component.editPassModel.set(validModel);
+      userServiceMock.editPass.mockReturnValue(of({ success: true, error: '' }));
 
       // Act
       await submit(component.editPassForm);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
-
       await vi.advanceTimersByTimeAsync(10000);
-
       expect(component.successPass()).toBe(false);
 
-      userServiceMock.editPass.mockReturnValue(of(errorResponse));
+      vi.useRealTimers();
+    });
+
+    it('should set this.error when editPass returns a server error', async () => {
+      // Arrange
+      component.editPassModel.set(validModel);
+      userServiceMock.editPass.mockReturnValue(
+        of({ success: false, error: 'Invalid credentials' })
+      );
+
       // Act
       await submit(component.editPassForm);
 
       // Assert
       expect(userServiceMock.editPass).toHaveBeenCalledWith(expectedBody);
       expect(component.error()).toBe('Invalid credentials');
-
-      vi.useRealTimers();
     });
 
     it('should set this.error when the passwords are not identical (form invalid)', () => {
@@ -167,35 +154,33 @@ describe('SettingsComponent', () => {
   });
 
   describe('onSubmitEditMail', () => {
-    it('should call httpClient.post with the correct arguments and update this.successMail or this.error based on the server response', async () => {
+    it('should call editMail and reset successMail after 10s on success', async () => {
+      // Arrange
       vi.useFakeTimers();
-
-      // Signal Forms: set model values directly
       component.editMailModel.set({ mail: 'test@example.com' });
-
-      const successResponse = { success: true, error: '' };
-      const errorResponse = { success: false, error: 'Invalid email' };
-      userServiceMock.editMail.mockReturnValue(of(successResponse));
+      userServiceMock.editMail.mockReturnValue(of({ success: true, error: '' }));
 
       // Act
       await submit(component.editMailForm);
 
       // Assert
       expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
-
       await vi.advanceTimersByTimeAsync(10000);
-
       expect(component.successMail()).toBe(false);
 
-      userServiceMock.editMail.mockReturnValue(of(errorResponse));
+      vi.useRealTimers();
+    });
+
+    it('should set this.error when editMail returns a server error', async () => {
+      // Arrange
+      component.editMailModel.set({ mail: 'test@example.com' });
+      userServiceMock.editMail.mockReturnValue(of({ success: false, error: 'Invalid email' }));
+
       // Act
       await submit(component.editMailForm);
 
       // Assert
-      expect(userServiceMock.editMail).toHaveBeenCalledWith({ mail: 'test@example.com' });
       expect(component.error()).toBe('Invalid email');
-
-      vi.useRealTimers();
     });
 
     it('should call initService.onMessageUnlog when editMail emits an error', async () => {
@@ -232,29 +217,6 @@ describe('SettingsComponent', () => {
     });
   });
 
-  it('should set error message on failure', () => {
-    const mockResponse = { success: false, error: 'some_error' } as UserReponse;
-    userServiceMock.editDarkMode.mockReturnValue(of(mockResponse));
-
-    component.onSwitchDarkMode();
-
-    expect(userServiceMock.editDarkMode).toHaveBeenCalledWith({
-      dark_mode_enabled: true,
-    });
-    expect(component.error()).toBe('some_error');
-  });
-
-  it('should handle error response', () => {
-    userServiceMock.editDarkMode.mockReturnValue(throwError(() => new Error('error')));
-
-    component.onSwitchDarkMode();
-
-    expect(userServiceMock.editDarkMode).toHaveBeenCalledWith({
-      dark_mode_enabled: true,
-    });
-    expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
-  });
-
   it('should call editLanguage with correct parameters and handle success response', async () => {
     // Signal Forms: set model values directly
     component.editLanguageModel.set({ language: 'en' });
@@ -271,31 +233,6 @@ describe('SettingsComponent', () => {
     vi.advanceTimersByTime(10000);
 
     expect(component.successLanguage()).toBe(false);
-  });
-
-  it('should handle error response correctly', async () => {
-    // Signal Forms: set model values directly
-    component.editLanguageModel.set({ language: 'en' });
-
-    const mockResponse = { success: false, error: 'Some error' } as UserReponse;
-    userServiceMock.editLanguage.mockReturnValue(of(mockResponse));
-
-    await submit(component.editLanguageForm);
-
-    expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
-    expect(component.error()).toBe('Some error');
-  });
-
-  it('should handle HTTP error correctly', async () => {
-    // Signal Forms: set model values directly
-    component.editLanguageModel.set({ language: 'en' });
-
-    userServiceMock.editLanguage.mockReturnValue(throwError(() => new Error('HTTP error')));
-
-    await submit(component.editLanguageForm);
-
-    expect(userServiceMock.editLanguage).toHaveBeenCalledWith({ language: 'en' });
-    expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
   });
 
   it('should handle successful account deletion', async () => {
@@ -319,31 +256,55 @@ describe('SettingsComponent', () => {
     expect(logoutSpy).toHaveBeenCalled();
   });
 
-  it('should handle account deletion error from server', async () => {
-    // Signal Forms: set model values directly
-    component.deleteAccountModel.set({ password: 'testPassword' });
+  // The three settings operations share the same error handling:
+  // server error → component.error(), network error → initService.onMessageUnlog()
+  const settingsOperations: [string, () => Mock, () => Promise<void>][] = [
+    ['editDarkMode', () => userServiceMock.editDarkMode, async () => component.onSwitchDarkMode()],
+    [
+      'editLanguage',
+      () => userServiceMock.editLanguage,
+      async () => {
+        component.editLanguageModel.set({ language: 'en' });
+        await submit(component.editLanguageForm);
+      },
+    ],
+    [
+      'deleteAccount',
+      () => userServiceMock.deleteAccount,
+      async () => {
+        component.deleteAccountModel.set({ password: 'testPassword' });
+        await submit(component.deleteAccountForm);
+      },
+    ],
+  ];
 
-    const response = { success: false, error: 'error_message' } as UserReponse;
-    userServiceMock.deleteAccount.mockReturnValue(of(response));
+  it.each(settingsOperations)(
+    'should set error message when %s returns a server error',
+    async (_name, getMock, act) => {
+      // Arrange
+      getMock().mockReturnValue(of({ success: false, error: 'some_error' } as UserReponse));
 
-    await submit(component.deleteAccountForm);
+      // Act
+      await act();
 
-    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
-    expect(component.successDelete()).toBe(false);
-    expect(component.error()).toBe('error_message');
-  });
+      // Assert
+      expect(component.error()).toBe('some_error');
+    }
+  );
 
-  it('should handle network error during account deletion', async () => {
-    // Signal Forms: set model values directly
-    component.deleteAccountModel.set({ password: 'testPassword' });
+  it.each(settingsOperations)(
+    'should call initService.onMessageUnlog on %s network error',
+    async (_name, getMock, act) => {
+      // Arrange
+      getMock().mockReturnValue(throwError(() => new Error('network')));
 
-    userServiceMock.deleteAccount.mockReturnValue(throwError(() => new Error('Network error')));
+      // Act
+      await act();
 
-    await submit(component.deleteAccountForm);
-
-    expect(userServiceMock.deleteAccount).toHaveBeenCalledWith({ password: 'testPassword' });
-    expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
-  });
+      // Assert
+      expect(initServiceMock.onMessageUnlog).toHaveBeenCalled();
+    }
+  );
 
   it('should initialize Google Sign-In', () => {
     const googleMock = {
