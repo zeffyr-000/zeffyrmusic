@@ -65,7 +65,7 @@ export class QueueAnimationService {
 
     // Web Animations API support (used by `HTMLElement.animate`).
     return (
-      typeof (globalThis as unknown as { Element?: typeof Element }).Element !== 'undefined' &&
+      (globalThis as unknown as { Element?: typeof Element }).Element !== undefined &&
       typeof Element.prototype.animate === 'function'
     );
   }
