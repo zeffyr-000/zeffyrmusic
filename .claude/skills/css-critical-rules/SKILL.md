@@ -249,6 +249,33 @@ accept that the overlay floats above the content.
 
 ---
 
+## Safe-area insets (`viewport-fit=cover` / iOS standalone PWA)
+
+**Context:** `src/index.html` declares `viewport-fit=cover`, so in a pinned/standalone
+PWA on a notched device the viewport extends **under the top notch / status bar and the
+bottom home indicator**. Any UI anchored to the top or bottom edge of the screen must
+compensate, or it renders under the encoche.
+
+**Rule:** Every top- or bottom-anchored surface MUST pad the matching safe-area inset:
+
+```scss
+padding-top: env(safe-area-inset-top, 0px); // or add it inside a calc()
+padding-bottom: env(safe-area-inset-bottom, 0px);
+```
+
+`env()` with a `0px` fallback is a no-op on desktop and in a normal browser (the inset is
+only non-zero in a full-screen PWA on a notched device), so it is always safe to add.
+
+**Already handled:** `app.component`, `header`, `control-bar`, `lyrics-panel`,
+`toast-container`, and the ng-bootstrap `.modal` container (see `_utilities.scss`).
+
+**Easy to miss:** ng-bootstrap modals — the default (non-centered) dialog only has a
+`0.5rem` top margin, so its header opens under the notch. Fixed via `padding-top`/`bottom`
+on `.modal` in `_utilities.scss`. When adding any new modal, overlay, sticky bar, or
+bottom sheet, check this rule first.
+
+---
+
 ## Emergency Recovery
 
 If you broke the player:
