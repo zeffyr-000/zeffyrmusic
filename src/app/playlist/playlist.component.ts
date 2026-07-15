@@ -217,7 +217,7 @@ export class PlaylistComponent {
     // Effect to reload playlist when a video is added to it from another component
     effect(() => {
       const added = this.uiStore.videoAddedToPlaylistId();
-      if (added && added.id === untracked(this.idPlaylist)) {
+      if (added?.id === untracked(this.idPlaylist)) {
         this.loadPlaylist('');
       }
     });
@@ -305,12 +305,10 @@ export class PlaylistComponent {
       let url: string;
       if (idPlaylist !== null) {
         url = environment.URL_SERVER + 'json/playlist/' + idPlaylist;
+      } else if (this.activatedRoute.snapshot.url[0].path === 'top') {
+        url = environment.URL_SERVER + 'json/top/' + id;
       } else {
-        if (this.activatedRoute.snapshot.url[0].path === 'top') {
-          url = environment.URL_SERVER + 'json/top/' + id;
-        } else {
-          url = '';
-        }
+        url = '';
       }
 
       this.loadPlaylist(url);
@@ -326,23 +324,21 @@ export class PlaylistComponent {
         count: data.tab_video?.length || 0,
         description: data.description,
       });
-    } else {
-      if (data.artiste !== undefined && data.titre !== undefined) {
-        description = this.translocoService.translate(
-          data.artiste ? 'description_album_artist' : 'description_album',
-          {
-            title: data.titre,
-            artist: data.artiste,
-            year: data.year,
-            count: data.tab_video?.length || 0,
-          }
-        );
-      } else {
-        description = this.translocoService.translate('description_playlist', {
-          title: data.title,
+    } else if (data.artiste !== undefined && data.titre !== undefined) {
+      description = this.translocoService.translate(
+        data.artiste ? 'description_album_artist' : 'description_album',
+        {
+          title: data.titre,
+          artist: data.artiste,
+          year: data.year,
           count: data.tab_video?.length || 0,
-        });
-      }
+        }
+      );
+    } else {
+      description = this.translocoService.translate('description_playlist', {
+        title: data.title,
+        count: data.tab_video?.length || 0,
+      });
     }
     return description;
   }
@@ -356,20 +352,15 @@ export class PlaylistComponent {
       } else {
         title = this.translocoService.translate('title_top_element', { title: data.title });
       }
+    } else if (data.artiste !== undefined && data.titre !== undefined) {
+      title = this.translocoService.translate(data.artiste ? 'title_album_artist' : 'title_album', {
+        title: data.titre,
+        artist: data.artiste,
+        year: data.year,
+        count: data.tab_video?.length || 0,
+      });
     } else {
-      if (data.artiste !== undefined && data.titre !== undefined) {
-        title = this.translocoService.translate(
-          data.artiste ? 'title_album_artist' : 'title_album',
-          {
-            title: data.titre,
-            artist: data.artiste,
-            year: data.year,
-            count: data.tab_video?.length || 0,
-          }
-        );
-      } else {
-        title = data.title;
-      }
+      title = data.title;
     }
     return title;
   }

@@ -121,13 +121,16 @@ body[data-bs-theme='dark'] {
 // FORM ELEMENTS
 // =============================================================================
 
+// Restore the native search-field rendering (incl. the clear/cancel button) that
+// Bootstrap's Reboot resets. `auto` is the standard replacement for the deprecated
+// `searchfield` / `searchfield-cancel-button` appearance values (css:S1874).
 input[type='search'] {
-  -webkit-appearance: searchfield;
-  appearance: searchfield;
+  -webkit-appearance: auto;
+  appearance: auto;
 }
 
 input[type='search']::-webkit-search-cancel-button {
-  -webkit-appearance: searchfield-cancel-button;
+  -webkit-appearance: auto;
 }
 
 // =============================================================================
