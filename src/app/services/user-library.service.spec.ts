@@ -178,13 +178,26 @@ describe('UserLibraryService', () => {
       req.flush({ success: true });
     });
 
-    it('should return false when addVideoToPlaylist fails', () => {
-      let result: boolean | null = null;
-      service.addVideoToPlaylist('p1', 'key1', 'Title', 'Artist', 180).subscribe(r => (result = r));
+    it('should error when addVideoToPlaylist hits a transport error', () => {
+      let errored = false;
+      service
+        .addVideoToPlaylist('p1', 'key1', 'Title', 'Artist', 180)
+        .subscribe({ error: () => (errored = true) });
 
       httpMock.expectOne(`${environment.URL_SERVER}insert_video`).error(new ProgressEvent('error'));
 
-      expect(result).toBe(false);
+      expect(errored).toBe(true);
+    });
+
+    it('should error when insert_video responds with success:false', () => {
+      let errored = false;
+      service
+        .addVideoToPlaylist('p1', 'key1', 'Title', 'Artist', 180)
+        .subscribe({ error: () => (errored = true) });
+
+      httpMock.expectOne(`${environment.URL_SERVER}insert_video`).flush({ success: false });
+
+      expect(errored).toBe(true);
     });
 
     it('should return false when removeVideoFromPlaylist fails', () => {

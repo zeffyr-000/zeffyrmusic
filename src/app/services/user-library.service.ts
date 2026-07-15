@@ -156,7 +156,10 @@ export class UserLibraryService {
     title: string,
     artist: string,
     duration: number
-  ): Observable<boolean> {
+  ): Observable<void> {
+    // Success and failure are two distinct outcomes, so they flow through the two
+    // separate RxJS channels (next / error) instead of a boolean the caller has to
+    // branch on. A `success: false` body is turned into an error like a transport error.
     return this.http
       .post<{ success: boolean }>(`${environment.URL_SERVER}insert_video`, {
         id_playlist: idPlaylist,
@@ -166,8 +169,11 @@ export class UserLibraryService {
         duree: duration,
       })
       .pipe(
-        map(response => response.success),
-        catchError(() => of(false))
+        map(response => {
+          if (!response.success) {
+            throw new Error('Failed to add video to playlist');
+          }
+        })
       );
   }
 

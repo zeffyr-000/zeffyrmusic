@@ -29,8 +29,8 @@
 
   <div class="lyrics-content" #contentRef>
     @if (isLoading()) {
-      <div role="status" class="lyrics-loading" aria-busy="true">
-        <span class="visually-hidden">Loading...</span>
+      <div class="lyrics-loading" aria-busy="true">
+        <output class="visually-hidden">Loading...</output>
         @for (_ of skeletonItems; track $index) {
           <div class="skeleton-pulse skeleton-line--title"></div>
         }
