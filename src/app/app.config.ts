@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideShareButtonsOptions, withConfig } from 'ngx-sharebuttons';
 import { shareIcons } from 'ngx-sharebuttons/icons';
 import { httpConfigInterceptor } from './interceptor/httpConfigInterceptor';
@@ -40,7 +40,7 @@ export const appConfig: ApplicationConfig = {
         },
       })
     ),
-    provideHttpClient(withFetch(), withInterceptors([httpConfigInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([httpConfigInterceptor, errorInterceptor])),
     provideShareButtonsOptions(
       shareIcons(),
       withConfig({

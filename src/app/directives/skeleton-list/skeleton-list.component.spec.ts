@@ -36,7 +36,7 @@ describe('SkeletonListComponent', () => {
   });
 
   it('should include visually-hidden loading text for accessibility', () => {
-    const srText = fixture.nativeElement.querySelector('.visually-hidden');
+    const srText = fixture.nativeElement.querySelector('output.visually-hidden');
     expect(srText?.textContent).toContain('Loading');
   });
 });

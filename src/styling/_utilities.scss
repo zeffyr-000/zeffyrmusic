@@ -1539,7 +1539,7 @@ a.card,
 
 // iOS standalone (pinned PWA): the viewport uses `viewport-fit=cover`, so the
 // modal scroll container extends under the top notch / status bar. Pad it with
-// the safe-area insets so the dialog never opens under the encoche.
+// the safe-area insets so the dialog never opens under the notch.
 .modal {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);

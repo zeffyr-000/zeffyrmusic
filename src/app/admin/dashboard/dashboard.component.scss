@@ -158,6 +158,46 @@
   margin-left: var(--spacing-xs);
 }
 
+.distribution-progress {
+  display: block;
+  width: 100%;
+  height: 0.5rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  appearance: none;
+  overflow: hidden;
+  background-color: var(--bs-secondary-bg);
+
+  // Track (WebKit)
+  &::-webkit-progress-bar {
+    background-color: var(--bs-secondary-bg);
+    border-radius: inherit;
+  }
+
+  // Value (WebKit)
+  &::-webkit-progress-value {
+    background-color: var(--bs-primary);
+    border-radius: inherit;
+    transition: width 0.6s ease;
+  }
+
+  // Value (Firefox)
+  &::-moz-progress-bar {
+    background-color: var(--bs-primary);
+    border-radius: inherit;
+  }
+
+  &--secondary {
+    &::-webkit-progress-value {
+      background-color: var(--bs-secondary);
+    }
+
+    &::-moz-progress-bar {
+      background-color: var(--bs-secondary);
+    }
+  }
+}
+
 // Responsive
 @media (max-width: 575.98px) {
   .chart-wrapper {

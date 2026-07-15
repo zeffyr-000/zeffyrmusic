@@ -254,7 +254,7 @@ accept that the overlay floats above the content.
 **Context:** `src/index.html` declares `viewport-fit=cover`, so in a pinned/standalone
 PWA on a notched device the viewport extends **under the top notch / status bar and the
 bottom home indicator**. Any UI anchored to the top or bottom edge of the screen must
-compensate, or it renders under the encoche.
+compensate, or it renders under the notch.
 
 **Rule:** Every top- or bottom-anchored surface MUST pad the matching safe-area inset:
 
