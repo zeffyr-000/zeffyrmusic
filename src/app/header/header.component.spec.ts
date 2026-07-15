@@ -93,7 +93,7 @@ describe('HeaderComponent', () => {
     initServiceMock = createInitServiceMock();
     userLibraryServiceMock = {
       initializeFromLogin: vi.fn(),
-      addVideoToPlaylist: vi.fn().mockReturnValue(of(true)),
+      addVideoToPlaylist: vi.fn().mockReturnValue(of(undefined)),
     };
     userServiceMock = {
       register: vi.fn(),
@@ -237,16 +237,7 @@ describe('HeaderComponent', () => {
       expect(modal.dismiss).toHaveBeenCalled();
     });
 
-    it('should set addVideoError when addVideoToPlaylist returns false', () => {
-      userLibraryServiceMock.addVideoToPlaylist = vi.fn().mockReturnValue(of(false));
-
-      component.onAddVideo('123', modal);
-
-      expect(component.addVideoError()).toBeTruthy();
-      expect(modal.dismiss).not.toHaveBeenCalled();
-    });
-
-    it('should set addVideoError when addVideoToPlaylist errors', () => {
+    it('should set addVideoError and keep the modal open when addVideoToPlaylist errors', () => {
       userLibraryServiceMock.addVideoToPlaylist = vi
         .fn()
         .mockReturnValue(throwError(() => new Error('fail')));

@@ -311,14 +311,10 @@ export class HeaderComponent {
     this.userLibraryService
       .addVideoToPlaylist(idPlaylist, this.addKey, this.addTitle, this.addArtist, this.addDuration)
       .subscribe({
-        next: success => {
-          if (success) {
-            this.uiStore.notifyVideoAddedToPlaylist(idPlaylist);
-            this.uiStore.showSuccess(this.translocoService.translate('video_added_to_playlist'));
-            modal.dismiss();
-          } else {
-            this.addVideoError.set(this.translocoService.translate('generic_error'));
-          }
+        next: () => {
+          this.uiStore.notifyVideoAddedToPlaylist(idPlaylist);
+          this.uiStore.showSuccess(this.translocoService.translate('video_added_to_playlist'));
+          modal.dismiss();
         },
         error: () => {
           this.addVideoError.set(this.translocoService.translate('generic_error'));
