@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
+import { NO_ERRORS_SCHEMA, PLATFORM_ID, RESPONSE_INIT } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, NavigationEnd } from '@angular/router';
 import { RouterModule } from '@angular/router';
@@ -8,7 +8,6 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { getTranslocoTestingProviders } from '../transloco-testing';
 import { NotFoundComponent } from './not-found.component';
 import { SeoService } from '../services/seo.service';
-import { RESPONSE } from '../tokens';
 import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
 
@@ -20,12 +19,12 @@ describe('NotFoundComponent', () => {
     event: ReturnType<typeof vi.fn>;
   };
   let seoServiceMock: { updateCanonicalUrl: ReturnType<typeof vi.fn> };
-  let responseMock: { status: ReturnType<typeof vi.fn> };
+  let responseMock: { status?: number };
 
   beforeEach(async () => {
     googleAnalyticsServiceMock = { pageView: vi.fn(), event: vi.fn() };
     seoServiceMock = { updateCanonicalUrl: vi.fn() };
-    responseMock = { status: vi.fn().mockReturnThis() };
+    responseMock = {};
 
     await TestBed.configureTestingModule({
       imports: [NotFoundComponent, RouterModule.forRoot([])],
@@ -34,7 +33,7 @@ describe('NotFoundComponent', () => {
         { provide: PLATFORM_ID, useValue: 'browser' },
         { provide: GoogleAnalyticsService, useValue: googleAnalyticsServiceMock },
         { provide: SeoService, useValue: seoServiceMock },
-        { provide: RESPONSE, useValue: null },
+        { provide: RESPONSE_INIT, useValue: null },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -131,7 +130,7 @@ describe('NotFoundComponent', () => {
     let ssrFixture: ComponentFixture<NotFoundComponent>;
 
     beforeEach(async () => {
-      const ssrResponseMock = { status: vi.fn().mockReturnThis() };
+      const ssrResponseMock: { status?: number } = {};
 
       await TestBed.resetTestingModule()
         .configureTestingModule({
@@ -141,7 +140,7 @@ describe('NotFoundComponent', () => {
             { provide: PLATFORM_ID, useValue: 'server' },
             { provide: GoogleAnalyticsService, useValue: { pageView: vi.fn(), event: vi.fn() } },
             { provide: SeoService, useValue: { updateCanonicalUrl: vi.fn() } },
-            { provide: RESPONSE, useValue: ssrResponseMock },
+            { provide: RESPONSE_INIT, useValue: ssrResponseMock },
           ],
           schemas: [NO_ERRORS_SCHEMA],
         })
@@ -153,7 +152,7 @@ describe('NotFoundComponent', () => {
     });
 
     it('should set HTTP status 404 on server', () => {
-      expect(responseMock.status).toHaveBeenCalledWith(404);
+      expect(responseMock.status).toBe(404);
     });
 
     it('should not track GA on server', () => {
@@ -164,8 +163,8 @@ describe('NotFoundComponent', () => {
     });
   });
 
-  describe('SSR with null RESPONSE', () => {
-    it('should not crash when RESPONSE is null on server', async () => {
+  describe('SSR with null RESPONSE_INIT', () => {
+    it('should not crash when RESPONSE_INIT is null on server', async () => {
       await TestBed.resetTestingModule()
         .configureTestingModule({
           imports: [NotFoundComponent, RouterModule.forRoot([])],

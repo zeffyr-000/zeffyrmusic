@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   PLATFORM_ID,
+  RESPONSE_INIT,
   inject,
   signal,
 } from '@angular/core';
@@ -15,7 +16,6 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { filter } from 'rxjs';
 import { SeoService } from '../services/seo.service';
-import { RESPONSE } from '../tokens';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -31,7 +31,7 @@ export class NotFoundComponent implements OnInit, OnDestroy {
   private readonly translocoService = inject(TranslocoService);
   private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly response = inject(RESPONSE, { optional: true });
+  private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
   private readonly destroyRef = inject(DestroyRef);
 
   readonly attemptedUrl = signal(this.sanitizePath(this.router.url));
@@ -65,8 +65,8 @@ export class NotFoundComponent implements OnInit, OnDestroy {
     const canonicalUrl = new URL(path || '/', environment.URL_BASE).toString();
     this.seoService.updateCanonicalUrl(canonicalUrl);
 
-    if (isPlatformServer(this.platformId) && this.response) {
-      this.response.status(404);
+    if (isPlatformServer(this.platformId) && this.responseInit) {
+      this.responseInit.status = 404;
     }
 
     if (isPlatformBrowser(this.platformId)) {

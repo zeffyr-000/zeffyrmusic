@@ -1,6 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { REQUEST } from '../tokens';
+import { inject, REQUEST } from '@angular/core';
 
 export const httpConfigInterceptor: HttpInterceptorFn = (req, next) => {
   const request = inject(REQUEST, { optional: true });
@@ -11,8 +10,9 @@ export const httpConfigInterceptor: HttpInterceptorFn = (req, next) => {
     Expires: '0',
   };
 
-  if (request?.headers?.cookie) {
-    headers['Cookie'] = request.headers.cookie;
+  const cookie = request?.headers.get('cookie');
+  if (cookie) {
+    headers['Cookie'] = cookie;
   }
 
   const modifiedRequest = req.clone({

@@ -1,11 +1,13 @@
-import { APP_BASE_HREF } from '@angular/common';
-import { CommonEngine, isMainModule } from '@angular/ssr/node';
+import {
+  AngularNodeAppEngine,
+  createNodeRequestHandler,
+  isMainModule,
+  writeResponseToNodeResponse,
+} from '@angular/ssr/node';
 import express from 'express';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import bootstrap from './main.server';
 import cookieParser from 'cookie-parser';
-import { REQUEST, RESPONSE } from './app/tokens';
 import { environment } from './environments/environment';
 import type * as SentryNode from '@sentry/node';
 
@@ -47,7 +49,6 @@ if (environment.SENTRY_DSN) {
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
-const indexHtml = join(serverDistFolder, 'index.server.html');
 
 const app = express();
 
@@ -60,7 +61,10 @@ const ALLOWED_HOSTS = new Set([
   'localhost',
 ]);
 
-const commonEngine = new CommonEngine({
+// Angular v22 SSR engine (replaces the deprecated CommonEngine). It reads the
+// server manifest emitted by the build, so no bootstrap/documentFilePath is passed.
+// `allowedHosts` blocks SSRF: an unknown hostname yields a 400 instead of rendering.
+const angularApp = new AngularNodeAppEngine({
   allowedHosts: [...ALLOWED_HOSTS],
 });
 
@@ -121,24 +125,14 @@ if (environment.URL_SERVER.startsWith('/')) {
   });
 }
 
-app.get('/{*path}', (req, res, next) => {
-  const { protocol, originalUrl, baseUrl, headers } = req;
-  const baseUrlValue = baseUrl || '/';
-
-  commonEngine
-    .render({
-      bootstrap,
-      documentFilePath: indexHtml,
-      url: `${protocol}://${headers.host}${originalUrl}`,
-      publicPath: browserDistFolder,
-      providers: [
-        { provide: APP_BASE_HREF, useValue: baseUrlValue },
-        { provide: REQUEST, useValue: req },
-        { provide: RESPONSE, useValue: res },
-      ],
-    })
-    .then(html => res.send(html))
-    .catch(err => next(err));
+// SSR — the engine populates the REQUEST / RESPONSE_INIT DI tokens itself, so
+// per-request providers are no longer wired here (see app.config.server.ts for
+// APP_BASE_HREF). Returns null for non-Angular routes, which fall through to 404.
+app.use('/{*path}', (req, res, next) => {
+  angularApp
+    .handle(req)
+    .then(response => (response ? writeResponseToNodeResponse(response, res) : next()))
+    .catch(next);
 });
 
 // Sentry Express error handler — must be after all routes but before app.listen
@@ -153,4 +147,4 @@ if (isMainModule(import.meta.url) || process.env['PM2_USAGE']) {
   });
 }
 
-export default app;
+export const reqHandler = createNodeRequestHandler(app);

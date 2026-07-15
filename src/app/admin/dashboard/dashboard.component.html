@@ -144,16 +144,12 @@
                           <span class="distribution-label__percent">({{ item.percent }}%)</span>
                         </span>
                       </div>
-                      <div
-                        class="progress"
-                        role="progressbar"
+                      <progress
+                        class="distribution-progress"
+                        [value]="item.percent"
+                        max="100"
                         [attr.aria-label]="(item.labelKey | transloco) + ' ' + item.percent + '%'"
-                        [attr.aria-valuenow]="item.percent"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      >
-                        <div class="progress-bar bg-primary" [style.width.%]="item.percent"></div>
-                      </div>
+                      ></progress>
                     </div>
                   }
                 </div>
@@ -178,16 +174,12 @@
                           <span class="distribution-label__percent">({{ item.percent }}%)</span>
                         </span>
                       </div>
-                      <div
-                        class="progress"
-                        role="progressbar"
+                      <progress
+                        class="distribution-progress distribution-progress--secondary"
+                        [value]="item.percent"
+                        max="100"
                         [attr.aria-label]="(item.labelKey | transloco) + ' ' + item.percent + '%'"
-                        [attr.aria-valuenow]="item.percent"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      >
-                        <div class="progress-bar bg-secondary" [style.width.%]="item.percent"></div>
-                      </div>
+                      ></progress>
                     </div>
                   }
                 </div>
