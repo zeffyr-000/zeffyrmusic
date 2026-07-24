@@ -1,0 +1,54 @@
+<app-admin-list-shell
+  icon="person"
+  titleKey="admin_duplicate_artists_title"
+  introKey="admin_duplicate_artists_intro"
+  emptyKey="admin_duplicate_artists_empty"
+  [loading]="isLoading()"
+  [error]="error()"
+  [empty]="groups().length === 0"
+  (refresh)="onRefresh()"
+>
+  @for (group of groups(); track group.key) {
+    <div class="card duplicate-group mb-3">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'admin_duplicate_col_id' | transloco }}</th>
+                <th scope="col">{{ 'admin_duplicate_col_name' | transloco }}</th>
+                <th scope="col">{{ 'admin_duplicate_col_albums' | transloco }}</th>
+                <th scope="col">Deezer</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (artist of group.artists; track artist.id) {
+                <tr>
+                  <td>
+                    <span class="badge text-bg-secondary">{{ artist.id }}</span>
+                  </td>
+                  <td>{{ artist.name }}</td>
+                  <td>{{ artist.albumCount }}</td>
+                  <td>{{ artist.deezerId }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (group.artists.length >= 2) {
+          <div class="mt-3">
+            <a
+              class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1"
+              routerLink="/admin/merge-artist"
+              [queryParams]="{ source: group.artists[0].id, with: group.artists[1].id }"
+            >
+              <span class="material-icons" aria-hidden="true">merge</span>
+              {{ 'admin_merge_artists' | transloco }}
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</app-admin-list-shell>

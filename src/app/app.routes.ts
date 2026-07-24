@@ -85,6 +85,24 @@ export const routes: Routes = [
     data: { noPreload: true },
   },
   {
+    path: 'admin/duplicate-albums',
+    loadComponent: () =>
+      import('./admin/duplicate-albums/duplicate-albums.component').then(
+        m => m.DuplicateAlbumsComponent
+      ),
+    canActivate: [AdminGuard],
+    data: { noPreload: true },
+  },
+  {
+    path: 'admin/duplicate-artists',
+    loadComponent: () =>
+      import('./admin/duplicate-artists/duplicate-artists.component').then(
+        m => m.DuplicateArtistsComponent
+      ),
+    canActivate: [AdminGuard],
+    data: { noPreload: true },
+  },
+  {
     path: '**',
     loadComponent: () => import('./not-found/not-found.component').then(m => m.NotFoundComponent),
   },

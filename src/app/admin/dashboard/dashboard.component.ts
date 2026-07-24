@@ -16,6 +16,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { firstValueFrom } from 'rxjs';
+import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { AdminDashboardService } from '../../services/admin-dashboard.service';
 import { SeoService } from '../../services/seo.service';
 import { DashboardGrowth, DashboardStats } from '../../models/admin-dashboard.model';
@@ -58,7 +59,7 @@ const DARK_MODE_LABEL_MAP: Record<string, string> = {
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
-  imports: [TranslocoPipe, DecimalPipe, BaseChartDirective],
+  imports: [TranslocoPipe, DecimalPipe, BaseChartDirective, AdminNavComponent],
 })
 export class DashboardComponent implements OnInit {
   private readonly dashboardService = inject(AdminDashboardService);

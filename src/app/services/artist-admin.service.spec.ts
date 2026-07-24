@@ -3,7 +3,11 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { ArtistAdminService } from './artist-admin.service';
 import { environment } from '../../environments/environment';
 import { ArtistData } from '../models/artist.model';
-import { MergeArtistsPayload, MergeArtistsResponse } from '../models/artist-admin.model';
+import {
+  DuplicateArtistGroupApi,
+  MergeArtistsPayload,
+  MergeArtistsResponse,
+} from '../models/artist-admin.model';
 import { provideHttpTesting } from '../testing/http-testing';
 
 describe('ArtistAdminService', () => {
@@ -77,5 +81,44 @@ describe('ArtistAdminService', () => {
 
     const req = httpMock.expectOne(environment.URL_SERVER + 'admin/merge-artists');
     req.flush(mockResponse);
+  });
+
+  it('should fetch and map duplicate artists', () => {
+    const apiResponse: DuplicateArtistGroupApi[] = [
+      {
+        key: 'test-artist',
+        artists: [
+          {
+            id_artist: '123',
+            nom: 'Test Artist',
+            nb_albums: 5,
+            id_artiste_deezer: '456',
+          },
+          {
+            id_artist: '789',
+            nom: 'Test Artist',
+            nb_albums: 3,
+            id_artiste_deezer: '',
+          },
+        ],
+      },
+    ];
+
+    service.getDuplicateArtists().subscribe(groups => {
+      expect(groups).toHaveLength(1);
+      expect(groups[0].key).toBe('test-artist');
+      expect(groups[0].artists[0]).toEqual({
+        id: '123',
+        name: 'Test Artist',
+        albumCount: 5,
+        deezerId: '456',
+      });
+      expect(groups[0].artists[1].id).toBe('789');
+      expect(groups[0].artists[1].albumCount).toBe(3);
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'admin/duplicate-artists');
+    expect(req.request.method).toBe('GET');
+    req.flush(apiResponse);
   });
 });

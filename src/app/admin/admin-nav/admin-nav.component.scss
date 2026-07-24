@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+.admin-nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md) var(--spacing-xl) 0;
+
+  @media (max-width: 575.98px) {
+    padding: var(--spacing-sm) var(--spacing-md) 0;
+  }
+
+  .nav {
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    .material-icons {
+      font-size: var(--text-lg);
+    }
+  }
+}

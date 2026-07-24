@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA, PLATFORM_ID } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DashboardComponent } from './dashboard.component';
@@ -51,6 +52,7 @@ describe('DashboardComponent', () => {
       imports: [DashboardComponent],
       providers: [
         getTranslocoTestingProviders(),
+        provideRouter([]),
         { provide: AdminDashboardService, useValue: dashboardServiceMock },
         { provide: SeoService, useValue: seoServiceMock },
         { provide: PLATFORM_ID, useValue: 'browser' },

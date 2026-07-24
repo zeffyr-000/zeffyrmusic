@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { DefaultImageDirective } from '../../directives/default-image.directive';
 import { ToMMSSPipe } from '../../pipes/to-mmss.pipe';
 import { AlbumAdminService } from '../../services/album-admin.service';
@@ -20,7 +21,14 @@ type AlbumChoice = 'album1' | 'album2';
   selector: 'app-merge-album',
   templateUrl: './merge-album.component.html',
   styleUrl: './merge-album.component.scss',
-  imports: [FormField, FormRoot, TranslocoPipe, DefaultImageDirective, ToMMSSPipe],
+  imports: [
+    FormField,
+    FormRoot,
+    TranslocoPipe,
+    DefaultImageDirective,
+    ToMMSSPipe,
+    AdminNavComponent,
+  ],
 })
 export class MergeAlbumComponent implements OnInit {
   private readonly albumAdminService = inject(AlbumAdminService);
@@ -116,7 +124,8 @@ export class MergeAlbumComponent implements OnInit {
     });
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}admin/merge-album`);
 
-    const sourceId = this.activatedRoute.snapshot.queryParamMap.get('source');
+    const queryParams = this.activatedRoute.snapshot.queryParamMap;
+    const sourceId = queryParams.get('source');
     if (sourceId) {
       this.hasSourceParam.set(true);
       const parsedId = this.parseAlbumId(sourceId);
@@ -124,6 +133,14 @@ export class MergeAlbumComponent implements OnInit {
         this.loadAlbum1(parsedId);
       } else {
         this.album1Error.set(this.translocoService.translate('admin_merge_invalid_id'));
+      }
+    }
+
+    const withId = queryParams.get('with');
+    if (withId) {
+      const parsedWithId = this.parseAlbumId(withId);
+      if (parsedWithId && parsedWithId !== this.parseAlbumId(sourceId ?? '')) {
+        this.loadAlbum2(parsedWithId);
       }
     }
   }
@@ -140,6 +157,22 @@ export class MergeAlbumComponent implements OnInit {
       error: () => {
         this.isLoadingAlbum1.set(false);
         this.album1Error.set(this.translocoService.translate('admin_merge_error'));
+      },
+    });
+  }
+
+  private loadAlbum2(idPlaylist: string): void {
+    this.isLoadingAlbum2.set(true);
+    this.album2Error.set('');
+
+    this.albumAdminService.getAlbumDetails(idPlaylist).subscribe({
+      next: (data: Playlist) => {
+        this.isLoadingAlbum2.set(false);
+        this.applyAlbumResult(data, this.album2, this.album2Error);
+      },
+      error: () => {
+        this.isLoadingAlbum2.set(false);
+        this.album2Error.set(this.translocoService.translate('admin_merge_error'));
       },
     });
   }

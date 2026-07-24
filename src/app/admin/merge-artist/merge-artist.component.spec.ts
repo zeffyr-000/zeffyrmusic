@@ -96,6 +96,38 @@ describe('MergeArtistComponent', () => {
     fixture.detectChanges();
   }
 
+  /** Rebuilds the TestBed with custom `source` and `with` query params */
+  async function recreateWithParams(source: string | null, withId: string | null): Promise<void> {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [MergeArtistComponent],
+      providers: [
+        getTranslocoTestingProviders(),
+        { provide: ArtistAdminService, useValue: artistAdminServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: (key: string) => {
+                  if (key === 'source') return source;
+                  if (key === 'with') return withId;
+                  return null;
+                },
+              },
+            },
+          },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(MergeArtistComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
   beforeEach(async () => {
     artistAdminServiceMock = {
       getArtistDetails: vi.fn(),
@@ -169,6 +201,27 @@ describe('MergeArtistComponent', () => {
       expect(component.artist1()).toBeNull();
       expect(component.artist1Error()).toBeTruthy();
       expect(artistAdminServiceMock.getArtistDetails).not.toHaveBeenCalled();
+    });
+
+    it('should preload both artists from source and with query params', async () => {
+      artistAdminServiceMock.getArtistDetails.mockImplementation((id: string) =>
+        of(id === '20' ? mockArtist2 : mockArtist1)
+      );
+      await recreateWithParams('10', '20');
+
+      expect(artistAdminServiceMock.getArtistDetails).toHaveBeenCalledWith('10');
+      expect(artistAdminServiceMock.getArtistDetails).toHaveBeenCalledWith('20');
+      expect(component.artist1()).toEqual(mockArtist1);
+      expect(component.artist2()).toEqual(mockArtist2);
+    });
+
+    it('should not load artist 2 when with equals source', async () => {
+      artistAdminServiceMock.getArtistDetails.mockReturnValue(of(mockArtist1));
+      await recreateWithParams('10', '10');
+
+      expect(component.artist1()).toEqual(mockArtist1);
+      expect(component.artist2()).toBeNull();
+      expect(artistAdminServiceMock.getArtistDetails).toHaveBeenCalledTimes(1);
     });
   });
 

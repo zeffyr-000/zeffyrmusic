@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AdminNavComponent } from '../admin-nav/admin-nav.component';
 import { DefaultImageDirective } from '../../directives/default-image.directive';
 import { ArtistAdminService } from '../../services/artist-admin.service';
 import { SeoService } from '../../services/seo.service';
@@ -19,7 +20,7 @@ type ArtistChoice = 'artist1' | 'artist2';
   selector: 'app-merge-artist',
   templateUrl: './merge-artist.component.html',
   styleUrl: './merge-artist.component.scss',
-  imports: [FormField, FormRoot, TranslocoPipe, DefaultImageDirective],
+  imports: [FormField, FormRoot, TranslocoPipe, DefaultImageDirective, AdminNavComponent],
 })
 export class MergeArtistComponent implements OnInit {
   private readonly artistAdminService = inject(ArtistAdminService);
@@ -112,7 +113,8 @@ export class MergeArtistComponent implements OnInit {
     });
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}admin/merge-artist`);
 
-    const sourceId = this.activatedRoute.snapshot.queryParamMap.get('source');
+    const queryParams = this.activatedRoute.snapshot.queryParamMap;
+    const sourceId = queryParams.get('source');
     if (sourceId) {
       this.hasSourceParam.set(true);
       const parsedId = this.parseArtistId(sourceId);
@@ -120,6 +122,14 @@ export class MergeArtistComponent implements OnInit {
         this.loadArtist1(parsedId);
       } else {
         this.artist1Error.set(this.translocoService.translate('admin_merge_invalid_id'));
+      }
+    }
+
+    const withId = queryParams.get('with');
+    if (withId) {
+      const parsedWithId = this.parseArtistId(withId);
+      if (parsedWithId && parsedWithId !== this.parseArtistId(sourceId ?? '')) {
+        this.loadArtist2(parsedWithId);
       }
     }
   }
@@ -136,6 +146,22 @@ export class MergeArtistComponent implements OnInit {
       error: () => {
         this.isLoadingArtist1.set(false);
         this.artist1Error.set(this.translocoService.translate('admin_merge_error'));
+      },
+    });
+  }
+
+  private loadArtist2(idArtist: string): void {
+    this.isLoadingArtist2.set(true);
+    this.artist2Error.set('');
+
+    this.artistAdminService.getArtistDetails(idArtist).subscribe({
+      next: (data: ArtistData) => {
+        this.isLoadingArtist2.set(false);
+        this.applyArtistResult(idArtist, data, this.artist2, this.artist2Error);
+      },
+      error: () => {
+        this.isLoadingArtist2.set(false);
+        this.artist2Error.set(this.translocoService.translate('admin_merge_error'));
       },
     });
   }

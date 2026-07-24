@@ -573,5 +573,21 @@
   "admin_dashboard_lang_fr_FR": "French (fr_FR)",
   "admin_dashboard_lang_en_US": "English (en_US)",
   "admin_dashboard_dark_mode_on": "Enabled",
-  "admin_dashboard_dark_mode_off": "Disabled"
+  "admin_dashboard_dark_mode_off": "Disabled",
+  "admin_menu_link": "Administration",
+  "admin_duplicate_albums_link": "Duplicate albums",
+  "admin_duplicate_albums_title": "Duplicate albums",
+  "admin_duplicate_albums_intro": "Groups of potentially duplicate albums. Review then merge.",
+  "admin_duplicate_albums_empty": "No duplicate album detected",
+  "admin_duplicate_artists_link": "Duplicate artists",
+  "admin_duplicate_artists_title": "Duplicate artists",
+  "admin_duplicate_artists_intro": "Groups of potentially duplicate artists. Review then merge.",
+  "admin_duplicate_artists_empty": "No duplicate artist detected",
+  "admin_duplicate_col_title": "Title",
+  "admin_duplicate_col_artist": "Artist",
+  "admin_duplicate_col_year": "Year",
+  "admin_duplicate_col_videos": "Videos",
+  "admin_duplicate_col_name": "Name",
+  "admin_duplicate_col_albums": "Albums",
+  "admin_duplicate_col_id": "ID"
 }

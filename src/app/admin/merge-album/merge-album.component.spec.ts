@@ -119,6 +119,38 @@ describe('MergeAlbumComponent', () => {
     fixture.detectChanges();
   }
 
+  /** Rebuilds the TestBed with custom `source` and `with` query params */
+  async function recreateWithParams(source: string | null, withId: string | null): Promise<void> {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [MergeAlbumComponent],
+      providers: [
+        getTranslocoTestingProviders(),
+        { provide: AlbumAdminService, useValue: albumAdminServiceMock },
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: (key: string) => {
+                  if (key === 'source') return source;
+                  if (key === 'with') return withId;
+                  return null;
+                },
+              },
+            },
+          },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(MergeAlbumComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
   beforeEach(async () => {
     albumAdminServiceMock = {
       getAlbumDetails: vi.fn(),
@@ -207,6 +239,27 @@ describe('MergeAlbumComponent', () => {
       expect(component.album1()).toBeNull();
       expect(component.album1Error()).toBeTruthy();
       expect(albumAdminServiceMock.getAlbumDetails).not.toHaveBeenCalled();
+    });
+
+    it('should preload both albums from source and with query params', async () => {
+      albumAdminServiceMock.getAlbumDetails.mockImplementation((id: string) =>
+        of(id === '200' ? mockAlbum2 : mockAlbum1)
+      );
+      await recreateWithParams('100', '200');
+
+      expect(albumAdminServiceMock.getAlbumDetails).toHaveBeenCalledWith('100');
+      expect(albumAdminServiceMock.getAlbumDetails).toHaveBeenCalledWith('200');
+      expect(component.album1()).toEqual(mockAlbum1);
+      expect(component.album2()).toEqual(mockAlbum2);
+    });
+
+    it('should not load album 2 when with equals source', async () => {
+      albumAdminServiceMock.getAlbumDetails.mockReturnValue(of(mockAlbum1));
+      await recreateWithParams('100', '100');
+
+      expect(component.album1()).toEqual(mockAlbum1);
+      expect(component.album2()).toBeNull();
+      expect(albumAdminServiceMock.getAlbumDetails).toHaveBeenCalledTimes(1);
     });
   });
 

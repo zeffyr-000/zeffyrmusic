@@ -1,0 +1,55 @@
+<!-- Admin indicator -->
+<div class="admin-bar">
+  <span class="material-icons" aria-hidden="true">admin_panel_settings</span>
+  <span>{{ 'admin_bar_title' | transloco }}</span>
+</div>
+
+<app-admin-nav />
+
+<div class="admin-page admin-page--full-width">
+  <div class="admin-page-header">
+    <h1 class="admin-page-title">
+      <span class="material-icons" aria-hidden="true">{{ icon() }}</span>
+      {{ titleKey() | transloco }}
+    </h1>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      [disabled]="loading()"
+      (click)="refresh.emit()"
+    >
+      <span class="material-icons" aria-hidden="true" [class.spin]="loading()">refresh</span>
+      {{ 'admin_dashboard_refresh' | transloco }}
+    </button>
+  </div>
+
+  <p class="text-body-secondary">{{ introKey() | transloco }}</p>
+
+  @if (loading()) {
+    @for (_ of skeletonItems; track $index) {
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="skeleton-pulse skeleton-line--title mb-3"></div>
+          <div class="skeleton-pulse skeleton-line--subtitle mb-2"></div>
+          <div class="skeleton-pulse skeleton-line--subtitle"></div>
+        </div>
+      </div>
+    }
+  } @else if (error()) {
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon" aria-hidden="true">error_outline</span>
+      <p class="empty-state-text">{{ 'admin_dashboard_error' | transloco }}</p>
+      <button type="button" class="btn btn-outline-primary mt-3" (click)="refresh.emit()">
+        <span class="material-icons" aria-hidden="true">refresh</span>
+        {{ 'admin_dashboard_refresh' | transloco }}
+      </button>
+    </div>
+  } @else if (empty()) {
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon" aria-hidden="true">check_circle</span>
+      <p class="empty-state-text">{{ emptyKey() | transloco }}</p>
+    </div>
+  } @else {
+    <ng-content />
+  }
+</div>

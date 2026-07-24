@@ -1,0 +1,37 @@
+<nav class="admin-nav" [attr.aria-label]="'admin_menu_link' | transloco">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        routerLink="/admin/dashboard"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="material-icons" aria-hidden="true">dashboard</span>
+        {{ 'admin_dashboard_link' | transloco }}
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        routerLink="/admin/duplicate-albums"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="material-icons" aria-hidden="true">album</span>
+        {{ 'admin_duplicate_albums_link' | transloco }}
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        routerLink="/admin/duplicate-artists"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="material-icons" aria-hidden="true">person</span>
+        {{ 'admin_duplicate_artists_link' | transloco }}
+      </a>
+    </li>
+  </ul>
+</nav>
