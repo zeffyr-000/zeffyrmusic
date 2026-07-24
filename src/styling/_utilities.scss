@@ -678,6 +678,19 @@
   margin-bottom: 0;
 }
 
+// Admin duplicate-listing pages (albums / artists)
+.duplicate-group {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius-lg);
+}
+
+.duplicate-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
 // =============================================================================
 // ADMIN MERGE - Shared styles for merge comparison pages
 // =============================================================================

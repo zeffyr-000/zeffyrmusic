@@ -1,0 +1,65 @@
+<app-admin-list-shell
+  icon="album"
+  titleKey="admin_duplicate_albums_title"
+  introKey="admin_duplicate_albums_intro"
+  emptyKey="admin_duplicate_albums_empty"
+  [loading]="isLoading()"
+  [error]="error()"
+  [empty]="groups().length === 0"
+  (refresh)="onRefresh()"
+>
+  @for (group of groups(); track group.key) {
+    <div class="card duplicate-group mb-3">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'admin_duplicate_col_id' | transloco }}</th>
+                <th scope="col"></th>
+                <th scope="col">{{ 'admin_duplicate_col_title' | transloco }}</th>
+                <th scope="col">{{ 'admin_duplicate_col_artist' | transloco }}</th>
+                <th scope="col">{{ 'admin_duplicate_col_year' | transloco }}</th>
+                <th scope="col">{{ 'admin_duplicate_col_videos' | transloco }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (album of group.albums; track album.id) {
+                <tr>
+                  <td>
+                    <span class="badge text-bg-secondary">{{ album.id }}</span>
+                  </td>
+                  <td>
+                    <img
+                      class="duplicate-thumb"
+                      [src]="album.image"
+                      [alt]="album.title"
+                      appDefaultImage
+                    />
+                  </td>
+                  <td>{{ album.title }}</td>
+                  <td>{{ album.artist }}</td>
+                  <td>{{ album.year }}</td>
+                  <td>{{ album.videoCount }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (group.albums.length >= 2) {
+          <div class="mt-3">
+            <a
+              class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1"
+              routerLink="/admin/merge-album"
+              [queryParams]="{ source: group.albums[0].id, with: group.albums[1].id }"
+            >
+              <span class="material-icons" aria-hidden="true">merge</span>
+              {{ 'admin_merge_albums' | transloco }}
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</app-admin-list-shell>

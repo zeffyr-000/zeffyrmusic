@@ -573,5 +573,21 @@
   "admin_dashboard_lang_fr_FR": "Français (fr_FR)",
   "admin_dashboard_lang_en_US": "Anglais (en_US)",
   "admin_dashboard_dark_mode_on": "Activé",
-  "admin_dashboard_dark_mode_off": "Désactivé"
+  "admin_dashboard_dark_mode_off": "Désactivé",
+  "admin_menu_link": "Administration",
+  "admin_duplicate_albums_link": "Albums en doublon",
+  "admin_duplicate_albums_title": "Albums en doublon",
+  "admin_duplicate_albums_intro": "Groupes d'albums potentiellement en doublon. Vérifiez puis fusionnez.",
+  "admin_duplicate_albums_empty": "Aucun doublon d'album détecté",
+  "admin_duplicate_artists_link": "Artistes en doublon",
+  "admin_duplicate_artists_title": "Artistes en doublon",
+  "admin_duplicate_artists_intro": "Groupes d'artistes potentiellement en doublon. Vérifiez puis fusionnez.",
+  "admin_duplicate_artists_empty": "Aucun doublon d'artiste détecté",
+  "admin_duplicate_col_title": "Titre",
+  "admin_duplicate_col_artist": "Artiste",
+  "admin_duplicate_col_year": "Année",
+  "admin_duplicate_col_videos": "Vidéos",
+  "admin_duplicate_col_name": "Nom",
+  "admin_duplicate_col_albums": "Albums",
+  "admin_duplicate_col_id": "ID"
 }

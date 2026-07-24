@@ -18,3 +18,36 @@ export interface MergeAlbumsResponse {
   success: boolean;
   error?: string;
 }
+
+/**
+ * Admin Duplicate Albums — API contract models
+ *
+ * GET /api/admin/duplicate-albums
+ */
+
+export interface DuplicateAlbumItem {
+  id: string; // ← id_playlist
+  title: string; // ← titre
+  artist: string; // ← artiste
+  year: number; // ← year
+  image: string; // ← img_big
+  videoCount: number; // ← nb_videos
+}
+
+export interface DuplicateAlbumGroup {
+  key: string; // ← key (normalized title/artist used to group)
+  albums: DuplicateAlbumItem[];
+}
+
+/** Raw snake_case response from the PHP backend */
+export interface DuplicateAlbumGroupApi {
+  key: string;
+  albums: {
+    id_playlist: string;
+    titre: string;
+    artiste: string;
+    year: number;
+    img_big: string;
+    nb_videos: number;
+  }[];
+}

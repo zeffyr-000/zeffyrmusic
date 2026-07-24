@@ -3,7 +3,11 @@ import { HttpTestingController } from '@angular/common/http/testing';
 import { AlbumAdminService } from './album-admin.service';
 import { environment } from '../../environments/environment';
 import { Playlist } from '../models/playlist.model';
-import { MergeAlbumsPayload, MergeAlbumsResponse } from '../models/album-admin.model';
+import {
+  DuplicateAlbumGroupApi,
+  MergeAlbumsPayload,
+  MergeAlbumsResponse,
+} from '../models/album-admin.model';
 import { provideHttpTesting } from '../testing/http-testing';
 
 describe('AlbumAdminService', () => {
@@ -92,5 +96,50 @@ describe('AlbumAdminService', () => {
 
     const req = httpMock.expectOne(environment.URL_SERVER + 'admin/merge-albums');
     req.flush(mockResponse);
+  });
+
+  it('should fetch and map duplicate albums', () => {
+    const apiResponse: DuplicateAlbumGroupApi[] = [
+      {
+        key: 'test-album|test-artist',
+        albums: [
+          {
+            id_playlist: '123',
+            titre: 'Test Album',
+            artiste: 'Test Artist',
+            year: 2023,
+            img_big: 'https://example.com/img.jpg',
+            nb_videos: 10,
+          },
+          {
+            id_playlist: '456',
+            titre: 'Test Album',
+            artiste: 'Test Artist',
+            year: 2023,
+            img_big: 'https://example.com/img2.jpg',
+            nb_videos: 12,
+          },
+        ],
+      },
+    ];
+
+    service.getDuplicateAlbums().subscribe(groups => {
+      expect(groups).toHaveLength(1);
+      expect(groups[0].key).toBe('test-album|test-artist');
+      expect(groups[0].albums[0]).toEqual({
+        id: '123',
+        title: 'Test Album',
+        artist: 'Test Artist',
+        year: 2023,
+        image: 'https://example.com/img.jpg',
+        videoCount: 10,
+      });
+      expect(groups[0].albums[1].id).toBe('456');
+      expect(groups[0].albums[1].videoCount).toBe(12);
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'admin/duplicate-albums');
+    expect(req.request.method).toBe('GET');
+    req.flush(apiResponse);
   });
 });
