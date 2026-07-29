@@ -589,5 +589,9 @@
   "admin_duplicate_col_videos": "Videos",
   "admin_duplicate_col_name": "Name",
   "admin_duplicate_col_albums": "Albums",
-  "admin_duplicate_col_id": "ID"
+  "admin_duplicate_col_id": "ID",
+  "admin_duplicate_source_label": "Keep (source)",
+  "admin_duplicate_target_label": "Duplicate to merge",
+  "admin_duplicate_merge_action": "Merge",
+  "admin_duplicate_same_item": "Select two different items"
 }

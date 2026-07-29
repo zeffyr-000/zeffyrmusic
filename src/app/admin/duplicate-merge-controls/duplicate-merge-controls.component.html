@@ -1,0 +1,37 @@
+<form [formRoot]="mergeForm" class="d-flex flex-wrap align-items-end gap-3">
+  <label class="d-flex flex-column gap-1">
+    <span class="small fw-semibold text-body-secondary">
+      {{ 'admin_duplicate_source_label' | transloco }}
+    </span>
+    <select class="form-select form-select-sm merge-select" [formField]="mergeForm.sourceId">
+      @for (item of items(); track item.id) {
+        <option [value]="item.id" [disabled]="item.id === mergeModel().targetId">
+          {{ item.label }}
+        </option>
+      }
+    </select>
+  </label>
+
+  <label class="d-flex flex-column gap-1">
+    <span class="small fw-semibold text-body-secondary">
+      {{ 'admin_duplicate_target_label' | transloco }}
+    </span>
+    <select class="form-select form-select-sm merge-select" [formField]="mergeForm.targetId">
+      @for (item of items(); track item.id) {
+        <option [value]="item.id" [disabled]="item.id === mergeModel().sourceId">
+          {{ item.label }}
+        </option>
+      }
+    </select>
+  </label>
+
+  <button
+    type="button"
+    class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1"
+    [disabled]="mergeForm().invalid()"
+    (click)="merge()"
+  >
+    <span class="material-icons" aria-hidden="true">merge</span>
+    {{ 'admin_duplicate_merge_action' | transloco }}
+  </button>
+</form>

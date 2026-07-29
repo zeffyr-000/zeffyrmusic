@@ -8,7 +8,7 @@
   [empty]="groups().length === 0"
   (refresh)="onRefresh()"
 >
-  @for (group of groups(); track group.key) {
+  @for (row of rows(); track row.group.key) {
     <div class="card duplicate-group mb-3">
       <div class="card-body">
         <div class="table-responsive">
@@ -24,7 +24,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (album of group.albums; track album.id) {
+              @for (album of row.group.albums; track album.id) {
                 <tr>
                   <td>
                     <span class="badge text-bg-secondary">{{ album.id }}</span>
@@ -47,18 +47,11 @@
           </table>
         </div>
 
-        @if (group.albums.length >= 2) {
-          <div class="mt-3">
-            <a
-              class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1"
-              routerLink="/admin/merge-album"
-              [queryParams]="{ source: group.albums[0].id, with: group.albums[1].id }"
-            >
-              <span class="material-icons" aria-hidden="true">merge</span>
-              {{ 'admin_merge_albums' | transloco }}
-            </a>
-          </div>
-        }
+        <app-duplicate-merge-controls
+          class="d-block mt-3"
+          [items]="row.candidates"
+          mergeRoute="/admin/merge-album"
+        />
       </div>
     </div>
   }
