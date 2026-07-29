@@ -53,7 +53,7 @@ jobs:
           MODEL="claude-sonnet-5"
           REASON="routine"
           if [ "${FILES:-0}" -gt 15 ] || [ "${LINES:-0}" -gt 400 ] || [ "${SENSITIVE:-0}" -gt 0 ]; then
-            MODEL="claude-opus-4-8"
+            MODEL="claude-opus-5"
             REASON="complex"
           fi
           echo "model=$MODEL" >> "$GITHUB_OUTPUT"
