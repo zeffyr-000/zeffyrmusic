@@ -5,7 +5,7 @@
   emptyKey="admin_duplicate_albums_empty"
   [loading]="isLoading()"
   [error]="error()"
-  [empty]="groups().length === 0"
+  [empty]="items().length === 0"
   (refresh)="onRefresh()"
 >
   @for (row of rows(); track row.group.key) {

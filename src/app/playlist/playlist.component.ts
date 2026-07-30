@@ -41,6 +41,7 @@ import { UserLibraryService } from '../services/user-library.service';
 import { PlaylistThumbnailService } from '../services/playlist-thumbnail.service';
 import { PlaylistThumbnailModalComponent } from './playlist-thumbnail-modal/playlist-thumbnail-modal.component';
 import { ExportPlaylistModalComponent } from '../directives/export-playlist-modal/export-playlist-modal.component';
+import { ReportAlbumModalComponent } from './report-album-modal/report-album-modal.component';
 import { UserDataStore } from '../store/user-data/user-data.store';
 import { AuthStore, PlayerStore, QueueStore, UiStore } from '../store';
 import {
@@ -202,6 +203,18 @@ export class PlaylistComponent {
     return !this.isLikePage() && !this.idTopCharts() && !!this.artist() && !isUserPlaylist;
   });
 
+  /** Reporting is offered on catalogue albums to signed-in users only */
+  readonly canReportAlbum = computed(() => this.isAlbum() && this.authStore.isAuthenticated());
+
+  /** True when at least one entry of the actions dropdown is visible */
+  readonly hasActionsMenu = computed(
+    () =>
+      this.isOwner() ||
+      this.isLikePage() ||
+      (this.authStore.isAdmin() && this.isAlbum()) ||
+      this.canReportAlbum()
+  );
+
   private lastAdjustedKey: string | null = null;
   private lastAdjustedDuration = 0;
   private pendingKeyChange = false;
@@ -278,6 +291,18 @@ export class PlaylistComponent {
       ? this.translocoService.translate('mes_likes')
       : this.titre() || this.title();
     modalRef.componentInstance.playlistTitle.set(exportTitle);
+  }
+
+  openReportModal(): void {
+    const idPlaylist = this.idPlaylist();
+    if (!idPlaylist) {
+      return;
+    }
+    const modalRef = this.modalService.open(ReportAlbumModalComponent, {
+      centered: true,
+      size: 'md',
+    });
+    modalRef.componentInstance.idPlaylist = idPlaylist;
   }
 
   openRenameModal(video: Video, tpl: TemplateRef<unknown>): void {

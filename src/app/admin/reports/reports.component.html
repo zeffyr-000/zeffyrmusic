@@ -1,0 +1,61 @@
+<app-admin-list-shell
+  icon="flag"
+  titleKey="admin_reports_title"
+  introKey="admin_reports_intro"
+  emptyKey="admin_reports_empty"
+  [loading]="isLoading()"
+  [error]="error()"
+  [empty]="items().length === 0"
+  (refresh)="onRefresh()"
+>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <caption class="visually-hidden">
+            {{
+              'admin_reports_title' | transloco
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ 'admin_reports_col_date' | transloco }}</th>
+              <th scope="col">{{ 'admin_reports_col_album' | transloco }}</th>
+              <th scope="col">{{ 'admin_reports_col_reason' | transloco }}</th>
+              <th scope="col">{{ 'admin_reports_col_user' | transloco }}</th>
+              <th scope="col">{{ 'admin_reports_col_status' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (report of items(); track report.id) {
+              <tr>
+                <td class="text-nowrap">
+                  {{ report.reportedAt * 1000 | date: 'dd/MM/yyyy HH:mm' }}
+                </td>
+                <td>
+                  <a routerLink="/playlist/{{ report.albumId }}">
+                    {{ report.albumTitle || ('admin_reports_unknown_album' | transloco) }}
+                  </a>
+                  @if (report.albumArtist) {
+                    <span class="d-block small text-body-secondary">{{ report.albumArtist }}</span>
+                  }
+                </td>
+                <td>{{ 'report_album_reason_' + report.reason | transloco }}</td>
+                <td>{{ report.userPseudo || ('admin_reports_unknown_user' | transloco) }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.text-bg-warning]="report.status === 'pending'"
+                    [class.text-bg-success]="report.status === 'processed'"
+                  >
+                    {{ 'admin_reports_status_' + report.status | transloco }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-admin-list-shell>

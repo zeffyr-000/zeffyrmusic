@@ -103,6 +103,12 @@ export const routes: Routes = [
     data: { noPreload: true },
   },
   {
+    path: 'admin/reports',
+    loadComponent: () => import('./admin/reports/reports.component').then(m => m.ReportsComponent),
+    canActivate: [AdminGuard],
+    data: { noPreload: true },
+  },
+  {
     path: '**',
     loadComponent: () => import('./not-found/not-found.component').then(m => m.NotFoundComponent),
   },

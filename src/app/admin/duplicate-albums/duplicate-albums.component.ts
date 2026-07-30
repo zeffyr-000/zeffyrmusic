@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
-import { AbstractDuplicatePage } from '../abstract-duplicate-page';
+import { AbstractAdminListPage } from '../abstract-admin-list-page';
 import { AdminListShellComponent } from '../admin-list-shell/admin-list-shell.component';
 import {
   DuplicateMergeControlsComponent,
@@ -21,7 +21,7 @@ import { DuplicateAlbumGroup } from '../../models/album-admin.model';
     DefaultImageDirective,
   ],
 })
-export class DuplicateAlbumsComponent extends AbstractDuplicatePage<DuplicateAlbumGroup> {
+export class DuplicateAlbumsComponent extends AbstractAdminListPage<DuplicateAlbumGroup> {
   private readonly albumAdminService = inject(AlbumAdminService);
 
   protected readonly titleKey = 'admin_duplicate_albums_title';
@@ -30,7 +30,7 @@ export class DuplicateAlbumsComponent extends AbstractDuplicatePage<DuplicateAlb
   // Precompute merge candidates so their reference stays stable across change
   // detection (required by the merge-controls linkedSignal defaults).
   readonly rows = computed(() =>
-    this.groups().map(group => ({
+    this.items().map(group => ({
       group,
       candidates: group.albums.map<MergeCandidate>(album => ({
         id: album.id,
@@ -40,7 +40,7 @@ export class DuplicateAlbumsComponent extends AbstractDuplicatePage<DuplicateAlb
     }))
   );
 
-  protected fetchGroups(): Observable<DuplicateAlbumGroup[]> {
+  protected fetchItems(): Observable<DuplicateAlbumGroup[]> {
     return this.albumAdminService.getDuplicateAlbums();
   }
 }
