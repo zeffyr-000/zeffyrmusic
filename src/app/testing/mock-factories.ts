@@ -16,6 +16,7 @@ import type { GoogleAnalyticsService } from 'ngx-google-analytics';
 import type { InitService } from '../services/init.service';
 import type { PlayerService } from '../services/player.service';
 import type { PlaylistThumbnailService } from '../services/playlist-thumbnail.service';
+import type { ReportAlbumService } from '../services/report-album.service';
 import type { UserLibraryService } from '../services/user-library.service';
 import type { UserService } from '../services/user.service';
 
@@ -99,6 +100,13 @@ export function createPlaylistThumbnailServiceMock(): MockedObject<PlaylistThumb
     resetThumbnail: vi.fn(),
   };
   return mock as MockedObject<PlaylistThumbnailService>;
+}
+
+export function createReportAlbumServiceMock(): MockedObject<ReportAlbumService> {
+  const mock: Partial<ReportAlbumService> = {
+    reportAlbum: vi.fn(),
+  };
+  return mock as MockedObject<ReportAlbumService>;
 }
 
 export function createGoogleAnalyticsServiceMock(): MockedObject<GoogleAnalyticsService> {

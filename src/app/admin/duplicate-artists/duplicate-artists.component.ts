@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
-import { AbstractDuplicatePage } from '../abstract-duplicate-page';
+import { AbstractAdminListPage } from '../abstract-admin-list-page';
 import { AdminListShellComponent } from '../admin-list-shell/admin-list-shell.component';
 import {
   DuplicateMergeControlsComponent,
@@ -15,7 +15,7 @@ import { DuplicateArtistGroup } from '../../models/artist-admin.model';
   templateUrl: './duplicate-artists.component.html',
   imports: [TranslocoPipe, AdminListShellComponent, DuplicateMergeControlsComponent],
 })
-export class DuplicateArtistsComponent extends AbstractDuplicatePage<DuplicateArtistGroup> {
+export class DuplicateArtistsComponent extends AbstractAdminListPage<DuplicateArtistGroup> {
   private readonly artistAdminService = inject(ArtistAdminService);
 
   protected readonly titleKey = 'admin_duplicate_artists_title';
@@ -24,7 +24,7 @@ export class DuplicateArtistsComponent extends AbstractDuplicatePage<DuplicateAr
   // Precompute merge candidates so their reference stays stable across change
   // detection (required by the merge-controls linkedSignal defaults).
   readonly rows = computed(() =>
-    this.groups().map(group => ({
+    this.items().map(group => ({
       group,
       candidates: group.artists.map<MergeCandidate>(artist => ({
         id: artist.id,
@@ -34,7 +34,7 @@ export class DuplicateArtistsComponent extends AbstractDuplicatePage<DuplicateAr
     }))
   );
 
-  protected fetchGroups(): Observable<DuplicateArtistGroup[]> {
+  protected fetchItems(): Observable<DuplicateArtistGroup[]> {
     return this.artistAdminService.getDuplicateArtists();
   }
 }

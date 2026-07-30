@@ -21,14 +21,16 @@ describe('AdminNavComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render links to the three admin pages', () => {
+  it('should render links to the four admin pages', () => {
     const links: HTMLAnchorElement[] = Array.from(
       fixture.nativeElement.querySelectorAll('a.nav-link')
     );
     const hrefs = links.map(a => a.getAttribute('href'));
 
+    expect(links).toHaveLength(4);
     expect(hrefs).toContain('/admin/dashboard');
     expect(hrefs).toContain('/admin/duplicate-albums');
     expect(hrefs).toContain('/admin/duplicate-artists');
+    expect(hrefs).toContain('/admin/reports');
   });
 });

@@ -22,6 +22,7 @@ import { UserDataStore } from '../store/user-data/user-data.store';
 import { UiStore } from '../store/ui/ui.store';
 import { AuthStore } from '../store/auth/auth.store';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ReportAlbumModalComponent } from './report-album-modal/report-album-modal.component';
 import { ExportPlaylistModalComponent } from '../directives/export-playlist-modal/export-playlist-modal.component';
 import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { provideHttpTesting } from '../testing/http-testing';
@@ -1022,6 +1023,103 @@ describe('PlaylistComponent', () => {
       component.idPersoOwner.set('owner-id');
 
       expect(component.canRenameTrack()).toBe(true);
+    });
+  });
+
+  describe('openReportModal', () => {
+    it('should open the report modal and pass the playlist id', () => {
+      const modalService = TestBed.inject(NgbModal);
+      const componentInstance: { idPlaylist?: string } = {};
+      const openSpy = vi
+        .spyOn(modalService, 'open')
+        .mockReturnValue({ componentInstance } as never);
+      component.idPlaylist.set('42');
+
+      component.openReportModal();
+
+      expect(openSpy).toHaveBeenCalledWith(ReportAlbumModalComponent, {
+        centered: true,
+        size: 'md',
+      });
+      expect(componentInstance.idPlaylist).toBe('42');
+    });
+
+    it('should not open the modal when there is no playlist id', () => {
+      const modalService = TestBed.inject(NgbModal);
+      const openSpy = vi.spyOn(modalService, 'open');
+      component.idPlaylist.set(null);
+
+      component.openReportModal();
+
+      expect(openSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('canReportAlbum / hasActionsMenu', () => {
+    let authStore: InstanceType<typeof AuthStore>;
+
+    /** Puts the component in the "catalogue album" state (see isAlbum) */
+    const setUpAlbum = () => {
+      component.isLikePage.set(false);
+      component.idTopCharts.set(null);
+      component.artist.set('Some Artist');
+      component.idPersoOwner.set('0');
+    };
+
+    beforeEach(() => {
+      authStore = TestBed.inject(AuthStore);
+      authStore.logout();
+      setUpAlbum();
+    });
+
+    const login = (isAdmin = false) =>
+      authStore.login(
+        { pseudo: 'user', idPerso: 'user-id', mail: 'u@test.com', isAdmin },
+        { darkModeEnabled: false, language: 'fr' }
+      );
+
+    it('should allow reporting an album when authenticated', () => {
+      login();
+
+      expect(component.canReportAlbum()).toBe(true);
+      expect(component.hasActionsMenu()).toBe(true);
+    });
+
+    it('should not allow reporting when not authenticated', () => {
+      expect(component.canReportAlbum()).toBe(false);
+    });
+
+    it('should not allow reporting on the likes page', () => {
+      login();
+      component.isLikePage.set(true);
+
+      expect(component.canReportAlbum()).toBe(false);
+    });
+
+    it('should not allow reporting on a top chart', () => {
+      login();
+      component.idTopCharts.set('1');
+
+      expect(component.canReportAlbum()).toBe(false);
+    });
+
+    it('should not allow reporting on a user playlist', () => {
+      login();
+      component.idPersoOwner.set('5');
+
+      expect(component.canReportAlbum()).toBe(false);
+    });
+
+    it('should hide the actions menu for an anonymous visitor on a top chart', () => {
+      component.idTopCharts.set('1');
+
+      expect(component.hasActionsMenu()).toBe(false);
+    });
+
+    it('should show the actions menu for an admin on an album', () => {
+      login(true);
+
+      expect(component.hasActionsMenu()).toBe(true);
     });
   });
 });

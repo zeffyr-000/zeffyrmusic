@@ -52,7 +52,7 @@ describe('DuplicateArtistsComponent', () => {
     await fixture.whenStable();
 
     expect(artistServiceMock.getDuplicateArtists).toHaveBeenCalled();
-    expect(component.groups()).toEqual(mockGroups);
+    expect(component.items()).toEqual(mockGroups);
     expect(component.isLoading()).toBe(false);
     expect(component.error()).toBe(false);
   });
@@ -68,7 +68,7 @@ describe('DuplicateArtistsComponent', () => {
 
     expect(component.error()).toBe(true);
     expect(component.isLoading()).toBe(false);
-    expect(component.groups()).toEqual([]);
+    expect(component.items()).toEqual([]);
   });
 
   it('should refresh data when onRefresh is called', async () => {

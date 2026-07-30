@@ -1,0 +1,65 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <span class="material-icons" aria-hidden="true">flag</span>
+    {{ 'report_album' | transloco }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="modal.dismiss('Cross click')"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <form [formRoot]="reportForm" class="modal-form">
+    <p class="text-body-secondary small mb-0">{{ 'report_album_intro' | transloco }}</p>
+
+    <div class="form-group">
+      <label class="form-label" for="report-album-reason">
+        <span class="material-icons" aria-hidden="true">flag</span>
+        {{ 'report_album_reason_label' | transloco }}
+      </label>
+      <select
+        id="report-album-reason"
+        class="form-select"
+        ngbAutofocus
+        data-testid="report-album-reason"
+        [formField]="reportForm.reason"
+      >
+        <option value="" disabled>{{ 'report_album_reason_placeholder' | transloco }}</option>
+        @for (reason of reasons; track reason) {
+          <option [value]="reason">{{ 'report_album_reason_' + reason | transloco }}</option>
+        }
+      </select>
+    </div>
+
+    @if (errorMessage() !== '') {
+      <div class="modal-alert modal-alert-danger" role="alert">
+        <span class="material-icons" aria-hidden="true">error</span>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">
+        <span class="material-icons" aria-hidden="true">close</span>
+        {{ 'annuler' | transloco }}
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        data-testid="report-album-submit"
+        [disabled]="reportForm().invalid() || reportForm().submitting()"
+        [attr.aria-busy]="reportForm().submitting() || null"
+      >
+        @if (reportForm().submitting()) {
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        } @else {
+          <span class="material-icons" aria-hidden="true">send</span>
+        }
+        {{ 'report_album_submit' | transloco }}
+      </button>
+    </div>
+  </form>
+</div>
