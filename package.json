@@ -38,7 +38,7 @@
     "@ngrx/signals": "^21.1.1",
     "@popperjs/core": "^2.11.8",
     "@sentry/angular": "^10.56.0",
-    "@sentry/node": "^10.55.0",
+    "@sentry/node": "^10.69.0",
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.1",
     "cookie-parser": "^1.4.7",
