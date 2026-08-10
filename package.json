@@ -79,7 +79,7 @@
     "angular-eslint": "^22.0.0",
     "eslint": "^10.8.0",
     "glob": "^13.0.6",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "playwright-ng-schematics": "^22.0.1",
     "prettier": "^3.9.5",
     "ts-node": "^10.9.2",
