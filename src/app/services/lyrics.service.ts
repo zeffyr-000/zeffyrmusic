@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LyricsResponse } from '../models/lyrics.model';
@@ -11,9 +11,7 @@ import { LyricsResponse } from '../models/lyrics.model';
  * Maintains an in-memory cache to avoid redundant HTTP calls
  * when the user reopens the panel on the same track.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class LyricsService {
   private readonly httpClient = inject(HttpClient);
   private readonly cache = new Map<string, LyricsResponse>();

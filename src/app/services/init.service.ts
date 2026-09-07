@@ -1,12 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {
-  Injectable,
-  PLATFORM_ID,
-  TransferState,
-  makeStateKey,
-  DOCUMENT,
-  inject,
-} from '@angular/core';
+import { PLATFORM_ID, TransferState, makeStateKey, DOCUMENT, inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -50,9 +43,7 @@ const PING_KEY = makeStateKey<PingResponse>('pingData');
  *
  * Handles bootstrap, authentication state and SSR TransferState.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class InitService {
   private readonly document = inject<Document>(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);

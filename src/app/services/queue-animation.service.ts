@@ -1,4 +1,4 @@
-import { Injectable, DOCUMENT, PLATFORM_ID, inject } from '@angular/core';
+import { DOCUMENT, PLATFORM_ID, inject, Service } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { UiStore } from '../store';
 
@@ -25,7 +25,7 @@ const MOBILE_TARGET = '#header-burger';
  * hamburger menu on mobile), giving users a clear cue that tracks were added.
  * Browser-only and SSR-safe.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class QueueAnimationService {
   private readonly document = inject<Document>(DOCUMENT);
   private readonly uiStore = inject(UiStore);

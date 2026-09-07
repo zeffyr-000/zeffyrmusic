@@ -69,7 +69,7 @@ For up-to-date Angular best practices and LLM context, see:
 - Do NOT use `ngStyle` — use `style` bindings instead
 - Use native control flow (@if, @for, @switch) instead of *ngIf, *ngFor, *ngSwitch
 - Use `inject()` function instead of constructor injection
-- Use `providedIn: 'root'` for singleton services
+- Use `@Service()` for singleton services (Angular 22+ replacement for `@Injectable({ providedIn: 'root' })`); `providedIn: 'root'` remains the signalStore() config
 - Use Reactive Forms instead of Template-driven Forms
 - Do NOT set `changeDetection` — OnPush is the Angular 22 zoneless default (use `ChangeDetectionStrategy.Eager` only if eager checking is needed)
 

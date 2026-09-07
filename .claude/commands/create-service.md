@@ -8,7 +8,7 @@ Create a new Angular service following project conventions.
 
 ## Requirements
 
-- Use `@Injectable({ providedIn: 'root' })`
+- Use `@Service()` (Angular 22+ — replaces `@Injectable({ providedIn: 'root' })`)
 - Use `inject()` for dependencies
 - Handle HTTP with proper error handling
 - Map API responses from snake_case to camelCase
@@ -16,14 +16,12 @@ Create a new Angular service following project conventions.
 ## Template
 
 ```typescript
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class MyService {
   private readonly http = inject(HttpClient);
 

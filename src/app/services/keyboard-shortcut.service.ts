@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
+import { PLATFORM_ID, inject, OnDestroy, Service } from '@angular/core';
 import { PlayerService } from './player.service';
 import { PlayerStore } from '../store/player/player.store';
 import { UiStore } from '../store/ui/ui.store';
@@ -26,9 +26,7 @@ const IGNORED_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
  * - M: toggle mute
  * - Escape: close lyrics panel / collapse expanded player / close modal
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class KeyboardShortcutService implements OnDestroy {
   private readonly document = inject<Document>(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);

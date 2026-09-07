@@ -1,11 +1,9 @@
-import { Injectable, DOCUMENT, inject } from '@angular/core';
+import { DOCUMENT, inject, Service } from '@angular/core';
 
 const JSON_LD_ID = 'structured-data-json-ld';
 const BREADCRUMB_ID = 'structured-data-breadcrumb';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class SeoService {
   private readonly document = inject<Document>(DOCUMENT);
 

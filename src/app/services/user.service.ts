@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import {
@@ -22,9 +22,7 @@ import {
  *
  * Handles authentication, registration and playlist CRUD operations.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class UserService {
   private readonly httpClient = inject(HttpClient);
 
