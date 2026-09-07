@@ -47,11 +47,11 @@
     "material-icons": "^1.13.12",
     "ng2-charts": "^10.0.0",
     "ngx-google-analytics": "^14.0.1",
-    "ngx-image-cropper": "^9.1.6",
+    "ngx-image-cropper": "^9.1.7",
     "ngx-sharebuttons": "^17.0.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.6.2",
-    "zone.js": "^0.16.2"
+    "zone.js": "^0.16.3"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "^2.6.3",
