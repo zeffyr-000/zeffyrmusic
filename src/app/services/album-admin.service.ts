@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Playlist } from '../models/playlist.model';
@@ -10,9 +10,7 @@ import {
   MergeAlbumsResponse,
 } from '../models/album-admin.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AlbumAdminService {
   private readonly httpClient = inject(HttpClient);
 

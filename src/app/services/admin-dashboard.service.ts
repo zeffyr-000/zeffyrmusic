@@ -1,12 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DashboardApiResponse, DashboardResponse } from '../models/admin-dashboard.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AdminDashboardService {
   private readonly httpClient = inject(HttpClient);
 

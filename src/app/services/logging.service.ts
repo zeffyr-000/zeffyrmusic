@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SENTRY_API } from '../tokens';
 
 /**
@@ -7,9 +7,7 @@ import { SENTRY_API } from '../tokens';
  * SSR-safe: SENTRY_API token is only provided in browser configs, so all methods
  * are automatic no-ops on the server with zero @sentry/angular in the SSR bundle.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class LoggingService {
   private readonly sentry = inject(SENTRY_API, { optional: true });
 

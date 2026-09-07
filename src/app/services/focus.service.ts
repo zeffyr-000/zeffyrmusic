@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { PLATFORM_ID, inject, Service } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService } from '@jsverse/transloco';
@@ -9,9 +9,7 @@ import { filter } from 'rxjs';
  * Manages focus after route navigation for SPA accessibility.
  * Resets focus to #content and announces the new page title via aria-live region.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class FocusService {
   private readonly router = inject(Router);
   private readonly titleService = inject(Title);

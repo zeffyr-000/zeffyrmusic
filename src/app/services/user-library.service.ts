@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable, tap, catchError, of, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UserPlaylist } from '../models/playlist.model';
@@ -15,9 +15,7 @@ export interface RenameTrackResult {
   artists: Artist[];
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class UserLibraryService {
   private readonly http = inject(HttpClient);
   private readonly userDataStore = inject(UserDataStore);

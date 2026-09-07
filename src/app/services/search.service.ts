@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, PLATFORM_ID, makeStateKey, TransferState, inject } from '@angular/core';
+import { PLATFORM_ID, makeStateKey, TransferState, inject, Service } from '@angular/core';
 import { Observable, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
@@ -12,9 +12,7 @@ import { isPlatformServer } from '@angular/common';
 
 const SEARCH1_KEY = (query: string) => makeStateKey<SearchResults1>(`search1-${query}`);
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class SearchService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly httpClient = inject(HttpClient);

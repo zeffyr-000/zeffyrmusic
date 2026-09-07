@@ -60,7 +60,7 @@ src/app/
 │   ├── queue/               # QueueStore
 │   ├── user-data/           # UserDataStore
 │   └── ui/                  # UiStore
-├── services/                 # 19 services (all with specs)
+├── services/                 # 22 services (all with specs), all `@Service()`
 │   ├── init.service.ts      # App bootstrap, session, ping
 │   ├── player.service.ts    # Playback orchestration
 │   ├── youtube-player.service.ts  # YouTube IFrame API wrapper
@@ -152,6 +152,23 @@ readonly authStore = inject(AuthStore);
 // ❌ No constructor injection
 constructor(private userService: UserService) {}
 ```
+
+```typescript
+// ✅ @Service() — Angular 22+ replacement for @Injectable({ providedIn: 'root' })
+@Service()
+export class MyService {}
+
+// ✅ Opt out of auto-provisioning (you must then list it in a `providers` array)
+@Service({ autoProvided: false })
+export class ManuallyProvidedService {}
+
+// ❌ No @Injectable in this codebase
+@Injectable({ providedIn: 'root' })
+export class MyService {}
+```
+
+`providedIn: 'root'` is still the correct config for `signalStore()` — the change above
+only concerns services, guards, preload strategies and the Transloco loader.
 
 ### 4. Transloco + Signal Forms
 

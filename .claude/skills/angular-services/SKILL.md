@@ -8,7 +8,7 @@ description: Angular service conventions for Zeffyr Music — HTTP calls and bus
 ## Structure
 
 ```typescript
-@Injectable({ providedIn: 'root' })
+@Service()
 export class MyService {
   private readonly http = inject(HttpClient);
   private readonly authStore = inject(AuthStore);
@@ -30,8 +30,24 @@ export class MyService {
 
 - Services handle HTTP calls and business logic only
 - Services do NOT hold application state — use Signal Stores instead
+- Use `@Service()` from `@angular/core`, never `@Injectable({ providedIn: 'root' })`
 - Use `inject()` function, never constructor injection
 - Always map API responses from snake_case to camelCase
+
+## `@Service()` vs `@Injectable()`
+
+`@Service()` (Angular 22+) is the replacement for `@Injectable({ providedIn: 'root' })` —
+the service is registered in the root injector automatically, so `providedIn` is gone.
+
+Only reach for the options object when the service must **not** be auto-provided
+(it is then up to you to list it in a `providers` array):
+
+```typescript
+@Service({ autoProvided: false })
+export class ManuallyProvidedService {}
+```
+
+`@Injectable()` is not deprecated, but the whole codebase is on `@Service()` — keep it that way.
 
 ## API Data Mapping
 

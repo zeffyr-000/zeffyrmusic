@@ -1,4 +1,4 @@
-import { effect, Injectable, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { effect, OnDestroy, PLATFORM_ID, inject, Service } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { Video } from '../models/video.model';
@@ -14,9 +14,7 @@ import { YoutubePlayerService } from './youtube-player.service';
  * Coordinates YouTube player, stores and playlist CRUD operations.
  * All state is held in QueueStore and PlayerStore (single source of truth).
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class PlayerService implements OnDestroy {
   private readonly titleService = inject(Title);
   private readonly platformId = inject(PLATFORM_ID);

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -7,9 +7,7 @@ export interface ThumbnailResult {
   img_big: string;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class PlaylistThumbnailService {
   private readonly http = inject(HttpClient);
 

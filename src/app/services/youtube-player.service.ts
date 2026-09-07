@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { PLATFORM_ID, inject, Service } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { PlayerStore } from '../store/player/player.store';
@@ -16,9 +16,7 @@ declare global {
  *
  * Encapsulates YouTube API interactions (init, loading, controls).
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class YoutubePlayerService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly playerStore = inject(PlayerStore);
