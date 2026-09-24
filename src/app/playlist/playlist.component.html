@@ -7,7 +7,7 @@
       !idTopCharts() ? 'http://schema.org/MusicAlbum' : 'http://schema.org/MusicGroup'
     "
   >
-    @if (!isPrivate() && (!isLikePage() || playlist().length > 0)) {
+    @if (!isPrivate() && !isUnavailable() && (!isLikePage() || playlist().length > 0)) {
       <div id="playlist-header" class="card-header clearfix border-0">
         <div class="panel-head-content row">
           @if (isLikePage()) {
@@ -378,6 +378,18 @@
           >lock</span
         >
         <p class="empty-state-text">{{ 'playlist_privee' | transloco }}</p>
+        <a class="btn btn-outline-primary mt-3" routerLink="/">{{ 'back_home' | transloco }}</a>
+      </div>
+    }
+    @if (isUnavailable()) {
+      <div class="empty-state" data-testid="empty-state">
+        <span
+          class="material-icons empty-state-icon"
+          data-testid="empty-state-icon"
+          aria-hidden="true"
+          >playlist_remove</span
+        >
+        <p class="empty-state-text">{{ 'playlist_not_available' | transloco }}</p>
         <a class="btn btn-outline-primary mt-3" routerLink="/">{{ 'back_home' | transloco }}</a>
       </div>
     }

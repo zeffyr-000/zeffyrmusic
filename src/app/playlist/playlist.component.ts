@@ -101,6 +101,7 @@ export class PlaylistComponent {
 
   readonly isLoading = signal(true);
   readonly isPrivate = signal(false);
+  readonly isUnavailable = signal(false);
   readonly idPlaylist = signal<string | null>(null);
   readonly playlist = signal<Video[]>([]);
   private readonly imgBigRaw = signal('');
@@ -413,7 +414,23 @@ export class PlaylistComponent {
       // Already reported and surfaced by errorInterceptor; handling it here keeps an
       // API failure from becoming an uncaughtException during SSR.
       error: () => {
-        this.isLoading.set(false);
+        // A failed route load must not keep showing the previous playlist; a failed
+        // in-place refresh (url === '') keeps the already rendered one.
+        if (url !== '') {
+          this.resetToDefaultState();
+          this.isUnavailable.set(true);
+          // Drop the previous playlist's SEO metadata along with its content.
+          this.titleService.setTitle(
+            this.translocoService.translate('playlist_not_available') + ' - Zeffyr Music'
+          );
+          this.clearSeoMetaTags();
+          // The data-less canonical branch is browser-only (never taken on the server).
+          if (this.isBrowser) {
+            this.updateCanonicalUrl();
+          }
+        } else {
+          this.isLoading.set(false);
+        }
       },
     });
   }
@@ -429,7 +446,7 @@ export class PlaylistComponent {
     }
 
     this.titleService.setTitle(this.translocoService.translate('mes_likes') + ' - Zeffyr Music');
-    this.clearOgMetaTags();
+    this.clearSeoMetaTags();
     this.updateCanonicalUrl();
     this.trackPageView();
   }
@@ -444,6 +461,7 @@ export class PlaylistComponent {
   private resetToDefaultState(): void {
     this.isLoading.set(false);
     this.isPrivate.set(false);
+    this.isUnavailable.set(false);
     this.idPlaylist.set('');
     this.playlist.set([]);
     this.imgBigRaw.set('');
@@ -459,6 +477,7 @@ export class PlaylistComponent {
   /** Updates component state from playlist data */
   private updatePlaylistState(data: Playlist): void {
     this.isPrivate.set(false);
+    this.isUnavailable.set(false);
     this.idPlaylist.set(data.id_playlist);
     this.playlist.set(data.tab_video);
     this.imgBigRaw.set(data.img_big || '');
@@ -513,8 +532,9 @@ export class PlaylistComponent {
     );
   }
 
-  /** Clears OpenGraph meta tags */
-  private clearOgMetaTags(): void {
+  /** Clears the description and OpenGraph meta tags set by updateSeoMetadata */
+  private clearSeoMetaTags(): void {
+    this.metaService.updateTag({ name: 'description', content: '' });
     this.metaService.updateTag({ name: 'og:title', content: '' });
     this.metaService.updateTag({ name: 'og:description', content: '' });
     this.metaService.updateTag({ name: 'og:image', content: '' });
