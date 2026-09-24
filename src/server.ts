@@ -19,7 +19,8 @@ if (environment.SENTRY_DSN) {
     dsn: environment.SENTRY_DSN,
     environment: environment.SENTRY_ENVIRONMENT,
     release: environment.SENTRY_RELEASE || undefined,
-    tracesSampleRate: 0.2,
+    // Kept low: the VPS has a single vCPU and every traced render adds overhead.
+    tracesSampleRate: 0.01,
     sendDefaultPii: false,
     beforeSend(event) {
       // Drop SSR hostname rejection errors — caused by security scanners (Censys, Shodan)
@@ -61,11 +62,24 @@ const ALLOWED_HOSTS = new Set([
   'localhost',
 ]);
 
+// Proxy headers (`Forwarded` / `X-Forwarded-*`) the SSR engine may use to rebuild the
+// request URL. Empty on purpose (least privilege, see
+// https://angular.dev/best-practices/security#configuring-trusted-proxy-headers):
+// - the app never reads the request origin: canonical URLs come from
+//   environment.URL_BASE and SSR redirects are path-only;
+// - Apache mod_proxy appends to (rather than overrides) client-supplied
+//   X-Forwarded-* values, and the engine reads the first one, so trusting them would
+//   let a client choose it. Only add a header here once Apache unsets the client
+//   value first (`RequestHeader unset <name> early`).
+// Passed explicitly so NG_TRUST_PROXY_HEADERS on the host cannot widen it silently.
+const TRUSTED_PROXY_HEADERS: readonly string[] = [];
+
 // Angular v22 SSR engine (replaces the deprecated CommonEngine). It reads the
 // server manifest emitted by the build, so no bootstrap/documentFilePath is passed.
 // `allowedHosts` blocks SSRF: an unknown hostname yields a 400 instead of rendering.
 const angularApp = new AngularNodeAppEngine({
   allowedHosts: [...ALLOWED_HOSTS],
+  trustProxyHeaders: TRUSTED_PROXY_HEADERS,
 });
 
 app.disable('x-powered-by');
@@ -125,10 +139,24 @@ if (environment.URL_SERVER.startsWith('/')) {
   });
 }
 
+// Apache adds X-Forwarded-For/Host/Server to every proxied request. The engine drops
+// untrusted proxy headers anyway, but logs a console.warn for each one on every
+// render. Dropping them here first gives the same result without flooding the PM2
+// error log.
+const stripUntrustedProxyHeaders = (headers: express.Request['headers']): void => {
+  for (const key of Object.keys(headers)) {
+    const isProxyHeader = key === 'forwarded' || key.startsWith('x-forwarded-');
+    if (isProxyHeader && !TRUSTED_PROXY_HEADERS.includes(key)) {
+      delete headers[key];
+    }
+  }
+};
+
 // SSR — the engine populates the REQUEST / RESPONSE_INIT DI tokens itself, so
 // per-request providers are no longer wired here (see app.config.server.ts for
 // APP_BASE_HREF). Returns null for non-Angular routes, which fall through to 404.
 app.use('/{*path}', (req, res, next) => {
+  stripUntrustedProxyHeaders(req.headers);
   angularApp
     .handle(req)
     .then(response => (response ? writeResponseToNodeResponse(response, res) : next()))

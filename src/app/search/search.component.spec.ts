@@ -4,7 +4,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslocoService } from '@jsverse/transloco';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { SearchResults1, SearchResults2, SearchResults3 } from '../models/search.model';
 import { PlayerService } from '../services/player.service';
 import { SearchComponent } from './search.component';
@@ -370,5 +370,38 @@ describe('SearchComponent', () => {
 
     expect(component.listExtras()).toEqual(searchResults3.tab_extra);
     expect(searchServiceMock.fullSearch3).toHaveBeenCalled();
+  });
+  it('should show empty results and still set the title when search requests fail', () => {
+    vi.spyOn(titleService, 'setTitle');
+    (searchServiceMock.fullSearch1 as Mock).mockReturnValue(throwError(() => new Error('400')));
+    (searchServiceMock.fullSearch2 as Mock).mockReturnValue(throwError(() => new Error('400')));
+    (searchServiceMock.fullSearch3 as Mock).mockReturnValue(throwError(() => new Error('400')));
+    authStore.login(
+      { pseudo: 'test', mail: 'test@test.com', idPerso: '123', isAdmin: false },
+      { darkModeEnabled: false, language: 'fr' }
+    );
+    translocoService.setActiveLang('en');
+
+    component.ngOnInit();
+
+    expect(component.isLoading1()).toBe(false);
+    expect(component.isLoading2()).toBe(false);
+    expect(component.isLoading3()).toBe(false);
+    expect(component.listArtists()).toEqual([]);
+    expect(component.listAlbums()).toEqual([]);
+    expect(component.listTracks()).toEqual([]);
+    expect(component.listExtras()).toEqual([]);
+    expect(titleService.setTitle).toHaveBeenCalledWith('Search results "test" - Zeffyr Music');
+  });
+
+  it('should default to empty lists when search responses miss their arrays', () => {
+    (searchServiceMock.fullSearch1 as Mock).mockReturnValue(of({}));
+    (searchServiceMock.fullSearch2 as Mock).mockReturnValue(of({}));
+
+    component.ngOnInit();
+
+    expect(component.listArtists()).toEqual([]);
+    expect(component.listAlbums()).toEqual([]);
+    expect(component.listTracks()).toEqual([]);
   });
 });

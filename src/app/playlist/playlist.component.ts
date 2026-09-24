@@ -393,9 +393,8 @@ export class PlaylistComponent {
   loadPlaylist(url: string) {
     this.resetAdjustmentState();
 
-    this.playlistService
-      .getPlaylist(url, this.idPlaylist() ?? undefined)
-      .subscribe((data: Playlist) => {
+    this.playlistService.getPlaylist(url, this.idPlaylist() ?? undefined).subscribe({
+      next: (data: Playlist) => {
         this.isLoading.set(false);
 
         if (data.est_prive === undefined) {
@@ -410,7 +409,13 @@ export class PlaylistComponent {
         }
 
         this.trackPageView();
-      });
+      },
+      // Already reported and surfaced by errorInterceptor; handling it here keeps an
+      // API failure from becoming an uncaughtException during SSR.
+      error: () => {
+        this.isLoading.set(false);
+      },
+    });
   }
 
   loadLike() {

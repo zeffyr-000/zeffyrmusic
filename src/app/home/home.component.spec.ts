@@ -304,5 +304,19 @@ describe('HomeComponent', () => {
         mockHomeData.top
       );
     });
+
+    it('should render empty lists instead of throwing when the API body is malformed', () => {
+      vi.spyOn(component['initService'], 'getHomeInit').mockReturnValue(
+        of({} as { top: HomeAlbum[]; top_albums: HomeAlbum[] })
+      );
+
+      expect(() => component.ngOnInit()).not.toThrow();
+
+      expect(component.isLoading()).toBe(false);
+      expect(component.listTopSliced()).toEqual([]);
+      expect(component.listTop()).toEqual([]);
+      expect(component.listTopDecade()).toEqual([]);
+      expect(component.listTopAlbums()).toEqual([]);
+    });
   });
 });

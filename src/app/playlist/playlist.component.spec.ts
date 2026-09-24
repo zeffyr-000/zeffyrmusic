@@ -312,6 +312,17 @@ describe('PlaylistComponent', () => {
     );
   });
 
+  it('should stop loading without throwing when the playlist request fails', () => {
+    const httpClient = TestBed.inject(HttpClient);
+    vi.spyOn(httpClient, 'get').mockReturnValue(throwError(() => new Error('403 Forbidden')));
+    component.isLoading.set(true);
+
+    expect(() => component.loadPlaylist(environment.URL_SERVER + 'json/playlist/1')).not.toThrow();
+
+    expect(component.isLoading()).toBe(false);
+    expect(component.isPrivate()).toBe(false);
+  });
+
   it('url empty', () => {
     const httpClient = TestBed.inject(HttpClient);
     const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
