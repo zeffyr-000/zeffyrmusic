@@ -323,6 +323,54 @@ describe('PlaylistComponent', () => {
     expect(component.isPrivate()).toBe(false);
   });
 
+  it('should clear the previous playlist and flag it unavailable when a route load fails', () => {
+    const httpClient = TestBed.inject(HttpClient);
+    vi.spyOn(httpClient, 'get').mockReturnValue(throwError(() => new Error('404 Not Found')));
+    const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
+    component.title.set('Previous playlist');
+    component.playlist.set([{ key: 'abc' } as Video]);
+
+    component.loadPlaylist(environment.URL_SERVER + 'json/playlist/2');
+
+    expect(component.isUnavailable()).toBe(true);
+    expect(component.title()).toBe('');
+    expect(component.playlist()).toEqual([]);
+    expect(component.isLoading()).toBe(false);
+    expect(titleServiceSpy).toHaveBeenCalledWith(
+      translocoService.translate('playlist_not_available') + ' - Zeffyr Music'
+    );
+    expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:title', content: '' });
+    expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:image', content: '' });
+    expect(metaService.updateTag).toHaveBeenCalledWith({
+      name: 'og:url',
+      content: document.location.href,
+    });
+  });
+
+  it('should keep the rendered playlist when an in-place refresh fails', () => {
+    const httpClient = TestBed.inject(HttpClient);
+    vi.spyOn(httpClient, 'get').mockReturnValue(throwError(() => new Error('500 Server Error')));
+    component.idPlaylist.set('1');
+    component.title.set('Current playlist');
+    component.isLoading.set(true);
+
+    component.loadPlaylist('');
+
+    expect(component.isUnavailable()).toBe(false);
+    expect(component.title()).toBe('Current playlist');
+    expect(component.isLoading()).toBe(false);
+  });
+
+  it('should clear the unavailable flag once a playlist loads successfully', () => {
+    const httpClient = TestBed.inject(HttpClient);
+    vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
+    component.isUnavailable.set(true);
+
+    component.loadPlaylist(environment.URL_SERVER + 'json/playlist/1');
+
+    expect(component.isUnavailable()).toBe(false);
+  });
+
   it('url empty', () => {
     const httpClient = TestBed.inject(HttpClient);
     const httpClientSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(mockPlaylistData));
@@ -1178,6 +1226,23 @@ describe('PlaylistComponent (Server context)', () => {
     expect(component.isPrivate()).toBe(false);
     expect(component.idPlaylist()).toEqual('');
     expect(component.isLikePage()).toBe(true);
+  });
+
+  it('should clear SEO metadata but not set a canonical URL when a route load fails on the server', () => {
+    const titleServiceSpy = vi.spyOn(titleService, 'setTitle');
+    const metaServiceSpy = metaService.updateTag as Mock;
+    const httpClient = TestBed.inject(HttpClient);
+    vi.spyOn(httpClient, 'get').mockReturnValue(throwError(() => new Error('404 Not Found')));
+    metaServiceSpy.mockClear();
+
+    component.loadPlaylist(environment.URL_SERVER + 'json/playlist/999');
+
+    expect(component.isUnavailable()).toBe(true);
+    expect(titleServiceSpy).toHaveBeenCalledWith(
+      translocoService.translate('playlist_not_available') + ' - Zeffyr Music'
+    );
+    expect(metaServiceSpy).toHaveBeenCalledWith({ name: 'og:title', content: '' });
+    expect(metaServiceSpy).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'og:url' }));
   });
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context', () => {
