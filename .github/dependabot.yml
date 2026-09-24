@@ -6,6 +6,12 @@ updates:
       interval: 'weekly'
     # Group minor/patch updates to reduce PR noise
     groups:
+      # vitest and its coverage provider must share the same version (the
+      # coverage payload format changes between majors), so bump them together.
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
       angular:
         patterns:
           - '@angular/*'
