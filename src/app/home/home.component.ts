@@ -72,28 +72,31 @@ export class HomeComponent implements OnInit {
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}${url}`);
 
     this.initService.getHomeInit().subscribe({
-      next: (data: { top: HomeAlbum[]; top_albums: HomeAlbum[] }) => {
+      next: (data: { top: HomeAlbum[]; top_albums: HomeAlbum[] } | null) => {
         this.isLoading.set(false);
 
+        // The backend can answer 200 with an unexpected body (PHP error, maintenance):
+        // fall back to empty lists instead of throwing during SSR.
+        const top = Array.isArray(data?.top) ? data.top : [];
+        const topAlbums = Array.isArray(data?.top_albums) ? data.top_albums : [];
+
         if (isPlatformServer(this.platformId)) {
-          const randomizedTop = shuffleArray(data.top).slice(0, 5);
+          const randomizedTop = shuffleArray(top).slice(0, 5);
           this.transferState.set(RANDOM_TOP_KEY, randomizedTop);
           this.listTopSliced.set(randomizedTop);
         } else {
           const storedTop = this.transferState.get(RANDOM_TOP_KEY, null);
-          this.listTopSliced.set(storedTop ?? shuffleArray(data.top).slice(0, 5));
+          this.listTopSliced.set(storedTop ?? shuffleArray(top).slice(0, 5));
           this.transferState.remove(RANDOM_TOP_KEY);
         }
 
-        this.listTop.set(data.top.filter((album: HomeAlbum) => !album.decade));
+        this.listTop.set(top.filter((album: HomeAlbum) => !album.decade));
         this.listTopDecade.set(
-          data.top
-            .filter((album: HomeAlbum) => album.decade)
-            .sort((a, b) => a.id.localeCompare(b.id))
+          top.filter((album: HomeAlbum) => album.decade).sort((a, b) => a.id.localeCompare(b.id))
         );
 
-        this.listTopAlbumsSliced.set(data.top_albums.slice(0, 5));
-        this.listTopAlbums.set(data.top_albums);
+        this.listTopAlbumsSliced.set(topAlbums.slice(0, 5));
+        this.listTopAlbums.set(topAlbums);
 
         if (!isPlatformServer(this.platformId)) {
           const path = url ? `/${url}` : '/';

@@ -96,29 +96,15 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.listTracks.set(undefined);
       this.listExtras.set(undefined);
 
-      this.searchService
-        .fullSearch1(this.query())
-        .subscribe((data: { artist: ArtistResult[]; playlist: PlaylistResult[] }) => {
+      this.searchService.fullSearch1(this.query()).subscribe({
+        next: (data: { artist: ArtistResult[]; playlist: PlaylistResult[] }) => {
           this.isLoading1.set(false);
+          this.updateSearchMeta();
 
-          this.titleService.setTitle(
-            this.translocoService.translate('resultats_recherche', { query: this.query() }) +
-              ' - Zeffyr Music'
-          );
-          const description = this.translocoService.translate('description_search', {
-            query: this.query(),
-          });
-          if (description) {
-            this.metaService.updateTag({
-              name: 'description',
-              content: description,
-            });
-          }
-
-          this.listArtists.set(data.artist);
+          this.listArtists.set(data.artist ?? []);
           this.limitArtist.set(5);
 
-          this.listAlbums.set(data.playlist);
+          this.listAlbums.set(data.playlist ?? []);
           this.limitAlbum.set(5);
 
           if (this.isBrowser) {
@@ -127,24 +113,61 @@ export class SearchComponent implements OnInit, OnDestroy {
               this.titleService.getTitle()
             );
           }
-        });
+        },
+        // The backend rejects some queries (e.g. Apache 400 on "%"): show the empty
+        // state instead of an endless skeleton and an uncaughtException during SSR.
+        error: () => {
+          this.isLoading1.set(false);
+          this.updateSearchMeta();
+          this.listArtists.set([]);
+          this.listAlbums.set([]);
+        },
+      });
 
-      this.searchService.fullSearch2(this.query()).subscribe((data: { tab_video: Video[] }) => {
-        this.isLoading2.set(false);
+      this.searchService.fullSearch2(this.query()).subscribe({
+        next: (data: { tab_video: Video[] }) => {
+          this.isLoading2.set(false);
 
-        this.listTracks.set(data.tab_video);
-        this.limitTrack.set(5);
+          this.listTracks.set(data.tab_video ?? []);
+          this.limitTrack.set(5);
+        },
+        error: () => {
+          this.isLoading2.set(false);
+          this.listTracks.set([]);
+        },
       });
 
       if (this.authStore.isAuthenticated()) {
-        this.searchService.fullSearch3(this.query()).subscribe((data: { tab_extra: Extra[] }) => {
-          this.isLoading3.set(false);
+        this.searchService.fullSearch3(this.query()).subscribe({
+          next: (data: { tab_extra: Extra[] }) => {
+            this.isLoading3.set(false);
 
-          this.listExtras.set(data.tab_extra || []);
-          this.limitExtra.set(5);
+            this.listExtras.set(data.tab_extra || []);
+            this.limitExtra.set(5);
+          },
+          error: () => {
+            this.isLoading3.set(false);
+            this.listExtras.set([]);
+          },
         });
       }
     });
+  }
+
+  private updateSearchMeta(): void {
+    this.titleService.setTitle(
+      this.translocoService.translate('resultats_recherche', { query: this.query() }) +
+        ' - Zeffyr Music'
+    );
+    const description = this.translocoService.translate('description_search', {
+      query: this.query(),
+    });
+    if (description) {
+      this.metaService.updateTag({
+        name: 'description',
+        content: description,
+      });
+    }
   }
 
   moreArtists() {

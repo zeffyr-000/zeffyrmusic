@@ -101,6 +101,7 @@ export class PlaylistComponent {
 
   readonly isLoading = signal(true);
   readonly isPrivate = signal(false);
+  readonly isUnavailable = signal(false);
   readonly idPlaylist = signal<string | null>(null);
   readonly playlist = signal<Video[]>([]);
   private readonly imgBigRaw = signal('');
@@ -393,9 +394,8 @@ export class PlaylistComponent {
   loadPlaylist(url: string) {
     this.resetAdjustmentState();
 
-    this.playlistService
-      .getPlaylist(url, this.idPlaylist() ?? undefined)
-      .subscribe((data: Playlist) => {
+    this.playlistService.getPlaylist(url, this.idPlaylist() ?? undefined).subscribe({
+      next: (data: Playlist) => {
         this.isLoading.set(false);
 
         if (data.est_prive === undefined) {
@@ -410,7 +410,29 @@ export class PlaylistComponent {
         }
 
         this.trackPageView();
-      });
+      },
+      // Already reported and surfaced by errorInterceptor; handling it here keeps an
+      // API failure from becoming an uncaughtException during SSR.
+      error: () => {
+        // A failed route load must not keep showing the previous playlist; a failed
+        // in-place refresh (url === '') keeps the already rendered one.
+        if (url !== '') {
+          this.resetToDefaultState();
+          this.isUnavailable.set(true);
+          // Drop the previous playlist's SEO metadata along with its content.
+          this.titleService.setTitle(
+            this.translocoService.translate('playlist_not_available') + ' - Zeffyr Music'
+          );
+          this.clearOgMetaTags();
+          // The data-less canonical branch is browser-only (never taken on the server).
+          if (this.isBrowser) {
+            this.updateCanonicalUrl();
+          }
+        } else {
+          this.isLoading.set(false);
+        }
+      },
+    });
   }
 
   loadLike() {
@@ -439,6 +461,7 @@ export class PlaylistComponent {
   private resetToDefaultState(): void {
     this.isLoading.set(false);
     this.isPrivate.set(false);
+    this.isUnavailable.set(false);
     this.idPlaylist.set('');
     this.playlist.set([]);
     this.imgBigRaw.set('');
@@ -454,6 +477,7 @@ export class PlaylistComponent {
   /** Updates component state from playlist data */
   private updatePlaylistState(data: Playlist): void {
     this.isPrivate.set(false);
+    this.isUnavailable.set(false);
     this.idPlaylist.set(data.id_playlist);
     this.playlist.set(data.tab_video);
     this.imgBigRaw.set(data.img_big || '');
