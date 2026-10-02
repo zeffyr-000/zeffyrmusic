@@ -32,7 +32,16 @@ if (environment.SENTRY_DSN) {
     release: environment.SENTRY_RELEASE || undefined,
     integrations: [Sentry.browserTracingIntegration(), Sentry.httpClientIntegration()],
     tracesSampleRate: 0.2,
-    sendDefaultPii: false,
+    // Sentry 11 dropped `sendDefaultPii` and collects everything by default:
+    // opt out explicitly. Only the user agent is kept for debugging.
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: { request: { allow: ['user-agent'] }, response: false },
+      httpBodies: [],
+      urlQueryParams: false,
+      stackFrameVariables: false,
+    },
     beforeBreadcrumb(breadcrumb) {
       if (breadcrumb.data?.['url']) {
         breadcrumb.data['url'] = sanitizeUrl(String(breadcrumb.data['url']));

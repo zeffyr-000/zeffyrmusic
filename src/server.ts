@@ -21,7 +21,16 @@ if (environment.SENTRY_DSN) {
     release: environment.SENTRY_RELEASE || undefined,
     // Kept low: the VPS has a single vCPU and every traced render adds overhead.
     tracesSampleRate: 0.01,
-    sendDefaultPii: false,
+    // Sentry 11 dropped `sendDefaultPii` and collects everything by default:
+    // opt out explicitly. Only the user agent is kept for debugging.
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: { request: { allow: ['user-agent'] }, response: false },
+      httpBodies: [],
+      urlQueryParams: false,
+      stackFrameVariables: false,
+    },
     beforeSend(event) {
       // Drop SSR hostname rejection errors — caused by security scanners (Censys, Shodan)
       // hitting the VPS hostname directly. The hostname guard middleware handles these at
