@@ -15,7 +15,7 @@ export abstract class AbstractAdminListPage<T> implements OnInit {
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
   private readonly seoService = inject(SeoService);
-  private readonly translocoService = inject(TranslocoService);
+  protected readonly translocoService = inject(TranslocoService);
 
   readonly isLoading = signal(true);
   readonly error = signal(false);
@@ -33,7 +33,7 @@ export abstract class AbstractAdminListPage<T> implements OnInit {
     this.titleService.setTitle(title + ' - Zeffyr Music');
     this.metaService.updateTag({ name: 'description', content: title || '' });
     this.seoService.updateCanonicalUrl(`${environment.URL_BASE}${this.canonicalPath}`);
-    this.load();
+    void this.load();
   }
 
   async load(): Promise<void> {
@@ -50,6 +50,6 @@ export abstract class AbstractAdminListPage<T> implements OnInit {
   }
 
   onRefresh(): void {
-    this.load();
+    void this.load();
   }
 }

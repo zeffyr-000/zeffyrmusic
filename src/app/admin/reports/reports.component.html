@@ -24,6 +24,8 @@
               <th scope="col">{{ 'admin_reports_col_reason' | transloco }}</th>
               <th scope="col">{{ 'admin_reports_col_user' | transloco }}</th>
               <th scope="col">{{ 'admin_reports_col_status' | transloco }}</th>
+              <th scope="col">{{ 'admin_reports_col_result' | transloco }}</th>
+              <th scope="col">{{ 'admin_reports_col_actions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -50,6 +52,41 @@
                   >
                     {{ 'admin_reports_status_' + report.status | transloco }}
                   </span>
+                </td>
+                <td
+                  class="small"
+                  data-testid="report-result"
+                  [class.text-danger]="needsAdmin(report.result)"
+                  [class.text-body-secondary]="!needsAdmin(report.result)"
+                >
+                  @let key = resultKey(report.result);
+                  {{ key ? (key | transloco) : report.result }}
+                </td>
+                <td class="text-nowrap">
+                  @if (report.status === 'pending') {
+                    <div class="d-inline-flex gap-1">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-success"
+                        data-testid="report-close"
+                        [title]="'admin_reports_action_scope' | transloco"
+                        [disabled]="busyId() !== null"
+                        (click)="onClose(report)"
+                      >
+                        {{ 'admin_reports_close' | transloco }}
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        data-testid="report-retry"
+                        [title]="'admin_reports_action_scope' | transloco"
+                        [disabled]="busyId() !== null"
+                        (click)="onRetry(report)"
+                      >
+                        {{ 'admin_reports_retry' | transloco }}
+                      </button>
+                    </div>
+                  }
                 </td>
               </tr>
             }

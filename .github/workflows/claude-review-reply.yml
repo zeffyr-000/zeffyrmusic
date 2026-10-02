@@ -85,5 +85,5 @@ jobs:
             - issue_comment: `gh pr comment ${{ github.event.issue.number }} --body "..."`
 
           claude_args: |
-            --model claude-sonnet-5
+            --model sonnet
             --allowedTools "Bash(gh api:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
