@@ -38,6 +38,7 @@ jobs:
 
       # Escalate to a higher-reasoning model (Opus) for large or sensitive PRs;
       # keep the faster Sonnet for routine ones — mirrors Copilot's effort levels.
+      # Aliases (sonnet/opus) resolve to the latest model of each family.
       - name: Select review model by PR complexity
         id: model
         env:
@@ -50,10 +51,10 @@ jobs:
           # Areas where subtle bugs are costly and deserve deeper analysis.
           SENSITIVE=$(printf '%s\n' "$CHANGED" | grep -Ec \
             'src/app/store/|src/server\.ts|styles\.scss|_custom\.scss|interceptor/|youtube-player|app\.config|with-ssr-safety' || true)
-          MODEL="claude-sonnet-5"
+          MODEL="sonnet"
           REASON="routine"
           if [ "${FILES:-0}" -gt 15 ] || [ "${LINES:-0}" -gt 400 ] || [ "${SENSITIVE:-0}" -gt 0 ]; then
-            MODEL="claude-opus-5"
+            MODEL="opus"
             REASON="complex"
           fi
           echo "model=$MODEL" >> "$GITHUB_OUTPUT"

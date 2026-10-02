@@ -20,6 +20,7 @@ describe('AdminReportService', () => {
       reason: 'missing_tracks',
       pseudo: 'jdoe',
       status: 'pending',
+      resultat: 'regenere_a_verifier',
     },
     {
       id_report: '399',
@@ -30,6 +31,7 @@ describe('AdminReportService', () => {
       reason: 'wrong_album',
       pseudo: 'alice',
       status: 'processed',
+      resultat: 'clos_admin',
     },
   ];
 
@@ -62,6 +64,7 @@ describe('AdminReportService', () => {
         reason: 'missing_tracks',
         userPseudo: 'jdoe',
         status: 'pending',
+        result: 'regenere_a_verifier',
       });
       expect(reports[1].id).toBe('399');
       expect(reports[1].status).toBe('processed');
@@ -90,5 +93,36 @@ describe('AdminReportService', () => {
 
     const req = httpMock.expectOne(environment.URL_SERVER + 'admin/reports');
     req.flush([{ ...mockApiResponse[0], titre: '', artiste: '', pseudo: '' }]);
+  });
+
+  it('should pass through an empty result for never-processed reports', () => {
+    service.getReports().subscribe(reports => {
+      expect(reports[0].result).toBe('');
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'admin/reports');
+    req.flush([{ ...mockApiResponse[0], resultat: '' }]);
+  });
+
+  it('should POST the report id to close-report', () => {
+    service.closeReport('412').subscribe(response => {
+      expect(response).toEqual({ success: true });
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'admin/close-report');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ id_report: '412' });
+    req.flush({ success: true });
+  });
+
+  it('should POST the report id to retry-report', () => {
+    service.retryReport('412').subscribe(response => {
+      expect(response).toEqual({ success: false, error: 'report_not_found' });
+    });
+
+    const req = httpMock.expectOne(environment.URL_SERVER + 'admin/retry-report');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ id_report: '412' });
+    req.flush({ success: false, error: 'report_not_found' });
   });
 });
