@@ -68,18 +68,38 @@ export class ArtistComponent implements OnInit {
   readonly isLoading = signal(true);
   readonly biographyFr = signal('');
   readonly biographyEn = signal('');
+  readonly biographyUrlFr = signal('');
+  readonly biographyUrlEn = signal('');
   readonly relatedArtists = signal<RelatedArtist[]>([]);
   readonly biographyExpanded = signal(false);
 
   private static readonly BIOGRAPHY_MAX_LENGTH = 120;
 
-  readonly biography = computed(() => {
-    const lang = this.authStore.language();
-    return lang === 'en' ? this.biographyEn() : this.biographyFr();
+  // English bio is shown when the French one is missing; source URL must follow the displayed text
+  private readonly biographyShowsEnglish = computed(
+    () => this.authStore.language() === 'en' || !this.biographyFr()
+  );
+
+  readonly biography = computed(() =>
+    this.biographyShowsEnglish() ? this.biographyEn() : this.biographyFr()
+  );
+
+  readonly biographyUrl = computed(() =>
+    this.biographyShowsEnglish() ? this.biographyUrlEn() : this.biographyUrlFr()
+  );
+
+  readonly biographySource = computed(() => {
+    const url = this.biographyUrl();
+    if (url.includes('wikipedia.org')) return 'Wikipedia';
+    if (url.includes('last.fm')) return 'Last.fm';
+    return '';
   });
 
+  // Paragraphs flattened so a short first paragraph doesn't break the collapsed preview
+  private readonly biographyFlat = computed(() => this.biography().replace(/\s+/g, ' '));
+
   readonly biographyTruncated = computed(() => {
-    const bio = this.biography();
+    const bio = this.biographyFlat();
     if (bio.length <= ArtistComponent.BIOGRAPHY_MAX_LENGTH) {
       return bio;
     }
@@ -90,7 +110,7 @@ export class ArtistComponent implements OnInit {
   });
 
   readonly biographyNeedsTruncation = computed(() => {
-    return this.biography().length > ArtistComponent.BIOGRAPHY_MAX_LENGTH;
+    return this.biographyFlat().length > ArtistComponent.BIOGRAPHY_MAX_LENGTH;
   });
 
   private readonly isBrowser: boolean;
@@ -121,6 +141,8 @@ export class ArtistComponent implements OnInit {
     this.listAlbums.set([]);
     this.biographyFr.set('');
     this.biographyEn.set('');
+    this.biographyUrlFr.set('');
+    this.biographyUrlEn.set('');
     this.relatedArtists.set([]);
     this.biographyExpanded.set(false);
 
@@ -157,6 +179,8 @@ export class ArtistComponent implements OnInit {
             this.listAlbums.set(data.list_albums);
             this.biographyFr.set(data.biography_fr ?? '');
             this.biographyEn.set(data.biography_en ?? '');
+            this.biographyUrlFr.set(data.biography_url_fr ?? '');
+            this.biographyUrlEn.set(data.biography_url_en ?? '');
             this.relatedArtists.set(data.related_artists ?? []);
 
             this.titleService.setTitle(
@@ -170,7 +194,7 @@ export class ArtistComponent implements OnInit {
             });
 
             // Use biography excerpt for meta description if available
-            const bioRaw = this.biography().substring(0, 150).trim();
+            const bioRaw = this.biographyFlat().substring(0, 150).trim();
             let bioExcerpt: string;
             if (bioRaw.length === 0) {
               bioExcerpt = '';
