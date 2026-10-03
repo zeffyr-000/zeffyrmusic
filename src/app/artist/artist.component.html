@@ -40,6 +40,17 @@
                   </button>
                 }
               </p>
+              @if (biographySource()) {
+                <a
+                  class="artist-bio-source"
+                  data-testid="artist-bio-source"
+                  [href]="biographyUrl()"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'biography_source' | transloco: { source: biographySource() } }}
+                </a>
+              }
             }
 
             <div class="artist-meta">

@@ -25,5 +25,7 @@ export interface ArtistData {
   list_albums: Album[];
   biography_fr?: string;
   biography_en?: string;
+  biography_url_fr?: string;
+  biography_url_en?: string;
   related_artists?: RelatedArtist[];
 }

@@ -160,17 +160,54 @@ describe('ArtistComponent', () => {
       expect(component.biography()).toBe('Biographie en français');
     });
 
-    it('should return empty string when biography is not available for selected language', () => {
+    it('should return empty string when no biography is available in any language', () => {
       const dataWithoutBio: ArtistData = {
         ...data,
         biography_fr: '',
         biography_en: '',
       };
       artistServiceMock.getArtist = vi.fn().mockReturnValue(of(dataWithoutBio));
+      TestBed.inject(AuthStore).setLanguage('fr');
 
       component.initLoad();
 
       expect(component.biography()).toBe('');
+    });
+
+    it('should fall back to the English biography and source when French is missing', () => {
+      const englishUrl = 'https://en.wikipedia.org/wiki/Test_Artist';
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(
+        of({
+          ...data,
+          biography_fr: '',
+          biography_url_fr: '',
+          biography_url_en: englishUrl,
+        })
+      );
+      TestBed.inject(AuthStore).setLanguage('fr');
+
+      component.initLoad();
+
+      expect(component.biography()).toBe('Biography in English');
+      expect(component.biographyUrl()).toBe(englishUrl);
+      expect(component.biographySource()).toBe('Wikipedia');
+    });
+
+    it('should not fall back to the French biography when English is missing', () => {
+      artistServiceMock.getArtist = vi.fn().mockReturnValue(
+        of({
+          ...data,
+          biography_en: '',
+          biography_url_fr: 'https://fr.wikipedia.org/wiki/Test_Artist',
+          biography_url_en: '',
+        })
+      );
+      TestBed.inject(AuthStore).setLanguage('en');
+
+      component.initLoad();
+
+      expect(component.biography()).toBe('');
+      expect(component.biographySource()).toBe('');
     });
 
     it('should handle empty related_artists array', () => {
@@ -269,6 +306,148 @@ describe('ArtistComponent', () => {
       expect(component.biographyTruncated()).toBe(shortBio);
     });
 
+    describe('multi-paragraph biography', () => {
+      const multiParagraphBio =
+        'Short intro.\n\nThe second paragraph is long enough to push the whole biography past the preview limit of one hundred and twenty characters.';
+
+      beforeEach(() => {
+        artistServiceMock.getArtist = vi
+          .fn()
+          .mockReturnValue(of({ ...data, biography_en: multiParagraphBio }));
+        TestBed.inject(AuthStore).setLanguage('en');
+      });
+
+      it('should keep paragraphs in the full biography', () => {
+        component.initLoad();
+
+        expect(component.biography()).toBe(multiParagraphBio);
+      });
+
+      it('should flatten line breaks in the truncated preview', () => {
+        component.initLoad();
+
+        const preview = component.biographyTruncated();
+        expect(component.biographyNeedsTruncation()).toBe(true);
+        expect(preview).not.toMatch(/\n/);
+        expect(preview.startsWith('Short intro. The second paragraph')).toBe(true);
+        expect(preview.endsWith('…')).toBe(true);
+      });
+
+      it('should not need truncation when only the line breaks exceed the limit', () => {
+        const bio = `${'A'.repeat(59)}\n\n${'B'.repeat(60)}`;
+        artistServiceMock.getArtist = vi.fn().mockReturnValue(of({ ...data, biography_en: bio }));
+
+        component.initLoad();
+
+        expect(component.biographyNeedsTruncation()).toBe(false);
+        expect(component.biographyTruncated()).toBe(`${'A'.repeat(59)} ${'B'.repeat(60)}`);
+      });
+
+      it('should strip line breaks from the meta description excerpt', () => {
+        const translateSpy = vi.spyOn(translocoService, 'translate');
+
+        component.initLoad();
+
+        const bioCall = translateSpy.mock.calls.find(([key]) => key === 'description_artist_bio');
+        const excerpt = (bioCall?.[1] as { description: string } | undefined)?.description ?? '';
+        expect(excerpt.startsWith('Short intro. The second paragraph')).toBe(true);
+        expect(excerpt).not.toMatch(/\n/);
+        expect(metaService.updateTag).toHaveBeenCalledWith(
+          expect.objectContaining({ name: 'description' })
+        );
+      });
+    });
+
+    describe('biography source', () => {
+      const wikipediaUrl = 'https://en.wikipedia.org/wiki/Test_Artist';
+
+      beforeEach(() => {
+        TestBed.inject(AuthStore).setLanguage('en');
+      });
+
+      it('should expose Wikipedia as source for a wikipedia.org URL', () => {
+        artistServiceMock.getArtist = vi
+          .fn()
+          .mockReturnValue(of({ ...data, biography_url_en: wikipediaUrl }));
+
+        component.initLoad();
+
+        expect(component.biographyUrl()).toBe(wikipediaUrl);
+        expect(component.biographySource()).toBe('Wikipedia');
+      });
+
+      it('should expose Last.fm as source for a last.fm URL', () => {
+        artistServiceMock.getArtist = vi
+          .fn()
+          .mockReturnValue(
+            of({ ...data, biography_url_en: 'https://www.last.fm/music/Test+Artist/+wiki' })
+          );
+
+        component.initLoad();
+
+        expect(component.biographySource()).toBe('Last.fm');
+      });
+
+      it('should follow the interface language', () => {
+        artistServiceMock.getArtist = vi.fn().mockReturnValue(
+          of({
+            ...data,
+            biography_url_fr: 'https://fr.wikipedia.org/wiki/Test_Artist',
+            biography_url_en: '',
+          })
+        );
+        const authStore = TestBed.inject(AuthStore);
+        authStore.setLanguage('fr');
+
+        component.initLoad();
+        expect(component.biographySource()).toBe('Wikipedia');
+
+        authStore.setLanguage('en');
+        expect(component.biographySource()).toBe('');
+      });
+
+      it('should render the source link when the URL is provided', () => {
+        artistServiceMock.getArtist = vi
+          .fn()
+          .mockReturnValue(of({ ...data, biography_url_en: wikipediaUrl }));
+
+        component.initLoad();
+        fixture.detectChanges();
+
+        const link: HTMLAnchorElement | null = fixture.nativeElement.querySelector(
+          '[data-testid="artist-bio-source"]'
+        );
+        expect(link).not.toBeNull();
+        expect(link?.getAttribute('href')).toBe(wikipediaUrl);
+        expect(link?.getAttribute('target')).toBe('_blank');
+        expect(link?.getAttribute('rel')).toBe('noopener noreferrer');
+        expect(link?.textContent?.trim()).toBe('Source: Wikipedia');
+      });
+
+      it('should not render the source link when the URL is empty', () => {
+        artistServiceMock.getArtist = vi
+          .fn()
+          .mockReturnValue(of({ ...data, biography_url_en: '' }));
+
+        component.initLoad();
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('.artist-bio')).not.toBeNull();
+        expect(fixture.nativeElement.querySelector('[data-testid="artist-bio-source"]')).toBeNull();
+      });
+
+      it('should not render the source link when the biography is empty', () => {
+        artistServiceMock.getArtist = vi
+          .fn()
+          .mockReturnValue(of({ ...data, biography_en: '', biography_url_en: '' }));
+
+        component.initLoad();
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('[data-testid="artist-bio-source"]')).toBeNull();
+      });
+    });
+
     it('should toggle biography expanded state', () => {
       expect(component.biographyExpanded()).toBe(false);
 
@@ -281,6 +460,11 @@ describe('ArtistComponent', () => {
 
     it('should reset state and scroll to top when navigating to a different artist', () => {
       // First, load an artist and expand biography
+      artistServiceMock.getArtist = vi
+        .fn()
+        .mockReturnValue(
+          of({ ...data, biography_url_en: 'https://en.wikipedia.org/wiki/Test_Artist' })
+        );
       component.initLoad();
       component.toggleBiography();
       expect(component.biographyExpanded()).toBe(true);
@@ -304,6 +488,8 @@ describe('ArtistComponent', () => {
       // State should be reset
       expect(component.biographyExpanded()).toBe(false);
       expect(component.name()).toBe('New Artist');
+      expect(component.biographyUrlEn()).toBe('');
+      expect(component.biographyUrlFr()).toBe('');
     });
 
     it('should handle API error and set loading/available states', () => {

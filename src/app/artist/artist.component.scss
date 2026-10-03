@@ -74,6 +74,25 @@
   color: var(--bs-secondary-color);
   margin: 0 0 var(--spacing-md) 0;
   max-width: 600px;
+  white-space: pre-line;
+
+  &:has(+ .artist-bio-source) {
+    margin-bottom: var(--spacing-xs);
+  }
+}
+
+// CC BY-SA attribution (Wikipedia / Last.fm) — required whenever a bio is shown
+.artist-bio-source {
+  display: inline-block;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--text-xs);
+  color: var(--bs-secondary-color);
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--bs-primary);
+    }
+  }
 }
 
 .btn-bio-toggle {
