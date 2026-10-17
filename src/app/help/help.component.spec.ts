@@ -94,18 +94,18 @@ describe('HelpComponent', () => {
 
   it('should set Open Graph meta tags', () => {
     const metaService = TestBed.inject(Meta);
-    expect(metaService.getTag('name="og:title"')?.content).toContain('Zeffyr Music');
-    expect(metaService.getTag('name="og:type"')?.content).toBe('website');
-    expect(metaService.getTag('name="og:site_name"')?.content).toBe('Zeffyr Music');
-    expect(metaService.getTag('name="og:url"')?.content).toContain('help');
+    expect(metaService.getTag('property="og:title"')?.content).toContain('Zeffyr Music');
+    expect(metaService.getTag('property="og:type"')?.content).toBe('website');
+    expect(metaService.getTag('property="og:site_name"')?.content).toBe('Zeffyr Music');
+    expect(metaService.getTag('property="og:url"')?.content).toContain('help');
   });
 
   it('should remove JSON-LD and OG tags on destroy', () => {
     const metaService = TestBed.inject(Meta);
-    expect(metaService.getTag('name="og:title"')).toBeTruthy();
+    expect(metaService.getTag('property="og:title"')).toBeTruthy();
     fixture.destroy();
     expect(seoServiceMock.removeJsonLd).toHaveBeenCalled();
-    expect(metaService.getTag('name="og:title"')).toBeNull();
+    expect(metaService.getTag('property="og:title"')).toBeNull();
   });
 
   it('should track pageView on init', () => {

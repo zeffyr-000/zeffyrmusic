@@ -160,18 +160,18 @@ describe('HelpPageComponent', () => {
     const metaService = TestBed.inject(Meta);
     getSpy.mockReturnValue('listen');
     component.ngOnInit();
-    expect(metaService.getTag('name="og:title"')?.content).toContain('Zeffyr Music');
-    expect(metaService.getTag('name="og:type"')?.content).toBe('article');
-    expect(metaService.getTag('name="og:site_name"')?.content).toBe('Zeffyr Music');
-    expect(metaService.getTag('name="og:url"')?.content).toContain('help/listen');
+    expect(metaService.getTag('property="og:title"')?.content).toContain('Zeffyr Music');
+    expect(metaService.getTag('property="og:type"')?.content).toBe('article');
+    expect(metaService.getTag('property="og:site_name"')?.content).toBe('Zeffyr Music');
+    expect(metaService.getTag('property="og:url"')?.content).toContain('help/listen');
   });
 
   it('should remove Open Graph meta tags on destroy', () => {
     const metaService = TestBed.inject(Meta);
     getSpy.mockReturnValue('listen');
     component.ngOnInit();
-    expect(metaService.getTag('name="og:title"')).toBeTruthy();
+    expect(metaService.getTag('property="og:title"')).toBeTruthy();
     component.ngOnDestroy();
-    expect(metaService.getTag('name="og:title"')).toBeNull();
+    expect(metaService.getTag('property="og:title"')).toBeNull();
   });
 });

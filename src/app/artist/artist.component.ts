@@ -188,7 +188,7 @@ export class ArtistComponent implements OnInit {
             );
 
             this.metaService.updateTag({
-              name: 'og:title',
+              property: 'og:title',
               content:
                 this.translocoService.translate('title_artist', { artist: this.name() }) || '',
             });
@@ -216,15 +216,15 @@ export class ArtistComponent implements OnInit {
                 });
 
             this.metaService.updateTag({
-              name: 'og:description',
+              property: 'og:description',
               content: metaDescription || '',
             });
-            this.metaService.updateTag({ name: 'og:image', content: this.urlDeezer() });
+            this.metaService.updateTag({ property: 'og:image', content: this.urlDeezer() });
             this.metaService.updateTag({
-              name: 'og:url',
+              property: 'og:url',
               content: `${environment.URL_BASE}artist/${idArtist}`,
             });
-            this.metaService.updateTag({ name: 'og:type', content: 'music.musician' });
+            this.metaService.updateTag({ property: 'og:type', content: 'music.musician' });
             this.seoService.updateCanonicalUrl(`${environment.URL_BASE}artist/${idArtist}`);
 
             this.metaService.updateTag({

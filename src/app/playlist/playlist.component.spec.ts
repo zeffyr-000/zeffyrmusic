@@ -123,8 +123,8 @@ async function configurePlaylistTestBed(
 }
 
 function expectOgMetaTags(metaServiceSpy: Mock): void {
-  for (const name of ['og:title', 'og:description', 'og:image', 'og:url']) {
-    expect(metaServiceSpy).toHaveBeenCalledWith(expect.objectContaining({ name }));
+  for (const property of ['og:title', 'og:description', 'og:image', 'og:url']) {
+    expect(metaServiceSpy).toHaveBeenCalledWith(expect.objectContaining({ property }));
   }
 }
 
@@ -305,7 +305,7 @@ describe('PlaylistComponent', () => {
     expect(titleServiceSpy).toHaveBeenCalledWith(
       'title - The Must-Haves of the Moment | Zeffyr Music'
     );
-    //expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:description', content: 'description_partage_playlist' });
+    //expect(metaService.updateTag).toHaveBeenCalledWith({ property: 'og:description', content: 'description_partage_playlist' });
     expect(googleAnalyticsServiceSpy).toHaveBeenCalledWith(
       '/' + activatedRoute.snapshot.url.join('/'),
       expect.any(String)
@@ -339,10 +339,10 @@ describe('PlaylistComponent', () => {
     expect(titleServiceSpy).toHaveBeenCalledWith(
       translocoService.translate('playlist_not_available') + ' - Zeffyr Music'
     );
-    expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:title', content: '' });
-    expect(metaService.updateTag).toHaveBeenCalledWith({ name: 'og:image', content: '' });
+    expect(metaService.updateTag).toHaveBeenCalledWith({ property: 'og:title', content: '' });
+    expect(metaService.updateTag).toHaveBeenCalledWith({ property: 'og:image', content: '' });
     expect(metaService.updateTag).toHaveBeenCalledWith({
-      name: 'og:url',
+      property: 'og:url',
       content: document.location.href,
     });
   });
@@ -1241,8 +1241,10 @@ describe('PlaylistComponent (Server context)', () => {
     expect(titleServiceSpy).toHaveBeenCalledWith(
       translocoService.translate('playlist_not_available') + ' - Zeffyr Music'
     );
-    expect(metaServiceSpy).toHaveBeenCalledWith({ name: 'og:title', content: '' });
-    expect(metaServiceSpy).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'og:url' }));
+    expect(metaServiceSpy).toHaveBeenCalledWith({ property: 'og:title', content: '' });
+    expect(metaServiceSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ property: 'og:url' })
+    );
   });
 
   it('should set meta tags and title correctly when loadPlaylist is called in server context', () => {

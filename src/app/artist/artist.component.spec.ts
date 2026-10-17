@@ -572,7 +572,7 @@ describe('ArtistComponent', () => {
       component.initLoad();
       expect(metaService.updateTag).toHaveBeenCalledWith(
         expect.objectContaining({
-          name: 'og:url',
+          property: 'og:url',
           content: `${environment.URL_BASE}artist/1`,
         })
       );
