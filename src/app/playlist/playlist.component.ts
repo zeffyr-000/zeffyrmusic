@@ -502,14 +502,14 @@ export class PlaylistComponent {
   /** Updates SEO metadata for the playlist */
   private updateSeoMetadata(data: Playlist): void {
     this.titleService.setTitle(this.getMetaTitle(data));
-    this.metaService.updateTag({ name: 'og:title', content: this.getMetaTitle(data) });
+    this.metaService.updateTag({ property: 'og:title', content: this.getMetaTitle(data) });
     this.metaService.updateTag({ name: 'description', content: this.getMetaDescription(data) });
 
     const ogDescription = this.getOgDescription(data);
-    this.metaService.updateTag({ name: 'og:description', content: ogDescription });
+    this.metaService.updateTag({ property: 'og:description', content: ogDescription });
 
     if (data.og_image || data.img_big) {
-      this.metaService.updateTag({ name: 'og:image', content: data.og_image || data.img_big });
+      this.metaService.updateTag({ property: 'og:image', content: data.og_image || data.img_big });
     }
 
     this.updateCanonicalUrl(data);
@@ -534,25 +534,25 @@ export class PlaylistComponent {
 
   /** Clears OpenGraph meta tags */
   private clearOgMetaTags(): void {
-    this.metaService.updateTag({ name: 'og:title', content: '' });
-    this.metaService.updateTag({ name: 'og:description', content: '' });
-    this.metaService.updateTag({ name: 'og:image', content: '' });
+    this.metaService.updateTag({ property: 'og:title', content: '' });
+    this.metaService.updateTag({ property: 'og:description', content: '' });
+    this.metaService.updateTag({ property: 'og:image', content: '' });
   }
 
   /** Updates canonical URL for SEO */
   private updateCanonicalUrl(data?: Playlist): void {
     if (this.isBrowser) {
-      this.metaService.updateTag({ name: 'og:url', content: document.location.href });
+      this.metaService.updateTag({ property: 'og:url', content: document.location.href });
       this.seoService.updateCanonicalUrl(document.location.href);
     } else if (data) {
       const url = data.id_top
         ? `${environment.URL_BASE}top/${data.id_top}`
         : `${environment.URL_BASE}playlist/${this.idPlaylist()}`;
-      this.metaService.updateTag({ name: 'og:url', content: url });
+      this.metaService.updateTag({ property: 'og:url', content: url });
       this.seoService.updateCanonicalUrl(url);
     } else {
       const url = `https://www.${this.baseHref}/${this.router.url}`;
-      this.metaService.updateTag({ name: 'og:url', content: url });
+      this.metaService.updateTag({ property: 'og:url', content: url });
       this.seoService.updateCanonicalUrl(url);
     }
   }

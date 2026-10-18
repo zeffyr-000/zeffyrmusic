@@ -279,11 +279,11 @@ export class HelpPageComponent implements OnInit, OnDestroy {
     }
     this.seoService.updateCanonicalUrl(canonicalUrl);
 
-    this.metaService.updateTag({ name: 'og:title', content: title });
-    this.metaService.updateTag({ name: 'og:description', content: description });
-    this.metaService.updateTag({ name: 'og:url', content: canonicalUrl });
-    this.metaService.updateTag({ name: 'og:type', content: 'article' });
-    this.metaService.updateTag({ name: 'og:site_name', content: 'Zeffyr Music' });
+    this.metaService.updateTag({ property: 'og:title', content: title });
+    this.metaService.updateTag({ property: 'og:description', content: description });
+    this.metaService.updateTag({ property: 'og:url', content: canonicalUrl });
+    this.metaService.updateTag({ property: 'og:type', content: 'article' });
+    this.metaService.updateTag({ property: 'og:site_name', content: 'Zeffyr Music' });
 
     this.seoService.setBreadcrumbJsonLd([
       { name: this.t('home'), url: environment.URL_BASE },
@@ -299,11 +299,11 @@ export class HelpPageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.seoService.removeJsonLd();
-    this.metaService.removeTag('name="og:title"');
-    this.metaService.removeTag('name="og:description"');
-    this.metaService.removeTag('name="og:url"');
-    this.metaService.removeTag('name="og:type"');
-    this.metaService.removeTag('name="og:site_name"');
+    this.metaService.removeTag('property="og:title"');
+    this.metaService.removeTag('property="og:description"');
+    this.metaService.removeTag('property="og:url"');
+    this.metaService.removeTag('property="og:type"');
+    this.metaService.removeTag('property="og:site_name"');
   }
 
   private setStructuredData(): void {
