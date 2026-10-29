@@ -266,6 +266,14 @@ padding-bottom: env(safe-area-inset-bottom, 0px);
 `env()` with a `0px` fallback is a no-op on desktop and in a normal browser (the inset is
 only non-zero in a full-screen PWA on a notched device), so it is always safe to add.
 
+**Status bar style:** NEVER set `apple-mobile-web-app-status-bar-style` to `black-translucent`.
+It runs the page under the status bar, and iOS 27 paints its scroll-edge blur (a frosted
+"fog") over the header there — no CSS can remove it. With the default style the bar is
+opaque and tinted by `theme-color` (synced with the header background in `AppComponent`),
+and `safe-area-inset-top` resolves to `0` in portrait. Keep the top-inset paddings anyway:
+iOS reads the status bar style only when the app is added to the Home Screen, so installs
+made before the change still run under the bar until re-added.
+
 **Already handled:** `app.component`, `header`, `control-bar`, `lyrics-panel`,
 `toast-container`, and the ng-bootstrap `.modal` container (see `_utilities.scss`).
 
