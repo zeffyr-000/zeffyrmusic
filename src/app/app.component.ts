@@ -10,6 +10,7 @@ import {
   ViewChild,
   TemplateRef,
   signal,
+  effect,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoService, TranslocoPipe } from '@jsverse/transloco';
@@ -24,6 +25,7 @@ import { HeaderComponent } from './header/header.component';
 import { ControlBarComponent } from './control-bar/control-bar.component';
 import { PlayerComponent } from './player/player.component';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AuthStore } from './store/auth/auth.store';
 import { PlayerStore } from './store/player/player.store';
 import { QueueStore } from './store/queue/queue.store';
 import { UiStore } from './store/ui/ui.store';
@@ -52,6 +54,7 @@ export class AppComponent implements OnInit {
   private readonly rendererFactory = inject(RendererFactory2);
   private readonly initService = inject(InitService);
   protected readonly playerService = inject(PlayerService);
+  private readonly authStore = inject(AuthStore);
   protected readonly playerStore = inject(PlayerStore);
   protected readonly queueStore = inject(QueueStore);
   protected readonly uiStore = inject(UiStore);
@@ -97,6 +100,15 @@ export class AppComponent implements OnInit {
           this.initService.checkSessionIfNeeded();
         }
       });
+
+      // theme-color tints the opaque iOS status bar of the pinned app: keep it
+      // identical to the .navbar-inverse header background so both blend.
+      effect(() => {
+        this.metaService.updateTag({
+          name: 'theme-color',
+          content: this.authStore.isDarkMode() ? '#000000' : '#ffffff',
+        });
+      });
     }
   }
 
@@ -120,12 +132,11 @@ export class AppComponent implements OnInit {
 
     this.metaService.updateTag({ name: 'mobile-web-app-capable', content: 'yes' });
     this.metaService.updateTag({ name: 'apple-mobile-web-app-capable', content: 'yes' });
-    this.metaService.updateTag({
-      name: 'apple-mobile-web-app-status-bar-style',
-      content: 'black-translucent',
-    });
+    // No apple-mobile-web-app-status-bar-style: 'black-translucent' runs the page
+    // under the status bar, where iOS 27 paints its scroll-edge blur over the
+    // header and never replaces it with the fixed header's color. The default
+    // style keeps an opaque bar tinted by theme-color (set in the constructor).
     this.metaService.updateTag({ name: 'apple-mobile-web-app-title', content: 'ZeffyrMusic' });
-    this.metaService.updateTag({ name: 'theme-color', content: '#1ac8e5' });
 
     const linkElem = this.renderer.createElement('link');
     this.renderer.setAttribute(linkElem, 'rel', 'apple-touch-icon');
