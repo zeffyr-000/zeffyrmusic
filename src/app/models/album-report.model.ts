@@ -37,9 +37,11 @@ export const ALBUM_REPORT_KNOWN_RESULTS: ReadonlySet<string> = new Set([
   'album_vide',
   'regenere',
   'titres_reparses',
+  'titres_inchanges',
   'pistes_etrangeres_supprimees',
   'album_conforme',
   'clos_admin',
+  'a_supprimer',
 ]);
 
 /** Result codes that wait for an admin decision (highlighted in the list). */
@@ -50,6 +52,8 @@ export const ALBUM_REPORT_ADMIN_RESULTS: ReadonlySet<string> = new Set([
   'album_conforme_conteste',
   'trop_essais',
   'album_absent',
+  'a_supprimer',
+  'titres_inchanges',
 ]);
 
 export interface AlbumReport {

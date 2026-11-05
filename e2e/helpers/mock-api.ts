@@ -4,6 +4,9 @@ import { resolve } from 'node:path';
 
 const fixturesDir = resolve(__dirname, '../fixtures');
 
+/** Hosts of the SSR server under test (`baseURL` in playwright.config.ts). */
+const APP_HOSTS = new Set(['localhost', '127.0.0.1']);
+
 function loadFixture(name: string): string {
   return readFileSync(resolve(fixturesDir, name), 'utf-8');
 }
@@ -45,8 +48,10 @@ export async function mockApiRoutes(page: Page): Promise<void> {
       return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
     }
 
-    // Strip TransferState from SSR HTML to force client-side re-fetch
-    if (route.request().isNavigationRequest()) {
+    // Strip TransferState from SSR HTML to force client-side re-fetch. Only the app's own pages:
+    // third-party frames such as the YouTube embed pass through, since re-fetching them from Node
+    // fails with "Header overflow" on YouTube's oversized response headers
+    if (route.request().isNavigationRequest() && APP_HOSTS.has(new URL(url).hostname)) {
       const response = await route.fetch();
       let body = await response.text();
       body = body.replace(/<script id="ng-state"[^>]*>[\s\S]*?<\/script>/g, '');
