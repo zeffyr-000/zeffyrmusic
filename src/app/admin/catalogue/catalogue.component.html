@@ -1,0 +1,513 @@
+<!-- TEMPORARY jour4: catalogue upgrade tab, delete this folder once the upgrade is over (API docs/mise-a-niveau-catalogue.md, section 8) -->
+<!-- Admin indicator -->
+<div class="admin-bar">
+  <span class="material-icons" aria-hidden="true">admin_panel_settings</span>
+  <span>{{ 'admin_bar_title' | transloco }}</span>
+</div>
+
+<app-admin-nav />
+
+<div class="admin-page">
+  <div class="admin-page-header">
+    <h1 class="admin-page-title">
+      <span class="material-icons" aria-hidden="true">library_add_check</span>
+      {{ 'admin_catalogue_title' | transloco }}
+    </h1>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      [disabled]="isLoading()"
+      (click)="onRefresh()"
+    >
+      <span class="material-icons" aria-hidden="true" [class.spin]="isLoading()">refresh</span>
+      {{ 'admin_dashboard_refresh' | transloco }}
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="stats-section">
+      <div class="section-title skeleton-pulse skeleton-line--title"></div>
+      <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3">
+        @for (_ of skeletonItems; track $index) {
+          <div class="col">
+            <div class="card stat-card">
+              <div class="card-body">
+                <div class="skeleton-pulse skeleton-icon-placeholder mb-3"></div>
+                <div class="skeleton-pulse skeleton-line--title mb-2"></div>
+                <div class="skeleton-pulse skeleton-line--subtitle"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <span class="material-icons empty-state-icon" aria-hidden="true">error_outline</span>
+      <p class="empty-state-text">{{ 'admin_catalogue_error' | transloco }}</p>
+      <button type="button" class="btn btn-outline-primary mt-3" (click)="onRefresh()">
+        <span class="material-icons" aria-hidden="true">refresh</span>
+        {{ 'admin_dashboard_refresh' | transloco }}
+      </button>
+    </div>
+  } @else {
+    <!-- Doubling target -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">flag</span>
+        {{ 'admin_catalogue_section_target' | transloco }}
+      </h2>
+      <div class="card distribution-card">
+        <div class="card-body">
+          @for (item of targetItems(); track item.key) {
+            <div class="distribution-item">
+              <div class="distribution-label">
+                <span>{{ item.labelKey | transloco }}</span>
+                <span class="distribution-label__count">
+                  {{ item.now | number: '' : 'fr' }} / {{ item.target | number: '' : 'fr' }}
+                  <span class="distribution-label__percent">({{ item.percent }}%)</span>
+                </span>
+              </div>
+              <progress
+                class="distribution-progress"
+                [value]="item.percent"
+                max="100"
+                [attr.aria-label]="(item.labelKey | transloco) + ' ' + item.percent + '%'"
+              ></progress>
+              <p class="segment-compliant">
+                {{ 'admin_catalogue_target_start' | transloco }} :
+                {{ item.start | number: '' : 'fr' }}
+              </p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Upgrade of existing albums -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">build</span>
+        {{ 'admin_catalogue_section_upgrade' | transloco }}
+      </h2>
+      <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3">
+        @for (card of upgradeCards(); track card.labelKey) {
+          <div class="col">
+            <div class="card stat-card stat-card--content">
+              <div class="card-body">
+                <span class="material-icons stat-card__icon" aria-hidden="true">{{
+                  card.icon
+                }}</span>
+                <p class="stat-card__value">{{ card.value | number: '' : 'fr' }}</p>
+                @if (card.total !== undefined) {
+                  <p class="stat-card__ratio">
+                    / {{ card.total | number: '' : 'fr' }} ({{
+                      percentOf(card.value, card.total)
+                    }}%)
+                  </p>
+                }
+                <p class="stat-card__label">{{ card.labelKey | transloco }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Progress by priority -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">low_priority</span>
+        {{ 'admin_catalogue_section_segments' | transloco }}
+      </h2>
+      <div class="card distribution-card">
+        <div class="card-body">
+          @for (segment of segments(); track segment.key) {
+            <div class="distribution-item">
+              <div class="distribution-label">
+                <span>{{ segment.labelKey | transloco }}</span>
+                <span class="distribution-label__count">
+                  {{ segment.processed | number: '' : 'fr' }} /
+                  {{ segment.total | number: '' : 'fr' }}
+                  <span class="distribution-label__percent">({{ segment.processedPercent }}%)</span>
+                </span>
+              </div>
+              <progress
+                class="distribution-progress"
+                [value]="segment.processedPercent"
+                max="100"
+                [attr.aria-label]="
+                  (segment.labelKey | transloco) + ' ' + segment.processedPercent + '%'
+                "
+              ></progress>
+              <p class="segment-compliant">
+                {{ 'admin_catalogue_segment_compliant' | transloco }} :
+                {{ segment.compliant | number: '' : 'fr' }} ({{ segment.compliantPercent }}%)
+              </p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Album states, before and now -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">rule</span>
+        {{ 'admin_catalogue_section_states' | transloco }}
+      </h2>
+      <div class="row g-3">
+        @for (block of stateBlocks(); track block.titleKey) {
+          <div class="col-md-6">
+            <div class="card distribution-card">
+              <div class="card-body">
+                <h3 class="distribution-card__title">{{ block.titleKey | transloco }}</h3>
+                @for (item of block.items; track item.key) {
+                  <div class="distribution-item">
+                    <div class="distribution-label">
+                      <span>{{ item.labelKey ? (item.labelKey | transloco) : item.key }}</span>
+                      <span class="distribution-label__count">
+                        {{ item.count | number: '' : 'fr' }}
+                        <span class="distribution-label__percent">({{ item.percent }}%)</span>
+                      </span>
+                    </div>
+                    <progress
+                      class="distribution-progress state-progress"
+                      [class]="'state-progress--' + item.key"
+                      [value]="item.percent"
+                      max="100"
+                      [attr.aria-label]="
+                        (item.labelKey ? (item.labelKey | transloco) : item.key) +
+                        ' ' +
+                        item.percent +
+                        '%'
+                      "
+                    ></progress>
+                  </div>
+                } @empty {
+                  <p class="text-body-secondary mb-0">{{ 'admin_catalogue_empty' | transloco }}</p>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Completion -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">library_add</span>
+        {{ 'admin_catalogue_section_completion' | transloco }}
+      </h2>
+      <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-3">
+        @for (card of completionCards(); track card.labelKey) {
+          <div class="col">
+            <div class="card stat-card stat-card--engagement">
+              <div class="card-body">
+                <span class="material-icons stat-card__icon" aria-hidden="true">{{
+                  card.icon
+                }}</span>
+                <p class="stat-card__value">{{ card.value | number: '' : 'fr' }}</p>
+                @if (card.total !== undefined) {
+                  <p class="stat-card__ratio">
+                    / {{ card.total | number: '' : 'fr' }} ({{
+                      percentOf(card.value, card.total)
+                    }}%)
+                  </p>
+                }
+                <p class="stat-card__label">{{ card.labelKey | transloco }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="card distribution-card mt-3">
+        <div class="card-body">
+          <h3 class="distribution-card__title">
+            {{ 'admin_catalogue_missing_title' | transloco }}
+          </h3>
+          @for (item of missingAlbums(); track item.key) {
+            <div class="distribution-item">
+              <div class="distribution-label">
+                <span>{{ item.labelKey ? (item.labelKey | transloco) : item.key }}</span>
+                <span class="distribution-label__count">
+                  {{ item.count | number: '' : 'fr' }}
+                  <span class="distribution-label__percent">({{ item.percent }}%)</span>
+                </span>
+              </div>
+              <progress
+                class="distribution-progress distribution-progress--secondary"
+                [value]="item.percent"
+                max="100"
+                [attr.aria-label]="
+                  (item.labelKey ? (item.labelKey | transloco) : item.key) +
+                  ' ' +
+                  item.percent +
+                  '%'
+                "
+              ></progress>
+            </div>
+          } @empty {
+            <p class="text-body-secondary mb-0">{{ 'admin_catalogue_empty' | transloco }}</p>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Today's YouTube quota -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">speed</span>
+        {{ 'admin_catalogue_section_quota' | transloco }}
+      </h2>
+      <div class="card distribution-card">
+        <div class="card-body">
+          @for (q of quota(); track q.task) {
+            <div class="distribution-item">
+              <div class="distribution-label">
+                <span>{{ q.labelKey | transloco }}</span>
+                <span class="distribution-label__count">
+                  {{ q.usedToday | number: '' : 'fr' }} / {{ q.budget | number: '' : 'fr' }}
+                  {{ 'admin_catalogue_units_short' | transloco }}
+                  <span class="distribution-label__percent">({{ q.percent }}%)</span>
+                </span>
+              </div>
+              <progress
+                class="distribution-progress"
+                [value]="q.percent"
+                max="100"
+                [attr.aria-label]="(q.labelKey | transloco) + ' ' + q.percent + '%'"
+              ></progress>
+            </div>
+          }
+          <p class="text-body-secondary small mb-0">
+            {{ 'admin_catalogue_quota_reset' | transloco }}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Last 30 days -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">bar_chart</span>
+        {{ 'admin_catalogue_section_history' | transloco }}
+      </h2>
+      <div class="card chart-container">
+        <div class="card-body">
+          <div class="chart-wrapper">
+            @defer {
+              <canvas
+                baseChart
+                type="bar"
+                [data]="historyChartData()"
+                [options]="historyChartOptions"
+              ></canvas>
+            } @placeholder {
+              <div
+                class="d-flex align-items-center justify-content-center h-100 text-body-secondary"
+              >
+                {{ 'admin_catalogue_section_history' | transloco }}
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Processing results -->
+    @if (results().length) {
+      <section class="stats-section">
+        <h2 class="section-title">
+          <span class="material-icons" aria-hidden="true">list_alt</span>
+          {{ 'admin_catalogue_section_results' | transloco }}
+        </h2>
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">{{ 'admin_reports_col_result' | transloco }}</th>
+                  <th scope="col" class="text-end">
+                    {{ 'admin_catalogue_segment_albums' | transloco }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of results(); track r.code) {
+                  <tr>
+                    <td>{{ r.labelKey ? (r.labelKey | transloco) : r.code }}</td>
+                    <td class="text-end">{{ r.count | number: '' : 'fr' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Last processed albums, to check by hand -->
+    <section class="stats-section">
+      <h2 class="section-title">
+        <span class="material-icons" aria-hidden="true">history</span>
+        {{ 'admin_catalogue_section_recent' | transloco }}
+      </h2>
+      <div class="card">
+        <div class="card-body">
+          <div class="recent-toolbar">
+            <!-- No <legend>: as a child it would break the .btn-group corner rules -->
+            <fieldset
+              class="btn-group btn-group-sm"
+              [attr.aria-label]="'admin_catalogue_section_recent' | transloco"
+            >
+              <button
+                type="button"
+                class="btn"
+                data-testid="recent-tab-upgraded"
+                [class.btn-primary]="recentTab() === 'upgraded'"
+                [class.btn-outline-primary]="recentTab() !== 'upgraded'"
+                [attr.aria-pressed]="recentTab() === 'upgraded'"
+                (click)="onRecentTab('upgraded')"
+              >
+                {{ 'admin_catalogue_recent_upgraded' | transloco }} ({{ recentUpgraded().length }})
+              </button>
+              <button
+                type="button"
+                class="btn"
+                data-testid="recent-tab-created"
+                [class.btn-primary]="recentTab() === 'created'"
+                [class.btn-outline-primary]="recentTab() !== 'created'"
+                [attr.aria-pressed]="recentTab() === 'created'"
+                (click)="onRecentTab('created')"
+              >
+                {{ 'admin_catalogue_recent_created' | transloco }} ({{ recentCreated().length }})
+              </button>
+            </fieldset>
+            <p class="text-body-secondary small mb-0">
+              {{ 'admin_catalogue_recent_hint' | transloco }}
+            </p>
+          </div>
+
+          <div class="table-responsive recent-table">
+            @if (recentTab() === 'upgraded') {
+              <table class="table table-sm table-hover align-middle mb-0">
+                <caption class="visually-hidden">
+                  {{
+                    'admin_catalogue_recent_upgraded' | transloco
+                  }}
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{{ 'admin_reports_col_date' | transloco }}</th>
+                    <th scope="col">{{ 'admin_reports_col_album' | transloco }}</th>
+                    <th scope="col">{{ 'admin_reports_col_result' | transloco }}</th>
+                    <th scope="col">{{ 'admin_catalogue_col_state' | transloco }}</th>
+                    <th scope="col" class="text-end">
+                      {{ 'admin_catalogue_col_score' | transloco }}
+                    </th>
+                    <th scope="col" class="text-end">
+                      {{ 'admin_catalogue_col_units' | transloco }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (album of recentUpgraded(); track album.albumId) {
+                    <tr data-testid="recent-upgraded-row">
+                      <td class="text-nowrap small">
+                        {{ album.date * 1000 | date: 'dd/MM HH:mm' }}
+                      </td>
+                      <td>
+                        <a routerLink="/playlist/{{ album.albumId }}">{{ album.title }}</a>
+                        @if (album.artist) {
+                          <span class="d-block small text-body-secondary">{{ album.artist }}</span>
+                        }
+                      </td>
+                      <td
+                        class="small"
+                        [class.text-danger]="album.toReview"
+                        [class.text-body-secondary]="!album.toReview"
+                      >
+                        {{ album.resultKey ? (album.resultKey | transloco) : album.result }}
+                      </td>
+                      <td class="small text-nowrap">
+                        {{
+                          album.initialStateKey
+                            ? (album.initialStateKey | transloco)
+                            : album.initialState
+                        }}
+                        →
+                        {{ album.stateKey ? (album.stateKey | transloco) : album.state }}
+                      </td>
+                      <td class="text-end small">{{ album.score }}%</td>
+                      <td class="text-end small">{{ album.units | number: '' : 'fr' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="text-body-secondary">
+                        {{ 'admin_catalogue_empty' | transloco }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <table class="table table-sm table-hover align-middle mb-0">
+                <caption class="visually-hidden">
+                  {{
+                    'admin_catalogue_recent_created' | transloco
+                  }}
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{{ 'admin_reports_col_date' | transloco }}</th>
+                    <th scope="col">{{ 'admin_reports_col_album' | transloco }}</th>
+                    <th scope="col">{{ 'admin_reports_col_result' | transloco }}</th>
+                    <th scope="col" class="text-end">
+                      {{ 'admin_catalogue_col_units' | transloco }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (album of recentCreated(); track album.albumId) {
+                    <tr data-testid="recent-created-row">
+                      <td class="text-nowrap small">
+                        {{ album.date * 1000 | date: 'dd/MM HH:mm' }}
+                      </td>
+                      <td>
+                        <a routerLink="/playlist/{{ album.albumId }}">{{ album.title }}</a>
+                        @if (album.newArtist) {
+                          <span class="badge text-bg-info ms-1">{{
+                            'admin_catalogue_new_artist' | transloco
+                          }}</span>
+                        }
+                        @if (album.artist) {
+                          <span class="d-block small text-body-secondary">{{ album.artist }}</span>
+                        }
+                      </td>
+                      <td
+                        class="small"
+                        [class.text-danger]="album.toReview"
+                        [class.text-body-secondary]="!album.toReview"
+                      >
+                        {{ album.resultKey ? (album.resultKey | transloco) : album.result }}
+                      </td>
+                      <td class="text-end small">{{ album.units | number: '' : 'fr' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="4" class="text-body-secondary">
+                        {{ 'admin_catalogue_empty' | transloco }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+</div>

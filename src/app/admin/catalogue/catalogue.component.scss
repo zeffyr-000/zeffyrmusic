@@ -1,0 +1,62 @@
+@use '../admin-stats';
+
+:host {
+  display: block;
+}
+
+.stat-card__ratio {
+  font-size: var(--text-sm);
+  color: var(--bs-secondary-color);
+  margin: 0;
+}
+
+.segment-compliant {
+  font-size: var(--text-sm);
+  color: var(--bs-secondary-color);
+  margin: var(--spacing-xs) 0 0;
+}
+
+// Recent albums panel: tabs and hint on one line, a scrolling table with a fixed header
+.recent-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.recent-table {
+  max-height: 28rem;
+  overflow-y: auto;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bs-body-bg);
+  }
+}
+
+// One color per album state
+$state-colors: (
+  conforme: var(--bs-success),
+  incomplet: var(--bs-warning),
+  non_conforme: var(--bs-danger),
+  douteux: var(--bs-info),
+  sans_reference: var(--bs-secondary),
+  a_supprimer: var(--bs-dark),
+  non_diagnostique: var(--bs-tertiary-color),
+);
+
+@each $state, $color in $state-colors {
+  .state-progress--#{$state} {
+    &::-webkit-progress-value {
+      background-color: $color;
+    }
+
+    &::-moz-progress-bar {
+      background-color: $color;
+    }
+  }
+}

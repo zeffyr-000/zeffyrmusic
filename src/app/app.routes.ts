@@ -102,6 +102,14 @@ export const routes: Routes = [
     canActivate: [AdminGuard],
     data: { noPreload: true },
   },
+  // TEMPORARY jour4: catalogue upgrade tab (API docs/mise-a-niveau-catalogue.md, section 8)
+  {
+    path: 'admin/catalogue',
+    loadComponent: () =>
+      import('./admin/catalogue/catalogue.component').then(m => m.CatalogueComponent),
+    canActivate: [AdminGuard],
+    data: { noPreload: true },
+  },
   {
     path: 'admin/reports',
     loadComponent: () => import('./admin/reports/reports.component').then(m => m.ReportsComponent),

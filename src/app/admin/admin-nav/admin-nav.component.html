@@ -44,5 +44,17 @@
         {{ 'admin_reports_link' | transloco }}
       </a>
     </li>
+    <!-- TEMPORARY jour4: catalogue upgrade tab, also back to 4 links in admin-nav.component.spec.ts -->
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        routerLink="/admin/catalogue"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="material-icons" aria-hidden="true">library_add_check</span>
+        {{ 'admin_catalogue_link' | transloco }}
+      </a>
+    </li>
   </ul>
 </nav>
