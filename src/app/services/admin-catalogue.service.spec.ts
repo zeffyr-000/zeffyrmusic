@@ -55,6 +55,7 @@ describe('AdminCatalogueService', () => {
       },
     ],
     recent: {
+      day: '2026-11-05',
       upgraded: [
         {
           id_playlist: '61190',
@@ -70,6 +71,7 @@ describe('AdminCatalogueService', () => {
       ],
       created: [
         {
+          id: '3067',
           id_playlist: '80604',
           date: 1793889618,
           title: 'Departure',
@@ -117,6 +119,7 @@ describe('AdminCatalogueService', () => {
       expect(data.completion.albums).toEqual({ a_creer: 4, cree: 2 });
       expect(data.quota[0]).toEqual({ task: 'completion', budget: 9500, usedToday: 215 });
       expect(data.history).toHaveLength(1);
+      expect(data.recent.day).toBe('2026-11-05');
       expect(data.recent.upgraded[0]).toEqual({
         albumId: '61190',
         date: 1793895800,
@@ -129,6 +132,7 @@ describe('AdminCatalogueService', () => {
         units: 108,
       });
       expect(data.recent.created[0]).toEqual({
+        id: '3067',
         albumId: '80604',
         date: 1793889618,
         title: 'Departure',

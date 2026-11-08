@@ -348,11 +348,14 @@
       </section>
     }
 
-    <!-- Last processed albums, to check by hand -->
+    <!-- Every album of the last run, to check by hand -->
     <section class="stats-section">
       <h2 class="section-title">
         <span class="material-icons" aria-hidden="true">history</span>
         {{ 'admin_catalogue_section_recent' | transloco }}
+        @if (recentDay()) {
+          ({{ recentDay() }})
+        }
       </h2>
       <div class="card">
         <div class="card-body">
@@ -390,7 +393,7 @@
             </p>
           </div>
 
-          <div class="table-responsive recent-table">
+          <div class="table-responsive">
             @if (recentTab() === 'upgraded') {
               <table class="table table-sm table-hover align-middle mb-0">
                 <caption class="visually-hidden">
@@ -414,7 +417,7 @@
                 </thead>
                 <tbody>
                   @for (album of recentUpgraded(); track album.albumId) {
-                    <tr data-testid="recent-upgraded-row">
+                    <tr data-testid="recent-upgraded-row" [class.table-danger]="album.toReview">
                       <td class="text-nowrap small">
                         {{ album.date * 1000 | date: 'dd/MM HH:mm' }}
                       </td>
@@ -470,13 +473,17 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @for (album of recentCreated(); track album.albumId) {
-                    <tr data-testid="recent-created-row">
+                  @for (album of recentCreated(); track album.id) {
+                    <tr data-testid="recent-created-row" [class.table-danger]="album.toReview">
                       <td class="text-nowrap small">
                         {{ album.date * 1000 | date: 'dd/MM HH:mm' }}
                       </td>
                       <td>
-                        <a routerLink="/playlist/{{ album.albumId }}">{{ album.title }}</a>
+                        @if (album.albumId) {
+                          <a routerLink="/playlist/{{ album.albumId }}">{{ album.title }}</a>
+                        } @else {
+                          {{ album.title }}
+                        }
                         @if (album.newArtist) {
                           <span class="badge text-bg-info ms-1">{{
                             'admin_catalogue_new_artist' | transloco

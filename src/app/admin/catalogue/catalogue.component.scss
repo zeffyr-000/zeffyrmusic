@@ -16,7 +16,7 @@
   margin: var(--spacing-xs) 0 0;
 }
 
-// Recent albums panel: tabs and hint on one line, a scrolling table with a fixed header
+// Last run panel: tabs and hint on one line, then the whole list, scrolled with the page
 .recent-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -24,18 +24,6 @@
   justify-content: space-between;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
-}
-
-.recent-table {
-  max-height: 28rem;
-  overflow-y: auto;
-
-  thead th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: var(--bs-body-bg);
-  }
 }
 
 // One color per album state
