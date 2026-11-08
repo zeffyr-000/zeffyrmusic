@@ -22,6 +22,15 @@ export const CATALOGUE_KNOWN_RESULTS: ReadonlySet<string> = new Set([
   'titres_suspects',
   'cree',
   'cree_a_verifier',
+  'deja_au_catalogue',
+  'doublon',
+  'reedition',
+  'remixes',
+  'autre_artiste',
+  'exclu',
+  'piste_unique',
+  'introuvable',
+  'import_echoue',
 ]);
 
 /** Result codes worth a manual check, highlighted in the recent albums panel. */
@@ -120,8 +129,10 @@ export interface CatalogueRecentUpgrade {
   units: number;
 }
 
-/** Album created by the completion task, newest first. */
+/** Album created or discarded by the completion task, newest first. */
 export interface CatalogueRecentCreation {
+  id: string; // ← id_album_manquant
+  /** Empty when no album was created (discarded, not found). */
   albumId: string; // ← id_playlist
   /** Unix timestamp in seconds. */
   date: number;
@@ -133,8 +144,10 @@ export interface CatalogueRecentCreation {
   newArtist: boolean; // ← new_artist
 }
 
-/** The last albums of each task (100 at most), to check them by hand. */
+/** Every album of the last jour4 run, per task, to check them by hand. */
 export interface CatalogueRecent {
+  /** Quota day of the last run ("2026-11-05"), empty before the first one. */
+  day: string;
   upgraded: CatalogueRecentUpgrade[];
   created: CatalogueRecentCreation[];
 }
@@ -185,6 +198,7 @@ export interface CatalogueApiResponse {
   quota: { task: CatalogueTask; budget: number; used_today: number }[];
   history: CatalogueHistoryPoint[];
   recent: {
+    day: string;
     upgraded: {
       id_playlist: string;
       date: number;
@@ -197,6 +211,7 @@ export interface CatalogueApiResponse {
       units: number;
     }[];
     created: {
+      id: string;
       id_playlist: string;
       date: number;
       title: string;

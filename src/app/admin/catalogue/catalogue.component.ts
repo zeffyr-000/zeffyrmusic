@@ -72,6 +72,14 @@ function stateLabelKey(state: string): string | null {
     : null;
 }
 
+/** Ranks of the states, the best first: any other state ranks after them. */
+const STATE_RANKS: Readonly<Record<string, number>> = { conforme: 1, incomplet: 2 };
+
+/** An album whose state ranks lower after processing than before was degraded. */
+function isDegraded(initialState: string, state: string): boolean {
+  return (STATE_RANKS[state] ?? 3) > (STATE_RANKS[initialState] ?? 3);
+}
+
 /** Known codes first, in display order, then any code the API added. */
 function countItems(
   counts: Record<string, number> | undefined,
@@ -259,18 +267,25 @@ export class CatalogueComponent implements OnInit {
 
   readonly recentTab = signal<RecentTab>('upgraded');
 
-  /** Last upgraded albums, with their labels and a flag on results to check by hand. */
+  /** Quota day of the last run, as "05/11". */
+  readonly recentDay = computed(() => {
+    const day = this.data()?.recent.day ?? '';
+    return day ? `${day.slice(8, 10)}/${day.slice(5, 7)}` : '';
+  });
+
+  /** Upgraded albums of the last run, flagged when to check by hand or degraded. */
   readonly recentUpgraded = computed(() =>
     (this.data()?.recent.upgraded ?? []).map(album => ({
       ...album,
       resultKey: resultLabelKey(album.result),
       initialStateKey: stateLabelKey(album.initialState),
       stateKey: stateLabelKey(album.state),
-      toReview: CATALOGUE_REVIEW_RESULTS.has(album.result),
+      toReview:
+        CATALOGUE_REVIEW_RESULTS.has(album.result) || isDegraded(album.initialState, album.state),
     }))
   );
 
-  /** Last created albums, with the same labels and flag. */
+  /** Created and discarded albums of the last run, with the same labels and flag. */
   readonly recentCreated = computed(() =>
     (this.data()?.recent.created ?? []).map(album => ({
       ...album,

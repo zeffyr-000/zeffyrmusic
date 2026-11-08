@@ -84,6 +84,7 @@ describe('CatalogueComponent', () => {
       },
     ],
     recent: {
+      day: '2026-11-05',
       upgraded: [
         {
           albumId: '61190',
@@ -107,15 +108,37 @@ describe('CatalogueComponent', () => {
           score: 8,
           units: 2,
         },
+        {
+          albumId: '59480',
+          date: 1793884000,
+          title: 'Brol La Suite',
+          artist: 'Angèle',
+          result: 'pistes_etrangeres_supprimees',
+          initialState: 'conforme',
+          state: 'incomplet',
+          score: 79,
+          units: 0,
+        },
       ],
       created: [
         {
+          id: '2950',
           albumId: '80602',
           date: 1793889609,
           title: 'Or Noir Part 3',
           artist: 'Kaaris',
           result: 'cree_a_verifier',
           units: 3,
+          newArtist: false,
+        },
+        {
+          id: '104',
+          albumId: '',
+          date: 1793888383,
+          title: 'Dion Chante Plamondon',
+          artist: 'Céline Dion',
+          result: 'doublon',
+          units: 0,
           newArtist: false,
         },
       ],
@@ -270,11 +293,12 @@ describe('CatalogueComponent', () => {
     expect(artists.percent).toBe(0);
   });
 
-  it('should label recent upgrades and flag results to check by hand', async () => {
+  it('should label the upgrades of the last run and flag results to check or degraded', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    const [regenerated, suspect] = component.recentUpgraded();
+    expect(component.recentDay()).toBe('05/11');
+    const [regenerated, suspect, degraded] = component.recentUpgraded();
     expect(regenerated).toEqual(
       expect.objectContaining({
         resultKey: 'admin_reports_result_regenere',
@@ -290,16 +314,25 @@ describe('CatalogueComponent', () => {
         toReview: true,
       })
     );
+    // Conforme to incomplet: degraded, whatever its result
+    expect(degraded.toReview).toBe(true);
   });
 
-  it('should label recent creations with the catalogue result keys', async () => {
+  it('should label created and discarded albums with the catalogue result keys', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(component.recentCreated()[0]).toEqual(
+    const [created, discarded] = component.recentCreated();
+    expect(created).toEqual(
       expect.objectContaining({
         resultKey: 'admin_catalogue_result_cree_a_verifier',
         toReview: true,
+      })
+    );
+    expect(discarded).toEqual(
+      expect.objectContaining({
+        resultKey: 'admin_catalogue_result_doublon',
+        toReview: false,
       })
     );
   });
@@ -311,9 +344,12 @@ describe('CatalogueComponent', () => {
     const rows = (testId: string) =>
       fixture.nativeElement.querySelectorAll(`[data-testid="${testId}"]`).length;
 
+    const highlighted = () => fixture.nativeElement.querySelectorAll('tr.table-danger').length;
+
     expect(component.recentTab()).toBe('upgraded');
-    expect(rows('recent-upgraded-row')).toBe(2);
+    expect(rows('recent-upgraded-row')).toBe(3);
     expect(rows('recent-created-row')).toBe(0);
+    expect(highlighted()).toBe(2);
 
     fixture.nativeElement.querySelector('[data-testid="recent-tab-created"]').click();
     fixture.detectChanges();
@@ -321,7 +357,14 @@ describe('CatalogueComponent', () => {
 
     expect(component.recentTab()).toBe('created');
     expect(rows('recent-upgraded-row')).toBe(0);
-    expect(rows('recent-created-row')).toBe(1);
+    expect(rows('recent-created-row')).toBe(2);
+    expect(highlighted()).toBe(1);
+    // A discarded album has no page on the site
+    const [created, discarded] = fixture.nativeElement.querySelectorAll(
+      '[data-testid="recent-created-row"]'
+    );
+    expect(created.querySelector('a')).not.toBeNull();
+    expect(discarded.querySelector('a')).toBeNull();
   });
 
   it('should reload on refresh', async () => {

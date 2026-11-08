@@ -51,6 +51,7 @@ export class AdminCatalogueService {
       quota: raw.quota.map(q => ({ task: q.task, budget: q.budget, usedToday: q.used_today })),
       history: raw.history,
       recent: {
+        day: raw.recent.day,
         upgraded: raw.recent.upgraded.map(r => ({
           albumId: r.id_playlist,
           date: r.date,
@@ -63,6 +64,7 @@ export class AdminCatalogueService {
           units: r.units,
         })),
         created: raw.recent.created.map(r => ({
+          id: r.id,
           albumId: r.id_playlist,
           date: r.date,
           title: r.title,
