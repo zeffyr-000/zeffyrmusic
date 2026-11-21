@@ -117,6 +117,45 @@ body[data-bs-theme='dark'] {
   }
 }
 
+// Mobile expanded player, "Video" mode: show the live video in place of the artwork.
+// ⚠️ The iframe is NEVER moved in the DOM (re-parenting an iframe reloads it and kills
+// playback). It stays in #container-player and is pinned over `.cb-video-slot`
+// (control bar) with CSS anchor positioning, only while that slot is rendered (`:has()`).
+@media screen and (max-width: 767.98px) {
+  body:has(.cb-video-slot) {
+    // Drop the z-index:-1 stacking context (player.component.scss) so the fixed
+    // iframe can rise above the control bar
+    #container-player {
+      z-index: auto;
+    }
+
+    #player {
+      position: fixed;
+      position-anchor: --cb-video;
+      position-visibility: always;
+      top: anchor(top);
+      left: anchor(left);
+      width: anchor-size(width);
+      height: anchor-size(height);
+      z-index: calc(var(--z-fixed) + 1); // above .cb-container, below popovers/modals
+      animation: player-video-in 0.3s ease-out 0.15s both; // hides the 1px → full resize
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+    }
+  }
+}
+
+@keyframes player-video-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 // =============================================================================
 // FORM ELEMENTS
 // =============================================================================

@@ -119,6 +119,8 @@
   "video_plein_ecran": "Video in full screen",
   "aria_controles_lecteur": "Player controls",
   "aria_reduire_lecteur": "Collapse player",
+  "mode_titre": "Song",
+  "mode_video": "Video",
   "aria_piste_precedente": "Previous track",
   "aria_piste_suivante": "Next track",
   "aria_position_lecture": "Seek position",

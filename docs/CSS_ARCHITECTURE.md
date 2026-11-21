@@ -48,6 +48,7 @@ src/app/
 1. **YouTube `#player`** → global `styles.scss` only (iframe has no Angular encapsulation)
 2. **Mobile `#player { height: 1px }`** → global `styles.scss` (avoids "not attached to DOM")
 3. **Mobile `padding-bottom: 0`** → `player.component.scss` (removes 16:9 aspect ratio)
+4. **Expanded mobile player** → global `styles.scss` anchors `#player` over `.cb-video-slot` (CSS anchor positioning); the iframe is never moved in the DOM
 
 ## Decision Tree
 

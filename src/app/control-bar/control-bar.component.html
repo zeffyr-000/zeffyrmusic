@@ -14,9 +14,49 @@
     <span class="material-icons" aria-hidden="true">keyboard_arrow_down</span>
   </button>
 
+  @if (isPlayerExpanded() && currentKey()) {
+    <div class="cb-view-switch">
+      <button
+        type="button"
+        class="cb-view-switch-btn"
+        [class.active]="!isVideoMode()"
+        [attr.aria-pressed]="!isVideoMode()"
+        (click)="isVideoMode.set(false)"
+      >
+        {{ 'mode_titre' | transloco }}
+      </button>
+      <button
+        type="button"
+        class="cb-view-switch-btn"
+        [class.active]="isVideoMode()"
+        [attr.aria-pressed]="isVideoMode()"
+        (click)="isVideoMode.set(true)"
+      >
+        {{ 'mode_video' | transloco }}
+      </button>
+    </div>
+  }
+
+  <!-- Mobile counterpart of the desktop .btn-fullscreen: header row, Video mode only -->
+  @if (isVideoMode() && canFullscreen) {
+    <button
+      type="button"
+      class="cb-video-fullscreen-btn"
+      (click)="goFullscreen('player')"
+      [attr.aria-label]="'video_plein_ecran' | transloco"
+    >
+      <span class="material-icons" aria-hidden="true">fullscreen</span>
+    </button>
+  }
+
   @for (key of currentKeyArr(); track $index) {
     <div class="cb-left" [class.cb-anim-a]="cbAnimA()" [class.cb-anim-b]="!cbAnimA()">
-      @if (thumbnailUrl()) {
+      @if (isVideoMode()) {
+        <!-- The YouTube iframe (#player) is anchored over this slot by global CSS -->
+        <div class="cb-video-slot">
+          <img [src]="thumbnailUrlHd()" class="cb-video-poster" alt="" />
+        </div>
+      } @else if (thumbnailUrl()) {
         <img
           [src]="isPlayerExpanded() ? thumbnailUrlHd() : thumbnailUrl()"
           class="cb-thumbnail"
@@ -153,7 +193,7 @@
       @if (authStore.isAuthenticated() && currentKey()) {
         <button
           type="button"
-          class="cb-btn-icon"
+          class="cb-btn-icon btn-lyrics"
           [class.active]="uiStore.isLyricsPanelOpen()"
           (click)="toggleLyrics()"
           placement="top"

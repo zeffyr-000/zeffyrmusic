@@ -68,6 +68,8 @@ export class YoutubePlayerService {
       playerVars: {
         controls: 0,
         origin: window.location.href,
+        // iOS: keep playback inline — the video is visible in the expanded mobile player
+        playsinline: 1,
         rel: 0,
       },
       events: {

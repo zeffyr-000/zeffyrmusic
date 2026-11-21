@@ -37,6 +37,7 @@ Music streaming app — Angular 22, SSR, zoneless, OnPush, @ngrx/signals.
 ## Critical CSS Rule
 YouTube #player styles MUST be in styles.scss (global) — iframe has no Angular encapsulation.
 Mobile #player { height: 1px } MUST be global. See the css-critical-rules skill (.claude/skills/css-critical-rules/).
+Expanded mobile player: never move the iframe in the DOM — global CSS anchors #player over .cb-video-slot (CSS anchor positioning).
 
 ## Signal Forms + Transloco
 Use arrow functions for validation messages (deferred evaluation):

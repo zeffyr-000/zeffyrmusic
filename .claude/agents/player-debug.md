@@ -34,6 +34,8 @@ YouTube iframe has **no Angular view encapsulation**. All `#player` styles must 
 
 If the player iframe is not visible (height: 0), YouTube throws "not attached to DOM" error. The `1px` trick keeps the player technically visible.
 
+Exception: in the expanded mobile player, global CSS anchors `#player` over `.cb-video-slot` (see Rule 4 in the `css-critical-rules` skill). Never move the iframe in the DOM to show it, because that reloads it.
+
 ```scss
 // styles.scss
 @media (max-width: 767.98px) {

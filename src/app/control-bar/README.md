@@ -22,38 +22,44 @@ All selectors use the `cb-` prefix (short for **c**ontrol-**b**ar). No ID select
 
 ### Selector Reference
 
-| Selector                  | Purpose                                                   |
-| ------------------------- | --------------------------------------------------------- |
-| `.cb-container`           | Root fixed bar (80px desktop, 64px mobile)                |
-| `.cb-collapse-btn`        | Arrow-down button to collapse expanded mobile view        |
-| `.cb-left`                | Left zone wrapper                                         |
-| `.cb-thumbnail`           | Album artwork (56px square)                               |
-| `.cb-track-info`          | Title + artist column                                     |
-| `.cb-track-title`         | Track title text                                          |
-| `.cb-track-artist`        | Artist name text                                          |
-| `.cb-btn-icon`            | Base icon button (40px circle)                            |
-| `.cb-btn-play`            | Play/pause button (44px, cyan background)                 |
-| `.cb-center`              | Center zone wrapper (max-width 650px)                     |
-| `.cb-controls`            | Transport button group                                    |
-| `.cb-secondary-actions`   | Fullscreen, repeat, shuffle group                         |
-| `.cb-seek`                | Seek row: current time + slider + total time              |
-| `.cb-seek-track`          | Seek slider container                                     |
-| `.cb-slider-bar`          | Shared track background (seek & volume)                   |
-| `.cb-slider-range`        | Invisible native `<input type="range">` overlay           |
-| `.cb-progress-buffered`   | Buffered progress bar (seek)                              |
-| `.cb-progress-current`    | Current position bar (seek)                               |
-| `.cb-time-current`        | Current time label                                        |
-| `.cb-time-total`          | Duration label                                            |
-| `.cb-right`               | Right zone wrapper                                        |
-| `.cb-volume`              | Volume icon + slider group                                |
-| `.cb-volume-track`        | Volume slider container                                   |
-| `.cb-volume-level`        | Volume fill bar                                           |
-| `.cb-mobile-title`        | Compact mobile title button (tap to expand)               |
-| `.cb-mobile-track-title`  | Mobile title text                                         |
-| `.cb-mobile-track-artist` | Mobile artist text                                        |
-| `.desktop-only`           | Helper class hidden on mobile                             |
-| `.btn-fullscreen`         | Fullscreen button hook (used in expanded mode to hide it) |
-| `.btn-like`               | Like button modifier (`.active` → cyan)                   |
+| Selector                   | Purpose                                                        |
+| -------------------------- | -------------------------------------------------------------- |
+| `.cb-container`            | Root fixed bar (80px desktop, 64px mobile)                     |
+| `.cb-collapse-btn`         | Arrow-down button to collapse expanded mobile view             |
+| `.cb-left`                 | Left zone wrapper                                              |
+| `.cb-thumbnail`            | Album artwork (56px square)                                    |
+| `.cb-video-slot`           | Expanded mobile: 16:9 anchor the YouTube iframe sits over      |
+| `.cb-video-poster`         | HD thumbnail shown in the slot until the video fades in        |
+| `.cb-view-switch`          | Expanded mobile: Song / Video switcher (top center)            |
+| `.cb-view-switch-btn`      | Switcher option (`.active` + `aria-pressed`)                   |
+| `.cb-track-info`           | Title + artist column                                          |
+| `.cb-track-title`          | Track title text                                               |
+| `.cb-track-artist`         | Artist name text                                               |
+| `.cb-btn-icon`             | Base icon button (40px circle)                                 |
+| `.cb-btn-play`             | Play/pause button (44px, cyan background)                      |
+| `.cb-center`               | Center zone wrapper (max-width 650px)                          |
+| `.cb-controls`             | Transport button group                                         |
+| `.cb-secondary-actions`    | Fullscreen, repeat, shuffle group                              |
+| `.cb-seek`                 | Seek row: current time + slider + total time                   |
+| `.cb-seek-track`           | Seek slider container                                          |
+| `.cb-slider-bar`           | Shared track background (seek & volume)                        |
+| `.cb-slider-range`         | Invisible native `<input type="range">` overlay                |
+| `.cb-progress-buffered`    | Buffered progress bar (seek)                                   |
+| `.cb-progress-current`     | Current position bar (seek)                                    |
+| `.cb-time-current`         | Current time label                                             |
+| `.cb-time-total`           | Duration label                                                 |
+| `.cb-right`                | Right zone wrapper                                             |
+| `.cb-volume`               | Volume icon + slider group                                     |
+| `.cb-volume-track`         | Volume slider container                                        |
+| `.cb-volume-level`         | Volume fill bar                                                |
+| `.cb-mobile-title`         | Compact mobile title button (tap to expand)                    |
+| `.cb-mobile-track-title`   | Mobile title text                                              |
+| `.cb-mobile-track-artist`  | Mobile artist text                                             |
+| `.desktop-only`            | Helper class hidden on mobile                                  |
+| `.btn-fullscreen`          | Desktop fullscreen button (hidden on mobile)                   |
+| `.cb-video-fullscreen-btn` | Mobile fullscreen button: expanded header row, Video mode only |
+| `.btn-lyrics`              | Lyrics button hook (hidden on mobile)                          |
+| `.btn-like`                | Like button modifier (`.active` → cyan)                        |
 
 ### Design Tokens
 
@@ -71,11 +77,32 @@ Defined in `src/styling/_custom.scss`:
 
 ### Responsive Behavior
 
-| Viewport           | Behavior                                                                  |
-| ------------------ | ------------------------------------------------------------------------- |
-| > 750px            | Full 3-zone layout with all controls                                      |
-| ≤ 750px (compact)  | Title + play only, 64px height, 6px seek track                            |
-| ≤ 750px (expanded) | Full-screen overlay, 70vw artwork, all controls visible except fullscreen |
+| Viewport           | Behavior                                                                                                                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| > 750px            | Full 3-zone layout with all controls                                                                                                                |
+| ≤ 750px (compact)  | Title + play only, 64px height, 6px seek track                                                                                                      |
+| ≤ 750px (expanded) | Full-screen overlay, 70vw artwork or live 16:9 video (Song / Video switcher), all controls visible except the desktop fullscreen and lyrics buttons |
+
+### Expanded video
+
+The expanded mobile view has a **Song / Video** switcher (`.cb-view-switch`, shown when a
+track is loaded). The choice is the local `isVideoMode` signal: Song (the artwork) by default,
+reset to Song by `collapsePlayer()` every time the panel closes. In Video mode the template
+renders `.cb-video-slot` instead of the artwork.
+
+The YouTube iframe can't be moved into the control bar (re-parenting an iframe reloads it),
+so it stays in `#container-player`. While `.cb-video-slot` is rendered, global CSS
+(`styles.scss`) pins it over the slot with CSS anchor positioning (`anchor-name: --cb-video`).
+Where anchor positioning is unsupported (e.g. iOS < 26), `@supports not (anchor-name: --a)`
+hides the switcher: the feature is simply absent, so the slot and the global rule never apply.
+
+In Video mode a fullscreen button (`.cb-video-fullscreen-btn`) sits at the top right of the
+header row, facing the collapse button. It is the mobile counterpart of the desktop
+`.btn-fullscreen` (hidden on mobile): same `goFullscreen('player')`, real Fullscreen API. Two
+buttons because they live in different layouts; moving one with CSS would fight the
+`fade-in-up` transform of `.cb-center`. Orientation is left to
+the user (no orientation lock). The button is hidden when `document.fullscreenEnabled` is
+false (iPhone Safari).
 
 ### Dark Mode
 

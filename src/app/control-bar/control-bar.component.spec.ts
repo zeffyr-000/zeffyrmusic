@@ -177,6 +177,152 @@ describe('ControlBarComponent', () => {
     });
   });
 
+  describe('Expanded video (Song / Video switcher)', () => {
+    const mockVideo = { key: 'xyz789', titre: 'Song Title', artiste: 'Artist Name' } as Video;
+
+    beforeEach(() => {
+      component.queueStore.setQueue([mockVideo], null);
+      fixture.detectChanges();
+    });
+
+    afterEach(() => {
+      document.body.classList.remove('cb-player-expanded');
+    });
+
+    function expand(): void {
+      component.expandPlayer();
+      fixture.detectChanges();
+    }
+
+    function query(selector: string): HTMLElement | null {
+      return (fixture.nativeElement as HTMLElement).querySelector(selector);
+    }
+
+    function switchButtons(): HTMLButtonElement[] {
+      return Array.from(
+        (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+          '.cb-view-switch-btn'
+        )
+      );
+    }
+
+    it('should not render the switcher while collapsed', () => {
+      expect(query('.cb-view-switch')).toBeNull();
+    });
+
+    it('should not render the switcher without a current track', () => {
+      component.queueStore.setQueue([], null);
+      expand();
+      expect(query('.cb-view-switch')).toBeNull();
+    });
+
+    it('should open in song mode with the artwork', () => {
+      expand();
+      const [song, video] = switchButtons();
+      expect(song.getAttribute('aria-pressed')).toBe('true');
+      expect(video.getAttribute('aria-pressed')).toBe('false');
+      expect(query('.cb-video-slot')).toBeNull();
+      expect(query('.cb-thumbnail')?.getAttribute('src')).toBe(
+        'https://img.youtube.com/vi/xyz789/hqdefault.jpg'
+      );
+    });
+
+    it('should swap the artwork for the video slot when the video option is clicked', () => {
+      expand();
+      switchButtons()[1].click();
+      fixture.detectChanges();
+      expect(component.isVideoMode()).toBe(true);
+      expect(switchButtons()[1].getAttribute('aria-pressed')).toBe('true');
+      expect(query('.cb-thumbnail')).toBeNull();
+      expect(query('.cb-video-poster')?.getAttribute('src')).toBe(
+        'https://img.youtube.com/vi/xyz789/hqdefault.jpg'
+      );
+    });
+
+    it('should restore the artwork when the song option is clicked', () => {
+      expand();
+      switchButtons()[1].click();
+      fixture.detectChanges();
+      switchButtons()[0].click();
+      fixture.detectChanges();
+      expect(component.isVideoMode()).toBe(false);
+      expect(query('.cb-video-slot')).toBeNull();
+      expect(query('.cb-thumbnail')).not.toBeNull();
+    });
+
+    it('should reset to song mode when the player is collapsed', () => {
+      expand();
+      switchButtons()[1].click();
+      component.collapsePlayer();
+      fixture.detectChanges();
+      expect(component.isVideoMode()).toBe(false);
+      expect(query('.cb-video-slot')).toBeNull();
+
+      expand();
+      expect(switchButtons()[0].getAttribute('aria-pressed')).toBe('true');
+    });
+
+    describe('Fullscreen button', () => {
+      /** Recreates the component: `canFullscreen` is read once at construction. */
+      function createWithFullscreen(enabled: boolean): void {
+        Object.defineProperty(document, 'fullscreenEnabled', {
+          configurable: true,
+          get: () => enabled,
+        });
+        fixture.destroy();
+        fixture = TestBed.createComponent(ControlBarComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+      }
+
+      afterEach(() => {
+        delete (document as unknown as Record<string, unknown>)['fullscreenEnabled'];
+      });
+
+      it('should not render the header fullscreen button in song mode', () => {
+        createWithFullscreen(true);
+        expand();
+        expect(query('.cb-video-fullscreen-btn')).toBeNull();
+      });
+
+      it('should render the header fullscreen button in video mode and open the player', () => {
+        createWithFullscreen(true);
+        expand();
+        switchButtons()[1].click();
+        fixture.detectChanges();
+        const goFullscreenSpy = vi.spyOn(component, 'goFullscreen').mockReturnValue(undefined);
+
+        query('.cb-video-fullscreen-btn')?.click();
+
+        expect(goFullscreenSpy).toHaveBeenCalledWith('player');
+      });
+
+      it('should not render the header fullscreen button when unsupported (iPhone)', () => {
+        createWithFullscreen(false);
+        expand();
+        switchButtons()[1].click();
+        fixture.detectChanges();
+        expect(query('.cb-video-fullscreen-btn')).toBeNull();
+      });
+    });
+  });
+
+  describe('Lyrics button', () => {
+    it('should carry the btn-lyrics hook used to hide it on mobile', () => {
+      component.authStore.login(
+        { pseudo: 'user', idPerso: 'user-id', mail: 'u@test.com', isAdmin: false },
+        { darkModeEnabled: false, language: 'fr' }
+      );
+      component.queueStore.setQueue(
+        [{ key: 'xyz789', titre: 'Song Title', artiste: 'Artist Name' } as Video],
+        null
+      );
+      fixture.detectChanges();
+      const btn = (fixture.nativeElement as HTMLElement).querySelector('.btn-lyrics');
+      expect(btn?.getAttribute('aria-label')).toBeTruthy();
+    });
+  });
+
   describe('Slider controls', () => {
     it('should update drag state on player slider input', () => {
       const event = { target: { value: '50' } } as unknown as Event;
