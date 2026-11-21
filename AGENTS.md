@@ -231,6 +231,7 @@ document.getElementById('el');
 - `#player` styles MUST be in `styles.scss` (global) — YouTube iframe has no Angular encapsulation
 - Mobile `#player { height: 1px }` MUST be global — avoids "not attached to DOM" error
 - Mobile `#container-player { padding-bottom: 0 }` in component CSS — removes 16:9 ratio
+- Expanded mobile player: the iframe is **never moved** in the DOM (it would reload) — global CSS anchors `#player` over `.cb-video-slot` (anchor positioning, rule 4 of the skill)
 
 ### 7. Comments & Code Quality
 

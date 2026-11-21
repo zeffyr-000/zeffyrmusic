@@ -119,6 +119,8 @@
   "video_plein_ecran": "Video en plein écran",
   "aria_controles_lecteur": "Contrôles du lecteur",
   "aria_reduire_lecteur": "Réduire le lecteur",
+  "mode_titre": "Titre",
+  "mode_video": "Vidéo",
   "aria_piste_precedente": "Piste précédente",
   "aria_piste_suivante": "Piste suivante",
   "aria_position_lecture": "Position de lecture",

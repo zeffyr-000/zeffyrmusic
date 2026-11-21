@@ -81,6 +81,14 @@ export class ControlBarComponent {
   }
 
   readonly isPlayerExpanded = signal(false);
+  /**
+   * Song / Video switcher of the expanded mobile player — back to Song on every collapse.
+   * The YouTube iframe can't be moved into the control bar (re-parenting an iframe reloads it),
+   * so global CSS (`styles.scss`) pins it over `.cb-video-slot` with CSS anchor positioning.
+   */
+  readonly isVideoMode = signal(false);
+  /** Element fullscreen support — false on iPhone Safari and on the server. */
+  readonly canFullscreen = !!this.document.fullscreenEnabled;
   readonly isDraggingPlayer = signal(false);
   readonly dragProgress = signal(0);
 
@@ -178,6 +186,7 @@ export class ControlBarComponent {
 
   collapsePlayer(): void {
     this.isPlayerExpanded.set(false);
+    this.isVideoMode.set(false);
     if (isPlatformBrowser(this.platformId)) {
       this.document.body.classList.remove('cb-player-expanded');
     }

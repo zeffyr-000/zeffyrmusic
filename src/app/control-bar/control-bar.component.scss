@@ -226,6 +226,56 @@
   margin-right: calc(var(--spacing-md) - var(--spacing-xs));
 }
 
+// Video slot (expanded mobile player). Sized like the thumbnail by default so a stale
+// expanded state after rotating to a desktop-width viewport stays tidy.
+.cb-video-slot {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  margin-right: calc(var(--spacing-md) - var(--spacing-xs));
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: $black;
+}
+
+.cb-video-poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // crops hqdefault's letterbox bars
+}
+
+// Song / Video switcher — only shown in the expanded mobile player (see RESPONSIVE)
+.cb-view-switch,
+.cb-video-fullscreen-btn {
+  display: none;
+}
+
+.cb-view-switch-btn {
+  min-width: 72px;
+  padding: 0 var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--control-bar-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+
+  &.active {
+    background: rgba($white, 0.16);
+    color: var(--control-bar-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+  }
+}
+
 .cb-track-info {
   flex: 0 1 auto;
   min-width: 0;
@@ -491,7 +541,10 @@
     display: none;
   }
 
-  .btn-fullscreen {
+  // Desktop-only actions — !important beats the expanded `.cb-btn-icon:not(.cb-btn-play)` rule.
+  // Mobile fullscreen is `.cb-video-fullscreen-btn` (header row, Video mode).
+  .btn-fullscreen,
+  .btn-lyrics {
     display: none !important;
   }
 
@@ -547,6 +600,50 @@
     font-size: 32px;
   }
 
+  // Centered on the collapse button's row (button: 40px tall at top: spacing-md)
+  .cb-container.expanded .cb-view-switch {
+    position: absolute;
+    top: calc(var(--spacing-md) + 2px);
+    left: 50%;
+    translate: -50% 0;
+    display: inline-flex;
+    height: 36px;
+    padding: 3px;
+    border-radius: var(--radius-full);
+    background: rgba($white, 0.08);
+    animation: fade-in-up 0.3s var(--transition-fast) both;
+  }
+
+  // No CSS anchor positioning (e.g. iOS < 26): the iframe can't be pinned over the slot,
+  // so drop the switcher — Video mode (slot, global #player rule, fullscreen) never starts
+  @supports not (anchor-name: --a) {
+    .cb-container.expanded .cb-view-switch {
+      display: none;
+    }
+  }
+
+  // Video mode: real fullscreen (Fullscreen API) — mirrors the collapse button, top right
+  .cb-container.expanded .cb-video-fullscreen-btn {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-lg);
+    display: flex;
+    padding: var(--spacing-xs);
+    border: none;
+    background: transparent;
+    color: var(--control-bar-text-muted);
+    animation: fade-in-up 0.3s var(--transition-fast) both;
+
+    > .material-icons {
+      font-size: 32px;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--bs-primary);
+      outline-offset: 2px;
+    }
+  }
+
   .cb-container.expanded .cb-left {
     display: flex;
     flex-direction: column;
@@ -567,6 +664,20 @@
     max-height: 280px;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
+    animation: scale-fade-in 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+  }
+
+  // "Video" mode: live video in place of the artwork. The YouTube iframe (#player) stays in
+  // the sidebar DOM and is anchored over this slot by global CSS (styles.scss) — the poster
+  // shows until the iframe fades in.
+  .cb-container.expanded .cb-left .cb-video-slot {
+    width: calc(100% + 2 * var(--spacing-lg)); // full-bleed: cancels the container side padding
+    max-width: calc(40dvh * 16 / 9); // short landscape viewports: keep room for the controls
+    height: auto;
+    aspect-ratio: 16 / 9;
+    margin: 0;
+    border-radius: 0;
+    anchor-name: --cb-video;
     animation: scale-fade-in 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
   }
 
@@ -651,10 +762,6 @@
     display: block;
   }
 
-  .cb-container.expanded .cb-secondary-actions .btn-fullscreen {
-    display: none;
-  }
-
   // Mobile volume button: hidden by default, shown only in expanded mode
   .cb-btn-volume-mobile {
     display: none;
@@ -699,6 +806,7 @@
 @media (prefers-reduced-motion: reduce) {
   .cb-btn-icon,
   .cb-btn-play,
+  .cb-view-switch-btn,
   .cb-container {
     transition: none;
   }
@@ -706,8 +814,11 @@
   .cb-left,
   .cb-mobile-title,
   .cb-container.expanded .cb-collapse-btn,
+  .cb-container.expanded .cb-view-switch,
+  .cb-container.expanded .cb-video-fullscreen-btn,
   .cb-container.expanded .cb-left,
   .cb-container.expanded .cb-left .cb-thumbnail,
+  .cb-container.expanded .cb-left .cb-video-slot,
   .cb-container.expanded .cb-center {
     animation: none;
   }

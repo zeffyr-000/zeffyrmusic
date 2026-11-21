@@ -47,7 +47,7 @@ User action → PlayerService (orchestrator)
 2. `YoutubePlayerService.loadApi()` injects `<script src="//www.youtube.com/iframe_api">`
 3. Uses `requestIdleCallback` (fallback: `setTimeout`) for deferred loading
 4. `window.onYouTubeIframeAPIReady` → `createPlayer(elementId)`
-5. `YT.Player` created with `{ playerVars: { controls: 0, origin: window.location.href, rel: 0 } }`
+5. `YT.Player` created with `{ playerVars: { controls: 0, origin: window.location.href, playsinline: 1, rel: 0 } }`
 6. `onReady` → `playerReady$.next(true)` → `playerStore.setPlayerReady(true)` → cues pending video if any (no autoplay)
 7. `PlayerService` effect watches `queueStore.items()` + `currentKey()` → `cueVideo()` on first init
 
@@ -127,6 +127,10 @@ Errors → `playerStore.setError(message)` → displayed in control bar.
 - `ControlBarComponent.expandPlayer()` → `isPlayerExpanded.set(true)` + `body.classList.add('cb-player-expanded')`
 - `collapsePlayer()` → reverse + `SwipeDownDirective` for swipe gesture
 - `DestroyRef.onDestroy` cleans up body class
+- Expanded view has a Song / Video switcher (`isVideoMode` signal, Song by default, reset on
+  collapse). In Video mode the live video shows in `.cb-video-slot`: the iframe stays in
+  `#container-player` and is anchored over the slot by global CSS — see Rule 4 of the
+  `css-critical-rules` skill.
 
 ## Common Issues
 

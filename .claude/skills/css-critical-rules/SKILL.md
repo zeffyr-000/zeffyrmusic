@@ -147,6 +147,45 @@ cy.get('#player').should('have.css', 'height', '1px');
 
 ---
 
+## Rule 4: Expanded Mobile Player Shows the Video (Anchored, Never Moved)
+
+**WHY:** Moving an iframe in the DOM reloads it and stops playback, so the iframe can never
+be re-parented into the control bar. Instead, while the expanded mobile player renders
+`.cb-video-slot`, global CSS pins `#player` over that slot with **CSS anchor positioning**.
+This is the only exception to Rule 2.
+
+```scss
+// ✅ styles.scss (GLOBAL), mobile only, scoped by body:has(.cb-video-slot)
+#container-player {
+  z-index: auto;
+} // drop the z-index:-1 stacking context
+#player {
+  position: fixed;
+  position-anchor: --cb-video; // anchor-name set on .cb-video-slot (control bar)
+  top: anchor(top);
+  left: anchor(left);
+  width: anchor-size(width);
+  height: anchor-size(height);
+  z-index: calc(var(--z-fixed) + 1); // above .cb-container (1030)
+}
+```
+
+- The video is opt-in: the Song / Video switcher (`ControlBarComponent.isVideoMode`, reset to
+  Song on every collapse) renders the slot only in Video mode; otherwise the artwork shows
+  and `#player` stays 1px. Without anchor positioning (e.g. iOS < 26), a single
+  `@supports not (anchor-name: --a)` rule in `control-bar.component.scss` hides the switcher, so
+  Video mode never starts — no `@supports` needed in `styles.scss`.
+- Fullscreen = `.cb-video-fullscreen-btn` (header row, Video mode; mobile counterpart of the desktop `.btn-fullscreen`), calling `requestFullscreen()` on the iframe (real
+  Fullscreen API, no orientation lock: the user controls rotation). The UA `:fullscreen` styles are
+  `!important` and override the anchored rule. No CSS pseudo-fullscreen.
+- The anchor works across the tree because `<app-control-bar>` precedes `#main` in
+  `app.component.html`. **Keep that order** or the anchor stops resolving.
+- Don't add `transform`/`filter`/`contain`/`will-change` on any `#player` ancestor: it would
+  become the fixed iframe's containing block and break the placement.
+- `playsinline: 1` (playerVars) keeps iOS from jumping to native fullscreen.
+
+---
+
 ## Quick Decision Tree
 
 ```
