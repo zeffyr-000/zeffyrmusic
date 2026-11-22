@@ -43,7 +43,7 @@
     "chart.js": "^4.6.1",
     "cookie-parser": "^1.4.7",
     "core-js": "^3.50.0",
-    "express": "^5.2.1",
+    "express": "^5.3.0",
     "material-icons": "^1.13.12",
     "ng2-charts": "^11.0.0",
     "ngx-google-analytics": "^14.0.1",
